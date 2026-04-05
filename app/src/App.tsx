@@ -8,6 +8,7 @@ import ProfilePage from './pages/ProfilePage'
 import LoginPage from './pages/LoginPage'
 import OnboardingPage from './pages/OnboardingPage'
 import SettingsPage from './pages/SettingsPage'
+import InsightsPage from './pages/InsightsPage'
 
 function AppRoutes() {
   const { user, loading: authLoading } = useAuth()
@@ -54,6 +55,7 @@ function AppRoutes() {
         <Route element={<AppShell />}>
           <Route index element={<TrackerPage />} />
           <Route path="history" element={<HistoryPage />} />
+          <Route path="insights" element={<InsightsPage />} />
           <Route path="profile" element={<ProfilePage />} />
           <Route path="settings" element={<SettingsPage />} />
         </Route>
