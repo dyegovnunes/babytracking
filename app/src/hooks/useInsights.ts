@@ -1,6 +1,5 @@
 import { useMemo } from 'react'
 import type { LogEntry } from '../types'
-import { DEFAULT_EVENTS } from '../lib/constants'
 
 export interface DaySummary {
   feeds: number
