@@ -10,12 +10,13 @@ export default function OnboardingPage({ onComplete }: Props) {
   const { user } = useAuth()
   const [name, setName] = useState('')
   const [birthDate, setBirthDate] = useState('')
+  const [parentName, setParentName] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!name.trim() || !birthDate || !user) return
+    if (!name.trim() || !birthDate || !parentName.trim() || !user) return
 
     setLoading(true)
     setError(null)
@@ -44,6 +45,7 @@ export default function OnboardingPage({ onComplete }: Props) {
         baby_id: baby.id,
         user_id: user.id,
         role: 'parent',
+        display_name: parentName.trim(),
       })
 
     if (memberError) {
@@ -86,6 +88,19 @@ export default function OnboardingPage({ onComplete }: Props) {
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="font-label text-[11px] text-primary font-semibold uppercase tracking-wider block mb-1.5">
+              Seu nome
+            </label>
+            <input
+              type="text"
+              value={parentName}
+              onChange={(e) => setParentName(e.target.value)}
+              placeholder="Ex: Mamãe, Papai, Ana"
+              className="w-full bg-surface-container-low rounded-lg px-4 py-3.5 text-on-surface font-body text-base outline-none focus:ring-2 focus:ring-primary/40"
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="font-label text-[11px] text-primary font-semibold uppercase tracking-wider block mb-1.5">
               Nome do bebê
             </label>
             <input
@@ -115,7 +130,7 @@ export default function OnboardingPage({ onComplete }: Props) {
 
           <button
             type="submit"
-            disabled={loading || !name.trim() || !birthDate}
+            disabled={loading || !parentName.trim() || !name.trim() || !birthDate}
             className="w-full py-3.5 rounded-xl bg-gradient-to-br from-primary to-primary-container text-on-primary font-label font-bold text-base disabled:opacity-50 transition-opacity"
           >
             {loading ? (

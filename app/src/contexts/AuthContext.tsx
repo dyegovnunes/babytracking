@@ -60,7 +60,26 @@ export async function signInWithEmail(email: string): Promise<{ error: string | 
   const { error } = await supabase.auth.signInWithOtp({
     email,
     options: {
-      emailRedirectTo: window.location.origin,
+      shouldCreateUser: true,
+    },
+  })
+  return { error: error?.message ?? null }
+}
+
+export async function verifyOtp(email: string, token: string): Promise<{ error: string | null }> {
+  const { error } = await supabase.auth.verifyOtp({
+    email,
+    token,
+    type: 'email',
+  })
+  return { error: error?.message ?? null }
+}
+
+export async function signInWithGoogle(): Promise<{ error: string | null }> {
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: window.location.origin,
     },
   })
   return { error: error?.message ?? null }

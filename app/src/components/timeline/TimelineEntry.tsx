@@ -1,9 +1,10 @@
-import type { LogEntry } from '../../types'
+import type { LogEntry, Member } from '../../types'
 import { DEFAULT_EVENTS } from '../../lib/constants'
 import { formatTime } from '../../lib/formatters'
 
 interface Props {
   log: LogEntry
+  members: Record<string, Member>
   onEdit: (log: LogEntry) => void
 }
 
@@ -19,12 +20,13 @@ const iconBgMap: Record<string, string> = {
   secondary: 'bg-secondary/15 text-secondary',
 }
 
-export default function TimelineEntry({ log, onEdit }: Props) {
+export default function TimelineEntry({ log, members, onEdit }: Props) {
   const event = DEFAULT_EVENTS.find((e) => e.id === log.eventId)
   if (!event) return null
 
   const dotColor = dotColorMap[event.color] ?? 'bg-primary'
   const iconBg = iconBgMap[event.color] ?? 'bg-primary/15 text-primary'
+  const memberName = log.createdBy ? members[log.createdBy]?.displayName : undefined
 
   return (
     <button
@@ -57,6 +59,11 @@ export default function TimelineEntry({ log, onEdit }: Props) {
         )}
         {log.notes && (
           <p className="font-label text-xs text-on-surface-variant truncate">{log.notes}</p>
+        )}
+        {memberName && (
+          <p className="font-label text-[10px] text-on-surface-variant/60">
+            por {memberName}
+          </p>
         )}
       </div>
 

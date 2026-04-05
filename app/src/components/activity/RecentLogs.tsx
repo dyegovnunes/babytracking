@@ -1,10 +1,11 @@
 import { Link } from 'react-router-dom'
-import type { LogEntry } from '../../types'
+import type { LogEntry, Member } from '../../types'
 import { DEFAULT_EVENTS } from '../../lib/constants'
 import { formatTime } from '../../lib/formatters'
 
 interface Props {
   logs: LogEntry[]
+  members: Record<string, Member>
 }
 
 const dotColorMap: Record<string, string> = {
@@ -13,7 +14,7 @@ const dotColorMap: Record<string, string> = {
   secondary: 'bg-secondary',
 }
 
-export default function RecentLogs({ logs }: Props) {
+export default function RecentLogs({ logs, members }: Props) {
   const recent = [...logs].sort((a, b) => b.timestamp - a.timestamp).slice(0, 5)
 
   if (recent.length === 0) {
@@ -46,19 +47,32 @@ export default function RecentLogs({ logs }: Props) {
           if (!event) return null
           const dotColor = dotColorMap[event.color] ?? 'bg-primary'
 
+          const memberName = log.createdBy ? members[log.createdBy]?.displayName : undefined
+
           return (
             <div
               key={log.id}
               className="flex items-center gap-3 py-2.5 px-3 rounded-lg bg-surface-container"
             >
               <div className={`w-2 h-2 rounded-full shrink-0 ${dotColor}`} />
-              <span className="material-symbols-outlined text-on-surface-variant text-base">
-                {event.icon}
-              </span>
-              <span className="flex-1 font-body text-sm text-on-surface">
-                {event.label}
-                {log.ml ? ` — ${log.ml}ml` : ''}
-              </span>
+              {event.emoji ? (
+                <span className="text-base leading-none">{event.emoji}</span>
+              ) : (
+                <span className="material-symbols-outlined text-on-surface-variant text-base">
+                  {event.icon}
+                </span>
+              )}
+              <div className="flex-1 min-w-0">
+                <span className="font-body text-sm text-on-surface">
+                  {event.label}
+                  {log.ml ? ` — ${log.ml}ml` : ''}
+                </span>
+                {memberName && (
+                  <p className="font-label text-[10px] text-on-surface-variant/60">
+                    por {memberName}
+                  </p>
+                )}
+              </div>
               <span className="font-label text-xs text-on-surface-variant">
                 {formatTime(new Date(log.timestamp))}
               </span>

@@ -35,6 +35,12 @@ export interface Baby {
   photoUrl?: string
 }
 
+export interface Member {
+  userId: string
+  displayName: string
+  role: string
+}
+
 export interface Projection {
   label: string
   time: Date

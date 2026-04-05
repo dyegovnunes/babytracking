@@ -10,7 +10,7 @@ import { HistorySkeleton } from '../components/ui/Skeleton'
 import { hapticMedium } from '../lib/haptics'
 
 export default function HistoryPage() {
-  const { logs, loading } = useAppState()
+  const { logs, members, loading } = useAppState()
   const dispatch = useAppDispatch()
 
   const [filter, setFilter] = useState<EventCategory | 'all'>('all')
@@ -74,7 +74,7 @@ export default function HistoryPage() {
           </p>
         ) : (
           filtered.map((log) => (
-            <TimelineEntry key={log.id} log={log} onEdit={handleEdit} />
+            <TimelineEntry key={log.id} log={log} members={members} onEdit={handleEdit} />
           ))
         )}
       </section>

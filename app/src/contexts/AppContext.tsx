@@ -1,5 +1,5 @@
 import { createContext, useContext, useReducer, useEffect, type ReactNode } from 'react'
-import type { LogEntry, IntervalConfig, Baby } from '../types'
+import type { LogEntry, IntervalConfig, Baby, Member } from '../types'
 import { supabase } from '../lib/supabase'
 import { DEFAULT_INTERVALS } from '../lib/constants'
 import { useAuth } from './AuthContext'
@@ -8,12 +8,13 @@ interface AppState {
   logs: LogEntry[]
   intervals: Record<string, IntervalConfig>
   baby: Baby | null
+  members: Record<string, Member>
   loading: boolean
   needsOnboarding: boolean
 }
 
 type Action =
-  | { type: 'SET_INITIAL'; logs: LogEntry[]; intervals: Record<string, IntervalConfig>; baby: Baby }
+  | { type: 'SET_INITIAL'; logs: LogEntry[]; intervals: Record<string, IntervalConfig>; baby: Baby; members: Record<string, Member> }
   | { type: 'SET_NO_BABY' }
   | { type: 'ADD_LOG'; log: LogEntry }
   | { type: 'UPDATE_LOG'; log: LogEntry }
@@ -26,6 +27,7 @@ const initialState: AppState = {
   logs: [],
   intervals: DEFAULT_INTERVALS,
   baby: null,
+  members: {},
   loading: true,
   needsOnboarding: false,
 }
@@ -33,7 +35,7 @@ const initialState: AppState = {
 function reducer(state: AppState, action: Action): AppState {
   switch (action.type) {
     case 'SET_INITIAL':
-      return { ...state, logs: action.logs, intervals: action.intervals, baby: action.baby, loading: false, needsOnboarding: false }
+      return { ...state, logs: action.logs, intervals: action.intervals, baby: action.baby, members: action.members, loading: false, needsOnboarding: false }
     case 'SET_NO_BABY':
       return { ...state, loading: false, needsOnboarding: true }
     case 'ADD_LOG':
@@ -89,10 +91,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       const babyId = memberships[0].baby_id
 
-      const [babyRes, logsRes, intervalsRes] = await Promise.all([
+      const [babyRes, logsRes, intervalsRes, membersRes] = await Promise.all([
         supabase.from('babies').select('*').eq('id', babyId).single(),
         supabase.from('logs').select('*').eq('baby_id', babyId).order('timestamp', { ascending: true }),
         supabase.from('interval_configs').select('*').eq('baby_id', babyId),
+        supabase.from('baby_members').select('user_id, display_name, role').eq('baby_id', babyId),
       ])
 
       if (!babyRes.data) {
@@ -114,7 +117,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
         ml: row.ml ?? undefined,
         duration: row.duration ?? undefined,
         notes: row.notes ?? undefined,
+        createdBy: row.created_by ?? undefined,
       }))
+
+      const members: Record<string, Member> = {}
+      for (const row of membersRes.data ?? []) {
+        members[row.user_id] = {
+          userId: row.user_id,
+          displayName: row.display_name || '',
+          role: row.role,
+        }
+      }
 
       const intervals = { ...DEFAULT_INTERVALS }
       for (const row of intervalsRes.data ?? []) {
@@ -127,7 +140,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         }
       }
 
-      dispatch({ type: 'SET_INITIAL', logs, intervals, baby })
+      dispatch({ type: 'SET_INITIAL', logs, intervals, baby, members })
     }
 
     load()
@@ -148,6 +161,7 @@ export async function addLog(
   eventId: string,
   babyId: string,
   ml?: number,
+  userId?: string,
 ): Promise<LogEntry | null> {
   const timestamp = Date.now()
 
@@ -158,6 +172,7 @@ export async function addLog(
       event_id: eventId,
       timestamp,
       ml: ml ?? null,
+      created_by: userId ?? null,
     })
     .select()
     .single()
@@ -169,6 +184,7 @@ export async function addLog(
     eventId: data.event_id,
     timestamp: data.timestamp,
     ml: data.ml ?? undefined,
+    createdBy: data.created_by ?? undefined,
   }
 
   dispatch({ type: 'ADD_LOG', log })

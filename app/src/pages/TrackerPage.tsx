@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react'
 import { useAppState, useAppDispatch, addLog } from '../contexts/AppContext'
+import { useAuth } from '../contexts/AuthContext'
 import { DEFAULT_EVENTS } from '../lib/constants'
 import { getNextProjection } from '../lib/projections'
 import { useTimer } from '../hooks/useTimer'
@@ -16,8 +17,9 @@ import { TrackerSkeleton } from '../components/ui/Skeleton'
 const PROJECTION_CATEGORIES: EventCategory[] = ['feed', 'diaper', 'sleep']
 
 export default function TrackerPage() {
-  const { logs, intervals, baby, loading } = useAppState()
+  const { logs, intervals, baby, members, loading } = useAppState()
   const dispatch = useAppDispatch()
+  const { user } = useAuth()
   const now = useTimer()
 
   const [bottleModalOpen, setBottleModalOpen] = useState(false)
@@ -36,26 +38,26 @@ export default function TrackerPage() {
         return
       }
 
-      const log = await addLog(dispatch, eventId, baby.id)
+      const log = await addLog(dispatch, eventId, baby.id, undefined, user?.id)
       if (log) {
         hapticSuccess()
         setToast(`${event.label} registrado!`)
       }
     },
-    [baby, dispatch],
+    [baby, dispatch, user],
   )
 
   const handleBottleConfirm = useCallback(
     async (ml: number) => {
       if (!baby) return
       setBottleModalOpen(false)
-      const log = await addLog(dispatch, 'bottle', baby.id, ml)
+      const log = await addLog(dispatch, 'bottle', baby.id, ml, user?.id)
       if (log) {
         hapticSuccess()
         setToast(`Mamadeira ${ml}ml registrada!`)
       }
     },
-    [baby, dispatch],
+    [baby, dispatch, user],
   )
 
   // Force re-render of projections with timer
@@ -88,7 +90,7 @@ export default function TrackerPage() {
         </section>
       )}
 
-      <RecentLogs logs={logs} />
+      <RecentLogs logs={logs} members={members} />
 
       {bottleModalOpen && (
         <BottleModal
