@@ -1,0 +1,155 @@
+@import "tailwindcss";
+
+@theme {
+  /* Surfaces */
+  --color-surface: #0d0a27;
+  --color-surface-dim: #0d0a27;
+  --color-surface-container-lowest: #000000;
+  --color-surface-container-low: #120f2f;
+  --color-surface-container: #181538;
+  --color-surface-container-high: #1e1a41;
+  --color-surface-container-highest: #24204a;
+  --color-surface-bright: #2a2653;
+  --color-surface-variant: #24204a;
+
+  /* Primary */
+  --color-primary: #b79fff;
+  --color-primary-dim: #a88cfb;
+  --color-primary-container: #ab8ffe;
+  --color-primary-fixed: #ab8ffe;
+  --color-primary-fixed-dim: #9d81f0;
+
+  /* Secondary */
+  --color-secondary: #d0c5fb;
+  --color-secondary-dim: #c2b7ec;
+  --color-secondary-container: #49406d;
+
+  /* Tertiary */
+  --color-tertiary: #ff96b9;
+  --color-tertiary-dim: #ef77a1;
+  --color-tertiary-container: #fc81ac;
+
+  /* Error */
+  --color-error: #ff6e84;
+  --color-error-dim: #d73357;
+  --color-error-container: #a70138;
+
+  /* On-colors */
+  --color-on-surface: #e7e2ff;
+  --color-on-surface-variant: #aca7cc;
+  --color-on-background: #e7e2ff;
+  --color-on-primary: #361083;
+  --color-on-secondary: #463d6a;
+  --color-on-error: #490013;
+
+  /* Utility */
+  --color-outline: #757294;
+  --color-outline-variant: #474464;
+
+  /* Fonts */
+  --font-headline: 'Manrope', sans-serif;
+  --font-body: 'Manrope', sans-serif;
+  --font-label: 'Plus Jakarta Sans', sans-serif;
+
+  /* Border Radius */
+  --radius: 1rem;
+  --radius-lg: 2rem;
+  --radius-xl: 3rem;
+
+  /* Animations */
+  --animate-fade-in: fade-in 0.3s ease-out;
+  --animate-slide-up: slide-up 0.3s ease-out;
+  --animate-fade-out: fade-out 0.2s ease-in forwards;
+  --animate-pulse-soft: pulse-soft 2s ease-in-out infinite;
+  --animate-shimmer: shimmer 1.5s ease-in-out infinite;
+  --animate-page-enter: page-enter 0.25s ease-out;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-out {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(8px); }
+}
+
+@keyframes slide-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes page-enter {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Base resets */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Material Symbols config */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  user-select: none;
+}
+
+/* Scrollbar styling for dark theme */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-outline-variant);
+  border-radius: 2px;
+}
+
+/* Hide scrollbar utility */
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* Skeleton loading */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-surface-container) 25%,
+    var(--color-surface-container-high) 50%,
+    var(--color-surface-container) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 0.5rem;
+}
+
+/* Page transition */
+.page-enter {
+  animation: page-enter 0.25s ease-out;
+}
+
+/* Safe area insets for mobile */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}

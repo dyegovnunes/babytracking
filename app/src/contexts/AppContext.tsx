@@ -1,0 +1,273 @@
+import { createContext, useContext, useReducer, useEffect, type ReactNode } from 'react'
+import type { LogEntry, IntervalConfig, Baby } from '../types'
+import { supabase } from '../lib/supabase'
+import { DEFAULT_INTERVALS } from '../lib/constants'
+import { useAuth } from './AuthContext'
+
+interface AppState {
+  logs: LogEntry[]
+  intervals: Record<string, IntervalConfig>
+  baby: Baby | null
+  loading: boolean
+  needsOnboarding: boolean
+}
+
+type Action =
+  | { type: 'SET_INITIAL'; logs: LogEntry[]; intervals: Record<string, IntervalConfig>; baby: Baby }
+  | { type: 'SET_NO_BABY' }
+  | { type: 'ADD_LOG'; log: LogEntry }
+  | { type: 'UPDATE_LOG'; log: LogEntry }
+  | { type: 'DELETE_LOG'; id: string }
+  | { type: 'SET_INTERVALS'; intervals: Record<string, IntervalConfig> }
+  | { type: 'SET_BABY'; baby: Baby }
+  | { type: 'CLEAR_LOGS' }
+
+const initialState: AppState = {
+  logs: [],
+  intervals: DEFAULT_INTERVALS,
+  baby: null,
+  loading: true,
+  needsOnboarding: false,
+}
+
+function reducer(state: AppState, action: Action): AppState {
+  switch (action.type) {
+    case 'SET_INITIAL':
+      return { ...state, logs: action.logs, intervals: action.intervals, baby: action.baby, loading: false, needsOnboarding: false }
+    case 'SET_NO_BABY':
+      return { ...state, loading: false, needsOnboarding: true }
+    case 'ADD_LOG':
+      return { ...state, logs: [...state.logs, action.log] }
+    case 'UPDATE_LOG':
+      return { ...state, logs: state.logs.map((l) => (l.id === action.log.id ? action.log : l)) }
+    case 'DELETE_LOG':
+      return { ...state, logs: state.logs.filter((l) => l.id !== action.id) }
+    case 'SET_INTERVALS':
+      return { ...state, intervals: action.intervals }
+    case 'SET_BABY':
+      return { ...state, baby: action.baby }
+    case 'CLEAR_LOGS':
+      return { ...state, logs: [] }
+    default:
+      return state
+  }
+}
+
+const StateContext = createContext<AppState>(initialState)
+const DispatchContext = createContext<React.Dispatch<Action>>(() => {})
+
+export function useAppState() {
+  return useContext(StateContext)
+}
+
+export function useAppDispatch() {
+  return useContext(DispatchContext)
+}
+
+export function AppProvider({ children }: { children: ReactNode }) {
+  const [state, dispatch] = useReducer(reducer, initialState)
+  const { user } = useAuth()
+
+  useEffect(() => {
+    if (!user) {
+      dispatch({ type: 'SET_NO_BABY' })
+      return
+    }
+
+    async function load() {
+      // Find the user's baby via baby_members
+      const { data: memberships } = await supabase
+        .from('baby_members')
+        .select('baby_id')
+        .eq('user_id', user!.id)
+        .limit(1)
+
+      if (!memberships || memberships.length === 0) {
+        dispatch({ type: 'SET_NO_BABY' })
+        return
+      }
+
+      const babyId = memberships[0].baby_id
+
+      const [babyRes, logsRes, intervalsRes] = await Promise.all([
+        supabase.from('babies').select('*').eq('id', babyId).single(),
+        supabase.from('logs').select('*').eq('baby_id', babyId).order('timestamp', { ascending: true }),
+        supabase.from('interval_configs').select('*').eq('baby_id', babyId),
+      ])
+
+      if (!babyRes.data) {
+        dispatch({ type: 'SET_NO_BABY' })
+        return
+      }
+
+      const baby: Baby = {
+        id: babyRes.data.id,
+        name: babyRes.data.name,
+        birthDate: babyRes.data.birth_date,
+        photoUrl: babyRes.data.photo_url,
+      }
+
+      const logs: LogEntry[] = (logsRes.data ?? []).map((row) => ({
+        id: row.id,
+        eventId: row.event_id,
+        timestamp: row.timestamp,
+        ml: row.ml ?? undefined,
+        duration: row.duration ?? undefined,
+        notes: row.notes ?? undefined,
+      }))
+
+      const intervals = { ...DEFAULT_INTERVALS }
+      for (const row of intervalsRes.data ?? []) {
+        if (intervals[row.category]) {
+          intervals[row.category] = {
+            ...intervals[row.category],
+            minutes: row.minutes,
+            warn: row.warn,
+          }
+        }
+      }
+
+      dispatch({ type: 'SET_INITIAL', logs, intervals, baby })
+    }
+
+    load()
+  }, [user])
+
+  return (
+    <StateContext.Provider value={state}>
+      <DispatchContext.Provider value={dispatch}>
+        {children}
+      </DispatchContext.Provider>
+    </StateContext.Provider>
+  )
+}
+
+// Helper: add log to Supabase + dispatch
+export async function addLog(
+  dispatch: React.Dispatch<Action>,
+  eventId: string,
+  babyId: string,
+  ml?: number,
+): Promise<LogEntry | null> {
+  const timestamp = Date.now()
+
+  const { data, error } = await supabase
+    .from('logs')
+    .insert({
+      baby_id: babyId,
+      event_id: eventId,
+      timestamp,
+      ml: ml ?? null,
+    })
+    .select()
+    .single()
+
+  if (error || !data) return null
+
+  const log: LogEntry = {
+    id: data.id,
+    eventId: data.event_id,
+    timestamp: data.timestamp,
+    ml: data.ml ?? undefined,
+  }
+
+  dispatch({ type: 'ADD_LOG', log })
+  return log
+}
+
+// Helper: update log in Supabase + dispatch
+export async function updateLog(
+  dispatch: React.Dispatch<Action>,
+  log: LogEntry,
+): Promise<boolean> {
+  const { error } = await supabase
+    .from('logs')
+    .update({
+      event_id: log.eventId,
+      timestamp: log.timestamp,
+      ml: log.ml ?? null,
+      duration: log.duration ?? null,
+      notes: log.notes ?? null,
+    })
+    .eq('id', log.id)
+
+  if (error) return false
+
+  dispatch({ type: 'UPDATE_LOG', log })
+  return true
+}
+
+// Helper: delete log from Supabase + dispatch
+export async function deleteLog(
+  dispatch: React.Dispatch<Action>,
+  id: string,
+): Promise<boolean> {
+  const { error } = await supabase
+    .from('logs')
+    .delete()
+    .eq('id', id)
+
+  if (error) return false
+
+  dispatch({ type: 'DELETE_LOG', id })
+  return true
+}
+
+// Helper: update baby in Supabase + dispatch
+export async function updateBaby(
+  dispatch: React.Dispatch<Action>,
+  baby: Baby,
+): Promise<boolean> {
+  const { error } = await supabase
+    .from('babies')
+    .update({
+      name: baby.name,
+      birth_date: baby.birthDate,
+      photo_url: baby.photoUrl ?? null,
+    })
+    .eq('id', baby.id)
+
+  if (error) return false
+
+  dispatch({ type: 'SET_BABY', baby })
+  return true
+}
+
+// Helper: update intervals in Supabase + dispatch
+export async function updateIntervals(
+  dispatch: React.Dispatch<Action>,
+  babyId: string,
+  intervals: Record<string, IntervalConfig>,
+): Promise<boolean> {
+  const upserts = Object.entries(intervals).map(([category, config]) => ({
+    baby_id: babyId,
+    category,
+    minutes: config.minutes,
+    warn: config.warn,
+  }))
+
+  const { error } = await supabase
+    .from('interval_configs')
+    .upsert(upserts, { onConflict: 'baby_id,category' })
+
+  if (error) return false
+
+  dispatch({ type: 'SET_INTERVALS', intervals })
+  return true
+}
+
+// Helper: clear all logs from Supabase + dispatch
+export async function clearAllLogs(
+  dispatch: React.Dispatch<Action>,
+  babyId: string,
+): Promise<boolean> {
+  const { error } = await supabase
+    .from('logs')
+    .delete()
+    .eq('baby_id', babyId)
+
+  if (error) return false
+
+  dispatch({ type: 'CLEAR_LOGS' })
+  return true
+}

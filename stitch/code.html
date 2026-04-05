@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BebêLog - Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Plus_Jakarta_Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .soft-glow-primary {
+            box-shadow: 0px 0px 20px rgba(167, 139, 250, 0.15);
+        }
+        .glass-panel {
+            background: rgba(24, 21, 56, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary-fixed-dim": "#f57ca6",
+                      "primary-dim": "#a88cfb",
+                      "on-secondary-fixed-variant": "#534a78",
+                      "secondary-dim": "#c2b7ec",
+                      "on-error": "#490013",
+                      "secondary": "#d0c5fb",
+                      "secondary-fixed-dim": "#c8bdf2",
+                      "surface-container-high": "#1e1a41",
+                      "outline": "#757294",
+                      "on-primary-container": "#290070",
+                      "error": "#ff6e84",
+                      "on-tertiary-fixed-variant": "#70103c",
+                      "on-primary": "#361083",
+                      "surface-container": "#181538",
+                      "on-secondary-container": "#d5c9ff",
+                      "on-error-container": "#ffb2b9",
+                      "surface-tint": "#b79fff",
+                      "tertiary-container": "#fc81ac",
+                      "inverse-primary": "#684cb6",
+                      "on-tertiary-fixed": "#380019",
+                      "error-container": "#a70138",
+                      "on-secondary": "#463d6a",
+                      "inverse-surface": "#fcf8ff",
+                      "surface-container-low": "#120f2f",
+                      "on-background": "#e7e2ff",
+                      "on-surface": "#e7e2ff",
+                      "primary-fixed": "#ab8ffe",
+                      "on-secondary-fixed": "#362e59",
+                      "surface-dim": "#0d0a27",
+                      "surface-container-highest": "#24204a",
+                      "on-surface-variant": "#aca7cc",
+                      "primary": "#b79fff",
+                      "outline-variant": "#474464",
+                      "primary-fixed-dim": "#9d81f0",
+                      "tertiary": "#ff96b9",
+                      "tertiary-dim": "#ef77a1",
+                      "surface-bright": "#2a2653",
+                      "on-primary-fixed-variant": "#330b80",
+                      "primary-container": "#ab8ffe",
+                      "tertiary-fixed": "#ff8db3",
+                      "surface-container-lowest": "#000000",
+                      "surface": "#0d0a27",
+                      "secondary-container": "#49406d",
+                      "on-tertiary-container": "#59002c",
+                      "surface-variant": "#24204a",
+                      "inverse-on-surface": "#555172",
+                      "on-primary-fixed": "#000000",
+                      "error-dim": "#d73357",
+                      "background": "#0d0a27",
+                      "secondary-fixed": "#d6cbff",
+                      "on-tertiary": "#690937"
+              },
+              "borderRadius": {
+                      "DEFAULT": "1rem",
+                      "lg": "2rem",
+                      "xl": "3rem",
+                      "full": "9999px"
+              },
+              "fontFamily": {
+                      "headline": ["Manrope"],
+                      "body": ["Manrope"],
+                      "label": ["Plus Jakarta Sans"]
+              }
+            },
+          }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface font-body text-on-surface selection:bg-primary/30">
+<!-- Top Navigation Bar -->
+<header class="flex justify-between items-center px-6 py-4 w-full z-50 fixed top-0 bg-[#0d0a27]">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary-container">
+<img class="w-full h-full object-cover" data-alt="Close-up artistic portrait of a sleeping newborn baby with soft lighting and neutral warm tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXWCj1Jb71PVnxyY62NNCq-f5BlEWqYujXOD3fmnGkjI_jJeO28WW5THPwwYZRJ3zNA90U8MKtp7k-nFsN5iHf3uaF7WzU4F6rXWfH-xNbDK_npIPt8RewkW33Aj9CC9nbeYoJz2C69O1H0DZwoqxCbRYlCMGS6Tzd8NIt263M-g9mXo_HV95Tl_E5bwqET4nLP0MA9_G0M0zjBcHm90lwNcT9G7jKwngqF_9Ext-2IBklBJQ5PlCwX8Al52gSozo2CS6COMK9wA"/>
+</div>
+<span class="text-xl font-black text-[#a78bfa] tracking-tight font-headline">BebêLog</span>
+</div>
+<button class="material-symbols-outlined text-[#e7e2ff] hover:opacity-80 transition-opacity active:scale-95 duration-200" data-icon="settings">settings</button>
+</header>
+<main class="pt-24 pb-32 px-6">
+<!-- Section 1: Hero Identity -->
+<section class="text-center mb-10">
+<div class="inline-block px-4 py-1.5 bg-surface-container rounded-full mb-4">
+<p class="font-label text-sm font-semibold text-primary">Alice <span class="text-outline-variant mx-1">•</span> 3 semanas, 4 dias</p>
+</div>
+<h1 class="text-5xl font-extrabold font-headline tracking-tight text-on-surface mb-2">14:35</h1>
+<p class="font-label text-sm font-medium text-on-surface-variant uppercase tracking-widest">Terça, 12 de Outubro</p>
+</section>
+<!-- Section 2: Quick Log Activity Grid (3x3) -->
+<section class="mb-10">
+<div class="grid grid-cols-3 gap-4">
+<!-- Peito Esq. -->
+<div class="flex flex-col items-center p-4 bg-surface-container-high rounded-lg group active:scale-95 transition-transform duration-150">
+<div class="w-12 h-12 rounded-full bg-tertiary-container/20 flex items-center justify-center mb-3 soft-glow-primary">
+<span class="material-symbols-outlined text-tertiary text-2xl" data-icon="breastfeeding">breastfeeding</span>
+</div>
+<span class="font-label text-[11px] font-semibold text-on-surface text-center leading-tight">Peito Esq.</span>
+<span class="font-label text-[9px] text-outline-variant mt-1">Há 3h</span>
+</div>
+<!-- Peito Dir. -->
+<div class="flex flex-col items-center p-4 bg-surface-container-high rounded-lg active:scale-95 transition-transform duration-150">
+<div class="w-12 h-12 rounded-full bg-tertiary-container/20 flex items-center justify-center mb-3 soft-glow-primary">
+<span class="material-symbols-outlined text-tertiary text-2xl" data-icon="breastfeeding">breastfeeding</span>
+</div>
+<span class="font-label text-[11px] font-semibold text-on-surface text-center leading-tight">Peito Dir.</span>
+<span class="font-label text-[9px] text-outline-variant mt-1">Há 1h 20m</span>
+</div>
+<!-- Ambos -->
+<div class="flex flex-col items-center p-4 bg-surface-container-high rounded-lg active:scale-95 transition-transform duration-150">
+<div class="w-12 h-12 rounded-full bg-tertiary-container/30 flex items-center justify-center mb-3 soft-glow-primary">
+<span class="material-symbols-outlined text-tertiary-dim text-2xl" data-icon="nutrition">nutrition</span>
+</div>
+<span class="font-label text-[11px] font-semibold text-on-surface text-center leading-tight">Ambos</span>
+<span class="font-label text-[9px] text-outline-variant mt-1">Há 6h</span>
+</div>
+<!-- Mamadeira -->
+<div class="flex flex-col items-center p-4 bg-surface-container-high rounded-lg active:scale-95 transition-transform duration-150">
+<div class="w-12 h-12 rounded-full bg-primary-container/20 flex items-center justify-center mb-3 soft-glow-primary">
+<span class="material-symbols-outlined text-primary text-2xl" data-icon="baby_changing_station">baby_changing_station</span>
+</div>
+<span class="font-label text-[11px] font-semibold text-on-surface text-center leading-tight">Mamadeira</span>
+<span class="font-label text-[9px] text-outline-variant mt-1">Há 4h</span>
+</div>
+<!-- Fralda Xixi -->
+<div class="flex flex-col items-center p-4 bg-surface-container-high rounded-lg active:scale-95 transition-transform duration-150">
+<div class="w-12 h-12 rounded-full bg-secondary-container/30 flex items-center justify-center mb-3 soft-glow-primary">
+<span class="material-symbols-outlined text-secondary text-2xl" data-icon="water_drop">water_drop</span>
+</div>
+<span class="font-label text-[11px] font-semibold text-on-surface text-center leading-tight">Fralda Xixi</span>
+<span class="font-label text-[9px] text-outline-variant mt-1">Há 45min</span>
+</div>
+<!-- Fralda Cocô -->
+<div class="flex flex-col items-center p-4 bg-surface-container-high rounded-lg active:scale-95 transition-transform duration-150">
+<div class="w-12 h-12 rounded-full bg-[#5d4037]/20 flex items-center justify-center mb-3 soft-glow-primary">
+<span class="material-symbols-outlined text-[#8d6e63] text-2xl" data-icon="rebase_edit">rebase_edit</span>
+</div>
+<span class="font-label text-[11px] font-semibold text-on-surface text-center leading-tight">Fralda Cocô</span>
+<span class="font-label text-[9px] text-outline-variant mt-1">Há 2h 10m</span>
+</div>
+<!-- Banho -->
+<div class="flex flex-col items-center p-4 bg-surface-container-high rounded-lg active:scale-95 transition-transform duration-150">
+<div class="w-12 h-12 rounded-full bg-[#c8e6c9]/10 flex items-center justify-center mb-3 soft-glow-primary">
+<span class="material-symbols-outlined text-[#81c784] text-2xl" data-icon="bathtub">bathtub</span>
+</div>
+<span class="font-label text-[11px] font-semibold text-on-surface text-center leading-tight">Banho</span>
+<span class="font-label text-[9px] text-outline-variant mt-1">Ontem</span>
+</div>
+<!-- Dormiu -->
+<div class="flex flex-col items-center p-4 bg-surface-container-high rounded-lg active:scale-95 transition-transform duration-150">
+<div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3 soft-glow-primary">
+<span class="material-symbols-outlined text-primary-dim text-2xl" data-icon="bedtime">bedtime</span>
+</div>
+<span class="font-label text-[11px] font-semibold text-on-surface text-center leading-tight">Dormiu</span>
+<span class="font-label text-[9px] text-outline-variant mt-1">Há 3h</span>
+</div>
+<!-- Acordou -->
+<div class="flex flex-col items-center p-4 bg-surface-container-high rounded-lg active:scale-95 transition-transform duration-150">
+<div class="w-12 h-12 rounded-full bg-yellow-500/10 flex items-center justify-center mb-3 soft-glow-primary">
+<span class="material-symbols-outlined text-yellow-300 text-2xl" data-icon="sunny">sunny</span>
+</div>
+<span class="font-label text-[11px] font-semibold text-on-surface text-center leading-tight">Acordou</span>
+<span class="font-label text-[9px] text-outline-variant mt-1">Há 30min</span>
+</div>
+</div>
+</section>
+<!-- Section 3: Smart Timeline -->
+<section class="space-y-6">
+<h2 class="font-headline font-bold text-lg text-on-surface">Histórico</h2>
+<!-- Timeline Container -->
+<div class="relative pl-4 space-y-8">
+<!-- Prediction Item -->
+<div class="flex items-center gap-6 relative">
+<div class="absolute -left-1 w-2.5 h-2.5 bg-yellow-400 rounded-full shadow-[0_0_8px_rgba(250,204,21,0.6)] z-10"></div>
+<div class="flex-1 p-4 bg-surface-container-highest/40 border-l-2 border-yellow-400/30 rounded-r-xl">
+<div class="flex justify-between items-center">
+<span class="font-label text-xs font-bold text-yellow-300 uppercase tracking-wider">Previsão</span>
+<span class="font-label text-xs font-semibold text-on-surface-variant">em 45min</span>
+</div>
+<p class="font-body font-semibold text-on-surface mt-1">Próxima mamada</p>
+</div>
+</div>
+<!-- Log Entry: Acordou -->
+<div class="flex items-start gap-6 relative">
+<div class="absolute -left-1 top-2 w-2.5 h-2.5 bg-primary rounded-full z-10"></div>
+<div class="w-12 text-right">
+<span class="font-label text-[11px] font-bold text-on-surface-variant">14:05</span>
+</div>
+<div class="flex-1 bg-surface-container p-4 rounded-xl">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-yellow-300 text-lg" data-icon="sunny">sunny</span>
+<p class="font-body font-medium text-on-surface">Acordou</p>
+</div>
+</div>
+</div>
+<!-- Log Entry: Fralda Xixi -->
+<div class="flex items-start gap-6 relative">
+<div class="absolute -left-1 top-2 w-2.5 h-2.5 bg-secondary rounded-full z-10"></div>
+<div class="w-12 text-right">
+<span class="font-label text-[11px] font-bold text-on-surface-variant">13:50</span>
+</div>
+<div class="flex-1 bg-surface-container p-4 rounded-xl">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary text-lg" data-icon="water_drop">water_drop</span>
+<p class="font-body font-medium text-on-surface">Fralda Xixi</p>
+</div>
+</div>
+</div>
+<!-- Log Entry: Peito Dir. -->
+<div class="flex items-start gap-6 relative">
+<div class="absolute -left-1 top-2 w-2.5 h-2.5 bg-tertiary rounded-full z-10"></div>
+<div class="w-12 text-right">
+<span class="font-label text-[11px] font-bold text-on-surface-variant">13:15</span>
+</div>
+<div class="flex-1 bg-surface-container p-4 rounded-xl">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-tertiary text-lg" data-icon="breastfeeding">breastfeeding</span>
+<p class="font-body font-medium text-on-surface">Alimentação: Peito Direito</p>
+</div>
+<p class="text-[10px] text-outline-variant mt-1 ml-7">Duração: 12 minutos</p>
+</div>
+</div>
+<!-- Log Entry: Dormiu -->
+<div class="flex items-start gap-6 relative">
+<div class="absolute -left-1 top-2 w-2.5 h-2.5 bg-outline-variant rounded-full z-10"></div>
+<div class="w-12 text-right">
+<span class="font-label text-[11px] font-bold text-on-surface-variant">11:30</span>
+</div>
+<div class="flex-1 bg-surface-container p-4 rounded-xl opacity-60">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-outline text-lg" data-icon="bedtime">bedtime</span>
+<p class="font-body font-medium text-on-surface">Dormiu</p>
+</div>
+</div>
+</div>
+<!-- Decorative Connector -->
+<div class="absolute top-4 left-0 w-[2px] h-full bg-surface-container-high -z-0"></div>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 bg-[#181538]/80 backdrop-blur-xl rounded-t-[2rem] shadow-[0px_-20px_40px_rgba(167,139,250,0.08)]">
+<!-- Tracker (Active) -->
+<a class="flex flex-col items-center justify-center bg-[#2a2653] text-[#a78bfa] rounded-2xl px-4 py-2 shadow-[0px_0px_12px_rgba(167,139,250,0.3)] Active: scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="grid_view">grid_view</span>
+<span class="font-label text-[10px] font-semibold tracking-wide">Tracker</span>
+</a>
+<!-- Insights -->
+<a class="flex flex-col items-center justify-center text-[#474464] px-4 py-2 hover:text-[#b79fff] transition-colors" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="insights">insights</span>
+<span class="font-label text-[10px] font-semibold tracking-wide">Insights</span>
+</a>
+<!-- Community -->
+<a class="flex flex-col items-center justify-center text-[#474464] px-4 py-2 hover:text-[#b79fff] transition-colors" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="groups">groups</span>
+<span class="font-label text-[10px] font-semibold tracking-wide">Community</span>
+</a>
+<!-- Profile -->
+<a class="flex flex-col items-center justify-center text-[#474464] px-4 py-2 hover:text-[#b79fff] transition-colors" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="person">person</span>
+<span class="font-label text-[10px] font-semibold tracking-wide">Profile</span>
+</a>
+</nav>
+<!-- Floating Action Button (Manual Log) -->
+<button class="fixed right-6 bottom-28 w-14 h-14 bg-primary text-on-primary rounded-full shadow-lg flex items-center justify-center active:scale-90 transition-transform z-40">
+<span class="material-symbols-outlined text-3xl" data-icon="add" data-weight="fill">add</span>
+</button>
+</body></html>
