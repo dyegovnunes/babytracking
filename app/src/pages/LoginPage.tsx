@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { signInWithEmail, signInWithGoogle, verifyOtp } from '../contexts/AuthContext'
 
 export default function LoginPage() {
@@ -9,7 +9,27 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [verifying, setVerifying] = useState(false)
   const [socialLoading, setSocialLoading] = useState(false)
+  const [resendCooldown, setResendCooldown] = useState(0)
   const inputRefs = useRef<(HTMLInputElement | null)[]>([])
+
+  useEffect(() => {
+    if (resendCooldown <= 0) return
+    const timer = setTimeout(() => setResendCooldown((c) => c - 1), 1000)
+    return () => clearTimeout(timer)
+  }, [resendCooldown])
+
+  const handleResend = useCallback(async () => {
+    if (resendCooldown > 0) return
+    setError(null)
+    const result = await signInWithEmail(email.trim())
+    if (result.error) {
+      setError(result.error)
+    } else {
+      setResendCooldown(60)
+      setOtp(['', '', '', '', '', ''])
+      setTimeout(() => inputRefs.current[0]?.focus(), 100)
+    }
+  }, [email, resendCooldown])
 
   async function handleGoogle() {
     setSocialLoading(true)
@@ -36,6 +56,7 @@ export default function LoginPage() {
     } else {
       setSent(true)
       setOtp(['', '', '', '', '', ''])
+      setResendCooldown(60)
       setTimeout(() => inputRefs.current[0]?.focus(), 100)
     }
   }
@@ -158,12 +179,22 @@ export default function LoginPage() {
               </div>
             )}
 
-            <button
-              onClick={() => { setSent(false); setError(null) }}
-              className="font-label text-sm text-primary font-medium"
-            >
-              Usar outro email
-            </button>
+            <div className="flex items-center justify-center gap-4">
+              <button
+                onClick={handleResend}
+                disabled={resendCooldown > 0}
+                className="font-label text-sm text-primary font-medium disabled:text-on-surface-variant/40"
+              >
+                {resendCooldown > 0 ? `Reenviar (${resendCooldown}s)` : 'Reenviar código'}
+              </button>
+              <span className="text-on-surface-variant/30">|</span>
+              <button
+                onClick={() => { setSent(false); setError(null) }}
+                className="font-label text-sm text-on-surface-variant font-medium"
+              >
+                Outro email
+              </button>
+            </div>
           </div>
         ) : (
           /* Login form */
