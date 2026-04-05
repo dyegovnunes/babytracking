@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import type { Baby } from '../../types'
 import { formatAge } from '../../lib/formatters'
 import { supabase } from '../../lib/supabase'
+import ImageCropModal from '../ui/ImageCropModal'
 
 interface Props {
   baby: Baby
@@ -13,16 +14,16 @@ export default function BabyCard({ baby, onSave }: Props) {
   const [name, setName] = useState(baby.name)
   const [birthDate, setBirthDate] = useState(baby.birthDate)
   const [uploading, setUploading] = useState(false)
+  const [cropFile, setCropFile] = useState<File | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
 
-  async function handlePhotoUpload(file: File) {
+  async function handlePhotoUpload(blob: Blob) {
     setUploading(true)
-    const ext = file.name.split('.').pop()
-    const path = `${baby.id}/photo.${ext}`
+    const path = `${baby.id}/photo.jpg`
 
     const { error } = await supabase.storage
       .from('baby-photos')
-      .upload(path, file, { upsert: true })
+      .upload(path, blob, { upsert: true, contentType: 'image/jpeg' })
 
     if (!error) {
       const { data } = supabase.storage.from('baby-photos').getPublicUrl(path)
@@ -67,14 +68,27 @@ export default function BabyCard({ baby, onSave }: Props) {
         className="hidden"
         onChange={(e) => {
           const file = e.target.files?.[0]
-          if (file) handlePhotoUpload(file)
+          if (file) setCropFile(file)
+          if (fileRef.current) fileRef.current.value = ''
         }}
       />
     </div>
   )
 
+  const cropModal = cropFile && (
+    <ImageCropModal
+      imageFile={cropFile}
+      onConfirm={(blob) => {
+        setCropFile(null)
+        handlePhotoUpload(blob)
+      }}
+      onClose={() => setCropFile(null)}
+    />
+  )
+
   if (editing) {
     return (
+      <>
       <div className="bg-surface-container rounded-lg p-5">
         <div className="flex items-center gap-4 mb-4">
           {photoElement}
@@ -121,10 +135,13 @@ export default function BabyCard({ baby, onSave }: Props) {
           </div>
         </div>
       </div>
+      {cropModal}
+      </>
     )
   }
 
   return (
+    <>
     <button
       onClick={() => setEditing(true)}
       className="w-full bg-surface-container rounded-lg p-5 flex items-center gap-4 text-left active:bg-surface-container-high transition-colors"
@@ -143,5 +160,7 @@ export default function BabyCard({ baby, onSave }: Props) {
         edit
       </span>
     </button>
+    {cropModal}
+    </>
   )
 }
