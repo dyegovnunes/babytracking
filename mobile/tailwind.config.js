@@ -1,0 +1,41 @@
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: ['./src/**/*.{ts,tsx}', './App.tsx', './index.ts'],
+  presets: [require('nativewind/preset')],
+  theme: {
+    extend: {
+      colors: {
+        surface: '#0d0a27',
+        'surface-dim': '#080620',
+        'surface-container-low': '#120f30',
+        'surface-container': '#181538',
+        'surface-container-high': '#1e1a41',
+        'surface-container-highest': '#24204a',
+        'surface-variant': '#2a2650',
+        primary: '#b79fff',
+        'primary-dim': '#9370f0',
+        'primary-container': '#7c5ed6',
+        'on-primary': '#361083',
+        secondary: '#d0c5fb',
+        'secondary-container': '#8b7ec4',
+        'on-secondary': '#463d6a',
+        tertiary: '#ff96b9',
+        'tertiary-dim': '#e0758f',
+        'on-tertiary': '#4d0020',
+        error: '#ff6e84',
+        'error-dim': '#d44a5e',
+        'on-error': '#3d0010',
+        'on-surface': '#e7e2ff',
+        'on-surface-variant': '#aca7cc',
+        outline: '#757294',
+        'outline-variant': '#474464',
+      },
+      fontFamily: {
+        headline: ['Manrope'],
+        body: ['Manrope'],
+        label: ['PlusJakartaSans'],
+      },
+    },
+  },
+  plugins: [],
+}
