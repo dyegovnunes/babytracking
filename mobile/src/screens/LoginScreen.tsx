@@ -6,7 +6,7 @@ import { signInWithEmail, signInWithGoogle, verifyOtp } from '../contexts/AuthCo
 export default function LoginScreen() {
   const [email, setEmail] = useState('')
   const [sent, setSent] = useState(false)
-  const [otp, setOtp] = useState(['', '', '', ''])
+  const [otp, setOtp] = useState(['', '', '', '', '', ''])
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [verifying, setVerifying] = useState(false)
@@ -28,7 +28,7 @@ export default function LoginScreen() {
       setError(result.error)
     } else {
       setResendCooldown(60)
-      setOtp(['', '', '', ''])
+      setOtp(['', '', '', '', '', ''])
       setTimeout(() => inputRefs.current[0]?.focus(), 100)
     }
   }, [email, resendCooldown])
@@ -55,7 +55,7 @@ export default function LoginScreen() {
       setError(result.error)
     } else {
       setSent(true)
-      setOtp(['', '', '', ''])
+      setOtp(['', '', '', '', '', ''])
       setResendCooldown(60)
       setTimeout(() => inputRefs.current[0]?.focus(), 100)
     }
@@ -63,13 +63,13 @@ export default function LoginScreen() {
 
   function handleOtpChange(index: number, value: string) {
     if (value.length > 1) {
-      const digits = value.replace(/\D/g, '').slice(0, 4).split('')
+      const digits = value.replace(/\D/g, '').slice(0, 6).split('')
       const newOtp = [...otp]
       digits.forEach((d, i) => {
-        if (index + i < 4) newOtp[index + i] = d
+        if (index + i < 6) newOtp[index + i] = d
       })
       setOtp(newOtp)
-      const nextIndex = Math.min(index + digits.length, 3)
+      const nextIndex = Math.min(index + digits.length, 5)
       inputRefs.current[nextIndex]?.focus()
 
       if (newOtp.every((d) => d !== '')) {
@@ -83,7 +83,7 @@ export default function LoginScreen() {
     newOtp[index] = digit
     setOtp(newOtp)
 
-    if (digit && index < 3) {
+    if (digit && index < 5) {
       inputRefs.current[index + 1]?.focus()
     }
 
@@ -105,7 +105,7 @@ export default function LoginScreen() {
     const result = await verifyOtp(email, code)
     if (result.error) {
       setError('Código inválido. Tente novamente.')
-      setOtp(['', '', '', ''])
+      setOtp(['', '', '', '', '', ''])
       setVerifying(false)
       setTimeout(() => inputRefs.current[0]?.focus(), 100)
     }
@@ -132,7 +132,7 @@ export default function LoginScreen() {
                 key={i}
                 ref={(el) => { inputRefs.current[i] = el }}
                 keyboardType="number-pad"
-                maxLength={i === 0 ? 4 : 1}
+                maxLength={i === 0 ? 6 : 1}
                 value={digit}
                 onChangeText={(v) => handleOtpChange(i, v)}
                 onKeyPress={({ nativeEvent }) => handleOtpKeyPress(i, nativeEvent.key)}
