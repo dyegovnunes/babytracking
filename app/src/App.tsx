@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { AppProvider, useAppState } from './contexts/AppContext'
 import AppShell from './components/layout/AppShell'
@@ -9,8 +9,9 @@ import LoginPage from './pages/LoginPage'
 import OnboardingPage from './pages/OnboardingPage'
 import SettingsPage from './pages/SettingsPage'
 import InsightsPage from './pages/InsightsPage'
+import PrivacyPage from './pages/PrivacyPage'
 
-function AppRoutes() {
+function AuthenticatedRoutes() {
   const { user, loading: authLoading } = useAuth()
   const { needsOnboarding, loading: dataLoading } = useAppState()
 
@@ -50,26 +51,37 @@ function AppRoutes() {
 
   // Main app
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route element={<AppShell />}>
-          <Route index element={<TrackerPage />} />
-          <Route path="history" element={<HistoryPage />} />
-          <Route path="insights" element={<InsightsPage />} />
-          <Route path="profile" element={<ProfilePage />} />
-          <Route path="settings" element={<SettingsPage />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+    <Routes>
+      <Route element={<AppShell />}>
+        <Route index element={<TrackerPage />} />
+        <Route path="history" element={<HistoryPage />} />
+        <Route path="insights" element={<InsightsPage />} />
+        <Route path="profile" element={<ProfilePage />} />
+        <Route path="settings" element={<SettingsPage />} />
+      </Route>
+    </Routes>
   )
+}
+
+function AppRoutes() {
+  const location = useLocation()
+
+  // Public routes (no auth required)
+  if (location.pathname === '/privacy') {
+    return <PrivacyPage />
+  }
+
+  return <AuthenticatedRoutes />
 }
 
 export default function App() {
   return (
-    <AuthProvider>
-      <AppProvider>
-        <AppRoutes />
-      </AppProvider>
-    </AuthProvider>
+    <BrowserRouter>
+      <AuthProvider>
+        <AppProvider>
+          <AppRoutes />
+        </AppProvider>
+      </AuthProvider>
+    </BrowserRouter>
   )
 }
