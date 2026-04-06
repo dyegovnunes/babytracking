@@ -1,7 +1,9 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { View, Text, TextInput, Pressable, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView } from 'react-native'
+import { View, Text, TextInput, Pressable, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, Image } from 'react-native'
 import Svg, { Path } from 'react-native-svg'
 import { signInWithEmail, signInWithGoogle, verifyOtp } from '../contexts/AuthContext'
+
+const logoSymbol = require('../../assets/logo-symbol.png')
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('')
@@ -190,9 +192,12 @@ export default function LoginScreen() {
         <View className="w-full items-center">
           {/* Logo */}
           <View className="items-center mb-10">
-            <View className="w-20 h-20 rounded-full bg-primary-container/20 items-center justify-center mb-5">
-              <Text className="text-4xl">👶</Text>
-            </View>
+            <Image
+              source={logoSymbol}
+              className="w-24 h-24 mb-5"
+              resizeMode="contain"
+              tintColor="#b79fff"
+            />
             <Text className="font-headline text-3xl font-extrabold text-on-surface tracking-tight">
               Ya<Text className="text-primary">ya</Text>
             </Text>
