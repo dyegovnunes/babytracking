@@ -1,7 +1,8 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { Text, Platform } from 'react-native'
+import { Platform } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { MaterialIcons } from '@expo/vector-icons'
 import TrackerScreen from '../screens/TrackerScreen'
 import HistoryScreen from '../screens/HistoryScreen'
 import InsightsScreen from '../screens/InsightsScreen'
@@ -11,18 +12,11 @@ import SettingsScreen from '../screens/SettingsScreen'
 const Tab = createBottomTabNavigator()
 const Stack = createNativeStackNavigator()
 
-function TabIcon({ label, focused }: { label: string; focused: boolean }) {
-  const icons: Record<string, string> = {
-    Início: '📋',
-    Histórico: '🕐',
-    Insights: '📊',
-    Perfil: '👤',
-  }
-  return (
-    <Text style={{ fontSize: focused ? 22 : 20, opacity: focused ? 1 : 0.5 }}>
-      {icons[label] ?? '•'}
-    </Text>
-  )
+const tabIcons: Record<string, keyof typeof MaterialIcons.glyphMap> = {
+  'Início': 'track-changes',
+  'Histórico': 'history',
+  'Insights': 'insights',
+  'Perfil': 'person',
 }
 
 function MainTabs() {
@@ -32,8 +26,12 @@ function MainTabs() {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarIcon: ({ focused }) => (
-          <TabIcon label={route.name} focused={focused} />
+        tabBarIcon: ({ focused, color }) => (
+          <MaterialIcons
+            name={tabIcons[route.name] ?? 'circle'}
+            size={focused ? 26 : 24}
+            color={color}
+          />
         ),
         tabBarStyle: {
           backgroundColor: '#181538',
