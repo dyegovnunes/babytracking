@@ -1,6 +1,7 @@
 import './global.css'
 import { StatusBar } from 'expo-status-bar'
 import { View, ActivityIndicator } from 'react-native'
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 import { NavigationContainer } from '@react-navigation/native'
 import { AuthProvider, useAuth } from './src/contexts/AuthContext'
 import { AppProvider, useAppState } from './src/contexts/AppContext'
@@ -50,6 +51,7 @@ function AppInner() {
 
 export default function App() {
   return (
+    <SafeAreaProvider>
     <NavigationContainer
       theme={{
         dark: true,
@@ -70,9 +72,12 @@ export default function App() {
       }}
     >
       <AuthProvider>
-        <AppContent />
+        <SafeAreaView className="flex-1 bg-surface" edges={['top', 'left', 'right']}>
+          <AppContent />
+        </SafeAreaView>
         <StatusBar style="light" />
       </AuthProvider>
     </NavigationContainer>
+    </SafeAreaProvider>
   )
 }

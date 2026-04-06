@@ -1,6 +1,7 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { Text } from 'react-native'
+import { Text, Platform } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import TrackerScreen from '../screens/TrackerScreen'
 import HistoryScreen from '../screens/HistoryScreen'
 import InsightsScreen from '../screens/InsightsScreen'
@@ -25,6 +26,8 @@ function TabIcon({ label, focused }: { label: string; focused: boolean }) {
 }
 
 function MainTabs() {
+  const insets = useSafeAreaInsets()
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -36,8 +39,8 @@ function MainTabs() {
           backgroundColor: '#181538',
           borderTopColor: '#47446440',
           borderTopWidth: 1,
-          height: 60,
-          paddingBottom: 8,
+          height: 60 + insets.bottom,
+          paddingBottom: 8 + insets.bottom,
           paddingTop: 4,
         },
         tabBarActiveTintColor: '#b79fff',
