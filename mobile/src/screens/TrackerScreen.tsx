@@ -6,6 +6,7 @@ import { DEFAULT_EVENTS } from '../lib/constants'
 import { getNextProjection } from '../lib/projections'
 import { useTimer } from '../hooks/useTimer'
 import { hapticSuccess, hapticLight } from '../lib/haptics'
+import { useNotificationSync } from '../hooks/useNotificationSync'
 import type { EventCategory } from '../types'
 import HeroIdentity from '../components/activity/HeroIdentity'
 import ActivityGrid from '../components/activity/ActivityGrid'
@@ -17,6 +18,7 @@ import Toast from '../components/ui/Toast'
 const PROJECTION_CATEGORIES: EventCategory[] = ['feed', 'diaper', 'sleep']
 
 export default function TrackerScreen() {
+  useNotificationSync()
   const { logs, intervals, baby, members, loading } = useAppState()
   const dispatch = useAppDispatch()
   const { user } = useAuth()

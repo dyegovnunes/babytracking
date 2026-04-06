@@ -1,7 +1,8 @@
 import { createContext, useContext, useReducer, useEffect, type ReactNode } from 'react'
 import type { LogEntry, IntervalConfig, Baby, Member } from '../types'
 import { supabase } from '../lib/supabase'
-import { DEFAULT_INTERVALS } from '../lib/constants'
+import { DEFAULT_INTERVALS, DEFAULT_EVENTS } from '../lib/constants'
+import { requestNotificationPermission, rescheduleAllNotifications } from '../lib/notifications'
 import { useAuth } from './AuthContext'
 
 interface AppState {
@@ -141,6 +142,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
 
       dispatch({ type: 'SET_INITIAL', logs, intervals, baby, members })
+
+      // Setup notifications
+      await requestNotificationPermission()
+      await rescheduleAllNotifications(logs, intervals, DEFAULT_EVENTS)
     }
 
     load()

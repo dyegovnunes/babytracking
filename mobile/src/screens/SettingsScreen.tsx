@@ -1,6 +1,9 @@
-import { useState, useCallback } from 'react'
-import { View, Text, ScrollView, Pressable } from 'react-native'
+import { useState, useCallback, useEffect } from 'react'
+import { View, Text, ScrollView, Pressable, Switch } from 'react-native'
+import * as Notifications from 'expo-notifications'
 import { useAppState, useAppDispatch, updateIntervals } from '../contexts/AppContext'
+import { requestNotificationPermission, rescheduleAllNotifications, cancelAllNotifications } from '../lib/notifications'
+import { DEFAULT_EVENTS } from '../lib/constants'
 import type { IntervalConfig } from '../types'
 import Toast from '../components/ui/Toast'
 
@@ -47,10 +50,32 @@ function minutesToDisplay(minutes: number): string {
 }
 
 export default function SettingsScreen() {
-  const { intervals, baby } = useAppState()
+  const { intervals, logs, baby } = useAppState()
   const dispatch = useAppDispatch()
   const [expandedCat, setExpandedCat] = useState<string | null>(null)
   const [toast, setToast] = useState<string | null>(null)
+  const [notifEnabled, setNotifEnabled] = useState(false)
+
+  useEffect(() => {
+    Notifications.getPermissionsAsync().then(({ status }) => {
+      setNotifEnabled(status === 'granted')
+    })
+  }, [])
+
+  const handleNotifToggle = useCallback(async (value: boolean) => {
+    if (value) {
+      const granted = await requestNotificationPermission()
+      setNotifEnabled(granted)
+      if (granted) {
+        await rescheduleAllNotifications(logs, intervals, DEFAULT_EVENTS)
+        setToast('Notificações ativadas!')
+      }
+    } else {
+      await cancelAllNotifications()
+      setNotifEnabled(false)
+      setToast('Notificações desativadas')
+    }
+  }, [logs, intervals])
 
   const handleSelect = useCallback(
     async (cat: string, preset: { minutes: number; warn: number }) => {
@@ -150,18 +175,28 @@ export default function SettingsScreen() {
           </View>
         </View>
 
-        {/* Push notifications - placeholder */}
+        {/* Notifications */}
         <View className="px-5 mt-4">
           <View className="bg-surface-container rounded-xl p-4">
-            <View className="flex-row items-center gap-3 mb-2">
-              <Text className="text-xl">🔔</Text>
-              <Text className="text-on-surface font-headline text-sm font-bold">
-                Notificações
-              </Text>
+            <View className="flex-row items-center justify-between">
+              <View className="flex-row items-center gap-3 flex-1">
+                <Text className="text-xl">🔔</Text>
+                <View className="flex-1">
+                  <Text className="text-on-surface font-headline text-sm font-bold">
+                    Notificações
+                  </Text>
+                  <Text className="font-label text-xs text-on-surface-variant mt-0.5">
+                    Alertas de mamada, troca e soninho
+                  </Text>
+                </View>
+              </View>
+              <Switch
+                value={notifEnabled}
+                onValueChange={handleNotifToggle}
+                trackColor={{ false: '#2a2650', true: '#b79fff50' }}
+                thumbColor={notifEnabled ? '#b79fff' : '#aca7cc'}
+              />
             </View>
-            <Text className="font-label text-xs text-on-surface-variant">
-              Em breve: receba alertas quando estiver perto da hora de mamada, troca ou soninho.
-            </Text>
           </View>
         </View>
       </ScrollView>
