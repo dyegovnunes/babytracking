@@ -6,9 +6,10 @@ import DateTimePicker from '@react-native-community/datetimepicker'
 
 interface Props {
   onComplete: () => void
+  onJoin?: () => void
 }
 
-export default function OnboardingScreen({ onComplete }: Props) {
+export default function OnboardingScreen({ onComplete, onJoin }: Props) {
   const { user } = useAuth()
   const [name, setName] = useState('')
   const [birthDate, setBirthDate] = useState<Date | null>(null)
@@ -159,7 +160,7 @@ export default function OnboardingScreen({ onComplete }: Props) {
             <Pressable
               onPress={handleSubmit}
               disabled={loading || !canSubmit}
-              className="w-full py-3.5 rounded-xl bg-primary items-center active:opacity-80"
+              className="w-full py-3.5 rounded-xl bg-primary items-center active:opacity-80 mb-4"
               style={{ opacity: loading || !canSubmit ? 0.5 : 1 }}
             >
               {loading ? (
@@ -170,6 +171,17 @@ export default function OnboardingScreen({ onComplete }: Props) {
                 </Text>
               )}
             </Pressable>
+
+            {onJoin && (
+              <Pressable
+                onPress={onJoin}
+                className="w-full py-3 items-center active:opacity-70"
+              >
+                <Text className="text-primary font-label text-sm font-medium">
+                  Já tenho um código de convite
+                </Text>
+              </Pressable>
+            )}
           </View>
         </View>
       </ScrollView>

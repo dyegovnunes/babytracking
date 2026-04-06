@@ -1,5 +1,6 @@
 import './global.css'
 import { StatusBar } from 'expo-status-bar'
+import { useState } from 'react'
 import { View, ActivityIndicator } from 'react-native'
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 import { NavigationContainer } from '@react-navigation/native'
@@ -8,6 +9,7 @@ import { AppProvider, useAppState } from './src/contexts/AppContext'
 import AppNavigation from './src/navigation'
 import LoginScreen from './src/screens/LoginScreen'
 import OnboardingScreen from './src/screens/OnboardingScreen'
+import JoinBabyScreen from './src/screens/JoinBabyScreen'
 
 function AppContent() {
   const { user, loading: authLoading } = useAuth()
@@ -33,6 +35,7 @@ function AppContent() {
 
 function AppInner() {
   const { loading, needsOnboarding } = useAppState()
+  const [joinMode, setJoinMode] = useState(false)
 
   if (loading) {
     return (
@@ -43,7 +46,20 @@ function AppInner() {
   }
 
   if (needsOnboarding) {
-    return <OnboardingScreen onComplete={() => {}} />
+    if (joinMode) {
+      return (
+        <JoinBabyScreen
+          onComplete={() => setJoinMode(false)}
+          onBack={() => setJoinMode(false)}
+        />
+      )
+    }
+    return (
+      <OnboardingScreen
+        onComplete={() => {}}
+        onJoin={() => setJoinMode(true)}
+      />
+    )
   }
 
   return <AppNavigation />

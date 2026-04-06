@@ -1,8 +1,8 @@
 import * as Notifications from 'expo-notifications'
 import { Platform } from 'react-native'
 import type { LogEntry, IntervalConfig, EventType } from '../types'
+import { loadNotificationPrefs, type NotificationPrefs } from './notificationPrefs'
 
-// One notification ID per category (so we can cancel/replace)
 const NOTIFICATION_IDS = {
   feed: 'bt_feed',
   diaper: 'bt_diaper',
@@ -23,7 +23,6 @@ Notifications.setNotificationHandler({
   }),
 })
 
-// ── Request permission ──────────────────────────────────────────────
 export async function requestNotificationPermission(): Promise<boolean> {
   if (Platform.OS === 'android') {
     await Notifications.setNotificationChannelAsync('babytracking', {
@@ -42,7 +41,29 @@ export async function requestNotificationPermission(): Promise<boolean> {
   return status === 'granted'
 }
 
-// ── Schedule a notification (replaces existing for same id) ─────────
+function isInQuietHours(date: Date, quietHours: NotificationPrefs['quietHours']): boolean {
+  if (!quietHours.enabled) return false
+  const hour = date.getHours()
+  if (quietHours.start < quietHours.end) {
+    // e.g. 8-18 (daytime quiet)
+    return hour >= quietHours.start && hour < quietHours.end
+  }
+  // e.g. 22-6 (nighttime quiet)
+  return hour >= quietHours.start || hour < quietHours.end
+}
+
+function pushOutOfQuietHours(date: Date, quietHours: NotificationPrefs['quietHours']): Date {
+  if (!isInQuietHours(date, quietHours)) return date
+  // Push to the end of quiet hours
+  const result = new Date(date)
+  result.setHours(quietHours.end, 0, 0, 0)
+  // If end is before start (e.g. 22-6), and current hour >= start, push to next day
+  if (quietHours.start > quietHours.end && result.getTime() <= date.getTime()) {
+    result.setDate(result.getDate() + 1)
+  }
+  return result
+}
+
 async function scheduleNotif(
   identifier: string,
   title: string,
@@ -56,11 +77,7 @@ async function scheduleNotif(
 
   await Notifications.scheduleNotificationAsync({
     identifier,
-    content: {
-      title,
-      body,
-      sound: 'default',
-    },
+    content: { title, body, sound: 'default' },
     trigger: {
       type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
       seconds: secondsFromNow,
@@ -69,17 +86,22 @@ async function scheduleNotif(
   })
 }
 
-// ── Cancel all notifications ────────────────────────────────────────
 export async function cancelAllNotifications(): Promise<void> {
   await Notifications.cancelAllScheduledNotificationsAsync()
 }
 
-// ── Reschedule all categories based on logs + intervals ─────────────
 export async function rescheduleAllNotifications(
   logs: LogEntry[],
   intervals: Record<string, IntervalConfig>,
   events: EventType[],
 ): Promise<void> {
+  const prefs = await loadNotificationPrefs()
+
+  if (!prefs.enabled) {
+    await cancelAllNotifications()
+    return
+  }
+
   const meta: Record<NotifCategory, { title: string; emoji: string }> = {
     feed: { title: 'Hora da mamada!', emoji: '🤱' },
     diaper: { title: 'Hora de trocar a fralda!', emoji: '💧' },
@@ -88,13 +110,22 @@ export async function rescheduleAllNotifications(
   }
 
   for (const [category, m] of Object.entries(meta) as [NotifCategory, { title: string; emoji: string }][]) {
-    const interval = intervals[category]
-    if (!interval) {
-      await Notifications.cancelScheduledNotificationAsync(NOTIFICATION_IDS[category]).catch(() => {})
+    const warnId = `${NOTIFICATION_IDS[category]}_warn`
+    const mainId = NOTIFICATION_IDS[category]
+
+    // If category is disabled, cancel its notifications
+    if (!prefs.categories[category]) {
+      await Notifications.cancelScheduledNotificationAsync(warnId).catch(() => {})
+      await Notifications.cancelScheduledNotificationAsync(mainId).catch(() => {})
       continue
     }
 
-    // Find most recent log for this category
+    const interval = intervals[category]
+    if (!interval) {
+      await Notifications.cancelScheduledNotificationAsync(mainId).catch(() => {})
+      continue
+    }
+
     const categoryLogs = logs
       .filter((l) => {
         const event = events.find((e) => e.id === l.eventId)
@@ -103,19 +134,20 @@ export async function rescheduleAllNotifications(
       .sort((a, b) => b.timestamp - a.timestamp)
 
     if (categoryLogs.length === 0) {
-      await Notifications.cancelScheduledNotificationAsync(NOTIFICATION_IDS[category]).catch(() => {})
+      await Notifications.cancelScheduledNotificationAsync(warnId).catch(() => {})
+      await Notifications.cancelScheduledNotificationAsync(mainId).catch(() => {})
       continue
     }
 
     const lastLog = categoryLogs[0]
-    const warnTime = new Date(lastLog.timestamp + interval.warn * 60 * 1000)
-    const nextTime = new Date(lastLog.timestamp + interval.minutes * 60 * 1000)
     const now = Date.now()
 
     // Warning notification
+    let warnTime = new Date(lastLog.timestamp + interval.warn * 60 * 1000)
+    warnTime = pushOutOfQuietHours(warnTime, prefs.quietHours)
     if (warnTime.getTime() > now) {
       await scheduleNotif(
-        `${NOTIFICATION_IDS[category]}_warn`,
+        warnId,
         `${m.emoji} Em breve: ${interval.label}`,
         `Faltam ${interval.minutes - interval.warn} min`,
         warnTime,
@@ -123,9 +155,11 @@ export async function rescheduleAllNotifications(
     }
 
     // Main notification
+    let nextTime = new Date(lastLog.timestamp + interval.minutes * 60 * 1000)
+    nextTime = pushOutOfQuietHours(nextTime, prefs.quietHours)
     if (nextTime.getTime() > now) {
       await scheduleNotif(
-        NOTIFICATION_IDS[category],
+        mainId,
         `${m.emoji} ${m.title}`,
         `Já passou ${interval.minutes} min desde o último registro`,
         nextTime,
