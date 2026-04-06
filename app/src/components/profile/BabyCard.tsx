@@ -22,14 +22,23 @@ export default function BabyCard({ baby, onSave }: Props) {
     setUploading(true)
     const path = `${baby.id}/photo.jpg`
 
-    const { error } = await supabase.storage
-      .from('baby-photos')
-      .upload(path, blob, { upsert: true, contentType: 'image/jpeg' })
+    try {
+      const arrayBuffer = await blob.arrayBuffer()
+      const { error } = await supabase.storage
+        .from('baby-photos')
+        .upload(path, arrayBuffer, { upsert: true, contentType: 'image/jpeg' })
 
-    if (!error) {
-      const { data } = supabase.storage.from('baby-photos').getPublicUrl(path)
-      const photoUrl = data.publicUrl + '?t=' + Date.now()
-      onSave({ ...baby, photoUrl })
+      if (error) {
+        console.error('Upload error:', error)
+        alert(`Erro ao enviar foto: ${error.message}`)
+      } else {
+        const { data } = supabase.storage.from('baby-photos').getPublicUrl(path)
+        const photoUrl = data.publicUrl + '?t=' + Date.now()
+        onSave({ ...baby, photoUrl })
+      }
+    } catch (err) {
+      console.error('Upload exception:', err)
+      alert('Erro inesperado ao enviar foto. Tente novamente.')
     }
     setUploading(false)
   }
