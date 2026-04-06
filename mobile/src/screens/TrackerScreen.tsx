@@ -7,7 +7,6 @@ import { getNextProjection } from '../lib/projections'
 import { useTimer } from '../hooks/useTimer'
 import { hapticSuccess, hapticLight } from '../lib/haptics'
 import { useNotificationSync } from '../hooks/useNotificationSync'
-import type { EventCategory } from '../types'
 import HeroIdentity from '../components/activity/HeroIdentity'
 import ActivityGrid from '../components/activity/ActivityGrid'
 import PredictionCard from '../components/activity/PredictionCard'
@@ -15,7 +14,7 @@ import RecentLogs from '../components/activity/RecentLogs'
 import BottleModal from '../components/ui/BottleModal'
 import Toast from '../components/ui/Toast'
 
-const PROJECTION_CATEGORIES: EventCategory[] = ['feed', 'diaper', 'sleep']
+const PROJECTION_CATEGORIES: string[] = ['feed', 'diaper', 'sleep_nap', 'sleep_awake', 'bath']
 
 export default function TrackerScreen() {
   useNotificationSync()

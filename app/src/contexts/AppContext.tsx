@@ -131,12 +131,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       const intervals = { ...DEFAULT_INTERVALS }
       for (const row of intervalsRes.data ?? []) {
-        if (intervals[row.category]) {
-          intervals[row.category] = {
-            ...intervals[row.category],
-            minutes: row.minutes,
-            warn: row.warn,
-          }
+        const base = intervals[row.category] ?? { label: row.category, minutes: row.minutes, warn: row.warn }
+        intervals[row.category] = {
+          ...base,
+          minutes: row.minutes,
+          warn: row.warn,
+          mode: row.mode ?? 'interval',
+          scheduledHours: row.scheduled_hours ? JSON.parse(row.scheduled_hours) : undefined,
         }
       }
 
@@ -260,6 +261,8 @@ export async function updateIntervals(
     category,
     minutes: config.minutes,
     warn: config.warn,
+    mode: config.mode ?? 'interval',
+    scheduled_hours: config.scheduledHours ? JSON.stringify(config.scheduledHours) : null,
   }))
 
   const { error } = await supabase

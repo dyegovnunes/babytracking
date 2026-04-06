@@ -26,6 +26,9 @@ export interface IntervalConfig {
   label: string
   minutes: number
   warn: number
+  mode?: 'interval' | 'scheduled'
+  scheduledHours?: number[]
+  description?: string
 }
 
 export interface Baby {

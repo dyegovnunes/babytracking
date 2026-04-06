@@ -5,7 +5,6 @@ import { DEFAULT_EVENTS } from '../lib/constants'
 import { getNextProjection } from '../lib/projections'
 import { useTimer } from '../hooks/useTimer'
 import { hapticSuccess, hapticLight } from '../lib/haptics'
-import type { EventCategory } from '../types'
 import HeroIdentity from '../components/activity/HeroIdentity'
 import ActivityGrid from '../components/activity/ActivityGrid'
 import PredictionCard from '../components/activity/PredictionCard'
@@ -14,7 +13,7 @@ import BottleModal from '../components/ui/BottleModal'
 import Toast from '../components/ui/Toast'
 import { TrackerSkeleton } from '../components/ui/Skeleton'
 
-const PROJECTION_CATEGORIES: EventCategory[] = ['feed', 'diaper', 'sleep']
+const PROJECTION_CATEGORIES: string[] = ['feed', 'diaper', 'sleep_nap', 'sleep_awake', 'bath']
 
 export default function TrackerPage() {
   const { logs, intervals, baby, members, loading } = useAppState()

@@ -58,10 +58,11 @@ export default function OnboardingScreen({ onComplete, onJoin }: Props) {
     }
 
     const defaultIntervals = [
-      { baby_id: baby.id, category: 'feed', minutes: 180, warn: 150 },
-      { baby_id: baby.id, category: 'diaper', minutes: 120, warn: 90 },
-      { baby_id: baby.id, category: 'bath', minutes: 1440, warn: 1200 },
-      { baby_id: baby.id, category: 'sleep', minutes: 90, warn: 60 },
+      { baby_id: baby.id, category: 'feed', minutes: 180, warn: 150, mode: 'interval', scheduled_hours: null },
+      { baby_id: baby.id, category: 'diaper', minutes: 120, warn: 90, mode: 'interval', scheduled_hours: null },
+      { baby_id: baby.id, category: 'bath', minutes: 0, warn: 15, mode: 'scheduled', scheduled_hours: '[18]' },
+      { baby_id: baby.id, category: 'sleep_nap', minutes: 90, warn: 75, mode: 'interval', scheduled_hours: null },
+      { baby_id: baby.id, category: 'sleep_awake', minutes: 120, warn: 100, mode: 'interval', scheduled_hours: null },
     ]
 
     await supabase.from('interval_configs').insert(defaultIntervals)

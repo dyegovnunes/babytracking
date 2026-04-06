@@ -13,10 +13,11 @@ export const DEFAULT_EVENTS: EventType[] = [
 ]
 
 export const DEFAULT_INTERVALS: Record<string, IntervalConfig> = {
-  feed:   { label: 'próxima mamada',  minutes: 180, warn: 150 },
-  diaper: { label: 'próxima troca',   minutes: 120, warn: 90 },
-  bath:   { label: 'próximo banho',   minutes: 1440, warn: 1200 },
-  sleep:  { label: 'próximo soninho', minutes: 90, warn: 60 },
+  feed:        { label: 'Próxima mamada',        minutes: 180, warn: 150 },
+  diaper:      { label: 'Próxima troca',         minutes: 120, warn: 90 },
+  bath:        { label: 'Próximo banho',         minutes: 0,   warn: 15, mode: 'scheduled', scheduledHours: [18] },
+  sleep_nap:   { label: 'Deve acordar',          minutes: 90,  warn: 75, description: 'Duração esperada da soneca' },
+  sleep_awake: { label: 'Deve dormir',           minutes: 120, warn: 100, description: 'Janela de sono (tempo acordado)' },
 }
 
 export const CATEGORY_LABELS: Record<string, string> = {
