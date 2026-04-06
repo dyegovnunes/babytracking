@@ -19,7 +19,7 @@ export default function DataManagement({ logs, babyName, onClearHistory }: Props
 
     // Title
     doc.setFontSize(20)
-    doc.text(`BabyTracking — ${babyName}`, 14, 20)
+    doc.text(`Yaya — ${babyName}`, 14, 20)
     doc.setFontSize(10)
     doc.text(`Exportado em ${new Date().toLocaleDateString('pt-BR')} — ${sorted.length} registros`, 14, 28)
 
@@ -55,7 +55,7 @@ export default function DataManagement({ logs, babyName, onClearHistory }: Props
       y += 6
     }
 
-    doc.save(`babytracking-${babyName.toLowerCase()}-${new Date().toISOString().slice(0, 10)}.pdf`)
+    doc.save(`yaya-${babyName.toLowerCase()}-${new Date().toISOString().slice(0, 10)}.pdf`)
   }
 
   return (

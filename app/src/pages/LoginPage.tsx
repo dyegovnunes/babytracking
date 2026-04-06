@@ -123,10 +123,10 @@ export default function LoginPage() {
             </span>
           </div>
           <h1 className="font-headline text-3xl font-extrabold text-on-surface tracking-tight">
-            Baby<span className="text-primary">Tracking</span>
+            Ya<span className="text-primary">ya</span>
           </h1>
           <p className="font-label text-sm text-on-surface-variant mt-2">
-            Acompanhe as atividades do seu bebê
+            Cada momento conta.
           </p>
         </div>
 

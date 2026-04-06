@@ -66,7 +66,20 @@ export default function ProfileScreen() {
     }
   }, [user, baby, displayName])
 
-  const handlePickPhoto = useCallback(async () => {
+  const handlePhotoAction = useCallback(() => {
+    if (!baby) return
+    if (baby.photoUrl) {
+      Alert.alert('Foto do bebê', 'O que deseja fazer?', [
+        { text: 'Cancelar', style: 'cancel' },
+        { text: 'Trocar foto', onPress: () => pickPhoto() },
+        { text: 'Remover foto', style: 'destructive', onPress: () => removePhoto() },
+      ])
+    } else {
+      pickPhoto()
+    }
+  }, [baby])
+
+  const pickPhoto = useCallback(async () => {
     if (!baby) return
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
@@ -95,6 +108,17 @@ export default function ProfileScreen() {
       handleSaveBaby({ ...baby, photoUrl })
     }
     setUploading(false)
+  }, [baby, handleSaveBaby])
+
+  const removePhoto = useCallback(async () => {
+    if (!baby) return
+    setUploading(true)
+    // Remove from storage
+    await supabase.storage.from('baby-photos').remove([`${baby.id}/photo.jpg`, `${baby.id}/photo.png`, `${baby.id}/photo.jpeg`])
+    // Clear URL in database
+    handleSaveBaby({ ...baby, photoUrl: undefined })
+    setUploading(false)
+    setToast('Foto removida!')
   }, [baby, handleSaveBaby])
 
   const handleGenerateInvite = useCallback(async () => {
@@ -249,7 +273,7 @@ export default function ProfileScreen() {
               onPress={() => { setBabyName(baby.name); setEditingBaby(true) }}
               className="bg-surface-container rounded-lg p-4 flex-row items-center gap-3 active:opacity-70"
             >
-              <Pressable onPress={handlePickPhoto} className="w-14 h-14 rounded-full overflow-hidden bg-primary-container/20 items-center justify-center">
+              <Pressable onPress={handlePhotoAction} className="w-14 h-14 rounded-full overflow-hidden bg-primary-container/20 items-center justify-center">
                 {baby.photoUrl ? (
                   <Image source={{ uri: baby.photoUrl }} className="w-full h-full" />
                 ) : (

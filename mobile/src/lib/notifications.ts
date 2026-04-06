@@ -26,7 +26,7 @@ Notifications.setNotificationHandler({
 export async function requestNotificationPermission(): Promise<boolean> {
   if (Platform.OS === 'android') {
     await Notifications.setNotificationChannelAsync('babytracking', {
-      name: 'BabyTracking',
+      name: 'Yaya',
       importance: Notifications.AndroidImportance.HIGH,
       vibrationPattern: [0, 250, 250, 250],
       lightColor: '#b79fff',

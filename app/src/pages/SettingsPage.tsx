@@ -122,7 +122,7 @@ export default function SettingsPage() {
 
         <div className="pt-2 text-center">
           <p className="font-label text-[10px] text-on-surface-variant/50">
-            BabyTracking v0.1.0
+            Yaya v1.0.0
           </p>
         </div>
       </div>

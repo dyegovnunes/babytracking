@@ -194,10 +194,10 @@ export default function LoginScreen() {
               <Text className="text-4xl">👶</Text>
             </View>
             <Text className="font-headline text-3xl font-extrabold text-on-surface tracking-tight">
-              Baby<Text className="text-primary">Tracking</Text>
+              Ya<Text className="text-primary">ya</Text>
             </Text>
             <Text className="font-label text-sm text-on-surface-variant mt-2">
-              Acompanhe as atividades do seu bebê
+              Cada momento conta.
             </Text>
           </View>
 
