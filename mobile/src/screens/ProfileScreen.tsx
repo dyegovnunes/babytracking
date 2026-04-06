@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react'
 import { View, Text, TextInput, Pressable, ScrollView, ActivityIndicator, Image, Alert } from 'react-native'
+import { useNavigation } from '@react-navigation/native'
 import * as ImagePicker from 'expo-image-picker'
 import { useAppState, useAppDispatch, updateBaby, clearAllLogs } from '../contexts/AppContext'
 import { signOut } from '../contexts/AuthContext'
@@ -9,6 +10,7 @@ import type { Baby } from '../types'
 import Toast from '../components/ui/Toast'
 
 export default function ProfileScreen() {
+  const navigation = useNavigation<any>()
   const { baby, logs, loading } = useAppState()
   const dispatch = useAppDispatch()
   const [toast, setToast] = useState<string | null>(null)
@@ -164,6 +166,21 @@ export default function ProfileScreen() {
               </View>
             </View>
           )}
+
+          {/* Settings */}
+          <Pressable
+            onPress={() => navigation.navigate('Settings')}
+            className="bg-surface-container rounded-lg p-4 flex-row items-center gap-3 active:opacity-70"
+          >
+            <Text className="text-xl">⚙️</Text>
+            <View className="flex-1">
+              <Text className="text-on-surface font-body text-sm font-medium">Configurações</Text>
+              <Text className="text-on-surface-variant font-label text-xs">
+                Intervalos, notificações
+              </Text>
+            </View>
+            <Text className="text-on-surface-variant">›</Text>
+          </Pressable>
 
           {/* Data management */}
           <Pressable
