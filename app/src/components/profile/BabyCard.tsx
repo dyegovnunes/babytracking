@@ -109,7 +109,8 @@ export default function BabyCard({ baby, onSave }: Props) {
             <button
               onClick={(e) => {
                 e.stopPropagation()
-                fileRef.current?.click()
+                setShowPhotoMenu(false)
+                setTimeout(() => fileRef.current?.click(), 50)
               }}
               className="w-full px-4 py-2.5 text-left text-on-surface font-label text-sm hover:bg-surface-variant/50 flex items-center gap-2"
             >

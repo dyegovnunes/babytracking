@@ -7,7 +7,7 @@ export default function Header() {
     <header className="fixed top-0 left-0 right-0 z-40 bg-surface/80 backdrop-blur-xl">
       <div className="flex items-center justify-between px-5 h-14">
         <h1 className="font-headline text-lg font-bold text-on-surface tracking-tight">
-          Baby<span className="text-primary">Tracking</span>
+          Ya<span className="text-primary">ya</span>
         </h1>
         <button
           onClick={() => navigate('/settings')}
