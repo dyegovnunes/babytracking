@@ -4,7 +4,7 @@ import { signInWithEmail, signInWithGoogle, verifyOtp } from '../contexts/AuthCo
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [sent, setSent] = useState(false)
-  const [otp, setOtp] = useState(['', '', '', '', '', '', '', ''])
+  const [otp, setOtp] = useState(['', '', '', ''])
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [verifying, setVerifying] = useState(false)
@@ -26,7 +26,7 @@ export default function LoginPage() {
       setError(result.error)
     } else {
       setResendCooldown(60)
-      setOtp(['', '', '', '', '', '', '', ''])
+      setOtp(['', '', '', ''])
       setTimeout(() => inputRefs.current[0]?.focus(), 100)
     }
   }, [email, resendCooldown])
@@ -55,7 +55,7 @@ export default function LoginPage() {
       setError(result.error)
     } else {
       setSent(true)
-      setOtp(['', '', '', '', '', '', '', ''])
+      setOtp(['', '', '', ''])
       setResendCooldown(60)
       setTimeout(() => inputRefs.current[0]?.focus(), 100)
     }
@@ -64,13 +64,13 @@ export default function LoginPage() {
   function handleOtpChange(index: number, value: string) {
     if (value.length > 1) {
       // Handle paste
-      const digits = value.replace(/\D/g, '').slice(0, 8).split('')
+      const digits = value.replace(/\D/g, '').slice(0, 4).split('')
       const newOtp = [...otp]
       digits.forEach((d, i) => {
-        if (index + i < 8) newOtp[index + i] = d
+        if (index + i < 4) newOtp[index + i] = d
       })
       setOtp(newOtp)
-      const nextIndex = Math.min(index + digits.length, 7)
+      const nextIndex = Math.min(index + digits.length, 3)
       inputRefs.current[nextIndex]?.focus()
 
       if (newOtp.every((d) => d !== '')) {
@@ -84,7 +84,7 @@ export default function LoginPage() {
     newOtp[index] = digit
     setOtp(newOtp)
 
-    if (digit && index < 7) {
+    if (digit && index < 3) {
       inputRefs.current[index + 1]?.focus()
     }
 
@@ -106,7 +106,7 @@ export default function LoginPage() {
     const result = await verifyOtp(email, code)
     if (result.error) {
       setError('Código inválido. Tente novamente.')
-      setOtp(['', '', '', '', '', '', '', ''])
+      setOtp(['', '', '', ''])
       setVerifying(false)
       setTimeout(() => inputRefs.current[0]?.focus(), 100)
     }
@@ -157,7 +157,7 @@ export default function LoginPage() {
                   type="text"
                   inputMode="numeric"
                   autoComplete="one-time-code"
-                  maxLength={8}
+                  maxLength={4}
                   value={digit}
                   onChange={(e) => handleOtpChange(i, e.target.value)}
                   onKeyDown={(e) => handleOtpKeyDown(i, e)}
