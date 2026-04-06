@@ -36,6 +36,7 @@ export default function BabyCard({ baby, onSave }: Props) {
 
   async function handleRemovePhoto() {
     setUploading(true)
+    setShowPhotoMenu(false)
     await supabase.storage.from('baby-photos').remove([
       `${baby.id}/photo.jpg`,
       `${baby.id}/photo.png`,
@@ -43,7 +44,11 @@ export default function BabyCard({ baby, onSave }: Props) {
     ])
     onSave({ ...baby, photoUrl: undefined })
     setUploading(false)
+  }
+
+  function openFilePicker() {
     setShowPhotoMenu(false)
+    setTimeout(() => fileRef.current?.click(), 100)
   }
 
   function handlePhotoClick(e: React.MouseEvent) {
@@ -51,7 +56,7 @@ export default function BabyCard({ baby, onSave }: Props) {
     if (baby.photoUrl) {
       setShowPhotoMenu(!showPhotoMenu)
     } else {
-      fileRef.current?.click()
+      openFilePicker()
     }
   }
 
@@ -66,82 +71,24 @@ export default function BabyCard({ baby, onSave }: Props) {
     setEditing(false)
   }
 
-  const photoElement = (
-    <div className="relative">
-      <div
-        className="w-16 h-16 rounded-full shrink-0 overflow-hidden bg-primary-container/20 flex items-center justify-center relative cursor-pointer"
-        onClick={handlePhotoClick}
-      >
-        {baby.photoUrl ? (
-          <img src={baby.photoUrl} alt={baby.name} className="w-full h-full object-cover" />
-        ) : (
-          <span className="material-symbols-outlined text-primary text-3xl">
-            child_care
-          </span>
-        )}
-        <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-          <span className="material-symbols-outlined text-white text-lg">
-            {uploading ? 'progress_activity' : 'photo_camera'}
-          </span>
-        </div>
-        <input
-          ref={fileRef}
-          type="file"
-          accept="image/*"
-          className="hidden"
-          onChange={(e) => {
-            const file = e.target.files?.[0]
-            if (file) setCropFile(file)
-            if (fileRef.current) fileRef.current.value = ''
-            setShowPhotoMenu(false)
-          }}
-        />
-      </div>
-
-      {/* Photo action menu */}
-      {showPhotoMenu && (
-        <>
-          <div
-            className="fixed inset-0 z-40"
-            onClick={() => setShowPhotoMenu(false)}
-          />
-          <div className="absolute top-full left-0 mt-1 z-50 bg-surface-container-high rounded-lg shadow-lg overflow-hidden min-w-[160px]">
-            <button
-              onClick={(e) => {
-                e.stopPropagation()
-                setShowPhotoMenu(false)
-                setTimeout(() => fileRef.current?.click(), 50)
-              }}
-              className="w-full px-4 py-2.5 text-left text-on-surface font-label text-sm hover:bg-surface-variant/50 flex items-center gap-2"
-            >
-              <span className="material-symbols-outlined text-base">photo_camera</span>
-              Trocar foto
-            </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation()
-                handleRemovePhoto()
-              }}
-              className="w-full px-4 py-2.5 text-left text-error font-label text-sm hover:bg-surface-variant/50 flex items-center gap-2"
-            >
-              <span className="material-symbols-outlined text-base">delete</span>
-              Remover foto
-            </button>
-          </div>
-        </>
+  const photoCircle = (
+    <div
+      className="w-16 h-16 rounded-full shrink-0 overflow-hidden bg-primary-container/20 flex items-center justify-center relative cursor-pointer"
+      onClick={handlePhotoClick}
+    >
+      {baby.photoUrl ? (
+        <img src={baby.photoUrl} alt={baby.name} className="w-full h-full object-cover" />
+      ) : (
+        <span className="material-symbols-outlined text-primary text-3xl">
+          child_care
+        </span>
       )}
+      <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+        <span className="material-symbols-outlined text-white text-lg">
+          {uploading ? 'progress_activity' : 'photo_camera'}
+        </span>
+      </div>
     </div>
-  )
-
-  const cropModal = cropFile && (
-    <ImageCropModal
-      imageFile={cropFile}
-      onConfirm={(blob) => {
-        setCropFile(null)
-        handlePhotoUpload(blob)
-      }}
-      onClose={() => setCropFile(null)}
-    />
   )
 
   if (editing) {
@@ -149,7 +96,24 @@ export default function BabyCard({ baby, onSave }: Props) {
       <>
       <div className="bg-surface-container rounded-lg p-5">
         <div className="flex items-center gap-4 mb-4">
-          {photoElement}
+          <div className="relative">
+            {photoCircle}
+            {showPhotoMenu && baby.photoUrl && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setShowPhotoMenu(false)} />
+                <div className="absolute top-full left-0 mt-1 z-50 bg-surface-container-high rounded-lg shadow-lg overflow-hidden min-w-[160px]">
+                  <button onClick={openFilePicker} className="w-full px-4 py-2.5 text-left text-on-surface font-label text-sm hover:bg-surface-variant/50 flex items-center gap-2">
+                    <span className="material-symbols-outlined text-base">photo_camera</span>
+                    Trocar foto
+                  </button>
+                  <button onClick={handleRemovePhoto} className="w-full px-4 py-2.5 text-left text-error font-label text-sm hover:bg-surface-variant/50 flex items-center gap-2">
+                    <span className="material-symbols-outlined text-base">delete</span>
+                    Remover foto
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
           <p className="font-label text-xs text-on-surface-variant">
             Toque na foto para trocar ou remover
           </p>
@@ -193,7 +157,30 @@ export default function BabyCard({ baby, onSave }: Props) {
           </div>
         </div>
       </div>
-      {cropModal}
+
+      {/* Hidden file input — outside of photo div to avoid event issues */}
+      <input
+        ref={fileRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0]
+          if (file) setCropFile(file)
+          if (fileRef.current) fileRef.current.value = ''
+        }}
+      />
+
+      {cropFile && (
+        <ImageCropModal
+          imageFile={cropFile}
+          onConfirm={(blob) => {
+            setCropFile(null)
+            handlePhotoUpload(blob)
+          }}
+          onClose={() => setCropFile(null)}
+        />
+      )}
       </>
     )
   }
@@ -201,7 +188,24 @@ export default function BabyCard({ baby, onSave }: Props) {
   return (
     <>
     <div className="w-full bg-surface-container rounded-lg p-5 flex items-center gap-4">
-      {photoElement}
+      <div className="relative">
+        {photoCircle}
+        {showPhotoMenu && baby.photoUrl && (
+          <>
+            <div className="fixed inset-0 z-40" onClick={() => setShowPhotoMenu(false)} />
+            <div className="absolute top-full left-0 mt-1 z-50 bg-surface-container-high rounded-lg shadow-lg overflow-hidden min-w-[160px]">
+              <button onClick={openFilePicker} className="w-full px-4 py-2.5 text-left text-on-surface font-label text-sm hover:bg-surface-variant/50 flex items-center gap-2">
+                <span className="material-symbols-outlined text-base">photo_camera</span>
+                Trocar foto
+              </button>
+              <button onClick={handleRemovePhoto} className="w-full px-4 py-2.5 text-left text-error font-label text-sm hover:bg-surface-variant/50 flex items-center gap-2">
+                <span className="material-symbols-outlined text-base">delete</span>
+                Remover foto
+              </button>
+            </div>
+          </>
+        )}
+      </div>
       <button
         onClick={() => setEditing(true)}
         className="flex-1 min-w-0 text-left"
@@ -221,7 +225,30 @@ export default function BabyCard({ baby, onSave }: Props) {
         <span className="material-symbols-outlined text-xl">edit</span>
       </button>
     </div>
-    {cropModal}
+
+    {/* Hidden file input — outside of photo div to avoid event issues */}
+    <input
+      ref={fileRef}
+      type="file"
+      accept="image/*"
+      className="hidden"
+      onChange={(e) => {
+        const file = e.target.files?.[0]
+        if (file) setCropFile(file)
+        if (fileRef.current) fileRef.current.value = ''
+      }}
+    />
+
+    {cropFile && (
+      <ImageCropModal
+        imageFile={cropFile}
+        onConfirm={(blob) => {
+          setCropFile(null)
+          handlePhotoUpload(blob)
+        }}
+        onClose={() => setCropFile(null)}
+      />
+    )}
     </>
   )
 }

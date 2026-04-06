@@ -13,7 +13,7 @@ const Stack = createNativeStackNavigator()
 
 function TabIcon({ label, focused }: { label: string; focused: boolean }) {
   const icons: Record<string, string> = {
-    Tracker: '📋',
+    Início: '📋',
     Histórico: '🕐',
     Insights: '📊',
     Perfil: '👤',
@@ -52,7 +52,7 @@ function MainTabs() {
         },
       })}
     >
-      <Tab.Screen name="Tracker" component={TrackerScreen} />
+      <Tab.Screen name="Início" component={TrackerScreen} />
       <Tab.Screen name="Histórico" component={HistoryScreen} />
       <Tab.Screen name="Insights" component={InsightsScreen} />
       <Tab.Screen name="Perfil" component={ProfileScreen} />
