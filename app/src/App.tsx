@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { AppProvider, useAppState } from './contexts/AppContext'
+import { PurchaseProvider } from './contexts/PurchaseContext'
 import AppShell from './components/layout/AppShell'
 import TrackerPage from './pages/TrackerPage'
 import HistoryPage from './pages/HistoryPage'
@@ -78,9 +79,11 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <AppProvider>
-          <AppRoutes />
-        </AppProvider>
+        <PurchaseProvider>
+          <AppProvider>
+            <AppRoutes />
+          </AppProvider>
+        </PurchaseProvider>
       </AuthProvider>
     </BrowserRouter>
   )

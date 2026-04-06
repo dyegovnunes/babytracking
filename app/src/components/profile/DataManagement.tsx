@@ -3,6 +3,8 @@ import { jsPDF } from 'jspdf'
 import type { LogEntry } from '../../types'
 import { DEFAULT_EVENTS } from '../../lib/constants'
 import { formatTime, formatDate } from '../../lib/formatters'
+import { usePremium } from '../../hooks/usePremium'
+import { PaywallModal } from '../ui/PaywallModal'
 
 interface Props {
   logs: LogEntry[]
@@ -12,8 +14,14 @@ interface Props {
 
 export default function DataManagement({ logs, babyName, onClearHistory }: Props) {
   const [confirmClear, setConfirmClear] = useState(false)
+  const { isPremium } = usePremium()
+  const [showPaywall, setShowPaywall] = useState(false)
 
   function handleExportPDF() {
+    if (!isPremium) {
+      setShowPaywall(true)
+      return
+    }
     const doc = new jsPDF()
     const sorted = [...logs].sort((a, b) => b.timestamp - a.timestamp)
 
@@ -118,6 +126,12 @@ export default function DataManagement({ logs, babyName, onClearHistory }: Props
           </div>
         </div>
       )}
+
+      <PaywallModal
+        isOpen={showPaywall}
+        onClose={() => setShowPaywall(false)}
+        trigger="pdf"
+      />
     </div>
   )
 }

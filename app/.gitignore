@@ -11,6 +11,12 @@ node_modules
 dist
 dist-ssr
 *.local
+.env
+.env.*
+
+# Capacitor native builds
+ios/
+android/
 
 # Editor directories and files
 .vscode/*
