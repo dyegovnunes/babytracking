@@ -118,9 +118,12 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="text-center mb-10">
           <div className="w-20 h-20 rounded-full bg-primary-container/20 flex items-center justify-center mx-auto mb-5 shadow-[0_0_40px_rgba(167,139,250,0.15)]">
-            <span className="material-symbols-outlined text-primary text-4xl">
-              child_care
-            </span>
+            <img
+              src="/logo-symbol.png"
+              alt="Yaya"
+              className="w-12 h-12"
+              style={{ filter: 'brightness(0) saturate(100%) invert(72%) sepia(40%) saturate(1500%) hue-rotate(220deg) brightness(105%) contrast(95%)' }}
+            />
           </div>
           <h1 className="font-headline text-3xl font-extrabold text-on-surface tracking-tight">
             Ya<span className="text-primary">ya</span>
