@@ -16,7 +16,7 @@ export default function PrivacyPage() {
             </span>
           </button>
           <h1 className="font-headline text-2xl font-bold text-on-surface">
-            Politica de Privacidade
+            Política de Privacidade
           </h1>
         </div>
       </section>
@@ -25,12 +25,12 @@ export default function PrivacyPage() {
         {/* Intro */}
         <div className="bg-surface-container rounded-lg p-4">
           <p className="font-body text-sm text-on-surface leading-relaxed">
-            Esta politica descreve como o <strong>Yaya (Baby Tracker)</strong> coleta,
-            usa e protege suas informacoes pessoais. Nos levamos sua privacidade
-            a serio e seguimos a Lei Geral de Protecao de Dados (LGPD - Lei 13.709/2018).
+            Esta política descreve como o <strong>Yaya (Baby Tracker)</strong> coleta,
+            usa e protege suas informações pessoais. Nós levamos sua privacidade
+            a sério e seguimos a Lei Geral de Proteção de Dados (LGPD - Lei 13.709/2018).
           </p>
           <p className="font-label text-xs text-on-surface-variant mt-3">
-            Ultima atualizacao: 06 de abril de 2026
+            Última atualização: 06 de abril de 2026
           </p>
         </div>
 
@@ -49,24 +49,24 @@ export default function PrivacyPage() {
               <p className="font-body text-sm text-on-surface font-medium">Dados da conta</p>
               <ul className="mt-1 space-y-1">
                 <li className="font-body text-sm text-on-surface-variant">
-                  - Email (para login via Google ou codigo OTP)
+                  - Email (para login via Google ou código OTP)
                 </li>
                 <li className="font-body text-sm text-on-surface-variant">
-                  - Nome de exibicao do responsavel
+                  - Nome de exibição do responsável
                 </li>
               </ul>
             </div>
             <div>
-              <p className="font-body text-sm text-on-surface font-medium">Dados do bebe</p>
+              <p className="font-body text-sm text-on-surface font-medium">Dados do bebê</p>
               <ul className="mt-1 space-y-1">
                 <li className="font-body text-sm text-on-surface-variant">
-                  - Nome do bebe
+                  - Nome do bebê
                 </li>
                 <li className="font-body text-sm text-on-surface-variant">
                   - Data de nascimento
                 </li>
                 <li className="font-body text-sm text-on-surface-variant">
-                  - Foto do bebe (opcional)
+                  - Foto do bebê (opcional)
                 </li>
               </ul>
             </div>
@@ -74,13 +74,13 @@ export default function PrivacyPage() {
               <p className="font-body text-sm text-on-surface font-medium">Registros de atividades</p>
               <ul className="mt-1 space-y-1">
                 <li className="font-body text-sm text-on-surface-variant">
-                  - Horarios e detalhes de amamentacao/mamadeira
+                  - Horários e detalhes de amamentação/mamadeira
                 </li>
                 <li className="font-body text-sm text-on-surface-variant">
                   - Trocas de fralda
                 </li>
                 <li className="font-body text-sm text-on-surface-variant">
-                  - Periodos de sono
+                  - Períodos de sono
                 </li>
                 <li className="font-body text-sm text-on-surface-variant">
                   - Banhos
@@ -102,54 +102,54 @@ export default function PrivacyPage() {
           </div>
           <ul className="space-y-2">
             <li className="font-body text-sm text-on-surface-variant">
-              - <strong className="text-on-surface">Autenticacao:</strong> seu email e usado
+              - <strong className="text-on-surface">Autenticação:</strong> seu email é usado
               exclusivamente para login seguro na plataforma.
             </li>
             <li className="font-body text-sm text-on-surface-variant">
               - <strong className="text-on-surface">Funcionamento do app:</strong> os registros
-              de atividades sao usados para exibir historico, calcular projecoes e
-              gerar relatorios em PDF.
+              de atividades são usados para exibir histórico, calcular projeções e
+              gerar relatórios em PDF.
             </li>
             <li className="font-body text-sm text-on-surface-variant">
-              - <strong className="text-on-surface">Compartilhamento familiar:</strong> atraves
-              de codigos de convite, outro responsavel pode acessar os dados do mesmo bebe.
+              - <strong className="text-on-surface">Compartilhamento familiar:</strong> através
+              de códigos de convite, outro responsável pode acessar os dados do mesmo bebê.
             </li>
           </ul>
           <p className="font-body text-sm text-on-surface-variant mt-3">
-            Nos <strong className="text-on-surface">nao</strong> usamos seus dados para
-            publicidade, analytics de terceiros ou qualquer outra finalidade alem
+            Nós <strong className="text-on-surface">não</strong> usamos seus dados para
+            publicidade, analytics de terceiros ou qualquer outra finalidade além
             do funcionamento do app.
           </p>
         </div>
 
-        {/* 3. Armazenamento e seguranca */}
+        {/* 3. Armazenamento e segurança */}
         <div className="bg-surface-container rounded-lg p-4">
           <div className="flex items-center gap-3 mb-3">
             <span className="material-symbols-outlined text-primary text-xl">
               shield
             </span>
             <h2 className="text-on-surface font-headline text-sm font-bold">
-              3. Armazenamento e seguranca
+              3. Armazenamento e segurança
             </h2>
           </div>
           <ul className="space-y-2">
             <li className="font-body text-sm text-on-surface-variant">
-              - Seus dados sao armazenados no <strong className="text-on-surface">Supabase</strong> (banco
+              - Seus dados são armazenados no <strong className="text-on-surface">Supabase</strong> (banco
               de dados PostgreSQL com infraestrutura na nuvem).
             </li>
             <li className="font-body text-sm text-on-surface-variant">
-              - Fotos sao armazenadas no <strong className="text-on-surface">Supabase Storage</strong> com
+              - Fotos são armazenadas no <strong className="text-on-surface">Supabase Storage</strong> com
               acesso restrito.
             </li>
             <li className="font-body text-sm text-on-surface-variant">
               - Utilizamos <strong className="text-on-surface">Row Level Security (RLS)</strong> para
-              garantir que cada usuario so acesse seus proprios dados.
+              garantir que cada usuário só acesse seus próprios dados.
             </li>
             <li className="font-body text-sm text-on-surface-variant">
-              - Toda comunicacao e feita via HTTPS com criptografia em transito.
+              - Toda comunicação é feita via HTTPS com criptografia em trânsito.
             </li>
             <li className="font-body text-sm text-on-surface-variant">
-              - Notificacoes sao processadas localmente no dispositivo, sem envio
+              - Notificações são processadas localmente no dispositivo, sem envio
               de dados a servidores externos.
             </li>
           </ul>
@@ -166,24 +166,24 @@ export default function PrivacyPage() {
             </h2>
           </div>
           <p className="font-body text-sm text-on-surface-variant">
-            <strong className="text-on-surface">Nao vendemos, alugamos ou compartilhamos
+            <strong className="text-on-surface">Não vendemos, alugamos ou compartilhamos
             seus dados com terceiros.</strong>
           </p>
           <p className="font-body text-sm text-on-surface-variant mt-2">
-            Os unicos servicos que tem acesso aos dados sao:
+            Os únicos serviços que têm acesso aos dados são:
           </p>
           <ul className="mt-2 space-y-1">
             <li className="font-body text-sm text-on-surface-variant">
               - <strong className="text-on-surface">Supabase:</strong> provedor de banco de dados
-              e autenticacao (processador de dados).
+              e autenticação (processador de dados).
             </li>
             <li className="font-body text-sm text-on-surface-variant">
-              - <strong className="text-on-surface">Google:</strong> apenas se voce optar por login
-              com Google OAuth (dados minimos de autenticacao).
+              - <strong className="text-on-surface">Google:</strong> apenas se você optar por login
+              com Google OAuth (dados mínimos de autenticação).
             </li>
           </ul>
           <p className="font-body text-sm text-on-surface-variant mt-2">
-            Nao utilizamos ferramentas de analytics, rastreamento ou publicidade.
+            Não utilizamos ferramentas de analytics, rastreamento ou publicidade.
           </p>
         </div>
 
@@ -198,7 +198,7 @@ export default function PrivacyPage() {
             </h2>
           </div>
           <p className="font-body text-sm text-on-surface-variant mb-2">
-            De acordo com a LGPD, voce tem direito a:
+            De acordo com a LGPD, você tem direito a:
           </p>
           <ul className="space-y-2">
             <li className="font-body text-sm text-on-surface-variant">
@@ -206,16 +206,16 @@ export default function PrivacyPage() {
               armazenados.
             </li>
             <li className="font-body text-sm text-on-surface-variant">
-              - <strong className="text-on-surface">Exportar</strong> seus dados (disponivel via
-              exportacao em PDF no app).
+              - <strong className="text-on-surface">Exportar</strong> seus dados (disponível via
+              exportação em PDF no app).
             </li>
             <li className="font-body text-sm text-on-surface-variant">
               - <strong className="text-on-surface">Corrigir</strong> dados incorretos ou
               desatualizados.
             </li>
             <li className="font-body text-sm text-on-surface-variant">
-              - <strong className="text-on-surface">Excluir</strong> seus dados (voce pode limpar
-              o historico diretamente no app ou solicitar exclusao completa da conta).
+              - <strong className="text-on-surface">Excluir</strong> seus dados (você pode limpar
+              o histórico diretamente no app ou solicitar exclusão completa da conta).
             </li>
             <li className="font-body text-sm text-on-surface-variant">
               - <strong className="text-on-surface">Revogar consentimento</strong> a qualquer momento.
@@ -227,37 +227,37 @@ export default function PrivacyPage() {
           </p>
         </div>
 
-        {/* 6. Privacidade de criancas */}
+        {/* 6. Privacidade de crianças */}
         <div className="bg-surface-container rounded-lg p-4">
           <div className="flex items-center gap-3 mb-3">
             <span className="material-symbols-outlined text-primary text-xl">
               child_care
             </span>
             <h2 className="text-on-surface font-headline text-sm font-bold">
-              6. Privacidade de criancas
+              6. Privacidade de crianças
             </h2>
           </div>
           <p className="font-body text-sm text-on-surface-variant">
-            O Yaya e um app destinado a pais e responsaveis. Nao coletamos dados
-            diretamente de criancas. Os dados sobre bebes (nome, data de nascimento,
-            foto e registros de atividades) sao inseridos e gerenciados exclusivamente
-            pelos pais ou responsaveis legais.
+            O Yaya é um app destinado a pais e responsáveis. Não coletamos dados
+            diretamente de crianças. Os dados sobre bebês (nome, data de nascimento,
+            foto e registros de atividades) são inseridos e gerenciados exclusivamente
+            pelos pais ou responsáveis legais.
           </p>
         </div>
 
-        {/* 7. Alteracoes */}
+        {/* 7. Alterações */}
         <div className="bg-surface-container rounded-lg p-4">
           <div className="flex items-center gap-3 mb-3">
             <span className="material-symbols-outlined text-primary text-xl">
               edit_document
             </span>
             <h2 className="text-on-surface font-headline text-sm font-bold">
-              7. Alteracoes nesta politica
+              7. Alterações nesta política
             </h2>
           </div>
           <p className="font-body text-sm text-on-surface-variant">
-            Podemos atualizar esta politica periodicamente. Alteracoes significativas
-            serao comunicadas pelo app. Recomendamos que voce revise esta pagina
+            Podemos atualizar esta política periodicamente. Alterações significativas
+            serão comunicadas pelo app. Recomendamos que você revise esta página
             ocasionalmente.
           </p>
         </div>
@@ -273,15 +273,15 @@ export default function PrivacyPage() {
             </h2>
           </div>
           <p className="font-body text-sm text-on-surface-variant">
-            Se voce tiver duvidas sobre esta politica ou quiser exercer seus
+            Se você tiver dúvidas sobre esta política ou quiser exercer seus
             direitos, entre em contato:
           </p>
           <div className="mt-3 space-y-1">
             <p className="font-body text-sm text-on-surface">
-              Dyego Nunes (Desenvolvedor responsavel)
+              Dyego Nunes (Desenvolvedor responsável)
             </p>
             <p className="font-body text-sm text-primary">
-              dyegovnunes@gmail.com
+              contato@yayababy.app
             </p>
             <p className="font-body text-sm text-on-surface-variant">
               yayababy.app
