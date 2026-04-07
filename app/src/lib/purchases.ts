@@ -1,5 +1,6 @@
 import { Purchases, LOG_LEVEL, type PurchasesPackage } from '@revenuecat/purchases-capacitor';
 import { Capacitor } from '@capacitor/core';
+import { supabase } from './supabase';
 
 export const ENTITLEMENT_YAYA_PLUS = 'yaya_plus';
 
@@ -18,11 +19,32 @@ export async function initializePurchases(userId: string) {
 }
 
 export async function checkIsPremium(): Promise<boolean> {
-  if (Capacitor.getPlatform() === 'web') return false;
+  // On web, check Supabase profiles table
+  if (Capacitor.getPlatform() === 'web') {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return false;
+      const { data } = await supabase.from('profiles').select('is_premium').eq('id', user.id).single();
+      return data?.is_premium === true;
+    } catch {
+      return false;
+    }
+  }
 
+  // On native, check RevenueCat first, fallback to Supabase
   try {
     const { customerInfo } = await Purchases.getCustomerInfo();
-    return customerInfo.entitlements.active[ENTITLEMENT_YAYA_PLUS] !== undefined;
+    if (customerInfo.entitlements.active[ENTITLEMENT_YAYA_PLUS] !== undefined) return true;
+  } catch {
+    // fallback below
+  }
+
+  // Fallback: check Supabase
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return false;
+    const { data } = await supabase.from('profiles').select('is_premium').eq('id', user.id).single();
+    return data?.is_premium === true;
   } catch {
     return false;
   }
