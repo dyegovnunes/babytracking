@@ -152,7 +152,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const { data: prefData } = await supabase
         .from('notification_prefs')
         .select('pause_during_sleep')
-        .eq('user_id', userId)
+        .eq('user_id', user!.id)
         .eq('baby_id', babyId)
         .single()
 

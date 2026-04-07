@@ -105,17 +105,17 @@ export default function SettingsPage() {
   const savePrefs = useCallback(async (updated: NotifPrefs) => {
     setPrefs(updated)
     if (!user || !baby) return
-    await supabase.from('notification_prefs').upsert({
+    const { error } = await supabase.from('notification_prefs').upsert({
       user_id: user.id, baby_id: baby.id,
       enabled: updated.enabled,
       cat_feed: updated.categories.feed, cat_diaper: updated.categories.diaper,
       cat_sleep: updated.categories.sleep, cat_bath: updated.categories.bath,
       quiet_enabled: updated.quietHours.enabled,
       quiet_start: updated.quietHours.start, quiet_end: updated.quietHours.end,
-      pause_during_sleep: pauseDuringSleep,
       updated_at: new Date().toISOString(),
     }, { onConflict: 'user_id,baby_id' })
-  }, [user, baby, pauseDuringSleep])
+    if (error) setToast('Erro ao salvar preferências')
+  }, [user, baby])
 
   // ===== INTERVAL HANDLERS =====
 
@@ -147,10 +147,11 @@ export default function SettingsPage() {
   const bathHours = intervals['bath']?.scheduledHours ?? [18]
 
   const setBathHours = useCallback(async (newHours: number[]) => {
-    if (!baby) return
+    if (!baby || newHours.length === 0) return
     const sorted = [...newHours].sort((a, b) => a - b)
     const updated = { ...intervals, bath: { ...intervals['bath'], mode: 'scheduled' as const, scheduledHours: sorted } }
-    await updateIntervals(dispatch, baby.id, updated)
+    const ok = await updateIntervals(dispatch, baby.id, updated)
+    if (!ok) setToast('Erro ao salvar')
   }, [intervals, baby, dispatch])
 
   const handleBathCount = useCallback(async (count: number) => {
@@ -178,13 +179,14 @@ export default function SettingsPage() {
   // ===== PAUSE DURING SLEEP =====
 
   const togglePauseDuringSleep = useCallback(async () => {
-    const newVal = !pauseDuringSleep
-    dispatch({ type: 'SET_PAUSE_DURING_SLEEP', value: newVal })
     if (!user || !baby) return
-    await supabase.from('notification_prefs').upsert({
+    const newVal = !pauseDuringSleep
+    const { error } = await supabase.from('notification_prefs').upsert({
       user_id: user.id, baby_id: baby.id, pause_during_sleep: newVal,
       updated_at: new Date().toISOString(),
     }, { onConflict: 'user_id,baby_id' })
+    if (error) { setToast('Erro ao salvar'); return }
+    dispatch({ type: 'SET_PAUSE_DURING_SLEEP', value: newVal })
     setToast(newVal ? 'Alertas pausados durante sono' : 'Alertas ativos durante sono')
   }, [pauseDuringSleep, user, baby, dispatch])
 
