@@ -1,757 +1,920 @@
 <!DOCTYPE html>
-<html class="dark" lang="pt-BR">
+<html lang="pt-BR">
 <head>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Yaya | O companheiro 24h do seu bebê</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-<script>
-  tailwind.config = {
-    darkMode: "class",
-    theme: {
-      extend: {
-        colors: {
-          "yaya-night": "#0d0a27",
-          "yaya-purple": "#b79fff",
-          "yaya-glow": "#ab8ffe",
-          "yaya-blush": "#ff96b9",
-          "yaya-cloud": "#e7e2ff",
-          "surface": "#120f2c",
-          "surface-container-low": "#1a1835",
-          "surface-container": "#1f1c39",
-          "surface-container-high": "#292644",
-          "surface-container-highest": "#343150",
-          "surface-variant": "#343150",
-          "primary": "#b79fff",
-          "primary-container": "#ab8ffe",
-          "on-primary": "#371d77",
-          "on-surface": "#e7e2ff",
-          "on-surface-variant": "#cac4d3",
-          "tertiary": "#ff96b9",
-          "error": "#ffb4ab",
-          "outline-variant": "#494551",
-        },
-        fontFamily: {
-          headline: ["Manrope"],
-          body: ["Plus Jakarta Sans"],
-          label: ["Plus Jakarta Sans"],
-        },
-      },
-    },
-  }
-</script>
+<meta name="description" content="Registre mamadas, fraldas, sono e banhos com um toque. O cérebro externo que pais, mães, babás e avós precisam."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
+  :root {
+    --night: #0d0a27;
+    --purple: #b79fff;
+    --glow: #ab8ffe;
+    --blush: #ff96b9;
+    --cloud: #e7e2ff;
+    --surface: #120f2c;
+    --surface-low: #1a1835;
+    --surface-mid: #1f1c39;
+    --surface-high: #292644;
+    --surface-top: #343150;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
   body {
-    background-color: #0d0a27;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    color: #e7e2ff;
+    background: var(--night);
+    font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+    color: var(--cloud);
+    -webkit-font-smoothing: antialiased;
   }
-  .material-symbols-outlined {
-    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-  }
-  .filled {
-    font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-  }
-  .aura-glow {
-    box-shadow: 0 0 60px -5px rgba(171, 143, 254, 0.08);
-  }
-  .glass-panel {
-    background: rgba(41, 38, 68, 0.6);
+
+  .font-headline { font-family: 'Manrope', sans-serif; }
+
+  /* ===== NAV ===== */
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+    background: rgba(13,10,39,0.7);
     backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
   }
-  .cta-gradient {
-    background: linear-gradient(135deg, #b79fff 0%, #4f319c 100%);
+  .nav-inner {
+    max-width: 1100px; margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px 24px;
   }
-  /* Phone mockup */
-  .phone-frame {
-    width: 280px;
-    height: 560px;
-    border-radius: 40px;
-    border: 8px solid #2a2750;
-    background: #0d0a27;
-    overflow: hidden;
-    position: relative;
-    box-shadow: 0 30px 60px rgba(171,142,254,0.2);
+  .nav-logo {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .nav-logo img { height: 28px; filter: brightness(0) saturate(100%) invert(67%) sepia(18%) saturate(1800%) hue-rotate(216deg) brightness(102%) contrast(100%); }
+  .nav-logo span { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+  .nav-cta {
+    background: var(--purple); color: #371d77;
+    padding: 10px 24px; border-radius: 100px;
+    font-weight: 700; font-size: 14px;
+    text-decoration: none; border: none; cursor: pointer;
+    transition: transform 0.2s, opacity 0.2s;
+  }
+  .nav-cta:hover { transform: scale(0.97); opacity: 0.9; }
+
+  /* ===== SECTION BASE ===== */
+  .section { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+  /* ===== HERO ===== */
+  .hero {
+    padding-top: 120px; padding-bottom: 80px;
+    display: grid; grid-template-columns: 1fr;
+    gap: 48px; align-items: center;
+  }
+  @media (min-width: 768px) {
+    .hero { grid-template-columns: 1fr 340px; padding-top: 140px; padding-bottom: 100px; }
+  }
+  .hero-badge {
+    display: inline-block;
+    padding: 6px 16px; border-radius: 100px;
+    background: var(--surface-high);
+    color: var(--purple); font-size: 13px; font-weight: 600;
+    border: 1px solid rgba(183,159,255,0.1);
+  }
+  .hero h1 {
+    font-size: clamp(2.2rem, 5vw, 3.4rem);
+    font-weight: 800; line-height: 1.1;
+    margin-top: 20px;
+  }
+  .hero h1 em {
+    font-style: normal; color: var(--purple);
+  }
+  .hero-sub {
+    font-size: clamp(1rem, 2.5vw, 1.15rem);
+    color: rgba(231,226,255,0.5);
+    line-height: 1.7; max-width: 480px;
+    margin-top: 16px;
+  }
+  .hero-form {
+    display: flex; flex-direction: column; gap: 12px;
+    margin-top: 32px;
+  }
+  @media (min-width: 480px) { .hero-form { flex-direction: row; } }
+  .hero-form input {
+    flex: 1; padding: 14px 20px;
+    background: var(--surface-top); border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px; color: var(--cloud);
+    font-size: 15px; font-family: inherit; outline: none;
+    transition: border-color 0.2s;
+  }
+  .hero-form input::placeholder { color: rgba(231,226,255,0.25); }
+  .hero-form input:focus { border-color: var(--purple); }
+  .hero-form button {
+    padding: 14px 28px; border-radius: 14px;
+    background: linear-gradient(135deg, var(--purple), #7c5ce0);
+    color: #fff; font-weight: 700; font-size: 15px;
+    border: none; cursor: pointer; white-space: nowrap;
+    font-family: inherit; transition: opacity 0.2s;
+  }
+  .hero-form button:hover { opacity: 0.9; }
+  .hero-form button:disabled { opacity: 0.6; cursor: not-allowed; }
+  .hero-checks {
+    display: flex; flex-wrap: wrap; gap: 16px;
+    margin-top: 16px; font-size: 13px;
+    color: rgba(231,226,255,0.4);
+  }
+  .hero-msg {
+    font-size: 13px; margin-top: 8px;
+    display: none;
+  }
+  .hero-msg.show { display: block; }
+  .hero-msg.error { color: #ff6b6b; }
+  .hero-msg.success { color: #69db7c; }
+
+  /* ===== PHONE MOCKUP ===== */
+  .phone-wrap {
+    display: flex; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .phone-aura {
+    position: absolute; inset: -40px;
+    background: var(--glow); opacity: 0.08;
+    filter: blur(80px); border-radius: 50%;
+    pointer-events: none;
+  }
+  .phone {
+    width: 260px; height: 520px;
+    border-radius: 36px; border: 6px solid #2a2750;
+    background: var(--night); overflow: hidden;
+    position: relative; z-index: 2;
+    box-shadow: 0 24px 48px rgba(171,143,254,0.15), 0 0 0 1px rgba(255,255,255,0.04);
   }
   .phone-notch {
-    width: 100px;
-    height: 24px;
-    background: #2a2750;
-    border-radius: 0 0 16px 16px;
+    width: 90px; height: 22px;
+    background: #2a2750; border-radius: 0 0 14px 14px;
     margin: 0 auto;
-    position: relative;
-    z-index: 10;
   }
-  /* Interactive mockup buttons */
-  .mock-btn {
-    transition: all 0.15s ease;
-    cursor: pointer;
-    user-select: none;
+  .phone-content { padding: 12px 14px; }
+  .phone-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 10px;
   }
-  .mock-btn:active {
-    transform: scale(0.92);
-    opacity: 0.8;
+  .phone-header .logo {
+    display: flex; align-items: center; gap: 4px;
   }
-  .mock-btn.tapped {
-    animation: tapPulse 0.4s ease;
+  .phone-header .logo img { height: 14px; filter: brightness(0) saturate(100%) invert(67%) sepia(18%) saturate(1800%) hue-rotate(216deg) brightness(102%) contrast(100%); }
+  .phone-header .logo span { font-size: 11px; font-weight: 800; color: var(--purple); }
+  .phone-header .baby-name { font-size: 10px; color: rgba(231,226,255,0.35); }
+
+  /* Activity Grid */
+  .activity-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 6px; margin-bottom: 10px;
   }
+  .activity-btn {
+    aspect-ratio: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 2px;
+    background: var(--surface-low); border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.04);
+    cursor: pointer; transition: all 0.15s; user-select: none;
+  }
+  .activity-btn:active { transform: scale(0.92); opacity: 0.8; }
+  .activity-btn.tapped { animation: tapPulse 0.4s ease; }
+  .activity-btn .emoji { font-size: 18px; line-height: 1; }
+  .activity-btn .label { font-size: 8px; color: rgba(231,226,255,0.6); }
+
   @keyframes tapPulse {
     0% { transform: scale(1); }
-    30% { transform: scale(0.9); background: rgba(183,159,255,0.25); }
+    30% { transform: scale(0.9); background: rgba(183,159,255,0.2); }
     100% { transform: scale(1); }
   }
-  .mock-toast {
-    animation: toastIn 0.3s ease, toastOut 0.3s ease 1.5s forwards;
+
+  /* Projection card */
+  .projection-card {
+    background: rgba(183,159,255,0.08); border-radius: 12px;
+    padding: 10px 12px; border: 1px solid rgba(183,159,255,0.08);
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 10px;
+  }
+  .projection-card .icon { font-size: 16px; }
+  .projection-card .info-label { font-size: 9px; color: rgba(231,226,255,0.4); }
+  .projection-card .info-value { font-size: 11px; font-weight: 700; color: var(--purple); font-family: 'Manrope', sans-serif; }
+  .projection-card .meta { margin-left: auto; text-align: right; }
+  .projection-card .meta span { display: block; font-size: 8px; color: rgba(231,226,255,0.3); }
+
+  /* Recent logs */
+  .recent-title { font-size: 9px; color: rgba(231,226,255,0.4); font-weight: 600; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .log-entry { display: flex; align-items: center; gap: 6px; font-size: 9px; padding: 3px 0; }
+  .log-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--purple); flex-shrink: 0; }
+  .log-event { color: rgba(231,226,255,0.6); }
+  .log-time { margin-left: auto; color: rgba(231,226,255,0.3); }
+
+  /* Toast */
+  .phone-toast {
+    position: absolute; bottom: 12px; left: 12px; right: 12px;
+    z-index: 10; display: none;
+  }
+  .phone-toast-inner {
+    background: var(--surface-high); border-radius: 12px;
+    padding: 8px 14px; text-align: center;
+    font-size: 11px; border: 1px solid rgba(183,159,255,0.15);
+    animation: toastIn 0.3s ease;
   }
   @keyframes toastIn {
-    from { transform: translateY(20px); opacity: 0; }
+    from { transform: translateY(12px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
   }
-  @keyframes toastOut {
-    from { opacity: 1; }
-    to { opacity: 0; }
+
+  /* ===== TRUST BAR ===== */
+  .trust-bar {
+    padding: 40px 0;
+    background: rgba(26,24,53,0.4);
+    border-top: 1px solid rgba(255,255,255,0.03);
+    border-bottom: 1px solid rgba(255,255,255,0.03);
   }
-  /* Smooth scroll */
-  html { scroll-behavior: smooth; }
-  /* Waitlist form success */
-  .success-check {
-    animation: checkBounce 0.5s ease;
+  .trust-items {
+    display: flex; flex-wrap: wrap; justify-content: center;
+    gap: 12px 32px; font-size: 14px; color: rgba(231,226,255,0.45);
   }
-  @keyframes checkBounce {
-    0% { transform: scale(0); }
-    50% { transform: scale(1.2); }
-    100% { transform: scale(1); }
+  .trust-items span { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+  .trust-icon { color: var(--purple); font-size: 16px; }
+
+  /* ===== PROBLEM ===== */
+  .problem {
+    padding: 100px 0; text-align: center;
   }
+  .problem-card {
+    max-width: 720px; margin: 0 auto;
+    background: var(--surface-low); padding: 48px 40px;
+    border-radius: 32px; border: 1px solid rgba(255,255,255,0.04);
+  }
+  .problem-card h2 {
+    font-size: clamp(1.5rem, 3.5vw, 2rem); font-weight: 800; line-height: 1.3;
+  }
+  .problem-card p {
+    margin-top: 16px; font-size: 16px; line-height: 1.8;
+    color: rgba(231,226,255,0.45); max-width: 560px; margin-left: auto; margin-right: auto;
+  }
+
+  /* ===== SCREENS SECTION ===== */
+  .screens { padding: 100px 0; }
+  .screens-header { text-align: center; margin-bottom: 64px; }
+  .screens-header h2 { font-size: clamp(1.6rem, 3.5vw, 2.2rem); font-weight: 800; }
+  .screens-header p { color: rgba(231,226,255,0.45); font-size: 16px; margin-top: 12px; }
+  .screens-grid {
+    display: grid; grid-template-columns: 1fr;
+    gap: 48px;
+  }
+  @media (min-width: 768px) {
+    .screens-grid { grid-template-columns: repeat(3, 1fr); gap: 32px; }
+  }
+  .screen-item { display: flex; flex-direction: column; align-items: center; text-align: center; }
+  .screen-item .phone { margin-bottom: 24px; }
+  .screen-item h3 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+  .screen-item p { font-size: 14px; color: rgba(231,226,255,0.45); max-width: 280px; }
+
+  /* Timeline mockup */
+  .timeline-entry {
+    display: flex; align-items: center; gap: 10px;
+    padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .timeline-entry:last-child { border: none; }
+  .timeline-time { font-size: 9px; color: rgba(231,226,255,0.3); width: 32px; font-variant-numeric: tabular-nums; }
+  .timeline-emoji { font-size: 13px; }
+  .timeline-label { font-size: 10px; color: var(--cloud); font-weight: 500; }
+  .timeline-detail { font-size: 8px; color: rgba(231,226,255,0.3); }
+
+  /* Insights mockup */
+  .insight-card {
+    background: var(--surface-low); border-radius: 12px;
+    padding: 10px 12px; border: 1px solid rgba(255,255,255,0.04);
+    margin-bottom: 8px;
+  }
+  .insight-label { font-size: 8px; color: rgba(231,226,255,0.35); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .insight-value { font-size: 20px; font-weight: 800; font-family: 'Manrope', sans-serif; margin-top: 2px; }
+  .insight-sub { font-size: 9px; color: rgba(231,226,255,0.35); }
+  .insight-trend { font-size: 9px; color: #69db7c; font-weight: 600; }
+  .bar-chart { display: flex; align-items: flex-end; gap: 3px; height: 36px; margin-top: 6px; }
+  .bar-chart .bar { flex: 1; border-radius: 3px 3px 0 0; transition: height 0.3s; }
+  .bar-labels { display: flex; justify-content: space-between; margin-top: 4px; }
+  .bar-labels span { font-size: 7px; color: rgba(231,226,255,0.25); }
+  .insight-tip {
+    background: rgba(183,159,255,0.08); border-radius: 12px;
+    padding: 10px 12px; border: 1px solid rgba(183,159,255,0.1);
+    display: flex; align-items: center; gap: 8px;
+    font-size: 9px; color: rgba(231,226,255,0.6);
+  }
+  .insight-tip .bulb { font-size: 14px; }
+
+  /* ===== FEATURES GRID ===== */
+  .features { padding: 100px 0; position: relative; overflow: hidden; }
+  .features-bg {
+    position: absolute; top: -200px; right: -200px;
+    width: 500px; height: 500px; background: var(--purple);
+    opacity: 0.03; filter: blur(120px); border-radius: 50%;
+    pointer-events: none;
+  }
+  .features-label {
+    font-size: 12px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 2px; color: var(--blush);
+  }
+  .features h2 {
+    font-size: clamp(1.6rem, 3.5vw, 2.2rem); font-weight: 800;
+    margin-top: 12px; margin-bottom: 48px;
+  }
+  .features-grid {
+    display: grid; grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  @media (min-width: 640px) { .features-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 960px) { .features-grid { grid-template-columns: repeat(3, 1fr); } }
+  .feature-card {
+    background: rgba(41,38,68,0.5); backdrop-filter: blur(16px);
+    padding: 36px 28px; border-radius: 24px;
+    border: 1px solid rgba(255,255,255,0.04);
+    transition: background 0.2s;
+  }
+  .feature-card:hover { background: var(--surface-high); }
+  .feature-card .icon { font-size: 32px; margin-bottom: 16px; display: block; }
+  .feature-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+  .feature-card p { font-size: 14px; color: rgba(231,226,255,0.45); line-height: 1.7; }
+
+  /* ===== HOW IT WORKS ===== */
+  .how-it-works { padding: 100px 0; text-align: center; }
+  .how-it-works h2 { font-size: clamp(1.6rem, 3.5vw, 2.2rem); font-weight: 800; margin-bottom: 48px; }
+  .steps {
+    display: grid; grid-template-columns: 1fr;
+    gap: 24px; max-width: 800px; margin: 0 auto;
+  }
+  @media (min-width: 640px) { .steps { grid-template-columns: repeat(3, 1fr); } }
+  .step {
+    padding: 32px 24px; border-radius: 24px;
+    background: var(--surface-low);
+    border: 1px solid rgba(255,255,255,0.04);
+  }
+  .step-number {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: rgba(183,159,255,0.1); color: var(--purple);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 18px;
+    margin: 0 auto 16px; font-family: 'Manrope', sans-serif;
+  }
+  .step h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+  .step p { font-size: 13px; color: rgba(231,226,255,0.4); line-height: 1.6; }
+
+  /* ===== CTA FINAL ===== */
+  .cta-final {
+    padding: 100px 0;
+  }
+  .cta-card {
+    max-width: 800px; margin: 0 auto;
+    background: linear-gradient(135deg, var(--purple), #6b4ce0);
+    border-radius: 40px; padding: 64px 40px;
+    text-align: center;
+    box-shadow: 0 0 80px rgba(171,143,254,0.15);
+  }
+  .cta-card img {
+    height: 56px; margin: 0 auto 24px;
+    filter: brightness(0) invert(1);
+    opacity: 0.9;
+  }
+  .cta-card h2 {
+    font-size: clamp(1.5rem, 4vw, 2.4rem);
+    font-weight: 800; color: #fff; line-height: 1.2;
+    margin-bottom: 32px;
+  }
+  .cta-form {
+    display: flex; flex-direction: column; gap: 12px;
+    max-width: 460px; margin: 0 auto;
+  }
+  @media (min-width: 480px) { .cta-form { flex-direction: row; } }
+  .cta-form input {
+    flex: 1; padding: 14px 20px;
+    background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 14px; color: #fff;
+    font-size: 15px; font-family: inherit; outline: none;
+  }
+  .cta-form input::placeholder { color: rgba(255,255,255,0.5); }
+  .cta-form input:focus { border-color: rgba(255,255,255,0.5); }
+  .cta-form button {
+    padding: 14px 28px; border-radius: 14px;
+    background: #fff; color: #4e368f;
+    font-weight: 700; font-size: 15px;
+    border: none; cursor: pointer; white-space: nowrap;
+    font-family: inherit; transition: opacity 0.2s;
+  }
+  .cta-form button:hover { opacity: 0.9; }
+  .cta-form button:disabled { opacity: 0.6; }
+  .cta-msg { font-size: 13px; margin-top: 8px; display: none; color: #fff; }
+  .cta-msg.show { display: block; }
+  .cta-sub {
+    margin-top: 16px; font-size: 14px;
+    color: rgba(255,255,255,0.6); font-weight: 500;
+  }
+
+  /* ===== FOOTER ===== */
+  .footer {
+    padding: 48px 0; border-top: 1px solid rgba(255,255,255,0.04);
+  }
+  .footer-inner {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 24px; text-align: center;
+  }
+  @media (min-width: 640px) {
+    .footer-inner { flex-direction: row; justify-content: space-between; text-align: left; }
+  }
+  .footer-logo { display: flex; align-items: center; gap: 6px; }
+  .footer-logo img { height: 20px; filter: brightness(0) saturate(100%) invert(67%) sepia(18%) saturate(1800%) hue-rotate(216deg) brightness(102%) contrast(100%); }
+  .footer-logo span { font-size: 18px; font-weight: 800; }
+  .footer-links { display: flex; gap: 24px; font-size: 14px; }
+  .footer-links a { color: rgba(231,226,255,0.4); text-decoration: none; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--blush); }
+  .footer-copy { font-size: 13px; color: rgba(231,226,255,0.2); }
+
+  /* ===== FADE IN ANIMATION ===== */
+  .fade-up {
+    opacity: 0; transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .fade-up.visible { opacity: 1; transform: translateY(0); }
 </style>
 </head>
-<body class="antialiased">
+<body>
 
-<!-- 1. NAV -->
-<nav class="fixed top-0 w-full z-50 bg-[#0d0a27]/60 backdrop-blur-xl transition-all duration-300">
-  <div class="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto">
-    <div class="flex items-center gap-2">
-      <img src="../Logo/simboloyaya2.png" alt="Yaya" class="h-6" style="filter: drop-shadow(0 0 8px rgba(183,159,255,0.3));" />
-      <span class="text-2xl font-extrabold text-yaya-cloud tracking-tight font-headline">yaya</span>
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-logo">
+      <img src="../Logo/simboloyaya2.png" alt="Yaya"/>
+      <span class="font-headline">yaya</span>
     </div>
-    <div class="flex items-center gap-6">
-      <span class="hidden md:block text-yaya-purple font-bold border-b-2 border-yaya-purple pb-1 text-sm">Em breve</span>
-      <a href="#waitlist" class="bg-yaya-purple text-[#371d77] px-5 py-2.5 rounded-full font-bold text-sm hover:scale-95 transition-transform duration-200">
-        Entrar na lista
-      </a>
-    </div>
+    <a href="#waitlist" class="nav-cta">Entrar na lista</a>
   </div>
 </nav>
 
-<!-- 2. HERO SECTION -->
-<section class="pt-32 pb-20 px-6 max-w-7xl mx-auto">
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-    <div class="space-y-8">
-      <span class="inline-block px-4 py-1.5 rounded-full bg-surface-container-high text-yaya-purple text-sm font-semibold tracking-wide border border-yaya-purple/10">
-        Cada momento conta.
-      </span>
-      <h1 class="text-5xl md:text-6xl font-extrabold font-headline leading-[1.1] text-yaya-cloud">
-        O companheiro que você precisa em <span class="text-yaya-purple">todos os momentos</span> do seu dia e da sua noite.
+<!-- HERO -->
+<div class="section">
+  <div class="hero">
+    <div>
+      <span class="hero-badge">Cada momento conta.</span>
+      <h1 class="font-headline">
+        O companheiro que você precisa em <em>todos os momentos.</em>
       </h1>
-      <p class="text-lg md:text-xl text-yaya-cloud/50 leading-relaxed max-w-lg font-body">
+      <p class="hero-sub">
         Registre mamadas, fraldas, sono e banhos com um toque. Um cérebro externo para pais, mães, babás e avós compartilharem a rotina do bebê.
       </p>
-      <div id="waitlist" class="flex flex-col sm:flex-row gap-3">
-        <input id="hero-email" class="flex-grow bg-surface-container-highest border-none rounded-xl px-6 py-4 text-yaya-cloud focus:ring-2 focus:ring-yaya-purple placeholder:text-yaya-cloud/30 font-body" placeholder="Seu melhor e-mail" type="email"/>
-        <button onclick="handleWaitlist('hero-email', 'hero-btn', 'hero-msg')" id="hero-btn" class="cta-gradient text-white px-8 py-4 rounded-xl font-bold hover:opacity-90 transition-opacity whitespace-nowrap font-label">
-          Quero ser avisado
-        </button>
-      </div>
-      <p id="hero-msg" class="text-sm font-label hidden"></p>
-      <div class="flex flex-wrap gap-4 text-sm text-yaya-cloud/50 font-body">
+      <form class="hero-form" id="waitlist" onsubmit="event.preventDefault(); handleWaitlist('hero-email','hero-btn','hero-msg')">
+        <input id="hero-email" type="email" placeholder="Seu melhor e-mail" required/>
+        <button id="hero-btn" type="submit">Quero ser avisado</button>
+      </form>
+      <p id="hero-msg" class="hero-msg"></p>
+      <div class="hero-checks">
         <span>✓ Gratuito para começar</span>
         <span>✓ Sem cartão de crédito</span>
         <span>✓ Android e iOS</span>
       </div>
     </div>
-    <div class="relative flex justify-center">
-      <!-- Glowing Background Aura -->
-      <div class="absolute inset-0 bg-yaya-glow opacity-[0.12] blur-[100px] rounded-full scale-125"></div>
-      <!-- Phone Mockup 1 — Interactive Tracker -->
-      <div class="phone-frame relative z-10" id="mockup-tracker">
+
+    <!-- Phone Mockup — Interactive -->
+    <div class="phone-wrap">
+      <div class="phone-aura"></div>
+      <div class="phone" id="hero-phone">
         <div class="phone-notch"></div>
-        <div class="p-4 space-y-4 pt-2">
-          <!-- Header -->
-          <div class="flex justify-between items-center">
-            <div class="flex items-center gap-1.5">
-              <img src="../Logo/simboloyaya2.png" alt="" class="h-4 opacity-80" />
-              <span class="text-yaya-purple font-headline font-bold text-xs">yaya</span>
+        <div class="phone-content">
+          <div class="phone-header">
+            <div class="logo">
+              <img src="../Logo/simboloyaya2.png" alt=""/>
+              <span class="font-headline">yaya</span>
             </div>
-            <span class="text-yaya-cloud/40 text-[10px] font-label">Luna, 47 dias</span>
+            <span class="baby-name">Luna, 47 dias</span>
           </div>
-          <!-- Activity Grid 3x3 -->
-          <div class="grid grid-cols-3 gap-2" id="mock-grid">
-            <button class="mock-btn aspect-square bg-surface-container-low rounded-2xl flex flex-col items-center justify-center gap-1 border border-white/5" data-event="Peito Esq." onclick="mockTap(this)">
-              <span class="text-xl">🤱</span>
-              <span class="text-[9px] text-yaya-cloud/70 font-label">Peito Esq.</span>
+          <div class="activity-grid" id="mock-grid">
+            <button class="activity-btn" data-event="Peito Esq." onclick="mockTap(this)">
+              <span class="emoji">🤱</span><span class="label">Peito Esq.</span>
             </button>
-            <button class="mock-btn aspect-square bg-surface-container-low rounded-2xl flex flex-col items-center justify-center gap-1 border border-white/5" data-event="Peito Dir." onclick="mockTap(this)">
-              <span class="text-xl">🤱</span>
-              <span class="text-[9px] text-yaya-cloud/70 font-label">Peito Dir.</span>
+            <button class="activity-btn" data-event="Peito Dir." onclick="mockTap(this)">
+              <span class="emoji">🤱</span><span class="label">Peito Dir.</span>
             </button>
-            <button class="mock-btn aspect-square bg-surface-container-low rounded-2xl flex flex-col items-center justify-center gap-1 border border-white/5" data-event="Mamadeira" onclick="mockTap(this)">
-              <span class="text-xl">🍼</span>
-              <span class="text-[9px] text-yaya-cloud/70 font-label">Mamadeira</span>
+            <button class="activity-btn" data-event="Mamadeira" onclick="mockTap(this)">
+              <span class="emoji">🍼</span><span class="label">Mamadeira</span>
             </button>
-            <button class="mock-btn aspect-square bg-surface-container-low rounded-2xl flex flex-col items-center justify-center gap-1 border border-white/5" data-event="Fralda Xixi" onclick="mockTap(this)">
-              <span class="text-xl">💧</span>
-              <span class="text-[9px] text-yaya-cloud/70 font-label">Fralda Xixi</span>
+            <button class="activity-btn" data-event="Fralda Xixi" onclick="mockTap(this)">
+              <span class="emoji">💧</span><span class="label">Fralda Xixi</span>
             </button>
-            <button class="mock-btn aspect-square bg-surface-container-low rounded-2xl flex flex-col items-center justify-center gap-1 border border-white/5" data-event="Fralda Cocô" onclick="mockTap(this)">
-              <span class="text-xl">💩</span>
-              <span class="text-[9px] text-yaya-cloud/70 font-label">Fralda Cocô</span>
+            <button class="activity-btn" data-event="Fralda Cocô" onclick="mockTap(this)">
+              <span class="emoji">💩</span><span class="label">Fralda Cocô</span>
             </button>
-            <button class="mock-btn aspect-square bg-surface-container-low rounded-2xl flex flex-col items-center justify-center gap-1 border border-white/5" data-event="Banho" onclick="mockTap(this)">
-              <span class="text-xl">🛁</span>
-              <span class="text-[9px] text-yaya-cloud/70 font-label">Banho</span>
+            <button class="activity-btn" data-event="Banho" onclick="mockTap(this)">
+              <span class="emoji">🛁</span><span class="label">Banho</span>
             </button>
-            <button class="mock-btn aspect-square bg-surface-container-low rounded-2xl flex flex-col items-center justify-center gap-1 border border-white/5" data-event="Dormiu" onclick="mockTap(this)">
-              <span class="text-xl">🌙</span>
-              <span class="text-[9px] text-yaya-cloud/70 font-label">Dormiu</span>
+            <button class="activity-btn" data-event="Dormiu" onclick="mockTap(this)">
+              <span class="emoji">🌙</span><span class="label">Dormiu</span>
             </button>
-            <button class="mock-btn aspect-square bg-surface-container-low rounded-2xl flex flex-col items-center justify-center gap-1 border border-white/5" data-event="Acordou" onclick="mockTap(this)">
-              <span class="text-xl">☀️</span>
-              <span class="text-[9px] text-yaya-cloud/70 font-label">Acordou</span>
+            <button class="activity-btn" data-event="Acordou" onclick="mockTap(this)">
+              <span class="emoji">☀️</span><span class="label">Acordou</span>
             </button>
           </div>
-          <!-- Projection Card -->
-          <div class="bg-yaya-purple/10 rounded-xl p-3 border border-yaya-purple/10">
-            <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-yaya-purple text-sm">schedule</span>
-              <div>
-                <p class="text-[10px] text-yaya-cloud/50 font-label">Próxima mamada</p>
-                <p class="text-xs font-bold text-yaya-purple font-headline" id="mock-projection">em 1h21</p>
-              </div>
-              <div class="ml-auto text-right">
-                <p class="text-[9px] text-yaya-cloud/40">Último: Peito Esq.</p>
-                <p class="text-[9px] text-yaya-cloud/40" id="mock-last-time">agora</p>
-              </div>
+          <div class="projection-card">
+            <span class="icon">🍼</span>
+            <div>
+              <p class="info-label">Próxima mamada</p>
+              <p class="info-value" id="mock-projection">em 1h21</p>
+            </div>
+            <div class="meta">
+              <span>Último: Peito Esq.</span>
+              <span id="mock-last-time">agora</span>
             </div>
           </div>
-          <!-- Recent Logs -->
           <div>
-            <p class="text-[10px] text-yaya-cloud/50 font-label font-semibold mb-2">Últimos registros</p>
-            <div class="space-y-1.5" id="mock-logs">
-              <div class="flex items-center gap-2 text-[10px]">
-                <span class="w-1.5 h-1.5 rounded-full bg-yaya-purple"></span>
-                <span class="text-yaya-cloud/70">Peito Esq.</span>
-                <span class="ml-auto text-yaya-cloud/40">agora</span>
+            <p class="recent-title">Últimos registros</p>
+            <div id="mock-logs">
+              <div class="log-entry">
+                <span class="log-dot"></span>
+                <span class="log-event">Peito Esq.</span>
+                <span class="log-time">agora</span>
               </div>
             </div>
           </div>
         </div>
-        <!-- Toast -->
-        <div id="mock-toast" class="absolute bottom-4 left-4 right-4 hidden">
-          <div class="bg-surface-container-high rounded-xl px-4 py-2.5 text-center mock-toast border border-yaya-purple/20">
-            <span class="text-xs font-label text-yaya-cloud" id="mock-toast-text"></span>
+        <div class="phone-toast" id="mock-toast">
+          <div class="phone-toast-inner" id="mock-toast-text"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+  <div class="section">
+    <div class="trust-items">
+      <span><span class="trust-icon">★</span> Gratuito para começar</span>
+      <span><span class="trust-icon">◷</span> Interface gentil 24h</span>
+      <span><span class="trust-icon">♡</span> Multi-cuidador</span>
+      <span><span class="trust-icon">∞</span> Compra única — sem mensalidade</span>
+    </div>
+  </div>
+</div>
+
+<!-- PROBLEM -->
+<div class="problem">
+  <div class="section">
+    <div class="problem-card fade-up">
+      <h2 class="font-headline">Chega de tentar lembrar de tudo sozinho.</h2>
+      <p>Da correria da tarde ao silêncio das 4 da manhã, Yaya centraliza tudo. Pais, avós e babás sabem exatamente quando foi a última mamada, a última fralda ou quanto durou a soneca.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SCREENS SECTION -->
+<div class="section screens">
+  <div class="screens-header fade-up">
+    <h2 class="font-headline">Simples para o dia e a noite inteira</h2>
+    <p>Design pensado para funcionar com uma mão só, no escuro, às 3 da manhã.</p>
+  </div>
+  <div class="screens-grid">
+    <!-- Screen 1 — Registrar -->
+    <div class="screen-item fade-up">
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-content">
+          <div class="phone-header">
+            <div class="logo">
+              <img src="../Logo/simboloyaya2.png" alt=""/><span class="font-headline">yaya</span>
+            </div>
+            <span class="baby-name">Luna, 47 dias</span>
+          </div>
+          <div class="activity-grid">
+            <div class="activity-btn"><span class="emoji">🤱</span><span class="label">Peito Esq.</span></div>
+            <div class="activity-btn"><span class="emoji">🤱</span><span class="label">Peito Dir.</span></div>
+            <div class="activity-btn"><span class="emoji">🍼</span><span class="label">Mamadeira</span></div>
+            <div class="activity-btn"><span class="emoji">💧</span><span class="label">Fralda Xixi</span></div>
+            <div class="activity-btn"><span class="emoji">💩</span><span class="label">Fralda Cocô</span></div>
+            <div class="activity-btn"><span class="emoji">🛁</span><span class="label">Banho</span></div>
+            <div class="activity-btn"><span class="emoji">🌙</span><span class="label">Dormiu</span></div>
+            <div class="activity-btn"><span class="emoji">☀️</span><span class="label">Acordou</span></div>
+          </div>
+          <div class="projection-card">
+            <span class="icon">🍼</span>
+            <div>
+              <p class="info-label">Próxima mamada</p>
+              <p class="info-value">em 1h21</p>
+            </div>
+          </div>
+          <div class="projection-card" style="background: rgba(255,150,185,0.06); border-color: rgba(255,150,185,0.08);">
+            <span class="icon">🛁</span>
+            <div>
+              <p class="info-label">Banho agendado</p>
+              <p class="info-value" style="color: var(--blush);">18:00</p>
+            </div>
           </div>
         </div>
       </div>
-      <!-- Floating Glass Card -->
-      <div class="absolute -right-4 top-1/2 glass-panel p-4 rounded-2xl border border-white/10 aura-glow max-w-[200px] z-20 hidden lg:block">
-        <p class="text-[11px] font-body text-yaya-cloud/80 leading-relaxed">🍼 Mamada: 12:30<br/>🛁 Banho: 18:00<br/>💤 Sono: 20:15</p>
-      </div>
+      <h3 class="font-headline">Registre com um toque</h3>
+      <p>Rápido e intuitivo, mesmo com uma mão só no escuro.</p>
     </div>
-  </div>
-</section>
 
-<!-- 3. TRUST BAR -->
-<section class="py-12 bg-surface-container-low/50">
-  <div class="max-w-7xl mx-auto px-6 overflow-x-auto">
-    <div class="flex justify-between items-center min-w-[800px] text-yaya-cloud/50 font-body font-medium">
-      <span class="flex items-center gap-2"><span class="material-symbols-outlined text-yaya-purple">star</span> Gratuito para começar</span>
-      <span class="text-surface-container-highest">·</span>
-      <span class="flex items-center gap-2"><span class="material-symbols-outlined text-yaya-purple">schedule</span> Interface gentil 24h</span>
-      <span class="text-surface-container-highest">·</span>
-      <span class="flex items-center gap-2"><span class="material-symbols-outlined text-yaya-purple">groups</span> Multi-cuidador</span>
-      <span class="text-surface-container-highest">·</span>
-      <span class="flex items-center gap-2"><span class="material-symbols-outlined text-yaya-purple">payments</span> Compra única — sem mensalidade</span>
-    </div>
-  </div>
-</section>
-
-<!-- 4. THE PROBLEM -->
-<section class="py-24 px-6">
-  <div class="max-w-4xl mx-auto text-center space-y-6 bg-surface-container-low p-12 rounded-[2.5rem] border border-outline-variant/10">
-    <h2 class="text-3xl md:text-4xl font-extrabold font-headline text-yaya-cloud">Chega de tentar lembrar de tudo sozinho.</h2>
-    <p class="text-lg md:text-xl text-yaya-cloud/50 leading-relaxed font-body">
-      Da correria da tarde ao silêncio das 4 da manhã, Yaya é seu cérebro externo. Centralize as informações entre pais, avós e babás para que todos saibam exatamente quando foi o último banho, a última fralda ou quanto tempo durou a soneca da manhã.
-    </p>
-  </div>
-</section>
-
-<!-- 5. SCREENSHOTS — 3 Phone Mockups -->
-<section class="py-24 px-6 max-w-7xl mx-auto">
-  <div class="text-center mb-16 space-y-4">
-    <h2 class="text-4xl font-extrabold font-headline text-yaya-cloud">Um companheiro para toda a jornada</h2>
-    <p class="text-yaya-cloud/50 text-lg font-body">Design que se adapta ao seu dia, do amanhecer ao repouso.</p>
-  </div>
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8">
-    <!-- Mockup 1 — Tracker -->
-    <div class="text-center space-y-6 group flex flex-col items-center">
-      <div class="phone-frame transition-transform group-hover:scale-[1.02]">
+    <!-- Screen 2 — Timeline -->
+    <div class="screen-item fade-up">
+      <div class="phone">
         <div class="phone-notch"></div>
-        <div class="p-4 space-y-3 pt-2">
-          <div class="flex justify-between items-center">
-            <span class="text-yaya-purple font-headline font-bold text-xs">yaya</span>
-            <span class="text-yaya-cloud/40 text-[10px]">Luna, 47 dias</span>
+        <div class="phone-content">
+          <div class="phone-header">
+            <div class="logo"><span class="font-headline" style="color: var(--purple); font-size: 11px;">Hoje</span></div>
+            <span class="baby-name">7 registros</span>
           </div>
-          <div class="grid grid-cols-3 gap-2">
-            <div class="aspect-square bg-surface-container-low rounded-2xl flex flex-col items-center justify-center gap-1 border border-white/5">
-              <span class="text-lg">🤱</span><span class="text-[8px] text-yaya-cloud/70">Peito Esq.</span>
-            </div>
-            <div class="aspect-square bg-surface-container-low rounded-2xl flex flex-col items-center justify-center gap-1 border border-white/5">
-              <span class="text-lg">🤱</span><span class="text-[8px] text-yaya-cloud/70">Peito Dir.</span>
-            </div>
-            <div class="aspect-square bg-surface-container-low rounded-2xl flex flex-col items-center justify-center gap-1 border border-white/5">
-              <span class="text-lg">🍼</span><span class="text-[8px] text-yaya-cloud/70">Mamadeira</span>
-            </div>
-            <div class="aspect-square bg-surface-container-low rounded-2xl flex flex-col items-center justify-center gap-1 border border-white/5">
-              <span class="text-lg">💧</span><span class="text-[8px] text-yaya-cloud/70">Fralda Xixi</span>
-            </div>
-            <div class="aspect-square bg-surface-container-low rounded-2xl flex flex-col items-center justify-center gap-1 border border-white/5">
-              <span class="text-lg">💩</span><span class="text-[8px] text-yaya-cloud/70">Fralda Cocô</span>
-            </div>
-            <div class="aspect-square bg-surface-container-low rounded-2xl flex flex-col items-center justify-center gap-1 border border-white/5">
-              <span class="text-lg">🛁</span><span class="text-[8px] text-yaya-cloud/70">Banho</span>
-            </div>
-            <div class="aspect-square bg-surface-container-low rounded-2xl flex flex-col items-center justify-center gap-1 border border-white/5">
-              <span class="text-lg">🌙</span><span class="text-[8px] text-yaya-cloud/70">Dormiu</span>
-            </div>
-            <div class="aspect-square bg-surface-container-low rounded-2xl flex flex-col items-center justify-center gap-1 border border-white/5">
-              <span class="text-lg">☀️</span><span class="text-[8px] text-yaya-cloud/70">Acordou</span>
-            </div>
-          </div>
-          <div class="bg-yaya-purple/10 rounded-xl p-2.5">
-            <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-yaya-purple text-sm">schedule</span>
+          <div>
+            <div class="timeline-entry">
+              <span class="timeline-time">06:14</span>
+              <span class="timeline-emoji">🤱</span>
               <div>
-                <p class="text-[9px] text-yaya-cloud/50">Próxima mamada</p>
-                <p class="text-[11px] font-bold text-yaya-purple font-headline">em 1h21</p>
+                <span class="timeline-label">Peito Esquerdo</span><br/>
+                <span class="timeline-detail">12 minutos</span>
               </div>
             </div>
-          </div>
-          <div class="bg-yaya-purple/10 rounded-xl p-2.5">
-            <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-yaya-purple text-sm">schedule</span>
+            <div class="timeline-entry">
+              <span class="timeline-time">07:30</span>
+              <span class="timeline-emoji">💧</span>
+              <div><span class="timeline-label">Fralda Xixi</span></div>
+            </div>
+            <div class="timeline-entry">
+              <span class="timeline-time">09:00</span>
+              <span class="timeline-emoji">🍼</span>
               <div>
-                <p class="text-[9px] text-yaya-cloud/50">Banho às 18:00</p>
-                <p class="text-[11px] font-bold text-yaya-purple font-headline">18:00</p>
+                <span class="timeline-label">Mamadeira</span><br/>
+                <span class="timeline-detail">90ml</span>
               </div>
+            </div>
+            <div class="timeline-entry">
+              <span class="timeline-time">09:45</span>
+              <span class="timeline-emoji">🌙</span>
+              <div><span class="timeline-label">Dormiu</span></div>
+            </div>
+            <div class="timeline-entry">
+              <span class="timeline-time">11:20</span>
+              <span class="timeline-emoji">☀️</span>
+              <div>
+                <span class="timeline-label">Acordou</span><br/>
+                <span class="timeline-detail">Soneca de 1h35</span>
+              </div>
+            </div>
+            <div class="timeline-entry">
+              <span class="timeline-time">12:00</span>
+              <span class="timeline-emoji">💩</span>
+              <div><span class="timeline-label">Fralda Cocô</span></div>
+            </div>
+            <div class="timeline-entry">
+              <span class="timeline-time">14:30</span>
+              <span class="timeline-emoji">🛁</span>
+              <div><span class="timeline-label">Banho</span></div>
             </div>
           </div>
         </div>
       </div>
-      <div>
-        <h3 class="text-xl font-bold font-headline mb-2 text-yaya-cloud">Tracker Completo</h3>
-        <p class="text-yaya-cloud/50 text-sm px-4 font-body">Registre tudo com um toque. Rápido e intuitivo, mesmo com uma mão só.</p>
-      </div>
+      <h3 class="font-headline">Histórico completo</h3>
+      <p>Veja o dia inteiro do bebê numa timeline clara e organizada.</p>
     </div>
 
-    <!-- Mockup 2 — Timeline -->
-    <div class="text-center space-y-6 group flex flex-col items-center">
-      <div class="phone-frame transition-transform group-hover:scale-[1.02]">
+    <!-- Screen 3 — Insights -->
+    <div class="screen-item fade-up">
+      <div class="phone">
         <div class="phone-notch"></div>
-        <div class="p-4 space-y-3 pt-2">
-          <div class="flex justify-between items-center">
-            <span class="text-yaya-purple font-headline font-bold text-xs">Hoje</span>
-            <span class="text-yaya-cloud/40 text-[10px]">6 registros</span>
+        <div class="phone-content">
+          <div class="phone-header">
+            <div class="logo"><span class="font-headline" style="color: var(--purple); font-size: 11px;">Insights</span></div>
+            <span class="baby-name">Últimos 7 dias</span>
           </div>
-          <div class="space-y-2">
-            <div class="flex items-center gap-3 py-2 border-b border-white/5">
-              <span class="text-[10px] text-yaya-cloud/40 w-10 font-label">06:14</span>
-              <span class="text-sm">🤱</span>
-              <div class="flex-1">
-                <p class="text-[11px] text-yaya-cloud font-medium">Peito Esquerdo</p>
-                <p class="text-[9px] text-yaya-cloud/40">12 minutos</p>
+
+          <!-- Resumo do dia -->
+          <div class="insight-card">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+              <div>
+                <p class="insight-label">Resumo de hoje</p>
+                <div style="display: flex; gap: 14px; margin-top: 6px;">
+                  <div><span style="font-size: 13px;">🤱</span> <span style="font-size: 11px; font-weight: 700;">6x</span></div>
+                  <div><span style="font-size: 13px;">💧</span> <span style="font-size: 11px; font-weight: 700;">4x</span></div>
+                  <div><span style="font-size: 13px;">🌙</span> <span style="font-size: 11px; font-weight: 700;">14h</span></div>
+                </div>
               </div>
             </div>
-            <div class="flex items-center gap-3 py-2 border-b border-white/5">
-              <span class="text-[10px] text-yaya-cloud/40 w-10 font-label">07:30</span>
-              <span class="text-sm">💧</span>
-              <div class="flex-1">
-                <p class="text-[11px] text-yaya-cloud font-medium">Fralda Xixi</p>
-              </div>
+          </div>
+
+          <!-- Alimentação -->
+          <div class="insight-card">
+            <p class="insight-label">Alimentação</p>
+            <div style="display: flex; align-items: baseline; gap: 6px; margin-top: 4px;">
+              <span class="insight-value" style="font-size: 18px;">8x</span>
+              <span class="insight-sub">por dia</span>
+              <span class="insight-trend" style="margin-left: auto;">estável</span>
             </div>
-            <div class="flex items-center gap-3 py-2 border-b border-white/5">
-              <span class="text-[10px] text-yaya-cloud/40 w-10 font-label">09:45</span>
-              <span class="text-sm">🌙</span>
-              <div class="flex-1">
-                <p class="text-[11px] text-yaya-cloud font-medium">Dormiu</p>
-              </div>
+            <div class="bar-chart">
+              <div class="bar" style="height: 55%; background: rgba(183,159,255,0.25);"></div>
+              <div class="bar" style="height: 75%; background: rgba(183,159,255,0.25);"></div>
+              <div class="bar" style="height: 50%; background: rgba(183,159,255,0.25);"></div>
+              <div class="bar" style="height: 85%; background: rgba(183,159,255,0.3);"></div>
+              <div class="bar" style="height: 65%; background: rgba(183,159,255,0.25);"></div>
+              <div class="bar" style="height: 60%; background: rgba(183,159,255,0.25);"></div>
+              <div class="bar" style="height: 100%; background: var(--purple);"></div>
             </div>
-            <div class="flex items-center gap-3 py-2 border-b border-white/5">
-              <span class="text-[10px] text-yaya-cloud/40 w-10 font-label">11:20</span>
-              <span class="text-sm">☀️</span>
-              <div class="flex-1">
-                <p class="text-[11px] text-yaya-cloud font-medium">Acordou</p>
-                <p class="text-[9px] text-yaya-cloud/40">Soneca de 1h35</p>
-              </div>
+            <div class="bar-labels">
+              <span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span><span>Dom</span>
             </div>
-            <div class="flex items-center gap-3 py-2 border-b border-white/5">
-              <span class="text-[10px] text-yaya-cloud/40 w-10 font-label">12:00</span>
-              <span class="text-sm">🍼</span>
-              <div class="flex-1">
-                <p class="text-[11px] text-yaya-cloud font-medium">Mamadeira</p>
-                <p class="text-[9px] text-yaya-cloud/40">90ml</p>
-              </div>
+          </div>
+
+          <!-- Sono -->
+          <div class="insight-card">
+            <p class="insight-label">Sono</p>
+            <div style="display: flex; align-items: baseline; gap: 6px; margin-top: 4px;">
+              <span class="insight-value" style="font-size: 18px;">14h</span>
+              <span class="insight-sub">por dia</span>
+              <span class="insight-trend" style="margin-left: auto;">↑ 8%</span>
             </div>
-            <div class="flex items-center gap-3 py-2 border-b border-white/5">
-              <span class="text-[10px] text-yaya-cloud/40 w-10 font-label">13:15</span>
-              <span class="text-sm">💩</span>
-              <div class="flex-1">
-                <p class="text-[11px] text-yaya-cloud font-medium">Fralda Cocô</p>
-              </div>
-            </div>
-            <div class="flex items-center gap-3 py-2">
-              <span class="text-[10px] text-yaya-cloud/40 w-10 font-label">14:30</span>
-              <span class="text-sm">🛁</span>
-              <div class="flex-1">
-                <p class="text-[11px] text-yaya-cloud font-medium">Banho</p>
-              </div>
-            </div>
+          </div>
+
+          <!-- Tip -->
+          <div class="insight-tip">
+            <span class="bulb">💡</span>
+            <span>Padrão: dorme melhor após mamada das 20h</span>
           </div>
         </div>
       </div>
-      <div>
-        <h3 class="text-xl font-bold font-headline mb-2 text-yaya-cloud">Timeline 24 Horas</h3>
-        <p class="text-yaya-cloud/50 text-sm px-4 font-body">Uma visão clara do ciclo completo do seu bebê, dia e noite.</p>
-      </div>
+      <h3 class="font-headline">Padrões e insights</h3>
+      <p>Entenda os ritmos do seu bebê ao longo da semana.</p>
     </div>
+  </div>
+</div>
 
-    <!-- Mockup 3 — Insights -->
-    <div class="text-center space-y-6 group flex flex-col items-center">
-      <div class="phone-frame transition-transform group-hover:scale-[1.02]">
-        <div class="phone-notch"></div>
-        <div class="p-4 space-y-3 pt-2">
-          <div class="flex justify-between items-center">
-            <span class="text-yaya-purple font-headline font-bold text-xs">Insights</span>
-            <span class="text-yaya-cloud/40 text-[10px]">Esta semana</span>
-          </div>
-          <!-- Summary Cards -->
-          <div class="bg-surface-container-low rounded-xl p-3 border border-white/5">
-            <p class="text-[9px] text-yaya-cloud/40 font-label uppercase tracking-wider mb-1">Sono médio</p>
-            <div class="flex items-baseline gap-2">
-              <span class="text-xl font-extrabold text-yaya-cloud font-headline">14h</span>
-              <span class="text-[10px] text-green-400 font-label">↑ 8%</span>
-            </div>
-            <p class="text-[9px] text-yaya-cloud/40">por dia</p>
-          </div>
-          <div class="bg-surface-container-low rounded-xl p-3 border border-white/5">
-            <p class="text-[9px] text-yaya-cloud/40 font-label uppercase tracking-wider mb-1">Mamadas</p>
-            <div class="flex items-baseline gap-2">
-              <span class="text-xl font-extrabold text-yaya-cloud font-headline">8x</span>
-              <span class="text-[10px] text-yaya-cloud/40 font-label">por dia</span>
-            </div>
-            <!-- Mini bar chart -->
-            <div class="flex items-end gap-1 mt-2 h-8">
-              <div class="flex-1 bg-yaya-purple/30 rounded-sm" style="height:60%"></div>
-              <div class="flex-1 bg-yaya-purple/30 rounded-sm" style="height:80%"></div>
-              <div class="flex-1 bg-yaya-purple/30 rounded-sm" style="height:45%"></div>
-              <div class="flex-1 bg-yaya-purple/30 rounded-sm" style="height:90%"></div>
-              <div class="flex-1 bg-yaya-purple/30 rounded-sm" style="height:70%"></div>
-              <div class="flex-1 bg-yaya-purple/30 rounded-sm" style="height:55%"></div>
-              <div class="flex-1 bg-yaya-purple rounded-sm" style="height:100%"></div>
-            </div>
-            <div class="flex justify-between mt-1">
-              <span class="text-[7px] text-yaya-cloud/30">Seg</span>
-              <span class="text-[7px] text-yaya-cloud/30">Ter</span>
-              <span class="text-[7px] text-yaya-cloud/30">Qua</span>
-              <span class="text-[7px] text-yaya-cloud/30">Qui</span>
-              <span class="text-[7px] text-yaya-cloud/30">Sex</span>
-              <span class="text-[7px] text-yaya-cloud/30">Sáb</span>
-              <span class="text-[7px] text-yaya-purple">Dom</span>
-            </div>
-          </div>
-          <div class="bg-surface-container-low rounded-xl p-3 border border-white/5">
-            <p class="text-[9px] text-yaya-cloud/40 font-label uppercase tracking-wider mb-1">Fraldas</p>
-            <div class="flex items-baseline gap-2">
-              <span class="text-xl font-extrabold text-yaya-cloud font-headline">6x</span>
-              <span class="text-[10px] text-yaya-cloud/40 font-label">por dia</span>
-            </div>
-          </div>
-          <div class="bg-yaya-purple/10 rounded-xl p-3 border border-yaya-purple/20">
-            <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-yaya-purple text-sm">lightbulb</span>
-              <p class="text-[10px] text-yaya-cloud/70 font-body">Padrão: dorme melhor após mamada das 20h</p>
-            </div>
-          </div>
-        </div>
+<!-- FEATURES -->
+<div class="section features">
+  <div class="features-bg"></div>
+  <div style="position: relative; z-index: 1;">
+    <p class="features-label fade-up">Funcionalidades</p>
+    <h2 class="font-headline fade-up">Tudo que pais reais precisam.</h2>
+    <div class="features-grid">
+      <div class="feature-card fade-up">
+        <span class="icon">🤱</span>
+        <h3 class="font-headline">Amamentação e Alimentação</h3>
+        <p>Controle lados, tempos e mamadeiras. Tudo no seu ritmo, com um toque.</p>
       </div>
-      <div>
-        <h3 class="text-xl font-bold font-headline mb-2 text-yaya-cloud">Insights Reais</h3>
-        <p class="text-yaya-cloud/50 text-sm px-4 font-body">Entenda os padrões e as necessidades do seu bebê ao longo da semana.</p>
+      <div class="feature-card fade-up">
+        <span class="icon">💧</span>
+        <h3 class="font-headline">Fraldas e Saúde</h3>
+        <p>Monitore xixi e cocô para acompanhar a saúde do seu bebê com rapidez.</p>
+      </div>
+      <div class="feature-card fade-up">
+        <span class="icon">🌙</span>
+        <h3 class="font-headline">Sono e Sonecas</h3>
+        <p>Diferencie sono noturno das sonecas e entenda as janelas de sono.</p>
+      </div>
+      <div class="feature-card fade-up">
+        <span class="icon">🛁</span>
+        <h3 class="font-headline">Rotina de Higiene</h3>
+        <p>Registre banhos com horários agendados para manter o equilíbrio.</p>
+      </div>
+      <div class="feature-card fade-up">
+        <span class="icon">👨‍👩‍👦</span>
+        <h3 class="font-headline">Multi-cuidador</h3>
+        <p>Compartilhe a rotina em tempo real com quem cuida do bebê.</p>
+      </div>
+      <div class="feature-card fade-up">
+        <span class="icon">📋</span>
+        <h3 class="font-headline">Relatório para o Pediatra</h3>
+        <p>PDFs com dados de rotina para levar na consulta. O pediatra vai adorar.</p>
       </div>
     </div>
   </div>
-</section>
+</div>
 
-<!-- 6. FEATURES GRID -->
-<section class="py-24 px-6 bg-[#0d0a27] relative overflow-hidden">
-  <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-yaya-purple/5 blur-[120px] rounded-full -mr-64 -mt-64"></div>
-  <div class="max-w-7xl mx-auto relative z-10">
-    <div class="mb-16">
-      <span class="text-yaya-blush font-bold tracking-widest text-xs uppercase font-label">Funcionalidades</span>
-      <h2 class="text-4xl font-extrabold font-headline mt-4 text-yaya-cloud">Tudo que pais reais precisam, 24h por dia.</h2>
+<!-- HOW IT WORKS -->
+<div class="section how-it-works">
+  <h2 class="font-headline fade-up">Comece em 30 segundos</h2>
+  <div class="steps">
+    <div class="step fade-up">
+      <div class="step-number">1</div>
+      <h3 class="font-headline">Crie sua conta</h3>
+      <p>Login com Google ou e-mail. Sem senha para lembrar.</p>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div class="glass-panel p-8 rounded-[2rem] border border-white/5 hover:bg-surface-container-high transition-colors">
-        <span class="text-4xl mb-6 block">🤱</span>
-        <h3 class="text-xl font-bold mb-3 text-yaya-cloud font-headline">Amamentação e Alimentação</h3>
-        <p class="text-yaya-cloud/50 leading-relaxed font-body">Controle lados, tempos e mamadeiras. Tudo no seu ritmo, com um toque.</p>
-      </div>
-      <div class="glass-panel p-8 rounded-[2rem] border border-white/5 hover:bg-surface-container-high transition-colors">
-        <span class="text-4xl mb-6 block">💧</span>
-        <h3 class="text-xl font-bold mb-3 text-yaya-cloud font-headline">Fraldas e Saúde</h3>
-        <p class="text-yaya-cloud/50 leading-relaxed font-body">Monitore xixi e cocô para acompanhar a saúde do seu bebê com rapidez.</p>
-      </div>
-      <div class="glass-panel p-8 rounded-[2rem] border border-white/5 hover:bg-surface-container-high transition-colors">
-        <span class="text-4xl mb-6 block">🌙</span>
-        <h3 class="text-xl font-bold mb-3 text-yaya-cloud font-headline">Sono e Sonecas</h3>
-        <p class="text-yaya-cloud/50 leading-relaxed font-body">Diferencie o sono noturno das sonecas diurnas para entender as janelas de sono.</p>
-      </div>
-      <div class="glass-panel p-8 rounded-[2rem] border border-white/5 hover:bg-surface-container-high transition-colors">
-        <span class="text-4xl mb-6 block">🛁</span>
-        <h3 class="text-xl font-bold mb-3 text-yaya-cloud font-headline">Rotina de Higiene</h3>
-        <p class="text-yaya-cloud/50 leading-relaxed font-body">Registre banhos e cuidados com horários agendados para manter o equilíbrio.</p>
-      </div>
-      <div class="glass-panel p-8 rounded-[2rem] border border-white/5 hover:bg-surface-container-high transition-colors">
-        <span class="text-4xl mb-6 block">👨‍👩‍👦</span>
-        <h3 class="text-xl font-bold mb-3 text-yaya-cloud font-headline">Multi-cuidador Sincronizado</h3>
-        <p class="text-yaya-cloud/50 leading-relaxed font-body">Compartilhe a rotina em tempo real com quem cuida do bebê enquanto você descansa.</p>
-      </div>
-      <div class="glass-panel p-8 rounded-[2rem] border border-white/5 hover:bg-surface-container-high transition-colors">
-        <span class="text-4xl mb-6 block">📋</span>
-        <h3 class="text-xl font-bold mb-3 text-yaya-cloud font-headline">Relatório para o Pediatra</h3>
-        <p class="text-yaya-cloud/50 leading-relaxed font-body">PDFs com dados de rotina para levar na consulta. O pediatra vai adorar.</p>
-      </div>
+    <div class="step fade-up">
+      <div class="step-number">2</div>
+      <h3 class="font-headline">Cadastre o bebê</h3>
+      <p>Nome, data de nascimento e pronto. Comece a registrar na hora.</p>
+    </div>
+    <div class="step fade-up">
+      <div class="step-number">3</div>
+      <h3 class="font-headline">Convide quem cuida</h3>
+      <p>Compartilhe um código com avós, babá ou parceiro(a). Todos sincronizados.</p>
     </div>
   </div>
-</section>
+</div>
 
-<!-- 7. TESTIMONIAL -->
-<section class="py-24 px-6 max-w-5xl mx-auto">
-  <div class="bg-surface-container-high p-10 md:p-16 rounded-[3rem] text-center space-y-8 relative overflow-hidden">
-    <div class="absolute -top-10 -left-10 w-40 h-40 bg-yaya-blush/10 blur-3xl rounded-full"></div>
-    <div class="flex justify-center gap-1 text-yaya-blush">
-      <span class="material-symbols-outlined filled">star</span>
-      <span class="material-symbols-outlined filled">star</span>
-      <span class="material-symbols-outlined filled">star</span>
-      <span class="material-symbols-outlined filled">star</span>
-      <span class="material-symbols-outlined filled">star</span>
-    </div>
-    <blockquote class="text-2xl md:text-3xl font-headline font-bold text-yaya-cloud leading-tight italic">
-      "Uso durante o dia no trabalho para acompanhar as mamadas com a babá e à noite para não perder a conta do sono. Simplesmente indispensável."
-    </blockquote>
-    <div>
-      <p class="font-bold text-lg text-yaya-cloud font-headline">Pai de primeira viagem, 31 anos</p>
-      <p class="text-yaya-cloud/50 font-body">Usuário Beta</p>
-    </div>
+<!-- CTA FINAL -->
+<div class="section cta-final">
+  <div class="cta-card fade-up">
+    <img src="../Logo/simboloyaya2.png" alt="Yaya"/>
+    <h2 class="font-headline">O suporte que sua rotina merece, 24h por dia.</h2>
+    <form class="cta-form" onsubmit="event.preventDefault(); handleWaitlist('cta-email','cta-btn','cta-msg')">
+      <input id="cta-email" type="email" placeholder="Seu e-mail" required/>
+      <button id="cta-btn" type="submit">Quero ser avisado</button>
+    </form>
+    <p id="cta-msg" class="cta-msg"></p>
+    <p class="cta-sub">Seja um dos primeiros a experimentar.</p>
   </div>
-</section>
+</div>
 
-<!-- 8. PRICING -->
-<section class="py-24 px-6 max-w-7xl mx-auto">
-  <div class="text-center mb-16">
-    <h2 class="text-4xl font-extrabold font-headline text-yaya-cloud">Um preço justo para uma fase que passa rápido.</h2>
-    <p class="text-yaya-cloud/50 text-lg mt-4 font-body">A gente também odeia mensalidades. Compre uma vez, use para sempre.</p>
-  </div>
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-    <!-- Yaya Free -->
-    <div class="bg-surface-container p-10 rounded-[2.5rem] border border-white/5 flex flex-col items-center">
-      <h3 class="text-xl font-bold mb-2 text-yaya-cloud font-headline">Yaya Free</h3>
-      <div class="flex items-baseline gap-1 my-6">
-        <span class="text-4xl font-extrabold text-yaya-cloud font-headline">R$0</span>
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="section">
+    <div class="footer-inner">
+      <div class="footer-logo">
+        <img src="../Logo/simboloyaya2.png" alt="Yaya"/>
+        <span class="font-headline">yaya</span>
       </div>
-      <ul class="space-y-4 mb-10 w-full">
-        <li class="flex items-center gap-3 text-sm text-yaya-cloud/50 font-body">
-          <span class="material-symbols-outlined text-yaya-purple text-lg">check_circle</span>
-          Tracking completo (mama, fralda, sono, banho)
-        </li>
-        <li class="flex items-center gap-3 text-sm text-yaya-cloud/50 font-body">
-          <span class="material-symbols-outlined text-yaya-purple text-lg">check_circle</span>
-          Histórico dos últimos 7 dias
-        </li>
-        <li class="flex items-center gap-3 text-sm text-yaya-cloud/50 font-body">
-          <span class="material-symbols-outlined text-yaya-purple text-lg">check_circle</span>
-          1 perfil de bebê
-        </li>
-        <li class="flex items-center gap-3 text-sm text-yaya-cloud/50 font-body">
-          <span class="material-symbols-outlined text-yaya-purple text-lg">check_circle</span>
-          1 cuidador
-        </li>
-      </ul>
-      <button class="w-full py-4 border-2 border-yaya-purple/20 rounded-xl font-bold hover:bg-yaya-purple/5 transition-colors text-yaya-cloud font-label">Começar grátis</button>
-    </div>
-    <!-- Yaya+ -->
-    <div class="bg-surface-container-high p-10 rounded-[2.5rem] border-2 border-yaya-purple aura-glow relative flex flex-col items-center">
-      <span class="absolute -top-4 bg-yaya-purple text-[#371d77] text-[10px] uppercase font-black px-4 py-1.5 rounded-full tracking-widest font-label">Mais Popular</span>
-      <h3 class="text-xl font-bold mb-2 text-yaya-cloud font-headline">Yaya+</h3>
-      <div class="flex items-baseline gap-1 my-6">
-        <span class="text-4xl font-extrabold text-yaya-cloud font-headline">R$49,90</span>
+      <div class="footer-links">
+        <a href="mailto:contato@yayababy.app">Contato</a>
+        <a href="/privacy">Privacidade</a>
       </div>
-      <p class="text-xs text-yaya-purple/80 mb-6 font-bold uppercase tracking-wide font-label">Compra única · Para sempre</p>
-      <ul class="space-y-4 mb-6 w-full">
-        <li class="flex items-center gap-3 text-sm text-yaya-cloud font-body">
-          <span class="material-symbols-outlined text-yaya-purple text-lg filled">check_circle</span>
-          Histórico ilimitado de registros
-        </li>
-        <li class="flex items-center gap-3 text-sm text-yaya-cloud font-body">
-          <span class="material-symbols-outlined text-yaya-purple text-lg filled">check_circle</span>
-          Até 4 perfis de bebê (para o próximo filho também)
-        </li>
-        <li class="flex items-center gap-3 text-sm text-yaya-cloud font-body">
-          <span class="material-symbols-outlined text-yaya-purple text-lg filled">check_circle</span>
-          Cuidadores ilimitados — parceiro, avós, babá
-        </li>
-        <li class="flex items-center gap-3 text-sm text-yaya-cloud font-body">
-          <span class="material-symbols-outlined text-yaya-purple text-lg filled">check_circle</span>
-          Insights e padrões semanais completos
-        </li>
-        <li class="flex items-center gap-3 text-sm text-yaya-cloud font-body">
-          <span class="material-symbols-outlined text-yaya-purple text-lg filled">check_circle</span>
-          Relatório PDF para levar ao pediatra
-        </li>
-        <li class="flex items-center gap-3 text-sm text-yaya-cloud font-body">
-          <span class="material-symbols-outlined text-yaya-purple text-lg filled">check_circle</span>
-          Sem anúncios, para sempre
-        </li>
-        <li class="flex items-center gap-3 text-sm text-yaya-cloud font-body">
-          <span class="material-symbols-outlined text-yaya-purple text-lg filled">check_circle</span>
-          Backup automático na nuvem
-        </li>
-        <li class="flex items-center gap-3 text-sm text-yaya-cloud font-body">
-          <span class="material-symbols-outlined text-yaya-purple text-lg filled">check_circle</span>
-          Suporte prioritário
-        </li>
-      </ul>
-      <p class="text-[13px] text-yaya-cloud/50 mb-6 text-center font-body">Menos que uma caixa de fraldas. Para sempre.</p>
-      <button class="cta-gradient w-full py-4 rounded-xl font-bold text-white hover:scale-[1.02] transition-transform font-label">Garantir acesso vitalício</button>
-    </div>
-  </div>
-</section>
-
-<!-- 9. FINAL CTA -->
-<section class="py-24 px-6">
-  <div class="max-w-4xl mx-auto cta-gradient rounded-[3rem] p-12 md:p-20 text-center space-y-8 aura-glow">
-    <img src="../Logo/simboloyaya2.png" alt="Yaya" class="h-16 mx-auto" style="filter: drop-shadow(0 0 20px rgba(255,255,255,0.3)) brightness(2);" />
-    <h2 class="text-3xl md:text-5xl font-extrabold font-headline text-white leading-tight">O suporte que sua rotina merece, 24h por dia.</h2>
-    <div class="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto">
-      <input id="footer-email" class="flex-grow bg-white/10 border-white/20 rounded-xl px-6 py-4 text-white placeholder:text-white/60 focus:ring-2 focus:ring-white font-body" placeholder="Seu e-mail" type="email"/>
-      <button onclick="handleWaitlist('footer-email', 'footer-btn', 'footer-msg')" id="footer-btn" class="bg-white text-[#4e368f] px-8 py-4 rounded-xl font-bold hover:bg-white/90 transition-all font-label">Quero ser avisado</button>
-    </div>
-    <p id="footer-msg" class="text-sm font-label hidden"></p>
-    <p class="text-white/70 font-medium font-body">Seja um dos primeiros a experimentar.</p>
-  </div>
-</section>
-
-<!-- 10. FOOTER -->
-<footer class="bg-[#0d0a27] py-16 px-6 border-t border-white/5">
-  <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12">
-    <div class="space-y-4 text-center md:text-left">
-      <div class="flex items-center gap-2 justify-center md:justify-start">
-        <img src="../Logo/simboloyaya2.png" alt="Yaya" class="h-5" style="filter: drop-shadow(0 0 8px rgba(183,159,255,0.3));" />
-        <span class="text-xl font-extrabold text-yaya-cloud tracking-tight font-headline">yaya</span>
-      </div>
-      <p class="text-yaya-cloud/50 max-w-xs font-body">Cada momento conta. O companheiro da sua jornada inteira.</p>
-    </div>
-    <div class="flex flex-wrap justify-center gap-8 text-yaya-cloud/50 font-medium font-body">
-      <a class="hover:text-yaya-blush transition-colors" href="#">Contato</a>
-      <a class="hover:text-yaya-blush transition-colors" href="/privacy">Privacidade</a>
-      <a class="hover:text-yaya-blush transition-colors" href="#">Termos</a>
-    </div>
-    <div class="text-yaya-cloud/30 text-sm font-body">
-      &copy; 2026 Yaya. Todos os direitos reservados.
+      <span class="footer-copy">&copy; 2026 Yaya. Todos os direitos reservados.</span>
     </div>
   </div>
 </footer>
 
 <script>
-  // ===== INTERACTIVE MOCKUP =====
-  const mockLogs = [];
-  let tapCount = 0;
+// ===== INTERACTIVE MOCKUP =====
+const mockLogs = [];
 
-  function mockTap(btn) {
-    const event = btn.dataset.event;
-    btn.classList.add('tapped');
-    setTimeout(() => btn.classList.remove('tapped'), 400);
+function mockTap(btn) {
+  const event = btn.dataset.event;
+  btn.classList.add('tapped');
+  setTimeout(() => btn.classList.remove('tapped'), 400);
 
-    // Add to logs
-    const now = new Date();
-    const time = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-    mockLogs.unshift({ event, time });
-    if (mockLogs.length > 4) mockLogs.pop();
+  const now = new Date();
+  const time = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  mockLogs.unshift({ event, time });
+  if (mockLogs.length > 4) mockLogs.pop();
 
-    // Update log display
-    const logsEl = document.getElementById('mock-logs');
-    logsEl.innerHTML = mockLogs.map(l =>
-      `<div class="flex items-center gap-2 text-[10px]">
-        <span class="w-1.5 h-1.5 rounded-full bg-yaya-purple"></span>
-        <span class="text-yaya-cloud/70">${l.event}</span>
-        <span class="ml-auto text-yaya-cloud/40">${l.time}</span>
-      </div>`
-    ).join('');
+  const logsEl = document.getElementById('mock-logs');
+  logsEl.innerHTML = mockLogs.map(l =>
+    '<div class="log-entry"><span class="log-dot"></span><span class="log-event">' + l.event + '</span><span class="log-time">' + l.time + '</span></div>'
+  ).join('');
 
-    // Update last time
-    document.getElementById('mock-last-time').textContent = 'agora';
+  document.getElementById('mock-last-time').textContent = 'agora';
+  showToast(event + ' registrado ✓');
+}
 
-    // Show toast
-    showMockToast(`${event} registrado!`);
+function showToast(msg) {
+  const toast = document.getElementById('mock-toast');
+  const text = document.getElementById('mock-toast-text');
+  text.textContent = msg;
+  toast.style.display = 'block';
+  // Reset animation
+  const inner = toast.querySelector('.phone-toast-inner');
+  inner.style.animation = 'none';
+  inner.offsetHeight; // reflow
+  inner.style.animation = '';
+  setTimeout(() => { toast.style.display = 'none'; }, 1800);
+}
 
-    tapCount++;
+// ===== WAITLIST FORM =====
+function handleWaitlist(inputId, btnId, msgId) {
+  const input = document.getElementById(inputId);
+  const btn = document.getElementById(btnId);
+  const msg = document.getElementById(msgId);
+  const email = input.value.trim();
+
+  if (!email || !email.includes('@') || !email.includes('.')) {
+    msg.textContent = 'Por favor, insira um e-mail válido.';
+    msg.className = (msgId === 'cta-msg' ? 'cta-msg' : 'hero-msg') + ' show error';
+    return;
   }
 
-  function showMockToast(msg) {
-    const toast = document.getElementById('mock-toast');
-    const text = document.getElementById('mock-toast-text');
-    text.textContent = msg;
-    toast.classList.remove('hidden');
-    toast.firstElementChild.classList.remove('mock-toast');
-    void toast.firstElementChild.offsetWidth; // reflow
-    toast.firstElementChild.classList.add('mock-toast');
-    setTimeout(() => toast.classList.add('hidden'), 2000);
-  }
+  btn.disabled = true;
+  btn.textContent = 'Enviando...';
 
-  // ===== WAITLIST FORM =====
-  function handleWaitlist(inputId, btnId, msgId) {
-    const input = document.getElementById(inputId);
-    const btn = document.getElementById(btnId);
-    const msg = document.getElementById(msgId);
-    const email = input.value.trim();
+  // Simulate API (replace with real endpoint)
+  setTimeout(() => {
+    input.value = '';
+    btn.textContent = '✓ Cadastrado!';
+    msg.textContent = 'Pronto! Você será avisado quando o Yaya estiver disponível.';
+    msg.className = (msgId === 'cta-msg' ? 'cta-msg' : 'hero-msg') + ' show success';
 
-    if (!email || !email.includes('@')) {
-      msg.textContent = 'Por favor, insira um e-mail válido.';
-      msg.className = 'text-sm font-label text-red-400';
-      return;
-    }
-
-    btn.disabled = true;
-    btn.textContent = 'Enviando...';
-
-    // Simulate API call (replace with real endpoint later)
     setTimeout(() => {
-      input.value = '';
-      btn.textContent = '✓ Cadastrado!';
-      btn.className = btn.className.replace('cta-gradient', 'bg-green-600/80').replace('bg-white', 'bg-green-600/80');
-      msg.textContent = 'Pronto! Você será um dos primeiros a saber quando o Yaya estiver disponível.';
-      msg.className = 'text-sm font-label text-green-400';
+      btn.disabled = false;
+      btn.textContent = 'Quero ser avisado';
+      msg.className = (msgId === 'cta-msg' ? 'cta-msg' : 'hero-msg');
+    }, 4000);
+  }, 800);
+}
 
-      setTimeout(() => {
-        btn.disabled = false;
-        btn.textContent = 'Quero ser avisado';
-        if (btnId === 'hero-btn') {
-          btn.className = 'cta-gradient text-white px-8 py-4 rounded-xl font-bold hover:opacity-90 transition-opacity whitespace-nowrap font-label';
-        } else {
-          btn.className = 'bg-white text-[#4e368f] px-8 py-4 rounded-xl font-bold hover:bg-white/90 transition-all font-label';
-        }
-      }, 3000);
-    }, 800);
-  }
+// ===== FADE IN ON SCROLL =====
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+}, { threshold: 0.15 });
+
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
 </script>
 
 </body>
