@@ -8,6 +8,7 @@ interface AppState {
   logs: LogEntry[]
   intervals: Record<string, IntervalConfig>
   baby: Baby | null
+  babies: Baby[]
   members: Record<string, Member>
   loading: boolean
   needsOnboarding: boolean
@@ -16,13 +17,14 @@ interface AppState {
 }
 
 type Action =
-  | { type: 'SET_INITIAL'; logs: LogEntry[]; intervals: Record<string, IntervalConfig>; baby: Baby; members: Record<string, Member> }
+  | { type: 'SET_INITIAL'; logs: LogEntry[]; intervals: Record<string, IntervalConfig>; baby: Baby; babies: Baby[]; members: Record<string, Member> }
   | { type: 'SET_NO_BABY' }
   | { type: 'ADD_LOG'; log: LogEntry }
   | { type: 'UPDATE_LOG'; log: LogEntry }
   | { type: 'DELETE_LOG'; id: string }
   | { type: 'SET_INTERVALS'; intervals: Record<string, IntervalConfig> }
   | { type: 'SET_BABY'; baby: Baby }
+  | { type: 'SWITCH_BABY'; baby: Baby; logs: LogEntry[]; intervals: Record<string, IntervalConfig>; members: Record<string, Member> }
   | { type: 'CLEAR_LOGS' }
   | { type: 'SET_PAUSE_DURING_SLEEP'; value: boolean }
   | { type: 'SET_QUIET_HOURS'; value: { enabled: boolean; start: number; end: number } }
@@ -31,6 +33,7 @@ const initialState: AppState = {
   logs: [],
   intervals: DEFAULT_INTERVALS,
   baby: null,
+  babies: [],
   members: {},
   loading: true,
   needsOnboarding: false,
@@ -41,7 +44,7 @@ const initialState: AppState = {
 function reducer(state: AppState, action: Action): AppState {
   switch (action.type) {
     case 'SET_INITIAL':
-      return { ...state, logs: action.logs, intervals: action.intervals, baby: action.baby, members: action.members, loading: false, needsOnboarding: false }
+      return { ...state, logs: action.logs, intervals: action.intervals, baby: action.baby, babies: action.babies, members: action.members, loading: false, needsOnboarding: false }
     case 'SET_NO_BABY':
       return { ...state, loading: false, needsOnboarding: true }
     case 'ADD_LOG':
@@ -54,6 +57,8 @@ function reducer(state: AppState, action: Action): AppState {
       return { ...state, intervals: action.intervals }
     case 'SET_BABY':
       return { ...state, baby: action.baby }
+    case 'SWITCH_BABY':
+      return { ...state, baby: action.baby, logs: action.logs, intervals: action.intervals, members: action.members, pauseDuringSleep: false, quietHours: { enabled: false, start: 22, end: 7 } }
     case 'CLEAR_LOGS':
       return { ...state, logs: [] }
     case 'SET_PAUSE_DURING_SLEEP':
@@ -87,38 +92,44 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
 
     async function load() {
-      // Find the user's baby via baby_members
+      // Find all babies the user has access to
       const { data: memberships } = await supabase
         .from('baby_members')
         .select('baby_id')
         .eq('user_id', user!.id)
-        .limit(1)
 
       if (!memberships || memberships.length === 0) {
         dispatch({ type: 'SET_NO_BABY' })
         return
       }
 
-      const babyId = memberships[0].baby_id
+      const babyIds = memberships.map((m) => m.baby_id)
 
-      const [babyRes, logsRes, intervalsRes, membersRes] = await Promise.all([
-        supabase.from('babies').select('*').eq('id', babyId).single(),
+      // Pick active baby: localStorage preference or first
+      const savedBabyId = localStorage.getItem('yaya_active_baby')
+      const babyId = savedBabyId && babyIds.includes(savedBabyId) ? savedBabyId : babyIds[0]
+      localStorage.setItem('yaya_active_baby', babyId)
+
+      // Fetch all babies + active baby's data
+      const [allBabiesRes, logsRes, intervalsRes, membersRes] = await Promise.all([
+        supabase.from('babies').select('*').in('id', babyIds),
         supabase.from('logs').select('*').eq('baby_id', babyId).order('timestamp', { ascending: true }),
         supabase.from('interval_configs').select('*').eq('baby_id', babyId),
         supabase.from('baby_members').select('user_id, display_name, role').eq('baby_id', babyId),
       ])
 
-      if (!babyRes.data) {
+      const allBabies: Baby[] = (allBabiesRes.data ?? []).map((row) => ({
+        id: row.id,
+        name: row.name,
+        birthDate: row.birth_date,
+        gender: row.gender ?? undefined,
+        photoUrl: row.photo_url,
+      }))
+
+      const baby = allBabies.find((b) => b.id === babyId)
+      if (!baby) {
         dispatch({ type: 'SET_NO_BABY' })
         return
-      }
-
-      const baby: Baby = {
-        id: babyRes.data.id,
-        name: babyRes.data.name,
-        birthDate: babyRes.data.birth_date,
-        gender: babyRes.data.gender ?? undefined,
-        photoUrl: babyRes.data.photo_url,
       }
 
       const logs: LogEntry[] = (logsRes.data ?? []).map((row) => ({
@@ -152,7 +163,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         }
       }
 
-      dispatch({ type: 'SET_INITIAL', logs, intervals, baby, members })
+      dispatch({ type: 'SET_INITIAL', logs, intervals, baby, babies: allBabies, members })
 
       // Load notification preferences
       const { data: prefData } = await supabase
@@ -318,4 +329,78 @@ export async function clearAllLogs(
 
   dispatch({ type: 'CLEAR_LOGS' })
   return true
+}
+
+// Helper: switch active baby — reload logs, intervals, members
+export async function switchBaby(
+  dispatch: React.Dispatch<Action>,
+  babyId: string,
+): Promise<void> {
+  localStorage.setItem('yaya_active_baby', babyId)
+
+  const [babyRes, logsRes, intervalsRes, membersRes] = await Promise.all([
+    supabase.from('babies').select('*').eq('id', babyId).single(),
+    supabase.from('logs').select('*').eq('baby_id', babyId).order('timestamp', { ascending: true }),
+    supabase.from('interval_configs').select('*').eq('baby_id', babyId),
+    supabase.from('baby_members').select('user_id, display_name, role').eq('baby_id', babyId),
+  ])
+
+  if (!babyRes.data) return
+
+  const baby: Baby = {
+    id: babyRes.data.id,
+    name: babyRes.data.name,
+    birthDate: babyRes.data.birth_date,
+    gender: babyRes.data.gender ?? undefined,
+    photoUrl: babyRes.data.photo_url,
+  }
+
+  const logs: LogEntry[] = (logsRes.data ?? []).map((row) => ({
+    id: row.id,
+    eventId: row.event_id,
+    timestamp: row.timestamp,
+    ml: row.ml ?? undefined,
+    duration: row.duration ?? undefined,
+    notes: row.notes ?? undefined,
+    createdBy: row.created_by ?? undefined,
+  }))
+
+  const members: Record<string, Member> = {}
+  for (const row of membersRes.data ?? []) {
+    members[row.user_id] = {
+      userId: row.user_id,
+      displayName: row.display_name || '',
+      role: row.role,
+    }
+  }
+
+  const intervals = { ...DEFAULT_INTERVALS }
+  for (const row of intervalsRes.data ?? []) {
+    const base = intervals[row.category] ?? { label: row.category, minutes: row.minutes, warn: row.warn }
+    intervals[row.category] = {
+      ...base,
+      minutes: row.minutes,
+      warn: row.warn,
+      mode: row.mode ?? 'interval',
+      scheduledHours: row.scheduled_hours ? JSON.parse(row.scheduled_hours) : undefined,
+    }
+  }
+
+  dispatch({ type: 'SWITCH_BABY', baby, logs, intervals, members })
+
+  // Load notification preferences for new baby
+  const { data: prefData } = await supabase
+    .from('notification_prefs')
+    .select('pause_during_sleep, quiet_enabled, quiet_start, quiet_end')
+    .eq('baby_id', babyId)
+    .single()
+
+  if (prefData) {
+    if (prefData.pause_during_sleep) {
+      dispatch({ type: 'SET_PAUSE_DURING_SLEEP', value: true })
+    }
+    if (prefData.quiet_enabled) {
+      dispatch({ type: 'SET_QUIET_HOURS', value: { enabled: true, start: prefData.quiet_start, end: prefData.quiet_end } })
+    }
+  }
 }
