@@ -6,6 +6,7 @@ import { formatTime } from '../../lib/formatters'
 interface Props {
   logs: LogEntry[]
   members: Record<string, Member>
+  onEdit?: (log: LogEntry) => void
 }
 
 const dotColorMap: Record<string, string> = {
@@ -14,7 +15,7 @@ const dotColorMap: Record<string, string> = {
   secondary: 'bg-secondary',
 }
 
-export default function RecentLogs({ logs, members }: Props) {
+export default function RecentLogs({ logs, members, onEdit }: Props) {
   const recent = [...logs].sort((a, b) => b.timestamp - a.timestamp).slice(0, 5)
 
   if (recent.length === 0) {
@@ -52,7 +53,8 @@ export default function RecentLogs({ logs, members }: Props) {
           return (
             <div
               key={log.id}
-              className="flex items-center gap-3 py-2.5 px-3 rounded-lg bg-surface-container"
+              onClick={() => onEdit?.(log)}
+              className={`flex items-center gap-3 py-2.5 px-3 rounded-lg bg-surface-container${onEdit ? ' cursor-pointer active:bg-surface-container-high transition-colors' : ''}`}
             >
               <div className={`w-2 h-2 rounded-full shrink-0 ${dotColor}`} />
               {event.emoji ? (

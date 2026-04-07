@@ -38,20 +38,24 @@ export default function EditModal({ log, onSave, onDelete, onClose }: Props) {
       className="fixed inset-0 z-50 flex items-end justify-center bg-black/75 backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="w-full max-w-lg bg-surface-container-highest rounded-t-3xl p-6 border-t-2 border-primary-fixed animate-slide-up">
+      <div className="w-full max-w-lg bg-surface-container-highest rounded-t-3xl p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] border-t-2 border-primary-fixed animate-slide-up">
         <div className="flex items-center gap-3 mb-5">
           {event && (
-            <span className="material-symbols-outlined text-primary text-2xl">
-              {event.icon}
-            </span>
+            event.emoji ? (
+              <span className="text-2xl">{event.emoji}</span>
+            ) : (
+              <span className="material-symbols-outlined text-primary text-2xl">
+                {event.icon}
+              </span>
+            )
           )}
           <h2 className="font-headline text-lg font-bold text-on-surface">
             Editar — {event?.label}
           </h2>
         </div>
 
-        <div className="flex gap-3 mb-4">
-          <div className="flex-1">
+        <div className="grid grid-cols-2 gap-3 mb-4">
+          <div>
             <label className="font-label text-[11px] text-primary font-semibold uppercase tracking-wider block mb-1.5">
               Data
             </label>
@@ -59,10 +63,10 @@ export default function EditModal({ log, onSave, onDelete, onClose }: Props) {
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full bg-surface-container-low rounded-lg px-3 py-2.5 text-on-surface font-body text-sm outline-none focus:ring-2 focus:ring-primary/40"
+              className="w-full bg-surface-container-low rounded-lg px-3 py-3 text-on-surface font-body text-sm outline-none focus:ring-2 focus:ring-primary/40 min-h-[44px]"
             />
           </div>
-          <div className="flex-1">
+          <div>
             <label className="font-label text-[11px] text-primary font-semibold uppercase tracking-wider block mb-1.5">
               Horário
             </label>
@@ -70,7 +74,7 @@ export default function EditModal({ log, onSave, onDelete, onClose }: Props) {
               type="time"
               value={time}
               onChange={(e) => setTime(e.target.value)}
-              className="w-full bg-surface-container-low rounded-lg px-3 py-2.5 text-on-surface font-body text-sm outline-none focus:ring-2 focus:ring-primary/40"
+              className="w-full bg-surface-container-low rounded-lg px-3 py-3 text-on-surface font-body text-sm outline-none focus:ring-2 focus:ring-primary/40 min-h-[44px]"
             />
           </div>
         </div>

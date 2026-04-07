@@ -1,17 +1,19 @@
 import { useState, useCallback } from 'react'
-import { useAppState, useAppDispatch, addLog } from '../contexts/AppContext'
+import { useAppState, useAppDispatch, addLog, updateLog, deleteLog } from '../contexts/AppContext'
 import { useAuth } from '../contexts/AuthContext'
 import { DEFAULT_EVENTS } from '../lib/constants'
 import { getNextProjection } from '../lib/projections'
 import { useTimer } from '../hooks/useTimer'
-import { hapticSuccess, hapticLight } from '../lib/haptics'
+import { hapticSuccess, hapticLight, hapticMedium } from '../lib/haptics'
 import HeroIdentity from '../components/activity/HeroIdentity'
 import ActivityGrid from '../components/activity/ActivityGrid'
 import PredictionCard from '../components/activity/PredictionCard'
 import RecentLogs from '../components/activity/RecentLogs'
 import BottleModal from '../components/ui/BottleModal'
+import EditModal from '../components/ui/EditModal'
 import Toast from '../components/ui/Toast'
 import { TrackerSkeleton } from '../components/ui/Skeleton'
+import type { LogEntry } from '../types'
 
 const PROJECTION_CATEGORIES: string[] = ['feed', 'diaper', 'sleep_nap', 'sleep_awake', 'bath']
 
@@ -22,6 +24,7 @@ export default function TrackerPage() {
   const now = useTimer()
 
   const [bottleModalOpen, setBottleModalOpen] = useState(false)
+  const [editingLog, setEditingLog] = useState<LogEntry | null>(null)
   const [toast, setToast] = useState<string | null>(null)
 
   const handleLog = useCallback(
@@ -59,12 +62,43 @@ export default function TrackerPage() {
     [baby, dispatch, user],
   )
 
+  const handleEditLog = useCallback((log: LogEntry) => {
+    hapticMedium()
+    setEditingLog(log)
+  }, [])
+
+  const handleSaveLog = useCallback(
+    async (log: LogEntry) => {
+      const ok = await updateLog(dispatch, log)
+      setEditingLog(null)
+      if (ok) setToast('Registro atualizado!')
+    },
+    [dispatch],
+  )
+
+  const handleDeleteLog = useCallback(
+    async (id: string) => {
+      const ok = await deleteLog(dispatch, id)
+      setEditingLog(null)
+      if (ok) setToast('Registro excluído!')
+    },
+    [dispatch],
+  )
+
+  const [dismissedProjections, setDismissedProjections] = useState<Set<string>>(new Set())
+
+  const handleDismissProjection = useCallback((label: string) => {
+    hapticLight()
+    setDismissedProjections(prev => new Set(prev).add(label))
+  }, [])
+
   // Force re-render of projections with timer
   void now
 
   const projections = PROJECTION_CATEGORIES
     .map((cat) => getNextProjection(logs, cat, intervals, DEFAULT_EVENTS, { pauseDuringSleep, quietHours }))
     .filter(Boolean)
+    .filter(p => !dismissedProjections.has(p!.label))
 
   if (loading) {
     return <TrackerSkeleton />
@@ -83,18 +117,27 @@ export default function TrackerPage() {
           </h2>
           <div className="space-y-2">
             {projections.map((p) => (
-              <PredictionCard key={p!.label} projection={p!} />
+              <PredictionCard key={p!.label} projection={p!} onDismiss={handleDismissProjection} />
             ))}
           </div>
         </section>
       )}
 
-      <RecentLogs logs={logs} members={members} />
+      <RecentLogs logs={logs} members={members} onEdit={handleEditLog} />
 
       {bottleModalOpen && (
         <BottleModal
           onConfirm={handleBottleConfirm}
           onClose={() => setBottleModalOpen(false)}
+        />
+      )}
+
+      {editingLog && (
+        <EditModal
+          log={editingLog}
+          onSave={handleSaveLog}
+          onDelete={handleDeleteLog}
+          onClose={() => setEditingLog(null)}
         />
       )}
 
