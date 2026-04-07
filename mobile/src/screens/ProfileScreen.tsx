@@ -7,7 +7,7 @@ import { useAppState, useAppDispatch, updateBaby, clearAllLogs } from '../contex
 import { useAuth } from '../contexts/AuthContext'
 import { signOut } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
-import { formatAge } from '../lib/formatters'
+import { formatAge, formatBirthDate } from '../lib/formatters'
 import type { Baby } from '../types'
 import Toast from '../components/ui/Toast'
 
@@ -291,7 +291,7 @@ export default function ProfileScreen() {
                   {formatAge(baby.birthDate)} de vida
                 </Text>
                 <Text className="text-on-surface-variant font-label text-xs mt-0.5">
-                  Nasceu em {new Date(baby.birthDate).toLocaleDateString('pt-BR')}
+                  Nasceu em {formatBirthDate(baby.birthDate)}
                 </Text>
               </View>
               <Text className="text-on-surface-variant text-xl">✏️</Text>

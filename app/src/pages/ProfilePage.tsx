@@ -6,6 +6,7 @@ import BabyCard from '../components/profile/BabyCard'
 import DataManagement from '../components/profile/DataManagement'
 import Toast from '../components/ui/Toast'
 import { supabase } from '../lib/supabase'
+import { parseLocalDate } from '../lib/formatters'
 
 interface Caregiver {
   userId: string
@@ -105,8 +106,8 @@ export default function ProfilePage() {
     if (ok) setToast('Histórico limpo!')
   }, [dispatch, baby])
 
-  const birthDate = baby?.birthDate ? new Date(baby.birthDate) : null
-  const ageText = birthDate ? getAgeText(birthDate) : ''
+  const birthDateObj = baby?.birthDate ? parseLocalDate(baby.birthDate) : null
+  const ageText = birthDateObj ? getAgeText(birthDateObj) : ''
 
   if (loading || !baby) {
     return (

@@ -33,8 +33,6 @@ const SLEEP_AWAKE_PRESETS = [
   { label: '3h', minutes: 180, warn: 150 },
 ]
 const BATH_COUNTS = [1, 2, 3]
-const BATH_HOURS = [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]
-const HOURS_24 = Array.from({ length: 24 }, (_, i) => i)
 
 // ========== TYPES ==========
 
@@ -456,44 +454,60 @@ export default function SettingsPage() {
 
       {/* Quiet hour picker */}
       {pickingQuietHour && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="bg-surface-container w-full max-w-sm rounded-t-2xl sm:rounded-2xl p-5 sm:mx-4">
-            <h3 className="font-headline text-lg font-bold text-on-surface mb-3">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setPickingQuietHour(null)}>
+          <div className="bg-surface-container w-full max-w-sm rounded-t-2xl sm:rounded-2xl p-5 sm:mx-4" onClick={e => e.stopPropagation()}>
+            <h3 className="font-headline text-lg font-bold text-on-surface mb-4">
               {pickingQuietHour === 'start' ? 'Início do silêncio' : 'Fim do silêncio'}
             </h3>
-            <div className="flex flex-wrap gap-2 max-h-[240px] overflow-y-auto">
-              {HOURS_24.map(h => {
-                const isActive = pickingQuietHour === 'start' ? prefs.quietHours.start === h : prefs.quietHours.end === h
-                return (
-                  <button key={h} onClick={() => { setPickingQuietHour(null); savePrefs({ ...prefs, quietHours: { ...prefs.quietHours, [pickingQuietHour]: h } }) }}
-                    className={`w-16 py-2 rounded-lg font-label text-sm font-medium ${isActive ? 'bg-primary text-on-primary' : 'bg-surface-variant text-on-surface-variant'}`}>
-                    {padH(h)}
-                  </button>
-                )
-              })}
+            <div className="flex justify-center mb-5">
+              <input
+                type="time"
+                value={padH(pickingQuietHour === 'start' ? prefs.quietHours.start : prefs.quietHours.end)}
+                onChange={e => {
+                  const h = parseInt(e.target.value.split(':')[0], 10)
+                  if (!isNaN(h)) {
+                    savePrefs({ ...prefs, quietHours: { ...prefs.quietHours, [pickingQuietHour!]: h } })
+                  }
+                }}
+                className="bg-surface-container-low rounded-xl px-6 py-4 text-on-surface font-headline text-3xl text-center outline-none focus:ring-2 focus:ring-primary/40"
+              />
             </div>
-            <button onClick={() => setPickingQuietHour(null)} className="mt-4 w-full py-2.5 rounded-xl bg-surface-variant text-on-surface-variant font-label font-semibold text-sm">Cancelar</button>
+            <button onClick={() => setPickingQuietHour(null)} className="w-full py-2.5 rounded-xl bg-primary text-on-primary font-label font-semibold text-sm">OK</button>
           </div>
         </div>
       )}
 
       {/* Bath hour picker */}
       {pickingBathHour && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="bg-surface-container w-full max-w-sm rounded-t-2xl sm:rounded-2xl p-5 sm:mx-4">
-            <h3 className="font-headline text-lg font-bold text-on-surface mb-3">Horário do banho</h3>
-            <div className="flex flex-wrap gap-2 max-h-[240px] overflow-y-auto">
-              {BATH_HOURS.map(h => {
-                const isActive = bathHours.includes(h)
-                return (
-                  <button key={h} onClick={() => isActive ? removeBathHour(h) : addBathHour(h)}
-                    className={`w-16 py-2 rounded-lg font-label text-sm font-medium ${isActive ? 'bg-primary text-on-primary' : 'bg-surface-variant text-on-surface-variant'}`}>
-                    {padH(h)}
-                  </button>
-                )
-              })}
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setPickingBathHour(false)}>
+          <div className="bg-surface-container w-full max-w-sm rounded-t-2xl sm:rounded-2xl p-5 sm:mx-4" onClick={e => e.stopPropagation()}>
+            <h3 className="font-headline text-lg font-bold text-on-surface mb-4">Horário do banho</h3>
+            <div className="flex justify-center mb-5">
+              <input
+                type="time"
+                value={padH(bathHours.length > 0 ? bathHours[bathHours.length - 1] : 18)}
+                onChange={e => {
+                  const h = parseInt(e.target.value.split(':')[0], 10)
+                  if (!isNaN(h) && !bathHours.includes(h)) {
+                    addBathHour(h)
+                  }
+                }}
+                className="bg-surface-container-low rounded-xl px-6 py-4 text-on-surface font-headline text-3xl text-center outline-none focus:ring-2 focus:ring-primary/40"
+              />
             </div>
-            <button onClick={() => setPickingBathHour(false)} className="mt-4 w-full py-2.5 rounded-xl bg-surface-variant text-on-surface-variant font-label font-semibold text-sm">Fechar</button>
+            {bathHours.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-4 justify-center">
+                {[...bathHours].sort((a, b) => a - b).map(h => (
+                  <div key={h} className="flex items-center gap-1 bg-primary/15 rounded-lg px-3 py-1.5">
+                    <span className="font-label text-sm font-medium text-primary">{padH(h)}</span>
+                    <button onClick={() => removeBathHour(h)} className="text-primary/60 hover:text-error">
+                      <span className="material-symbols-outlined text-sm">close</span>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+            <button onClick={() => setPickingBathHour(false)} className="w-full py-2.5 rounded-xl bg-primary text-on-primary font-label font-semibold text-sm">OK</button>
           </div>
         </div>
       )}

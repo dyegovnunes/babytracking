@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react'
 import type { Baby } from '../../types'
-import { formatAge } from '../../lib/formatters'
+import { formatAge, formatBirthDate } from '../../lib/formatters'
 import { supabase } from '../../lib/supabase'
 import ImageCropModal from '../ui/ImageCropModal'
 
@@ -224,7 +224,7 @@ export default function BabyCard({ baby, onSave }: Props) {
           {formatAge(baby.birthDate)} de vida
         </p>
         <p className="text-on-surface-variant font-label text-xs mt-0.5">
-          Nasceu em {new Date(baby.birthDate).toLocaleDateString('pt-BR')}
+          Nasceu em {formatBirthDate(baby.birthDate)}
         </p>
       </button>
       <button

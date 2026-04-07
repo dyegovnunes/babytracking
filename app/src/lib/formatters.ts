@@ -24,8 +24,19 @@ export function formatRelative(ms: number): string {
   return m > 0 ? `em ${h}h${m}min` : `em ${h}h`
 }
 
+/** Parse a date string (YYYY-MM-DD) without timezone shift */
+export function parseLocalDate(dateStr: string): Date {
+  const [y, m, d] = dateStr.split('-').map(Number)
+  return new Date(y, m - 1, d)
+}
+
+/** Format a birth date string (YYYY-MM-DD) to pt-BR locale */
+export function formatBirthDate(dateStr: string): string {
+  return parseLocalDate(dateStr).toLocaleDateString('pt-BR')
+}
+
 export function formatAge(birthDate: string): string {
-  const birth = new Date(birthDate)
+  const birth = parseLocalDate(birthDate)
   const now = new Date()
   const diffMs = now.getTime() - birth.getTime()
   const days = Math.floor(diffMs / (1000 * 60 * 60 * 24))
