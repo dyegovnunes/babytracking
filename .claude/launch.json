@@ -8,6 +8,12 @@
       "port": 5173,
       "autoPort": true,
       "cwd": "app"
+    },
+    {
+      "name": "landing-page",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["http-server", "-p", "3456", "-c-1"],
+      "port": 3456
     }
   ]
 }
