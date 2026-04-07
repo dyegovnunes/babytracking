@@ -77,16 +77,16 @@ export default function OnboardingPage({ onComplete }: Props) {
     setLoading(true)
     setError(null)
 
-    // Find invite code
+    // Find active invite code
     const { data: invite, error: inviteError } = await supabase
       .from('invite_codes')
       .select('*')
       .eq('code', inviteCode.trim().toUpperCase())
-      .is('used_by', null)
+      .eq('active', true)
       .single()
 
     if (inviteError || !invite) {
-      setError('Código inválido ou já utilizado.')
+      setError('Código inválido ou desativado.')
       setLoading(false)
       return
     }
@@ -127,12 +127,6 @@ export default function OnboardingPage({ onComplete }: Props) {
       setLoading(false)
       return
     }
-
-    // Mark invite as used
-    await supabase
-      .from('invite_codes')
-      .update({ used_by: user.id })
-      .eq('id', invite.id)
 
     setLoading(false)
     onComplete()

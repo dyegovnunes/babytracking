@@ -33,7 +33,26 @@ export default function ProfilePage() {
 
   // Invite
   const [inviteCode, setInviteCode] = useState<string | null>(null)
+  const [inviteId, setInviteId] = useState<string | null>(null)
   const [generatingCode, setGeneratingCode] = useState(false)
+
+  // Load active invite code
+  useEffect(() => {
+    if (!baby) return
+    supabase
+      .from('invite_codes')
+      .select('id, code')
+      .eq('baby_id', baby.id)
+      .eq('active', true)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .then(({ data }) => {
+        if (data && data.length > 0) {
+          setInviteCode(data[0].code)
+          setInviteId(data[0].id)
+        }
+      })
+  }, [baby])
 
   useEffect(() => {
     if (members && user) {
@@ -73,10 +92,18 @@ export default function ProfilePage() {
   const handleGenerateInvite = useCallback(async () => {
     if (!user || !baby) return
     setGeneratingCode(true)
-    const code = Math.random().toString(36).substring(2, 8).toUpperCase()
-    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
 
-    const { error } = await supabase
+    // Deactivate any existing active codes for this baby
+    await supabase
+      .from('invite_codes')
+      .update({ active: false })
+      .eq('baby_id', baby.id)
+      .eq('active', true)
+
+    const code = Math.random().toString(36).substring(2, 8).toUpperCase()
+    const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+
+    const { data, error } = await supabase
       .from('invite_codes')
       .insert({
         code,
@@ -84,13 +111,30 @@ export default function ProfilePage() {
         created_by: user.id,
         expires_at: expiresAt,
       })
+      .select('id')
+      .single()
 
-    if (!error) {
+    if (!error && data) {
       setInviteCode(code)
+      setInviteId(data.id)
       setToast('Código gerado!')
     }
     setGeneratingCode(false)
   }, [user, baby])
+
+  const handleDeactivateCode = useCallback(async () => {
+    if (!inviteId) return
+    const { error } = await supabase
+      .from('invite_codes')
+      .update({ active: false })
+      .eq('id', inviteId)
+
+    if (!error) {
+      setInviteCode(null)
+      setInviteId(null)
+      setToast('Código desativado!')
+    }
+  }, [inviteId])
 
   const handleCopyCode = useCallback(() => {
     if (!inviteCode) return
@@ -266,16 +310,22 @@ export default function ProfilePage() {
           {/* Invite section */}
           {inviteCode ? (
             <div className="bg-primary/5 border border-primary/20 rounded-xl p-4">
-              <p className="font-label text-xs text-on-surface-variant mb-2">Código de convite (válido por 7 dias)</p>
+              <p className="font-label text-xs text-on-surface-variant mb-2">Código de convite ativo</p>
               <p className="font-headline text-2xl font-bold text-primary tracking-widest text-center mb-3">{inviteCode}</p>
-              <div className="flex gap-2">
-                <button onClick={handleCopyCode} className="flex-1 py-2 rounded-lg bg-surface-variant text-on-surface-variant font-label text-xs font-semibold flex items-center justify-center gap-1">
+              <div className="flex gap-2 mb-2">
+                <button onClick={handleCopyCode} className="flex-1 py-2.5 rounded-lg bg-surface-variant text-on-surface-variant font-label text-xs font-semibold flex items-center justify-center gap-1">
                   <span className="material-symbols-outlined text-sm">content_copy</span> Copiar
                 </button>
-                <button onClick={handleShareWhatsApp} className="flex-1 py-2 rounded-lg bg-[#25D366] text-white font-label text-xs font-semibold flex items-center justify-center gap-1">
+                <button onClick={handleShareWhatsApp} className="flex-1 py-2.5 rounded-lg bg-[#25D366] text-white font-label text-xs font-semibold flex items-center justify-center gap-1">
                   <span className="material-symbols-outlined text-sm">share</span> WhatsApp
                 </button>
               </div>
+              <button
+                onClick={handleDeactivateCode}
+                className="w-full py-2 rounded-lg bg-error/10 text-error font-label text-xs font-semibold flex items-center justify-center gap-1 active:bg-error/20"
+              >
+                <span className="material-symbols-outlined text-sm">block</span> Desativar código
+              </button>
             </div>
           ) : (
             <button
@@ -284,7 +334,7 @@ export default function ProfilePage() {
               className="w-full py-3 rounded-xl bg-primary/10 text-primary font-label font-semibold text-sm flex items-center justify-center gap-2 active:bg-primary/20 transition-colors disabled:opacity-50"
             >
               <span className="material-symbols-outlined text-lg">person_add</span>
-              {generatingCode ? 'Gerando...' : 'Convidar cuidador'}
+              {generatingCode ? 'Gerando...' : 'Gerar código de convite'}
             </button>
           )}
         </div>
