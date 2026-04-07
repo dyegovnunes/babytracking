@@ -14,6 +14,14 @@
       "runtimeExecutable": "npx",
       "runtimeArgs": ["http-server", "-p", "3456", "-c-1"],
       "port": 3456
+    },
+    {
+      "name": "landing-app",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 5174,
+      "autoPort": true,
+      "cwd": "landing-app"
     }
   ]
 }
