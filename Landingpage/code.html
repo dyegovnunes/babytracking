@@ -56,7 +56,8 @@
     display: flex; align-items: center; gap: 8px;
   }
   .nav-logo img { height: 28px; filter: brightness(0) saturate(100%) invert(67%) sepia(18%) saturate(1800%) hue-rotate(216deg) brightness(102%) contrast(100%); }
-  .nav-logo span { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+  .nav-logo span { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; color: var(--cloud); }
+  .nav-logo .logo-ya { color: var(--purple); }
   .nav-cta {
     background: var(--purple); color: #371d77;
     padding: 10px 24px; border-radius: 100px;
@@ -71,12 +72,16 @@
 
   /* ===== HERO ===== */
   .hero {
-    padding-top: 120px; padding-bottom: 80px;
+    padding-top: 100px; padding-bottom: 40px;
     display: grid; grid-template-columns: 1fr;
-    gap: 48px; align-items: center;
+    gap: 32px; align-items: center;
+    min-height: 100vh; min-height: 100dvh;
   }
   @media (min-width: 768px) {
-    .hero { grid-template-columns: 1fr 340px; padding-top: 140px; padding-bottom: 100px; }
+    .hero { grid-template-columns: 1fr 300px; padding-top: 100px; padding-bottom: 40px; min-height: auto; }
+  }
+  @media (min-width: 960px) {
+    .hero { grid-template-columns: 1fr 340px; }
   }
   .hero-badge {
     display: inline-block;
@@ -86,9 +91,9 @@
     border: 1px solid rgba(183,159,255,0.1);
   }
   .hero h1 {
-    font-size: clamp(2.2rem, 5vw, 3.4rem);
+    font-size: clamp(1.8rem, 4.5vw, 3rem);
     font-weight: 800; line-height: 1.1;
-    margin-top: 20px;
+    margin-top: 16px;
   }
   .hero h1 em {
     font-style: normal; color: var(--purple);
@@ -120,6 +125,7 @@
     border: none; cursor: pointer; white-space: nowrap;
     font-family: inherit; transition: opacity 0.2s;
   }
+  #waitlist { scroll-margin-top: 80px; }
   .hero-form button:hover { opacity: 0.9; }
   .hero-form button:disabled { opacity: 0.6; cursor: not-allowed; }
   .hero-checks {
@@ -141,9 +147,9 @@
     position: relative; overflow: hidden;
   }
   .phone-aura {
-    position: absolute; inset: -40px;
-    background: var(--glow); opacity: 0.08;
-    filter: blur(80px); border-radius: 50%;
+    position: absolute; inset: 20px;
+    background: var(--glow); opacity: 0.05;
+    filter: blur(60px); border-radius: 50%;
     pointer-events: none;
   }
   .phone {
@@ -167,7 +173,8 @@
     display: flex; align-items: center; gap: 4px;
   }
   .phone-header .logo img { height: 14px; filter: brightness(0) saturate(100%) invert(67%) sepia(18%) saturate(1800%) hue-rotate(216deg) brightness(102%) contrast(100%); }
-  .phone-header .logo span { font-size: 11px; font-weight: 800; color: var(--purple); }
+  .phone-header .logo span { font-size: 11px; font-weight: 800; color: var(--cloud); }
+  .phone-header .logo .logo-ya { color: var(--purple); }
   .phone-header .baby-name { font-size: 10px; color: rgba(231,226,255,0.35); }
 
   /* Activity Grid */
@@ -343,29 +350,6 @@
   .feature-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
   .feature-card p { font-size: 14px; color: rgba(231,226,255,0.45); line-height: 1.7; }
 
-  /* ===== HOW IT WORKS ===== */
-  .how-it-works { padding: 100px 0; text-align: center; }
-  .how-it-works h2 { font-size: clamp(1.6rem, 3.5vw, 2.2rem); font-weight: 800; margin-bottom: 48px; }
-  .steps {
-    display: grid; grid-template-columns: 1fr;
-    gap: 24px; max-width: 800px; margin: 0 auto;
-  }
-  @media (min-width: 640px) { .steps { grid-template-columns: repeat(3, 1fr); } }
-  .step {
-    padding: 32px 24px; border-radius: 24px;
-    background: var(--surface-low);
-    border: 1px solid rgba(255,255,255,0.04);
-  }
-  .step-number {
-    width: 40px; height: 40px; border-radius: 50%;
-    background: rgba(183,159,255,0.1); color: var(--purple);
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 800; font-size: 18px;
-    margin: 0 auto 16px; font-family: 'Manrope', sans-serif;
-  }
-  .step h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
-  .step p { font-size: 13px; color: rgba(231,226,255,0.4); line-height: 1.6; }
-
   /* ===== CTA FINAL ===== */
   .cta-final {
     padding: 100px 0;
@@ -429,7 +413,8 @@
   }
   .footer-logo { display: flex; align-items: center; gap: 6px; }
   .footer-logo img { height: 20px; filter: brightness(0) saturate(100%) invert(67%) sepia(18%) saturate(1800%) hue-rotate(216deg) brightness(102%) contrast(100%); }
-  .footer-logo span { font-size: 18px; font-weight: 800; }
+  .footer-logo span { font-size: 18px; font-weight: 800; color: var(--cloud); }
+  .footer-logo .logo-ya { color: var(--purple); }
   .footer-links { display: flex; gap: 24px; font-size: 14px; }
   .footer-links a { color: rgba(231,226,255,0.4); text-decoration: none; transition: color 0.2s; }
   .footer-links a:hover { color: var(--blush); }
@@ -450,7 +435,7 @@
   <div class="nav-inner">
     <div class="nav-logo">
       <img src="../Logo/simboloyaya2.png" alt="Yaya"/>
-      <span class="font-headline">yaya</span>
+      <span class="font-headline">Ya<span class="logo-ya">ya</span></span>
     </div>
     <a href="#waitlist" class="nav-cta">Entrar na lista</a>
   </div>
@@ -467,7 +452,7 @@
       <p class="hero-sub">
         Registre mamadas, fraldas, sono e banhos com um toque. Um cérebro externo para pais, mães, babás e avós compartilharem a rotina do bebê.
       </p>
-      <form class="hero-form" id="waitlist" onsubmit="event.preventDefault(); handleWaitlist('hero-email','hero-btn','hero-msg')">
+      <form class="hero-form" onsubmit="event.preventDefault(); handleWaitlist('hero-email','hero-btn','hero-msg')" id="waitlist">
         <input id="hero-email" type="email" placeholder="Seu melhor e-mail" required/>
         <button id="hero-btn" type="submit">Quero ser avisado</button>
       </form>
@@ -488,7 +473,7 @@
           <div class="phone-header">
             <div class="logo">
               <img src="../Logo/simboloyaya2.png" alt=""/>
-              <span class="font-headline">yaya</span>
+              <span class="font-headline">Ya<span class="logo-ya">ya</span></span>
             </div>
             <span class="baby-name">Luna, 47 dias</span>
           </div>
@@ -555,7 +540,7 @@
       <span><span class="trust-icon">★</span> Gratuito para começar</span>
       <span><span class="trust-icon">◷</span> Interface gentil 24h</span>
       <span><span class="trust-icon">♡</span> Multi-cuidador</span>
-      <span><span class="trust-icon">∞</span> Compra única — sem mensalidade</span>
+      <span><span class="trust-icon">∞</span> Sem mensalidade</span>
     </div>
   </div>
 </div>
@@ -584,7 +569,7 @@
         <div class="phone-content">
           <div class="phone-header">
             <div class="logo">
-              <img src="../Logo/simboloyaya2.png" alt=""/><span class="font-headline">yaya</span>
+              <img src="../Logo/simboloyaya2.png" alt=""/><span class="font-headline">Ya<span class="logo-ya">ya</span></span>
             </div>
             <span class="baby-name">Luna, 47 dias</span>
           </div>
@@ -789,28 +774,6 @@
   </div>
 </div>
 
-<!-- HOW IT WORKS -->
-<div class="section how-it-works">
-  <h2 class="font-headline fade-up">Comece em 30 segundos</h2>
-  <div class="steps">
-    <div class="step fade-up">
-      <div class="step-number">1</div>
-      <h3 class="font-headline">Crie sua conta</h3>
-      <p>Login com Google ou e-mail. Sem senha para lembrar.</p>
-    </div>
-    <div class="step fade-up">
-      <div class="step-number">2</div>
-      <h3 class="font-headline">Cadastre o bebê</h3>
-      <p>Nome, data de nascimento e pronto. Comece a registrar na hora.</p>
-    </div>
-    <div class="step fade-up">
-      <div class="step-number">3</div>
-      <h3 class="font-headline">Convide quem cuida</h3>
-      <p>Compartilhe um código com avós, babá ou parceiro(a). Todos sincronizados.</p>
-    </div>
-  </div>
-</div>
-
 <!-- CTA FINAL -->
 <div class="section cta-final">
   <div class="cta-card fade-up">
@@ -831,7 +794,7 @@
     <div class="footer-inner">
       <div class="footer-logo">
         <img src="../Logo/simboloyaya2.png" alt="Yaya"/>
-        <span class="font-headline">yaya</span>
+        <span class="font-headline">Ya<span class="logo-ya">ya</span></span>
       </div>
       <div class="footer-links">
         <a href="mailto:contato@yayababy.app">Contato</a>
