@@ -64,7 +64,7 @@ export default function TrackerScreen() {
   void now
 
   const projections = PROJECTION_CATEGORIES
-    .map((cat) => getNextProjection(logs, cat, intervals, DEFAULT_EVENTS))
+    .map((cat) => getNextProjection(logs, cat, intervals, DEFAULT_EVENTS, { pauseDuringSleep: false }))
     .filter(Boolean)
 
   if (loading) {

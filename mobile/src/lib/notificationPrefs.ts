@@ -15,6 +15,7 @@ export interface NotificationPrefs {
     start: number // hour 0-23
     end: number   // hour 0-23
   }
+  pauseDuringSleep: boolean
 }
 
 export const DEFAULT_PREFS: NotificationPrefs = {
@@ -30,6 +31,7 @@ export const DEFAULT_PREFS: NotificationPrefs = {
     start: 22,
     end: 6,
   },
+  pauseDuringSleep: false,
 }
 
 export async function loadNotificationPrefs(): Promise<NotificationPrefs> {

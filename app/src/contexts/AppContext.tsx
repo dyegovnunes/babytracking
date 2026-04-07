@@ -11,6 +11,7 @@ interface AppState {
   members: Record<string, Member>
   loading: boolean
   needsOnboarding: boolean
+  pauseDuringSleep: boolean
 }
 
 type Action =
@@ -22,6 +23,7 @@ type Action =
   | { type: 'SET_INTERVALS'; intervals: Record<string, IntervalConfig> }
   | { type: 'SET_BABY'; baby: Baby }
   | { type: 'CLEAR_LOGS' }
+  | { type: 'SET_PAUSE_DURING_SLEEP'; value: boolean }
 
 const initialState: AppState = {
   logs: [],
@@ -30,6 +32,7 @@ const initialState: AppState = {
   members: {},
   loading: true,
   needsOnboarding: false,
+  pauseDuringSleep: false,
 }
 
 function reducer(state: AppState, action: Action): AppState {
@@ -50,6 +53,8 @@ function reducer(state: AppState, action: Action): AppState {
       return { ...state, baby: action.baby }
     case 'CLEAR_LOGS':
       return { ...state, logs: [] }
+    case 'SET_PAUSE_DURING_SLEEP':
+      return { ...state, pauseDuringSleep: action.value }
     default:
       return state
   }
@@ -142,6 +147,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
 
       dispatch({ type: 'SET_INITIAL', logs, intervals, baby, members })
+
+      // Load pause_during_sleep preference
+      const { data: prefData } = await supabase
+        .from('notification_prefs')
+        .select('pause_during_sleep')
+        .eq('user_id', userId)
+        .eq('baby_id', babyId)
+        .single()
+
+      if (prefData?.pause_during_sleep) {
+        dispatch({ type: 'SET_PAUSE_DURING_SLEEP', value: true })
+      }
     }
 
     load()

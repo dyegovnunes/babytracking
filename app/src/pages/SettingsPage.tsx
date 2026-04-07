@@ -13,13 +13,11 @@ const FEED_PRESETS = [
   { label: '3h', minutes: 180, warn: 150 },
   { label: '4h', minutes: 240, warn: 200 },
 ]
-
 const DIAPER_PRESETS = [
   { label: '1h30', minutes: 90, warn: 70 },
   { label: '2h', minutes: 120, warn: 90 },
   { label: '3h', minutes: 180, warn: 150 },
 ]
-
 const SLEEP_NAP_PRESETS = [
   { label: '30min', minutes: 30, warn: 25 },
   { label: '45min', minutes: 45, warn: 35 },
@@ -27,7 +25,6 @@ const SLEEP_NAP_PRESETS = [
   { label: '1h30', minutes: 90, warn: 75 },
   { label: '2h', minutes: 120, warn: 100 },
 ]
-
 const SLEEP_AWAKE_PRESETS = [
   { label: '1h', minutes: 60, warn: 45 },
   { label: '1h30', minutes: 90, warn: 70 },
@@ -35,56 +32,57 @@ const SLEEP_AWAKE_PRESETS = [
   { label: '2h30', minutes: 150, warn: 120 },
   { label: '3h', minutes: 180, warn: 150 },
 ]
-
 const BATH_COUNTS = [1, 2, 3]
 const BATH_HOURS = [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]
-
 const HOURS_24 = Array.from({ length: 24 }, (_, i) => i)
 
-// ========== HELPERS ==========
+// ========== TYPES ==========
 
-interface NotificationPrefs {
+interface NotifPrefs {
   enabled: boolean
   categories: { feed: boolean; diaper: boolean; sleep: boolean; bath: boolean }
   quietHours: { enabled: boolean; start: number; end: number }
 }
 
-const DEFAULT_PREFS: NotificationPrefs = {
+const DEFAULT_PREFS: NotifPrefs = {
   enabled: true,
   categories: { feed: true, diaper: true, sleep: true, bath: true },
   quietHours: { enabled: false, start: 22, end: 7 },
 }
 
-function minutesToDisplay(minutes: number): string {
-  if (minutes < 60) return `${minutes}min`
-  const h = Math.floor(minutes / 60)
-  const m = minutes % 60
-  return m > 0 ? `${h}h${m}min` : `${h}h`
+// ========== HELPERS ==========
+
+function mToStr(m: number): string {
+  if (m < 60) return `${m}min`
+  const h = Math.floor(m / 60)
+  const r = m % 60
+  return r > 0 ? `${h}h${r}min` : `${h}h`
 }
 
-function padHour(h: number): string {
+function padH(h: number): string {
   return `${h.toString().padStart(2, '0')}:00`
 }
 
 // ========== COMPONENT ==========
 
 export default function SettingsPage() {
-  const { baby, intervals } = useAppState()
+  const { baby, intervals, pauseDuringSleep } = useAppState()
   const { user } = useAuth()
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const [toast, setToast] = useState<string | null>(null)
 
-  // UI states
-  const [expandedSection, setExpandedSection] = useState<string | null>(null)
-  const [prefs, setPrefs] = useState<NotificationPrefs>(DEFAULT_PREFS)
+  // UI state
+  const [expanded, setExpanded] = useState<string | null>(null)
+  const [prefs, setPrefs] = useState<NotifPrefs>(DEFAULT_PREFS)
   const [customModal, setCustomModal] = useState<string | null>(null)
-  const [customHours, setCustomHours] = useState('')
-  const [customMinutes, setCustomMinutes] = useState('')
+  const [customH, setCustomH] = useState('')
+  const [customM, setCustomM] = useState('')
   const [pickingQuietHour, setPickingQuietHour] = useState<'start' | 'end' | null>(null)
   const [pickingBathHour, setPickingBathHour] = useState(false)
+  const [infoModal, setInfoModal] = useState<'sleep' | 'notifications' | null>(null)
 
-  // Load notification prefs from Supabase
+  // Load prefs
   useEffect(() => {
     if (!user || !baby) return
     supabase
@@ -97,524 +95,278 @@ export default function SettingsPage() {
         if (data) {
           setPrefs({
             enabled: data.enabled,
-            categories: {
-              feed: data.cat_feed,
-              diaper: data.cat_diaper,
-              sleep: data.cat_sleep,
-              bath: data.cat_bath,
-            },
-            quietHours: {
-              enabled: data.quiet_enabled,
-              start: data.quiet_start,
-              end: data.quiet_end,
-            },
+            categories: { feed: data.cat_feed, diaper: data.cat_diaper, sleep: data.cat_sleep, bath: data.cat_bath },
+            quietHours: { enabled: data.quiet_enabled, start: data.quiet_start, end: data.quiet_end },
           })
         }
       })
   }, [user, baby])
 
-  const savePrefs = useCallback(async (updated: NotificationPrefs) => {
+  const savePrefs = useCallback(async (updated: NotifPrefs) => {
     setPrefs(updated)
     if (!user || !baby) return
-    await supabase
-      .from('notification_prefs')
-      .upsert({
-        user_id: user.id,
-        baby_id: baby.id,
-        enabled: updated.enabled,
-        cat_feed: updated.categories.feed,
-        cat_diaper: updated.categories.diaper,
-        cat_sleep: updated.categories.sleep,
-        cat_bath: updated.categories.bath,
-        quiet_enabled: updated.quietHours.enabled,
-        quiet_start: updated.quietHours.start,
-        quiet_end: updated.quietHours.end,
-        updated_at: new Date().toISOString(),
-      }, { onConflict: 'user_id,baby_id' })
-  }, [user, baby])
+    await supabase.from('notification_prefs').upsert({
+      user_id: user.id, baby_id: baby.id,
+      enabled: updated.enabled,
+      cat_feed: updated.categories.feed, cat_diaper: updated.categories.diaper,
+      cat_sleep: updated.categories.sleep, cat_bath: updated.categories.bath,
+      quiet_enabled: updated.quietHours.enabled,
+      quiet_start: updated.quietHours.start, quiet_end: updated.quietHours.end,
+      pause_during_sleep: pauseDuringSleep,
+      updated_at: new Date().toISOString(),
+    }, { onConflict: 'user_id,baby_id' })
+  }, [user, baby, pauseDuringSleep])
 
-  // ========== INTERVAL HANDLERS ==========
+  // ===== INTERVAL HANDLERS =====
 
-  const handlePresetSelect = useCallback(
-    async (cat: string, preset: { minutes: number; warn: number }) => {
-      if (!baby) return
-      const updated = {
-        ...intervals,
-        [cat]: { ...intervals[cat], minutes: preset.minutes, warn: preset.warn },
-      }
-      const ok = await updateIntervals(dispatch, baby.id, updated)
-      if (ok) setToast('Intervalo atualizado!')
-    },
-    [intervals, baby, dispatch],
-  )
+  const handlePreset = useCallback(async (cat: string, p: { minutes: number; warn: number }) => {
+    if (!baby) return
+    const updated = { ...intervals, [cat]: { ...intervals[cat], minutes: p.minutes, warn: p.warn } }
+    const ok = await updateIntervals(dispatch, baby.id, updated)
+    if (ok) setToast('Atualizado!')
+  }, [intervals, baby, dispatch])
 
-  const handleCustomOpen = useCallback((cat: string) => {
-    const config = intervals[cat]
-    if (config) {
-      const h = Math.floor(config.minutes / 60)
-      const m = config.minutes % 60
-      setCustomHours(h > 0 ? h.toString() : '')
-      setCustomMinutes(m > 0 ? m.toString() : '')
-    }
+  const openCustom = useCallback((cat: string) => {
+    const c = intervals[cat]
+    if (c) { setCustomH(Math.floor(c.minutes / 60) > 0 ? Math.floor(c.minutes / 60).toString() : ''); setCustomM(c.minutes % 60 > 0 ? (c.minutes % 60).toString() : '') }
     setCustomModal(cat)
   }, [intervals])
 
-  const handleCustomSave = useCallback(async () => {
+  const saveCustom = useCallback(async () => {
     if (!customModal || !baby) return
-    const h = parseInt(customHours) || 0
-    const m = parseInt(customMinutes) || 0
-    const totalMinutes = h * 60 + m
-    if (totalMinutes <= 0) return
-
-    const warnMinutes = Math.max(1, Math.floor(totalMinutes * 0.8))
-    const updated = {
-      ...intervals,
-      [customModal]: { ...intervals[customModal], minutes: totalMinutes, warn: warnMinutes },
-    }
+    const total = (parseInt(customH) || 0) * 60 + (parseInt(customM) || 0)
+    if (total <= 0) return
+    const updated = { ...intervals, [customModal]: { ...intervals[customModal], minutes: total, warn: Math.max(1, Math.floor(total * 0.8)) } }
     const ok = await updateIntervals(dispatch, baby.id, updated)
-    if (ok) setToast('Intervalo personalizado salvo!')
+    if (ok) setToast('Intervalo salvo!')
     setCustomModal(null)
-  }, [customModal, customHours, customMinutes, intervals, baby, dispatch])
+  }, [customModal, customH, customM, intervals, baby, dispatch])
 
-  // ========== BATH HANDLERS ==========
+  // ===== BATH HANDLERS =====
 
-  const bathConfig = intervals['bath']
-  const bathHours = bathConfig?.scheduledHours ?? [18]
+  const bathHours = intervals['bath']?.scheduledHours ?? [18]
 
-  const handleBathCountChange = useCallback(async (count: number) => {
+  const setBathHours = useCallback(async (newHours: number[]) => {
     if (!baby) return
-    // Adjust hours array to match count
-    let newHours = [...bathHours]
-    if (count > newHours.length) {
-      // Add default hours
-      const defaults = [7, 12, 18]
-      while (newHours.length < count) {
-        const next = defaults.find(h => !newHours.includes(h)) ?? (newHours[newHours.length - 1] + 4)
-        newHours.push(next)
-      }
-    } else {
-      newHours = newHours.slice(0, count)
-    }
-    newHours.sort((a, b) => a - b)
+    const sorted = [...newHours].sort((a, b) => a - b)
+    const updated = { ...intervals, bath: { ...intervals['bath'], mode: 'scheduled' as const, scheduledHours: sorted } }
+    await updateIntervals(dispatch, baby.id, updated)
+  }, [intervals, baby, dispatch])
 
-    const updated = {
-      ...intervals,
-      bath: { ...intervals['bath'], mode: 'scheduled' as const, scheduledHours: newHours },
-    }
-    const ok = await updateIntervals(dispatch, baby.id, updated)
-    if (ok) setToast('Banhos atualizados!')
-  }, [bathHours, intervals, baby, dispatch])
+  const handleBathCount = useCallback(async (count: number) => {
+    let h = [...bathHours]
+    const defaults = [7, 12, 18]
+    while (h.length < count) { const next = defaults.find(x => !h.includes(x)) ?? h[h.length - 1] + 4; h.push(next) }
+    h = h.slice(0, count)
+    await setBathHours(h)
+    setToast('Atualizado!')
+  }, [bathHours, setBathHours])
 
-  const handleAddBathHour = useCallback(async (hour: number) => {
-    if (!baby || bathHours.includes(hour)) return
-    const newHours = [...bathHours, hour].sort((a, b) => a - b)
-    const updated = {
-      ...intervals,
-      bath: { ...intervals['bath'], mode: 'scheduled' as const, scheduledHours: newHours },
-    }
-    const ok = await updateIntervals(dispatch, baby.id, updated)
-    if (ok) setToast('Horário adicionado!')
+  const addBathHour = useCallback(async (hour: number) => {
+    if (bathHours.includes(hour)) return
+    await setBathHours([...bathHours, hour])
     setPickingBathHour(false)
-  }, [bathHours, intervals, baby, dispatch])
+    setToast('Horário adicionado!')
+  }, [bathHours, setBathHours])
 
-  const handleRemoveBathHour = useCallback(async (hour: number) => {
-    if (!baby || bathHours.length <= 1) return
-    const newHours = bathHours.filter(h => h !== hour)
-    const updated = {
-      ...intervals,
-      bath: { ...intervals['bath'], mode: 'scheduled' as const, scheduledHours: newHours },
-    }
-    const ok = await updateIntervals(dispatch, baby.id, updated)
-    if (ok) setToast('Horário removido!')
-  }, [bathHours, intervals, baby, dispatch])
+  const removeBathHour = useCallback(async (hour: number) => {
+    if (bathHours.length <= 1) return
+    await setBathHours(bathHours.filter(h => h !== hour))
+    setToast('Horário removido!')
+  }, [bathHours, setBathHours])
 
-  // ========== TOGGLE SECTION ==========
+  // ===== PAUSE DURING SLEEP =====
 
-  const toggleSection = (section: string) => {
-    setExpandedSection(expandedSection === section ? null : section)
-  }
+  const togglePauseDuringSleep = useCallback(async () => {
+    const newVal = !pauseDuringSleep
+    dispatch({ type: 'SET_PAUSE_DURING_SLEEP', value: newVal })
+    if (!user || !baby) return
+    await supabase.from('notification_prefs').upsert({
+      user_id: user.id, baby_id: baby.id, pause_during_sleep: newVal,
+      updated_at: new Date().toISOString(),
+    }, { onConflict: 'user_id,baby_id' })
+    setToast(newVal ? 'Alertas pausados durante sono' : 'Alertas ativos durante sono')
+  }, [pauseDuringSleep, user, baby, dispatch])
 
-  // ========== RENDER HELPERS ==========
+  // ===== RENDER: INTERVAL ROW =====
 
-  function renderNotificationPreview(icon: string, title: string, body: string) {
-    return (
-      <div className="bg-surface-container-low rounded-xl p-3 flex items-start gap-3 mt-3">
-        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-          <span className="material-symbols-outlined text-primary text-base">{icon}</span>
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-0.5">
-            <span className="font-label text-[10px] text-on-surface-variant">Yaya</span>
-            <span className="font-label text-[10px] text-on-surface-variant/50">agora</span>
-          </div>
-          <p className="font-body text-xs text-on-surface font-semibold">{title}</p>
-          <p className="font-label text-[11px] text-on-surface-variant">{body}</p>
-        </div>
-      </div>
-    )
-  }
-
-  function renderIntervalSection(
-    cat: string,
-    icon: string,
-    label: string,
-    description: string,
-    presets: { label: string; minutes: number; warn: number }[],
-    notifPreview?: { icon: string; title: string; body: string },
-  ) {
+  function IntervalRow({ cat, icon, label, presets }: { cat: string; icon: string; label: string; presets: { label: string; minutes: number; warn: number }[] }) {
     const config = intervals[cat]
     if (!config) return null
-    const isExpanded = expandedSection === cat
+    const isOpen = expanded === cat
 
     return (
       <div className="bg-surface-container rounded-xl overflow-hidden">
-        <button
-          onClick={() => toggleSection(cat)}
-          className="w-full flex items-center gap-3 p-4 active:bg-surface-container-high transition-colors"
-        >
+        <button onClick={() => setExpanded(isOpen ? null : cat)} className="w-full flex items-center gap-3 px-4 py-3.5 active:bg-surface-container-high transition-colors">
           <span className="material-symbols-outlined text-on-surface-variant text-lg">{icon}</span>
-          <div className="flex-1 text-left">
-            <span className="font-body text-sm text-on-surface font-medium block">{label}</span>
-            <span className="font-label text-[11px] text-on-surface-variant">{description}</span>
-          </div>
-          <span className="font-label text-sm text-primary font-semibold">{minutesToDisplay(config.minutes)}</span>
-          <span className={`material-symbols-outlined text-on-surface-variant text-lg transition-transform ${isExpanded ? 'rotate-180' : ''}`}>
-            expand_more
-          </span>
+          <span className="flex-1 text-left font-body text-sm text-on-surface">{label}</span>
+          <span className="font-label text-sm text-primary font-semibold">{mToStr(config.minutes)}</span>
+          <span className={`material-symbols-outlined text-on-surface-variant text-base transition-transform ${isOpen ? 'rotate-180' : ''}`}>expand_more</span>
         </button>
-
-        {isExpanded && (
-          <div className="px-4 pb-4 animate-fade-in">
-            <div className="flex flex-wrap gap-2 mb-3">
-              {presets.map((preset) => {
-                const isActive = config.minutes === preset.minutes
-                return (
-                  <button
-                    key={preset.minutes}
-                    onClick={() => handlePresetSelect(cat, preset)}
-                    className={`px-4 py-2 rounded-lg font-label text-sm font-medium transition-colors ${
-                      isActive ? 'bg-primary text-on-primary' : 'bg-surface-variant text-on-surface-variant'
-                    }`}
-                  >
-                    {preset.label}
-                  </button>
-                )
-              })}
+        {isOpen && (
+          <div className="px-4 pb-3 animate-fade-in">
+            <div className="flex flex-wrap gap-2 mb-2">
+              {presets.map(p => (
+                <button key={p.minutes} onClick={() => handlePreset(cat, p)}
+                  className={`px-3.5 py-1.5 rounded-lg font-label text-sm font-medium transition-colors ${config.minutes === p.minutes ? 'bg-primary text-on-primary' : 'bg-surface-variant text-on-surface-variant'}`}>
+                  {p.label}
+                </button>
+              ))}
             </div>
-            <button
-              onClick={() => handleCustomOpen(cat)}
-              className="flex items-center gap-2 py-2 px-3 rounded-lg bg-primary/10 active:bg-primary/20 transition-colors"
-            >
-              <span className="material-symbols-outlined text-primary text-base">edit</span>
+            <button onClick={() => openCustom(cat)} className="flex items-center gap-1.5 py-1.5 px-3 rounded-lg bg-primary/10 active:bg-primary/20">
+              <span className="material-symbols-outlined text-primary text-sm">edit</span>
               <span className="font-label text-xs text-primary font-medium">Personalizar</span>
             </button>
-
-            {notifPreview && (
-              <>
-                <p className="font-label text-[10px] text-on-surface-variant uppercase tracking-wider mt-4 mb-1">
-                  Exemplo de notificação
-                </p>
-                {renderNotificationPreview(notifPreview.icon, notifPreview.title, notifPreview.body)}
-              </>
-            )}
           </div>
         )}
       </div>
     )
   }
 
-  // ========== MAIN RENDER ==========
+  // ===== RENDER: TOGGLE ROW =====
 
-  const feedMinutes = intervals['feed']?.minutes ?? 180
-  const diaperMinutes = intervals['diaper']?.minutes ?? 120
-  const sleepNapMinutes = intervals['sleep_nap']?.minutes ?? 90
-  const sleepAwakeMinutes = intervals['sleep_awake']?.minutes ?? 120
+  function Toggle({ value, onChange }: { value: boolean; onChange: () => void }) {
+    return (
+      <button onClick={onChange} className={`w-11 h-6 rounded-full relative transition-colors flex-shrink-0 ${value ? 'bg-primary/40' : 'bg-surface-variant'}`}>
+        <div className={`w-5 h-5 rounded-full absolute top-0.5 transition-all ${value ? 'right-0.5 bg-primary' : 'left-0.5 bg-on-surface-variant/50'}`} />
+      </button>
+    )
+  }
+
+  // ===== MAIN RENDER =====
 
   return (
     <div className="pb-4 page-enter">
+      {/* Header */}
       <section className="px-5 pt-6 pb-4">
-        <div className="flex items-center gap-3 mb-4">
-          <button
-            onClick={() => navigate(-1)}
-            className="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center"
-          >
-            <span className="material-symbols-outlined text-on-surface-variant text-xl">
-              arrow_back
-            </span>
+        <div className="flex items-center gap-3">
+          <button onClick={() => navigate(-1)} className="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center">
+            <span className="material-symbols-outlined text-on-surface-variant text-xl">arrow_back</span>
           </button>
-          <h1 className="font-headline text-2xl font-bold text-on-surface">
-            Configurações
-          </h1>
+          <h1 className="font-headline text-2xl font-bold text-on-surface">Configurações</h1>
         </div>
       </section>
 
-      <div className="px-5 space-y-4">
+      <div className="px-5 space-y-5">
 
-        {/* ========================================== */}
-        {/* ===== MAMADAS ===== */}
-        {/* ========================================== */}
-        {renderIntervalSection(
-          'feed',
-          'breastfeeding',
-          'Mamadas',
-          'Intervalo entre mamadas',
-          FEED_PRESETS,
-          {
-            icon: 'breastfeeding',
-            title: `Hora da mamada!`,
-            body: `Já faz ${minutesToDisplay(feedMinutes)} desde a última mamada.`,
-          },
-        )}
-
-        {/* ========================================== */}
-        {/* ===== FRALDAS ===== */}
-        {/* ========================================== */}
-        {renderIntervalSection(
-          'diaper',
-          'water_drop',
-          'Fraldas',
-          'Intervalo entre trocas',
-          DIAPER_PRESETS,
-          {
-            icon: 'water_drop',
-            title: `Hora de trocar a fralda!`,
-            body: `Já faz ${minutesToDisplay(diaperMinutes)} desde a última troca.`,
-          },
-        )}
-
-        {/* ========================================== */}
-        {/* ===== SONO ===== */}
-        {/* ========================================== */}
-        <div>
-          <div className="flex items-center gap-3 mb-2">
-            <span className="material-symbols-outlined text-primary text-xl">bedtime</span>
-            <h3 className="text-on-surface font-headline text-sm font-bold">Sono</h3>
+        {/* ================================================ */}
+        {/* SEÇÃO 1: INTERVALOS E HORÁRIOS                   */}
+        {/* ================================================ */}
+        <section>
+          <div className="flex items-center gap-2 mb-3">
+            <span className="material-symbols-outlined text-primary text-lg">timer</span>
+            <h2 className="font-headline text-sm font-bold text-on-surface">Intervalos e horários</h2>
           </div>
-          <p className="font-label text-xs text-on-surface-variant mb-3">
-            Duas configurações que trabalham juntas: duração da soneca e janela de sono
-          </p>
 
           <div className="space-y-2">
-            {/* Sleep Nap - Duration of nap */}
-            {renderIntervalSection(
-              'sleep_nap',
-              'nights_stay',
-              'Duração da soneca',
-              'Quanto tempo o bebê deve dormir',
-              SLEEP_NAP_PRESETS,
-              {
-                icon: 'nights_stay',
-                title: `O bebê deve estar acordando!`,
-                body: `Está dormindo há ${minutesToDisplay(sleepNapMinutes)}. A soneca esperada era de ${minutesToDisplay(sleepNapMinutes)}.`,
-              },
-            )}
+            <IntervalRow cat="feed" icon="breastfeeding" label="Mamadas" presets={FEED_PRESETS} />
+            <IntervalRow cat="diaper" icon="water_drop" label="Fraldas" presets={DIAPER_PRESETS} />
 
-            {/* Sleep Awake - Awake window */}
-            {renderIntervalSection(
-              'sleep_awake',
-              'wb_sunny',
-              'Janela de sono (acordado)',
-              'Tempo máximo acordado antes de dormir',
-              SLEEP_AWAKE_PRESETS,
-              {
-                icon: 'wb_sunny',
-                title: `Hora de dormir!`,
-                body: `O bebê está acordado há ${minutesToDisplay(sleepAwakeMinutes)}. A janela de sono é de ${minutesToDisplay(sleepAwakeMinutes)}.`,
-              },
-            )}
-
-            {/* Nighttime note */}
-            <div className="bg-surface-container rounded-xl p-4">
-              <div className="flex items-start gap-3">
-                <span className="material-symbols-outlined text-on-surface-variant text-lg mt-0.5">dark_mode</span>
-                <div>
-                  <p className="font-body text-sm text-on-surface font-medium mb-1">Sono noturno</p>
-                  <p className="font-label text-xs text-on-surface-variant leading-relaxed">
-                    À noite o bebê dorme por mais tempo. Os alertas de sono são pausados
-                    automaticamente durante o horário silencioso que você configurar abaixo
-                    em "Notificações".
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* How it works explanation */}
-          <div className="mt-3 bg-primary/5 border border-primary/15 rounded-xl p-4">
-            <p className="font-label text-xs text-primary font-semibold mb-2 flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-sm">info</span>
-              Como funciona
-            </p>
-            <div className="space-y-2">
-              <div className="flex items-start gap-2">
-                <span className="font-label text-xs text-primary mt-0.5">1.</span>
-                <p className="font-label text-xs text-on-surface-variant">
-                  Ao registrar <strong className="text-on-surface">"Dormiu"</strong>, o Yaya calcula quando o bebê
-                  deve acordar com base na <strong className="text-on-surface">duração da soneca</strong>.
-                </p>
-              </div>
-              <div className="flex items-start gap-2">
-                <span className="font-label text-xs text-primary mt-0.5">2.</span>
-                <p className="font-label text-xs text-on-surface-variant">
-                  Ao registrar <strong className="text-on-surface">"Acordou"</strong>, o Yaya calcula quando o bebê
-                  deve dormir com base na <strong className="text-on-surface">janela de sono</strong>.
-                </p>
-              </div>
-              <div className="flex items-start gap-2">
-                <span className="font-label text-xs text-primary mt-0.5">3.</span>
-                <p className="font-label text-xs text-on-surface-variant">
-                  Você recebe uma notificação <strong className="text-on-surface">quando o tempo está acabando</strong> (antes de
-                  esgotar) e outra <strong className="text-on-surface">quando já passou</strong>.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* ========================================== */}
-        {/* ===== BANHO ===== */}
-        {/* ========================================== */}
-        <div>
-          <div className="flex items-center gap-3 mb-2">
-            <span className="material-symbols-outlined text-primary text-xl">bathtub</span>
-            <h3 className="text-on-surface font-headline text-sm font-bold">Banho</h3>
-          </div>
-          <p className="font-label text-xs text-on-surface-variant mb-3">
-            Defina quantos banhos por dia e os horários agendados
-          </p>
-
-          <div className="space-y-2">
-            {/* Bath count */}
-            <div className="bg-surface-container rounded-xl p-4">
-              <p className="font-label text-xs text-on-surface-variant mb-3">Banhos por dia</p>
-              <div className="flex gap-2">
-                {BATH_COUNTS.map((count) => {
-                  const isActive = bathHours.length === count
-                  return (
-                    <button
-                      key={count}
-                      onClick={() => handleBathCountChange(count)}
-                      className={`flex-1 py-2.5 rounded-lg font-label text-sm font-semibold transition-colors ${
-                        isActive ? 'bg-primary text-on-primary' : 'bg-surface-variant text-on-surface-variant'
-                      }`}
-                    >
-                      {count} {count === 1 ? 'banho' : 'banhos'}
-                    </button>
-                  )
-                })}
-              </div>
-            </div>
-
-            {/* Bath scheduled times */}
-            <div className="bg-surface-container rounded-xl p-4">
-              <p className="font-label text-xs text-on-surface-variant mb-3">Horários agendados</p>
-              <div className="space-y-2">
-                {bathHours.map((hour) => (
-                  <div key={hour} className="flex items-center justify-between bg-surface-container-low rounded-lg px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      <span className="material-symbols-outlined text-primary text-lg">schedule</span>
-                      <span className="font-headline text-base text-on-surface font-bold">{padHour(hour)}</span>
-                    </div>
-                    {bathHours.length > 1 && (
-                      <button
-                        onClick={() => handleRemoveBathHour(hour)}
-                        className="w-8 h-8 rounded-full flex items-center justify-center active:bg-error/10 transition-colors"
-                      >
-                        <span className="material-symbols-outlined text-error text-lg">close</span>
-                      </button>
-                    )}
-                  </div>
-                ))}
-              </div>
-
-              <button
-                onClick={() => setPickingBathHour(true)}
-                className="w-full mt-3 py-2.5 rounded-lg bg-primary/10 text-primary font-label font-semibold text-sm flex items-center justify-center gap-2 active:bg-primary/20 transition-colors"
-              >
-                <span className="material-symbols-outlined text-base">add</span>
-                Alterar horário
+            {/* Sono header com info icon */}
+            <div className="flex items-center gap-2 pt-2">
+              <span className="material-symbols-outlined text-on-surface-variant text-base">bedtime</span>
+              <span className="font-label text-xs text-on-surface-variant font-semibold flex-1">Sono</span>
+              <button onClick={() => setInfoModal('sleep')} className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center">
+                <span className="material-symbols-outlined text-primary text-sm">info</span>
               </button>
             </div>
 
-            {/* Bath notification preview */}
-            <div className="bg-surface-container rounded-xl p-4">
-              <p className="font-label text-[10px] text-on-surface-variant uppercase tracking-wider mb-1">
-                Exemplo de notificação
-              </p>
-              {renderNotificationPreview(
-                'bathtub',
-                `Hora do banho!`,
-                `O banho está agendado para ${padHour(bathHours[0])}. Faltam 15 minutos.`,
-              )}
-              <p className="font-label text-[11px] text-on-surface-variant mt-3 flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-xs">info</span>
-                Você recebe o aviso 15 minutos antes do horário agendado.
+            <IntervalRow cat="sleep_nap" icon="nights_stay" label="Duração da soneca" presets={SLEEP_NAP_PRESETS} />
+            <IntervalRow cat="sleep_awake" icon="wb_sunny" label="Janela de sono" presets={SLEEP_AWAKE_PRESETS} />
+
+            {/* Pausar durante sono */}
+            <div className="bg-surface-container rounded-xl px-4 py-3.5 flex items-center gap-3">
+              <span className="material-symbols-outlined text-on-surface-variant text-lg">pause_circle</span>
+              <div className="flex-1">
+                <p className="font-body text-sm text-on-surface">Pausar alertas durante sono</p>
+                <p className="font-label text-[11px] text-on-surface-variant">Mamada e fralda não alertam enquanto dorme</p>
+              </div>
+              <Toggle value={pauseDuringSleep} onChange={togglePauseDuringSleep} />
+            </div>
+
+            {/* Banho header */}
+            <div className="flex items-center gap-2 pt-2">
+              <span className="material-symbols-outlined text-on-surface-variant text-base">bathtub</span>
+              <span className="font-label text-xs text-on-surface-variant font-semibold">Banho</span>
+            </div>
+
+            {/* Banho count + times */}
+            <div className="bg-surface-container rounded-xl p-4 space-y-3">
+              <div className="flex gap-2">
+                {BATH_COUNTS.map(c => (
+                  <button key={c} onClick={() => handleBathCount(c)}
+                    className={`flex-1 py-2 rounded-lg font-label text-sm font-semibold transition-colors ${bathHours.length === c ? 'bg-primary text-on-primary' : 'bg-surface-variant text-on-surface-variant'}`}>
+                    {c}x
+                  </button>
+                ))}
+              </div>
+
+              {bathHours.map(h => (
+                <div key={h} className="flex items-center justify-between bg-surface-container-low rounded-lg px-4 py-2.5">
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-primary text-base">schedule</span>
+                    <span className="font-headline text-sm text-on-surface font-bold">{padH(h)}</span>
+                  </div>
+                  {bathHours.length > 1 && (
+                    <button onClick={() => removeBathHour(h)} className="w-7 h-7 rounded-full flex items-center justify-center active:bg-error/10">
+                      <span className="material-symbols-outlined text-error text-base">close</span>
+                    </button>
+                  )}
+                </div>
+              ))}
+
+              <button onClick={() => setPickingBathHour(true)}
+                className="w-full py-2 rounded-lg bg-primary/10 text-primary font-label font-semibold text-xs flex items-center justify-center gap-1.5 active:bg-primary/20">
+                <span className="material-symbols-outlined text-sm">edit</span>
+                Alterar horário
+              </button>
+
+              <p className="font-label text-[11px] text-on-surface-variant text-center">
+                Aviso 15 min antes do horário agendado
               </p>
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* ========================================== */}
-        {/* ===== NOTIFICAÇÕES ===== */}
-        {/* ========================================== */}
-        <div>
-          <div className="flex items-center gap-3 mb-2">
-            <span className="material-symbols-outlined text-primary text-xl">notifications</span>
-            <h3 className="text-on-surface font-headline text-sm font-bold">Notificações</h3>
+        {/* ================================================ */}
+        {/* SEÇÃO 2: NOTIFICAÇÕES                            */}
+        {/* ================================================ */}
+        <section>
+          <div className="flex items-center gap-2 mb-3">
+            <span className="material-symbols-outlined text-primary text-lg">notifications</span>
+            <h2 className="font-headline text-sm font-bold text-on-surface flex-1">Notificações</h2>
+            <button onClick={() => setInfoModal('notifications')} className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center">
+              <span className="material-symbols-outlined text-primary text-sm">info</span>
+            </button>
           </div>
-          <p className="font-label text-xs text-on-surface-variant mb-3">
-            Controle quando e quais alertas receber
-          </p>
 
           <div className="space-y-2">
-            {/* Global toggle */}
-            <div className="bg-surface-container rounded-xl p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3 flex-1">
-                  <span className="material-symbols-outlined text-on-surface-variant text-lg">notifications_active</span>
-                  <div>
-                    <p className="font-body text-sm text-on-surface font-medium">Ativar notificações</p>
-                    <p className="font-label text-xs text-on-surface-variant">Receber alertas do app</p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => savePrefs({ ...prefs, enabled: !prefs.enabled })}
-                  className={`w-11 h-6 rounded-full relative transition-colors ${prefs.enabled ? 'bg-primary/40' : 'bg-surface-variant'}`}
-                >
-                  <div className={`w-5 h-5 rounded-full absolute top-0.5 transition-all ${prefs.enabled ? 'right-0.5 bg-primary' : 'left-0.5 bg-on-surface-variant/50'}`} />
-                </button>
-              </div>
+            {/* Global */}
+            <div className="bg-surface-container rounded-xl px-4 py-3.5 flex items-center gap-3">
+              <span className="material-symbols-outlined text-on-surface-variant text-lg">notifications_active</span>
+              <span className="flex-1 font-body text-sm text-on-surface">Ativar notificações</span>
+              <Toggle value={prefs.enabled} onChange={() => savePrefs({ ...prefs, enabled: !prefs.enabled })} />
             </div>
 
-            {/* Per-category toggles */}
+            {/* Per category */}
             {prefs.enabled && (
               <div className="bg-surface-container rounded-xl overflow-hidden">
-                <p className="px-4 pt-4 pb-2 font-label text-xs text-on-surface-variant font-semibold">
-                  Categorias
-                </p>
                 {[
-                  { key: 'feed', label: 'Mamadas', icon: 'breastfeeding', desc: `Avisa a cada ${minutesToDisplay(feedMinutes)}` },
-                  { key: 'diaper', label: 'Fraldas', icon: 'water_drop', desc: `Avisa a cada ${minutesToDisplay(diaperMinutes)}` },
-                  { key: 'sleep', label: 'Sono', icon: 'bedtime', desc: 'Avisa sobre soneca e janela de sono' },
-                  { key: 'bath', label: 'Banho', icon: 'bathtub', desc: `Avisa 15min antes do horário agendado` },
+                  { key: 'feed', label: 'Mamadas', icon: 'breastfeeding', desc: `A cada ${mToStr(intervals['feed']?.minutes ?? 180)}` },
+                  { key: 'diaper', label: 'Fraldas', icon: 'water_drop', desc: `A cada ${mToStr(intervals['diaper']?.minutes ?? 120)}` },
+                  { key: 'sleep', label: 'Sono', icon: 'bedtime', desc: 'Soneca e janela de sono' },
+                  { key: 'bath', label: 'Banho', icon: 'bathtub', desc: '15min antes do horário' },
                 ].map(({ key, label, icon, desc }, i) => (
-                  <div key={key} className={`flex items-center justify-between px-4 py-3 ${i > 0 ? 'border-t border-outline-variant/20' : ''}`}>
-                    <div className="flex items-center gap-3 flex-1">
-                      <span className="material-symbols-outlined text-on-surface-variant text-lg">{icon}</span>
-                      <div>
-                        <span className="font-body text-sm text-on-surface block">{label}</span>
-                        <span className="font-label text-[11px] text-on-surface-variant">{desc}</span>
-                      </div>
+                  <div key={key} className={`flex items-center gap-3 px-4 py-3 ${i > 0 ? 'border-t border-outline-variant/20' : ''}`}>
+                    <span className="material-symbols-outlined text-on-surface-variant text-lg">{icon}</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-body text-sm text-on-surface">{label}</p>
+                      <p className="font-label text-[11px] text-on-surface-variant">{desc}</p>
                     </div>
-                    <button
-                      onClick={() => savePrefs({
-                        ...prefs,
-                        categories: { ...prefs.categories, [key]: !prefs.categories[key as keyof typeof prefs.categories] },
-                      })}
-                      className={`w-11 h-6 rounded-full relative transition-colors flex-shrink-0 ${prefs.categories[key as keyof typeof prefs.categories] ? 'bg-primary/40' : 'bg-surface-variant'}`}
-                    >
-                      <div className={`w-5 h-5 rounded-full absolute top-0.5 transition-all ${prefs.categories[key as keyof typeof prefs.categories] ? 'right-0.5 bg-primary' : 'left-0.5 bg-on-surface-variant/50'}`} />
-                    </button>
+                    <Toggle
+                      value={prefs.categories[key as keyof typeof prefs.categories]}
+                      onChange={() => savePrefs({ ...prefs, categories: { ...prefs.categories, [key]: !prefs.categories[key as keyof typeof prefs.categories] } })}
+                    />
                   </div>
                 ))}
               </div>
@@ -622,228 +374,199 @@ export default function SettingsPage() {
 
             {/* Quiet hours */}
             {prefs.enabled && (
-              <div className="bg-surface-container rounded-xl p-4">
-                <div className="flex items-center justify-between mb-1">
-                  <div className="flex items-center gap-3 flex-1">
-                    <span className="material-symbols-outlined text-on-surface-variant text-lg">dark_mode</span>
-                    <div>
-                      <p className="font-body text-sm text-on-surface font-medium">Horário silencioso</p>
-                      <p className="font-label text-xs text-on-surface-variant">
-                        Nenhuma notificação nesse período. Ideal para o sono noturno.
-                      </p>
-                    </div>
+              <div className="bg-surface-container rounded-xl px-4 py-3.5">
+                <div className="flex items-center gap-3">
+                  <span className="material-symbols-outlined text-on-surface-variant text-lg">dark_mode</span>
+                  <div className="flex-1">
+                    <p className="font-body text-sm text-on-surface">Horário silencioso</p>
+                    <p className="font-label text-[11px] text-on-surface-variant">Ideal para o sono noturno</p>
                   </div>
-                  <button
-                    onClick={() => savePrefs({
-                      ...prefs,
-                      quietHours: { ...prefs.quietHours, enabled: !prefs.quietHours.enabled },
-                    })}
-                    className={`w-11 h-6 rounded-full relative transition-colors flex-shrink-0 ${prefs.quietHours.enabled ? 'bg-primary/40' : 'bg-surface-variant'}`}
-                  >
-                    <div className={`w-5 h-5 rounded-full absolute top-0.5 transition-all ${prefs.quietHours.enabled ? 'right-0.5 bg-primary' : 'left-0.5 bg-on-surface-variant/50'}`} />
-                  </button>
+                  <Toggle
+                    value={prefs.quietHours.enabled}
+                    onChange={() => savePrefs({ ...prefs, quietHours: { ...prefs.quietHours, enabled: !prefs.quietHours.enabled } })}
+                  />
                 </div>
-
                 {prefs.quietHours.enabled && (
-                  <div className="mt-3 ml-9">
-                    <div className="flex items-center gap-3">
-                      <button
-                        onClick={() => setPickingQuietHour('start')}
-                        className="px-4 py-2 rounded-lg bg-surface-container-low active:bg-surface-container-high transition-colors"
-                      >
-                        <span className="font-headline text-base text-on-surface font-bold">{padHour(prefs.quietHours.start)}</span>
-                      </button>
-                      <span className="font-label text-sm text-on-surface-variant">até</span>
-                      <button
-                        onClick={() => setPickingQuietHour('end')}
-                        className="px-4 py-2 rounded-lg bg-surface-container-low active:bg-surface-container-high transition-colors"
-                      >
-                        <span className="font-headline text-base text-on-surface font-bold">{padHour(prefs.quietHours.end)}</span>
-                      </button>
-                    </div>
-                    <p className="font-label text-[11px] text-on-surface-variant mt-2">
-                      Alertas de sono noturno, mamadas e fraldas serão silenciados das {padHour(prefs.quietHours.start)} às {padHour(prefs.quietHours.end)}.
-                    </p>
+                  <div className="flex items-center gap-3 mt-3 ml-9">
+                    <button onClick={() => setPickingQuietHour('start')} className="px-3.5 py-1.5 rounded-lg bg-surface-container-low active:bg-surface-container-high">
+                      <span className="font-headline text-sm text-on-surface font-bold">{padH(prefs.quietHours.start)}</span>
+                    </button>
+                    <span className="font-label text-xs text-on-surface-variant">até</span>
+                    <button onClick={() => setPickingQuietHour('end')} className="px-3.5 py-1.5 rounded-lg bg-surface-container-low active:bg-surface-container-high">
+                      <span className="font-headline text-sm text-on-surface font-bold">{padH(prefs.quietHours.end)}</span>
+                    </button>
                   </div>
                 )}
               </div>
             )}
-
-            {/* How notifications work */}
-            {prefs.enabled && (
-              <div className="bg-primary/5 border border-primary/15 rounded-xl p-4">
-                <p className="font-label text-xs text-primary font-semibold mb-2 flex items-center gap-1.5">
-                  <span className="material-symbols-outlined text-sm">info</span>
-                  Como funcionam as notificações
-                </p>
-                <div className="space-y-1.5">
-                  <p className="font-label text-xs text-on-surface-variant">
-                    <strong className="text-on-surface">Quando:</strong> Você recebe 2 alertas — um quando o tempo está
-                    acabando (80% do intervalo) e outro quando já passou.
-                  </p>
-                  <p className="font-label text-xs text-on-surface-variant">
-                    <strong className="text-on-surface">Banho:</strong> Alerta único 15 minutos antes do horário agendado.
-                  </p>
-                  <p className="font-label text-xs text-on-surface-variant">
-                    <strong className="text-on-surface">Silêncio:</strong> Nenhum alerta durante o horário silencioso.
-                  </p>
-                </div>
-              </div>
-            )}
           </div>
-        </div>
+        </section>
 
-        {/* ===== CONTA ===== */}
-        <div className="bg-surface-container rounded-lg p-4">
+        {/* ================================================ */}
+        {/* CONTA                                            */}
+        {/* ================================================ */}
+        <section className="bg-surface-container rounded-xl p-4">
           <div className="flex items-center gap-3 mb-3">
-            <span className="material-symbols-outlined text-on-surface-variant text-xl">account_circle</span>
-            <p className="text-on-surface font-body text-sm font-medium truncate flex-1">{user?.email}</p>
+            <span className="material-symbols-outlined text-on-surface-variant text-lg">account_circle</span>
+            <p className="text-on-surface font-body text-sm truncate flex-1">{user?.email}</p>
           </div>
-          <button
-            onClick={signOut}
-            className="w-full py-2.5 rounded-xl bg-error/10 text-error font-label font-semibold text-sm"
-          >
+          <button onClick={signOut} className="w-full py-2.5 rounded-xl bg-error/10 text-error font-label font-semibold text-sm">
             Sair da conta
           </button>
-        </div>
+        </section>
 
-        <div className="pt-2 text-center">
-          <p className="font-label text-[10px] text-on-surface-variant/50">Yaya v1.0.0</p>
-        </div>
+        <p className="text-center font-label text-[10px] text-on-surface-variant/50 pt-1">Yaya v1.0.0</p>
       </div>
 
-      {/* ===== CUSTOM INTERVAL MODAL ===== */}
-      {customModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="bg-surface-container w-full max-w-sm rounded-2xl p-6 mx-4">
-            <h3 className="font-headline text-lg font-bold text-on-surface mb-1">Personalizar intervalo</h3>
-            <p className="font-label text-xs text-on-surface-variant mb-5">Defina o tempo exato</p>
+      {/* ================================================ */}
+      {/* MODAIS                                           */}
+      {/* ================================================ */}
 
+      {/* Custom interval */}
+      {customModal && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="bg-surface-container w-full max-w-sm rounded-t-2xl sm:rounded-2xl p-6 sm:mx-4">
+            <h3 className="font-headline text-lg font-bold text-on-surface mb-4">Personalizar</h3>
             <div className="flex items-center gap-4 justify-center mb-6">
               <div className="text-center">
-                <label className="font-label text-xs text-on-surface-variant mb-1.5 block">Horas</label>
-                <input
-                  type="number"
-                  min="0"
-                  max="99"
-                  value={customHours}
-                  onChange={(e) => setCustomHours(e.target.value.replace(/\D/g, ''))}
-                  placeholder="0"
-                  className="w-20 bg-surface-container-low rounded-xl px-4 py-3 text-on-surface font-headline text-2xl text-center outline-none focus:ring-2 focus:ring-primary/40"
-                />
+                <label className="font-label text-xs text-on-surface-variant mb-1 block">Horas</label>
+                <input type="number" min="0" max="99" value={customH} onChange={e => setCustomH(e.target.value.replace(/\D/g, ''))} placeholder="0"
+                  className="w-20 bg-surface-container-low rounded-xl px-4 py-3 text-on-surface font-headline text-2xl text-center outline-none focus:ring-2 focus:ring-primary/40" />
               </div>
               <span className="font-headline text-2xl text-on-surface-variant mt-5">:</span>
               <div className="text-center">
-                <label className="font-label text-xs text-on-surface-variant mb-1.5 block">Minutos</label>
-                <input
-                  type="number"
-                  min="0"
-                  max="59"
-                  value={customMinutes}
-                  onChange={(e) => setCustomMinutes(e.target.value.replace(/\D/g, ''))}
-                  placeholder="00"
-                  className="w-20 bg-surface-container-low rounded-xl px-4 py-3 text-on-surface font-headline text-2xl text-center outline-none focus:ring-2 focus:ring-primary/40"
-                />
+                <label className="font-label text-xs text-on-surface-variant mb-1 block">Min</label>
+                <input type="number" min="0" max="59" value={customM} onChange={e => setCustomM(e.target.value.replace(/\D/g, ''))} placeholder="00"
+                  className="w-20 bg-surface-container-low rounded-xl px-4 py-3 text-on-surface font-headline text-2xl text-center outline-none focus:ring-2 focus:ring-primary/40" />
               </div>
             </div>
-
             <div className="flex gap-3">
-              <button onClick={() => setCustomModal(null)} className="flex-1 py-3 rounded-xl bg-surface-variant text-on-surface-variant font-label font-semibold text-sm">
-                Cancelar
-              </button>
-              <button onClick={handleCustomSave} className="flex-1 py-3 rounded-xl bg-primary text-on-primary font-label font-semibold text-sm">
-                Salvar
-              </button>
+              <button onClick={() => setCustomModal(null)} className="flex-1 py-3 rounded-xl bg-surface-variant text-on-surface-variant font-label font-semibold text-sm">Cancelar</button>
+              <button onClick={saveCustom} className="flex-1 py-3 rounded-xl bg-primary text-on-primary font-label font-semibold text-sm">Salvar</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* ===== QUIET HOUR PICKER MODAL ===== */}
+      {/* Quiet hour picker */}
       {pickingQuietHour && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="bg-surface-container w-full max-w-sm rounded-2xl p-5 mx-4 max-h-[80vh] flex flex-col">
-            <h3 className="font-headline text-lg font-bold text-on-surface mb-1">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="bg-surface-container w-full max-w-sm rounded-t-2xl sm:rounded-2xl p-5 sm:mx-4">
+            <h3 className="font-headline text-lg font-bold text-on-surface mb-3">
               {pickingQuietHour === 'start' ? 'Início do silêncio' : 'Fim do silêncio'}
             </h3>
-            <p className="font-label text-xs text-on-surface-variant mb-4">Selecione o horário</p>
-
-            <div className="overflow-y-auto flex-1" style={{ maxHeight: 300 }}>
-              <div className="flex flex-wrap gap-2">
-                {HOURS_24.map((h) => {
-                  const isActive = pickingQuietHour === 'start'
-                    ? prefs.quietHours.start === h
-                    : prefs.quietHours.end === h
-                  return (
-                    <button
-                      key={h}
-                      onClick={() => {
-                        const updated = {
-                          ...prefs,
-                          quietHours: { ...prefs.quietHours, [pickingQuietHour]: h },
-                        }
-                        setPickingQuietHour(null)
-                        savePrefs(updated)
-                      }}
-                      className={`w-16 py-2.5 rounded-lg font-label text-sm font-medium transition-colors ${
-                        isActive ? 'bg-primary text-on-primary' : 'bg-surface-variant text-on-surface-variant'
-                      }`}
-                    >
-                      {padHour(h)}
-                    </button>
-                  )
-                })}
-              </div>
+            <div className="flex flex-wrap gap-2 max-h-[240px] overflow-y-auto">
+              {HOURS_24.map(h => {
+                const isActive = pickingQuietHour === 'start' ? prefs.quietHours.start === h : prefs.quietHours.end === h
+                return (
+                  <button key={h} onClick={() => { setPickingQuietHour(null); savePrefs({ ...prefs, quietHours: { ...prefs.quietHours, [pickingQuietHour]: h } }) }}
+                    className={`w-16 py-2 rounded-lg font-label text-sm font-medium ${isActive ? 'bg-primary text-on-primary' : 'bg-surface-variant text-on-surface-variant'}`}>
+                    {padH(h)}
+                  </button>
+                )
+              })}
             </div>
-
-            <button
-              onClick={() => setPickingQuietHour(null)}
-              className="mt-4 py-2.5 rounded-xl bg-surface-variant text-on-surface-variant font-label font-semibold text-sm w-full"
-            >
-              Cancelar
-            </button>
+            <button onClick={() => setPickingQuietHour(null)} className="mt-4 w-full py-2.5 rounded-xl bg-surface-variant text-on-surface-variant font-label font-semibold text-sm">Cancelar</button>
           </div>
         </div>
       )}
 
-      {/* ===== BATH HOUR PICKER MODAL ===== */}
+      {/* Bath hour picker */}
       {pickingBathHour && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="bg-surface-container w-full max-w-sm rounded-2xl p-5 mx-4 max-h-[80vh] flex flex-col">
-            <h3 className="font-headline text-lg font-bold text-on-surface mb-1">Horário do banho</h3>
-            <p className="font-label text-xs text-on-surface-variant mb-4">Selecione o horário desejado</p>
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="bg-surface-container w-full max-w-sm rounded-t-2xl sm:rounded-2xl p-5 sm:mx-4">
+            <h3 className="font-headline text-lg font-bold text-on-surface mb-3">Horário do banho</h3>
+            <div className="flex flex-wrap gap-2 max-h-[240px] overflow-y-auto">
+              {BATH_HOURS.map(h => {
+                const isActive = bathHours.includes(h)
+                return (
+                  <button key={h} onClick={() => isActive ? removeBathHour(h) : addBathHour(h)}
+                    className={`w-16 py-2 rounded-lg font-label text-sm font-medium ${isActive ? 'bg-primary text-on-primary' : 'bg-surface-variant text-on-surface-variant'}`}>
+                    {padH(h)}
+                  </button>
+                )
+              })}
+            </div>
+            <button onClick={() => setPickingBathHour(false)} className="mt-4 w-full py-2.5 rounded-xl bg-surface-variant text-on-surface-variant font-label font-semibold text-sm">Fechar</button>
+          </div>
+        </div>
+      )}
 
-            <div className="overflow-y-auto flex-1" style={{ maxHeight: 300 }}>
-              <div className="flex flex-wrap gap-2">
-                {BATH_HOURS.map((h) => {
-                  const isActive = bathHours.includes(h)
-                  return (
-                    <button
-                      key={h}
-                      onClick={() => {
-                        if (isActive) {
-                          handleRemoveBathHour(h)
-                        } else {
-                          handleAddBathHour(h)
-                        }
-                      }}
-                      className={`w-16 py-2.5 rounded-lg font-label text-sm font-medium transition-colors ${
-                        isActive ? 'bg-primary text-on-primary' : 'bg-surface-variant text-on-surface-variant'
-                      }`}
-                    >
-                      {padHour(h)}
-                    </button>
-                  )
-                })}
+      {/* Info modal - Sleep */}
+      {infoModal === 'sleep' && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setInfoModal(null)}>
+          <div className="bg-surface-container w-full max-w-sm rounded-t-2xl sm:rounded-2xl p-5 sm:mx-4" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center gap-2 mb-4">
+              <span className="material-symbols-outlined text-primary text-xl">bedtime</span>
+              <h3 className="font-headline text-lg font-bold text-on-surface">Como funciona o sono</h3>
+            </div>
+            <div className="space-y-3">
+              <div className="flex items-start gap-3">
+                <span className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="font-label text-xs text-primary font-bold">1</span>
+                </span>
+                <p className="font-body text-sm text-on-surface-variant">
+                  Ao registrar <strong className="text-on-surface">"Dormiu"</strong>, calculamos quando o bebê deve acordar (duração da soneca).
+                </p>
+              </div>
+              <div className="flex items-start gap-3">
+                <span className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="font-label text-xs text-primary font-bold">2</span>
+                </span>
+                <p className="font-body text-sm text-on-surface-variant">
+                  Ao registrar <strong className="text-on-surface">"Acordou"</strong>, calculamos quando deve dormir novamente (janela de sono).
+                </p>
+              </div>
+              <div className="flex items-start gap-3">
+                <span className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="font-label text-xs text-primary font-bold">3</span>
+                </span>
+                <p className="font-body text-sm text-on-surface-variant">
+                  À noite, ative o <strong className="text-on-surface">horário silencioso</strong> para pausar os alertas de sono noturno.
+                </p>
               </div>
             </div>
+            <button onClick={() => setInfoModal(null)} className="mt-5 w-full py-2.5 rounded-xl bg-primary text-on-primary font-label font-semibold text-sm">Entendi</button>
+          </div>
+        </div>
+      )}
 
-            <button
-              onClick={() => setPickingBathHour(false)}
-              className="mt-4 py-2.5 rounded-xl bg-surface-variant text-on-surface-variant font-label font-semibold text-sm w-full"
-            >
-              Fechar
-            </button>
+      {/* Info modal - Notifications */}
+      {infoModal === 'notifications' && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setInfoModal(null)}>
+          <div className="bg-surface-container w-full max-w-sm rounded-t-2xl sm:rounded-2xl p-5 sm:mx-4" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center gap-2 mb-4">
+              <span className="material-symbols-outlined text-primary text-xl">notifications</span>
+              <h3 className="font-headline text-lg font-bold text-on-surface">Como funcionam</h3>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <p className="font-label text-xs text-primary font-semibold mb-1">Mamada e Fralda</p>
+                <p className="font-body text-sm text-on-surface-variant">
+                  Você recebe um alerta quando o intervalo está acabando (80%) e outro quando já passou.
+                </p>
+                <div className="bg-surface-container-low rounded-lg p-2.5 mt-2 flex items-start gap-2">
+                  <span className="material-symbols-outlined text-primary text-sm mt-0.5">breastfeeding</span>
+                  <div>
+                    <p className="font-body text-xs text-on-surface font-semibold">Hora da mamada!</p>
+                    <p className="font-label text-[11px] text-on-surface-variant">Última mamada foi há {mToStr(intervals['feed']?.minutes ?? 180)}.</p>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <p className="font-label text-xs text-primary font-semibold mb-1">Banho</p>
+                <p className="font-body text-sm text-on-surface-variant">
+                  Alerta único 15 minutos antes do horário agendado.
+                </p>
+              </div>
+              <div>
+                <p className="font-label text-xs text-primary font-semibold mb-1">Horário silencioso</p>
+                <p className="font-body text-sm text-on-surface-variant">
+                  Nenhum alerta durante o período configurado. Ideal para o sono noturno.
+                </p>
+              </div>
+            </div>
+            <button onClick={() => setInfoModal(null)} className="mt-5 w-full py-2.5 rounded-xl bg-primary text-on-primary font-label font-semibold text-sm">Entendi</button>
           </div>
         </div>
       )}

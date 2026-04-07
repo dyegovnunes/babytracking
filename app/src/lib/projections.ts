@@ -1,16 +1,27 @@
 import type { LogEntry, EventType, IntervalConfig, Projection } from '../types'
 
+export interface ProjectionOptions {
+  pauseDuringSleep?: boolean
+}
+
 /**
- * Get next projection for interval-based categories (feed, diaper, sleep_nap, sleep_awake)
+ * Get next projection for any category.
+ * Options.pauseDuringSleep: if true, returns null for feed/diaper when baby is sleeping.
  */
 export function getNextProjection(
   logs: LogEntry[],
   category: string,
   intervals: Record<string, IntervalConfig>,
   events: EventType[],
+  options?: ProjectionOptions,
 ): Projection | null {
   const interval = intervals[category]
   if (!interval) return null
+
+  // Pause feed/diaper projections while baby is sleeping
+  if (options?.pauseDuringSleep && (category === 'feed' || category === 'diaper')) {
+    if (isBabySleeping(logs, events)) return null
+  }
 
   // Bath uses scheduled mode
   if (interval.mode === 'scheduled') {
@@ -54,8 +65,22 @@ export function getNextProjection(
 }
 
 /**
- * Sleep Nap projection: triggered when baby falls asleep (event 'sleep')
- * Predicts when baby should wake up.
+ * Check if baby is currently sleeping (last sleep-category event was 'sleep')
+ */
+function isBabySleeping(logs: LogEntry[], events: EventType[]): boolean {
+  const sleepLogs = logs.filter((l) => {
+    const event = events.find((e) => e.id === l.eventId)
+    return event?.category === 'sleep'
+  })
+  if (sleepLogs.length === 0) return false
+
+  const sorted = [...sleepLogs].sort((a, b) => b.timestamp - a.timestamp)
+  const lastEventType = events.find((e) => e.id === sorted[0].eventId)
+  return lastEventType?.id === 'sleep'
+}
+
+/**
+ * Sleep Nap: triggered by 'sleep' event → predicts when baby should wake up.
  * Only active when baby is currently sleeping.
  */
 function getSleepNapProjection(
@@ -63,7 +88,6 @@ function getSleepNapProjection(
   interval: IntervalConfig,
   events: EventType[],
 ): Projection | null {
-  // Get all sleep-category events
   const sleepEvents = logs.filter((l) => {
     const event = events.find((e) => e.id === l.eventId)
     return event?.category === 'sleep'
@@ -75,7 +99,6 @@ function getSleepNapProjection(
   const lastEvent = sorted[0]
   const lastEventType = events.find((e) => e.id === lastEvent.eventId)
 
-  // Only show nap projection if baby is currently sleeping (last event was 'sleep'/'dormiu')
   if (lastEventType?.id !== 'sleep') return null
 
   const nextTime = new Date(lastEvent.timestamp + interval.minutes * 60000)
@@ -93,8 +116,7 @@ function getSleepNapProjection(
 }
 
 /**
- * Sleep Awake projection: triggered when baby wakes up (event 'wake')
- * Predicts when baby should go to sleep next.
+ * Sleep Awake: triggered by 'wake' event → predicts when baby should sleep.
  * Only active when baby is currently awake.
  */
 function getSleepAwakeProjection(
@@ -113,7 +135,6 @@ function getSleepAwakeProjection(
   const lastEvent = sorted[0]
   const lastEventType = events.find((e) => e.id === lastEvent.eventId)
 
-  // Only show awake projection if baby is currently awake (last event was 'wake'/'acordou')
   if (lastEventType?.id !== 'wake') return null
 
   const nextTime = new Date(lastEvent.timestamp + interval.minutes * 60000)
@@ -131,8 +152,8 @@ function getSleepAwakeProjection(
 }
 
 /**
- * Bath projection: scheduled mode
- * Shows next scheduled bath time. Warns `warn` minutes before.
+ * Bath projection: scheduled mode with nearest-slot matching.
+ * Shows next UPCOMING scheduled bath. Skips past missed slots.
  */
 function getBathProjection(
   logs: LogEntry[],
@@ -145,65 +166,68 @@ function getBathProjection(
   const now = new Date()
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate())
 
-  // Check which baths were already done today
+  // Today's bath logs
   const todayBathLogs = logs.filter((l) => {
     const event = events.find((e) => e.id === l.eventId)
     return event?.id === 'bath' && l.timestamp >= todayStart.getTime()
   })
 
-  // Find next upcoming scheduled time
   const sortedHours = [...hours].sort((a, b) => a - b)
 
+  // Nearest-slot matching: each bath log today matches the closest scheduled slot
+  const fulfilledHours = new Set<number>()
+  for (const bathLog of todayBathLogs) {
+    let nearestHour = sortedHours[0]
+    let nearestDiff = Infinity
+    for (const hour of sortedHours) {
+      if (fulfilledHours.has(hour)) continue // already matched
+      const scheduledMs = todayStart.getTime() + hour * 3600000
+      const diff = Math.abs(bathLog.timestamp - scheduledMs)
+      if (diff < nearestDiff) {
+        nearestDiff = diff
+        nearestHour = hour
+      }
+    }
+    fulfilledHours.add(nearestHour)
+  }
+
+  // Find last bath overall (for display)
+  const allBaths = logs.filter((l) => {
+    const event = events.find((e) => e.id === l.eventId)
+    return event?.id === 'bath'
+  })
+  const lastBath = allBaths.length > 0
+    ? [...allBaths].sort((a, b) => b.timestamp - a.timestamp)[0]
+    : null
+
+  // Find next upcoming slot (skip fulfilled and past-missed)
   for (const hour of sortedHours) {
-    const scheduledTime = new Date(todayStart.getTime() + hour * 60 * 60000)
+    if (fulfilledHours.has(hour)) continue // already done
 
-    // Check if this time slot already had a bath (within 1 hour window)
-    const alreadyDone = todayBathLogs.some((l) => {
-      const diff = Math.abs(l.timestamp - scheduledTime.getTime())
-      return diff < 60 * 60000 // within 1 hour
-    })
+    const scheduledTime = new Date(todayStart.getTime() + hour * 3600000)
 
-    if (alreadyDone) continue
+    // If this slot is in the past and wasn't done, it was missed → skip
+    if (scheduledTime.getTime() < now.getTime()) continue
 
-    // If this time is still upcoming (or recently passed)
+    // Upcoming slot found
     const warnTime = new Date(scheduledTime.getTime() - interval.warn * 60000)
-
-    // Find last bath overall
-    const allBaths = logs.filter((l) => {
-      const event = events.find((e) => e.id === l.eventId)
-      return event?.id === 'bath'
-    })
-    const lastBath = allBaths.length > 0
-      ? [...allBaths].sort((a, b) => b.timestamp - a.timestamp)[0]
-      : null
-
-    // Format the scheduled time for label
     const hourStr = hour.toString().padStart(2, '0')
-    const label = `Banho às ${hourStr}:00`
 
     return {
-      label,
+      label: `Banho às ${hourStr}:00`,
       time: scheduledTime,
-      isOverdue: scheduledTime.getTime() < now.getTime(),
-      isWarning: warnTime.getTime() < now.getTime() && scheduledTime.getTime() >= now.getTime(),
+      isOverdue: false,
+      isWarning: warnTime.getTime() < now.getTime(),
       lastEvent: lastBath ? 'Banho' : '',
       lastTime: lastBath ? new Date(lastBath.timestamp) : new Date(),
     }
   }
 
-  // All baths done today - show tomorrow's first
+  // All slots done or missed today → show tomorrow's first
   if (sortedHours.length > 0) {
-    const tomorrowStart = new Date(todayStart.getTime() + 24 * 60 * 60000)
-    const nextTime = new Date(tomorrowStart.getTime() + sortedHours[0] * 60 * 60000)
+    const tomorrowStart = new Date(todayStart.getTime() + 24 * 3600000)
+    const nextTime = new Date(tomorrowStart.getTime() + sortedHours[0] * 3600000)
     const hourStr = sortedHours[0].toString().padStart(2, '0')
-
-    const allBaths = logs.filter((l) => {
-      const event = events.find((e) => e.id === l.eventId)
-      return event?.id === 'bath'
-    })
-    const lastBath = allBaths.length > 0
-      ? [...allBaths].sort((a, b) => b.timestamp - a.timestamp)[0]
-      : null
 
     return {
       label: `Banho às ${hourStr}:00 (amanhã)`,
