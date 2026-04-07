@@ -217,7 +217,7 @@ export default function SettingsPage() {
                 </button>
               ))}
             </div>
-            <button onClick={() => openCustom(cat)} className="flex items-center gap-1.5 py-1.5 px-3 rounded-lg bg-primary/10 active:bg-primary/20">
+            <button onClick={() => openCustom(cat)} className="flex items-center gap-1.5 py-2.5 px-3.5 rounded-lg bg-primary/10 active:bg-primary/20 min-h-[44px]">
               <span className="material-symbols-outlined text-primary text-sm">edit</span>
               <span className="font-label text-xs text-primary font-medium">Personalizar</span>
             </button>
@@ -270,7 +270,7 @@ export default function SettingsPage() {
             <div className="flex items-center gap-2 pt-2">
               <span className="material-symbols-outlined text-on-surface-variant text-base">bedtime</span>
               <span className="font-label text-xs text-on-surface-variant font-semibold flex-1">Sono</span>
-              <button onClick={() => setInfoModal('sleep')} className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center">
+              <button onClick={() => setInfoModal('sleep')} className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center active:bg-primary/20">
                 <span className="material-symbols-outlined text-primary text-sm">info</span>
               </button>
             </div>
@@ -312,7 +312,7 @@ export default function SettingsPage() {
                     <span className="font-headline text-sm text-on-surface font-bold">{padH(h)}</span>
                   </div>
                   {bathHours.length > 1 && (
-                    <button onClick={() => removeBathHour(h)} className="w-7 h-7 rounded-full flex items-center justify-center active:bg-error/10">
+                    <button onClick={() => removeBathHour(h)} className="w-9 h-9 rounded-full flex items-center justify-center active:bg-error/10">
                       <span className="material-symbols-outlined text-error text-base">close</span>
                     </button>
                   )}
@@ -339,7 +339,7 @@ export default function SettingsPage() {
           <div className="flex items-center gap-2 mb-3">
             <span className="material-symbols-outlined text-primary text-lg">notifications</span>
             <h2 className="font-headline text-sm font-bold text-on-surface flex-1">Notificações</h2>
-            <button onClick={() => setInfoModal('notifications')} className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center">
+            <button onClick={() => setInfoModal('notifications')} className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center active:bg-primary/20">
               <span className="material-symbols-outlined text-primary text-sm">info</span>
             </button>
           </div>
@@ -392,11 +392,11 @@ export default function SettingsPage() {
                 </div>
                 {prefs.quietHours.enabled && (
                   <div className="flex items-center gap-3 mt-3 ml-9">
-                    <button onClick={() => setPickingQuietHour('start')} className="px-3.5 py-1.5 rounded-lg bg-surface-container-low active:bg-surface-container-high">
+                    <button onClick={() => setPickingQuietHour('start')} className="px-4 py-2.5 rounded-lg bg-surface-container-low active:bg-surface-container-high min-h-[44px]">
                       <span className="font-headline text-sm text-on-surface font-bold">{padH(prefs.quietHours.start)}</span>
                     </button>
                     <span className="font-label text-xs text-on-surface-variant">até</span>
-                    <button onClick={() => setPickingQuietHour('end')} className="px-3.5 py-1.5 rounded-lg bg-surface-container-low active:bg-surface-container-high">
+                    <button onClick={() => setPickingQuietHour('end')} className="px-4 py-2.5 rounded-lg bg-surface-container-low active:bg-surface-container-high min-h-[44px]">
                       <span className="font-headline text-sm text-on-surface font-bold">{padH(prefs.quietHours.end)}</span>
                     </button>
                   </div>

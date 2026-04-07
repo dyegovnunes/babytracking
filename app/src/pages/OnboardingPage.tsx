@@ -154,7 +154,7 @@ export default function OnboardingPage({ onComplete }: Props) {
           <div className="space-y-3">
             <button
               onClick={() => setMode('create')}
-              className="w-full bg-surface-container rounded-xl p-4 flex items-center gap-4 active:bg-surface-container-high transition-colors text-left"
+              className="w-full bg-surface-container rounded-xl p-4 flex items-center gap-4 active:bg-surface-container-high active:scale-[0.98] transition-all text-left"
             >
               <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                 <span className="material-symbols-outlined text-primary text-xl">child_care</span>
@@ -167,7 +167,7 @@ export default function OnboardingPage({ onComplete }: Props) {
 
             <button
               onClick={() => setMode('join')}
-              className="w-full bg-surface-container rounded-xl p-4 flex items-center gap-4 active:bg-surface-container-high transition-colors text-left"
+              className="w-full bg-surface-container rounded-xl p-4 flex items-center gap-4 active:bg-surface-container-high active:scale-[0.98] transition-all text-left"
             >
               <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                 <span className="material-symbols-outlined text-primary text-xl">group_add</span>

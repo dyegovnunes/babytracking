@@ -85,12 +85,13 @@ export default function EditModal({ log, onSave, onDelete, onClose }: Props) {
               Volume (ml)
             </label>
             <input
-              type="number"
+              type="text"
               inputMode="numeric"
+              pattern="[0-9]*"
               value={ml}
-              onChange={(e) => setMl(e.target.value)}
+              onChange={(e) => setMl(e.target.value.replace(/\D/g, ''))}
               placeholder="ex: 60"
-              className="w-full bg-surface-container-low rounded-lg px-3 py-2.5 text-on-surface font-body text-sm outline-none focus:ring-2 focus:ring-primary/40"
+              className="w-full bg-surface-container-low rounded-lg px-3 py-3 text-on-surface font-body text-sm outline-none focus:ring-2 focus:ring-primary/40 min-h-[44px]"
             />
           </div>
         )}

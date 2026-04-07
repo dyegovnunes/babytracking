@@ -51,9 +51,9 @@ export default function PredictionCard({ projection, onDismiss }: Props) {
       {onDismiss && (
         <button
           onClick={(e) => { e.stopPropagation(); onDismiss(projection.label) }}
-          className="absolute -top-1.5 -right-1.5 w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center border border-white/10"
+          className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center border border-white/10 active:bg-surface-container-high"
         >
-          <span className="material-symbols-outlined text-on-surface-variant text-sm">close</span>
+          <span className="material-symbols-outlined text-on-surface-variant text-base">close</span>
         </button>
       )}
     </div>

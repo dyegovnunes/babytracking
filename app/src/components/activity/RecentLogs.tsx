@@ -70,7 +70,7 @@ export default function RecentLogs({ logs, members, onEdit }: Props) {
                   {log.ml ? ` — ${log.ml}ml` : ''}
                 </span>
                 {memberName && (
-                  <p className="font-label text-[10px] text-on-surface-variant/60">
+                  <p className="font-label text-[10px] text-on-surface-variant truncate">
                     por {memberName}
                   </p>
                 )}

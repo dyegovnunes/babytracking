@@ -35,15 +35,15 @@ export default function HeroIdentity() {
           onClick={hasMultiple ? () => setSwitcherOpen(true) : undefined}
         >
           {avatar}
-          <div className="flex-1 min-w-0 flex items-baseline gap-1.5">
-            <span className="font-headline text-base font-bold text-on-surface truncate">
+          <div className="flex-1 min-w-0 flex items-baseline gap-1.5 overflow-hidden">
+            <span className="font-headline text-base font-bold text-on-surface truncate shrink">
               {baby.name}
             </span>
-            <span className="text-on-surface-variant font-label text-xs">
+            <span className="text-on-surface-variant font-label text-xs whitespace-nowrap shrink-0">
               · {formatAge(baby.birthDate)}
             </span>
             {hasMultiple && (
-              <span className="material-symbols-outlined text-on-surface-variant text-base">
+              <span className="material-symbols-outlined text-on-surface-variant text-base shrink-0">
                 expand_more
               </span>
             )}
