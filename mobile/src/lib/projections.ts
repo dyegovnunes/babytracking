@@ -2,6 +2,7 @@ import type { LogEntry, EventType, IntervalConfig, Projection } from '../types'
 
 export interface ProjectionOptions {
   pauseDuringSleep?: boolean
+  quietHours?: { enabled: boolean; start: number; end: number }
 }
 
 /**
@@ -21,6 +22,12 @@ export function getNextProjection(
   // Pause feed/diaper projections while baby is sleeping
   if (options?.pauseDuringSleep && (category === 'feed' || category === 'diaper')) {
     if (isBabySleeping(logs, events)) return null
+  }
+
+  // During quiet hours, hide feed/diaper/sleep projections
+  const qh = options?.quietHours
+  if (qh?.enabled && (category === 'feed' || category === 'diaper' || category === 'sleep_nap' || category === 'sleep_awake')) {
+    if (isInQuietHours(new Date(), qh)) return null
   }
 
   // Bath uses scheduled mode
@@ -52,6 +59,9 @@ export function getNextProjection(
   const warnTime = new Date(last.timestamp + interval.warn * 60000)
   const now = Date.now()
 
+  // If projected time falls within quiet hours, hide it
+  if (qh?.enabled && isInQuietHours(nextTime, qh)) return null
+
   const lastEvent = events.find((e) => e.id === last.eventId)
 
   return {
@@ -62,6 +72,16 @@ export function getNextProjection(
     lastEvent: lastEvent?.label ?? '',
     lastTime: new Date(last.timestamp),
   }
+}
+
+/**
+ * Check if a given time falls within quiet hours range.
+ * Handles wrapping across midnight (e.g., start=19, end=7).
+ */
+function isInQuietHours(date: Date, qh: { start: number; end: number }): boolean {
+  const h = date.getHours()
+  if (qh.start <= qh.end) return h >= qh.start && h < qh.end
+  return h >= qh.start || h < qh.end
 }
 
 /**

@@ -11,6 +11,7 @@ export default function OnboardingPage({ onComplete }: Props) {
   const [mode, setMode] = useState<'choose' | 'create' | 'join'>('choose')
   const [name, setName] = useState('')
   const [birthDate, setBirthDate] = useState('')
+  const [gender, setGender] = useState<'boy' | 'girl' | null>(null)
   const [parentName, setParentName] = useState('')
   const [inviteCode, setInviteCode] = useState('')
   const [loading, setLoading] = useState(false)
@@ -18,7 +19,7 @@ export default function OnboardingPage({ onComplete }: Props) {
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault()
-    if (!name.trim() || !birthDate || !parentName.trim() || !user) return
+    if (!name.trim() || !birthDate || !gender || !parentName.trim() || !user) return
 
     setLoading(true)
     setError(null)
@@ -28,6 +29,7 @@ export default function OnboardingPage({ onComplete }: Props) {
       .insert({
         name: name.trim(),
         birth_date: birthDate,
+        gender,
         created_by: user.id,
       })
       .select()
@@ -294,9 +296,45 @@ export default function OnboardingPage({ onComplete }: Props) {
             />
           </div>
 
+          <div className="mb-4">
+            <label className="font-label text-[11px] text-primary font-semibold uppercase tracking-wider block mb-1.5">
+              Menino ou menina?
+            </label>
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => setGender('boy')}
+                className={`flex-1 py-3 rounded-xl flex items-center justify-center gap-2 transition-all ${
+                  gender === 'boy'
+                    ? 'bg-blue-500/20 ring-2 ring-blue-400'
+                    : 'bg-surface-container-low'
+                }`}
+              >
+                <span className="text-xl">👦</span>
+                <span className={`font-label text-sm font-semibold ${gender === 'boy' ? 'text-blue-400' : 'text-on-surface-variant'}`}>
+                  Menino
+                </span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setGender('girl')}
+                className={`flex-1 py-3 rounded-xl flex items-center justify-center gap-2 transition-all ${
+                  gender === 'girl'
+                    ? 'bg-pink-500/20 ring-2 ring-pink-400'
+                    : 'bg-surface-container-low'
+                }`}
+              >
+                <span className="text-xl">👧</span>
+                <span className={`font-label text-sm font-semibold ${gender === 'girl' ? 'text-pink-400' : 'text-on-surface-variant'}`}>
+                  Menina
+                </span>
+              </button>
+            </div>
+          </div>
+
           <div className="mb-6">
             <label className="font-label text-[11px] text-primary font-semibold uppercase tracking-wider block mb-1.5">
-              Data de nascimento
+              Data de nascimento do bebê
             </label>
             <input
               type="date"
@@ -310,7 +348,7 @@ export default function OnboardingPage({ onComplete }: Props) {
 
           <button
             type="submit"
-            disabled={loading || !parentName.trim() || !name.trim() || !birthDate}
+            disabled={loading || !parentName.trim() || !name.trim() || !birthDate || !gender}
             className="w-full py-3.5 rounded-xl bg-gradient-to-br from-primary to-primary-container text-on-primary font-label font-bold text-base disabled:opacity-50 transition-opacity"
           >
             {loading ? (

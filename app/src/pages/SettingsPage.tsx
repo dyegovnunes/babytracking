@@ -114,8 +114,12 @@ export default function SettingsPage() {
       quiet_start: updated.quietHours.start, quiet_end: updated.quietHours.end,
       updated_at: new Date().toISOString(),
     }, { onConflict: 'user_id,baby_id' })
-    if (error) setToast('Erro ao salvar preferências')
-  }, [user, baby])
+    if (error) {
+      setToast('Erro ao salvar preferências')
+    } else {
+      dispatch({ type: 'SET_QUIET_HOURS', value: updated.quietHours })
+    }
+  }, [user, baby, dispatch])
 
   // ===== INTERVAL HANDLERS =====
 

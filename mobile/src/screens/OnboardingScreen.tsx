@@ -12,6 +12,7 @@ interface Props {
 export default function OnboardingScreen({ onComplete, onJoin }: Props) {
   const { user } = useAuth()
   const [name, setName] = useState('')
+  const [gender, setGender] = useState<'boy' | 'girl' | null>(null)
   const [birthDate, setBirthDate] = useState<Date | null>(null)
   const [parentName, setParentName] = useState('')
   const [loading, setLoading] = useState(false)
@@ -19,7 +20,7 @@ export default function OnboardingScreen({ onComplete, onJoin }: Props) {
   const [showDatePicker, setShowDatePicker] = useState(false)
 
   async function handleSubmit() {
-    if (!name.trim() || !birthDate || !parentName.trim() || !user) return
+    if (!name.trim() || !birthDate || !gender || !parentName.trim() || !user) return
 
     setLoading(true)
     setError(null)
@@ -31,6 +32,7 @@ export default function OnboardingScreen({ onComplete, onJoin }: Props) {
       .insert({
         name: name.trim(),
         birth_date: dateStr,
+        gender,
         created_by: user.id,
       })
       .select()
@@ -71,7 +73,7 @@ export default function OnboardingScreen({ onComplete, onJoin }: Props) {
     onComplete()
   }
 
-  const canSubmit = parentName.trim() && name.trim() && birthDate
+  const canSubmit = parentName.trim() && name.trim() && gender && birthDate
 
   return (
     <KeyboardAvoidingView
@@ -125,10 +127,45 @@ export default function OnboardingScreen({ onComplete, onJoin }: Props) {
               />
             </View>
 
+            {/* Gender */}
+            <View className="mb-4">
+              <Text className="font-label text-xs text-primary font-semibold uppercase tracking-wider mb-1.5">
+                Menino ou menina?
+              </Text>
+              <View className="flex-row gap-3">
+                <Pressable
+                  onPress={() => setGender('boy')}
+                  className={`flex-1 py-3 rounded-xl flex-row items-center justify-center gap-2 ${
+                    gender === 'boy'
+                      ? 'bg-blue-500/20 border-2 border-blue-400'
+                      : 'bg-surface-container-low border-2 border-transparent'
+                  }`}
+                >
+                  <Text className="text-xl">👦</Text>
+                  <Text className={`font-label text-sm font-semibold ${gender === 'boy' ? 'text-blue-400' : 'text-on-surface-variant'}`}>
+                    Menino
+                  </Text>
+                </Pressable>
+                <Pressable
+                  onPress={() => setGender('girl')}
+                  className={`flex-1 py-3 rounded-xl flex-row items-center justify-center gap-2 ${
+                    gender === 'girl'
+                      ? 'bg-pink-500/20 border-2 border-pink-400'
+                      : 'bg-surface-container-low border-2 border-transparent'
+                  }`}
+                >
+                  <Text className="text-xl">👧</Text>
+                  <Text className={`font-label text-sm font-semibold ${gender === 'girl' ? 'text-pink-400' : 'text-on-surface-variant'}`}>
+                    Menina
+                  </Text>
+                </Pressable>
+              </View>
+            </View>
+
             {/* Birth date */}
             <View className="mb-6">
               <Text className="font-label text-xs text-primary font-semibold uppercase tracking-wider mb-1.5">
-                Data de nascimento
+                Data de nascimento do bebê
               </Text>
               <Pressable
                 onPress={() => setShowDatePicker(true)}

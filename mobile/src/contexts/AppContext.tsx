@@ -12,6 +12,8 @@ interface AppState {
   members: Record<string, Member>
   loading: boolean
   needsOnboarding: boolean
+  pauseDuringSleep: boolean
+  quietHours: { enabled: boolean; start: number; end: number }
 }
 
 type Action =
@@ -23,6 +25,8 @@ type Action =
   | { type: 'SET_INTERVALS'; intervals: Record<string, IntervalConfig> }
   | { type: 'SET_BABY'; baby: Baby }
   | { type: 'CLEAR_LOGS' }
+  | { type: 'SET_PAUSE_DURING_SLEEP'; value: boolean }
+  | { type: 'SET_QUIET_HOURS'; value: { enabled: boolean; start: number; end: number } }
 
 const initialState: AppState = {
   logs: [],
@@ -31,6 +35,8 @@ const initialState: AppState = {
   members: {},
   loading: true,
   needsOnboarding: false,
+  pauseDuringSleep: false,
+  quietHours: { enabled: false, start: 22, end: 7 },
 }
 
 function reducer(state: AppState, action: Action): AppState {
@@ -51,6 +57,10 @@ function reducer(state: AppState, action: Action): AppState {
       return { ...state, baby: action.baby }
     case 'CLEAR_LOGS':
       return { ...state, logs: [] }
+    case 'SET_PAUSE_DURING_SLEEP':
+      return { ...state, pauseDuringSleep: action.value }
+    case 'SET_QUIET_HOURS':
+      return { ...state, quietHours: action.value }
     default:
       return state
   }
@@ -108,6 +118,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         id: babyRes.data.id,
         name: babyRes.data.name,
         birthDate: babyRes.data.birth_date,
+        gender: babyRes.data.gender ?? undefined,
         photoUrl: babyRes.data.photo_url,
       }
 
@@ -143,6 +154,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
 
       dispatch({ type: 'SET_INITIAL', logs, intervals, baby, members })
+
+      // Load notification preferences
+      const { data: prefData } = await supabase
+        .from('notification_prefs')
+        .select('pause_during_sleep, quiet_enabled, quiet_start, quiet_end')
+        .eq('user_id', user!.id)
+        .eq('baby_id', babyId)
+        .single()
+
+      if (prefData) {
+        if (prefData.pause_during_sleep) {
+          dispatch({ type: 'SET_PAUSE_DURING_SLEEP', value: true })
+        }
+        if (prefData.quiet_enabled) {
+          dispatch({ type: 'SET_QUIET_HOURS', value: { enabled: true, start: prefData.quiet_start, end: prefData.quiet_end } })
+        }
+      }
 
       // Setup notifications
       await requestNotificationPermission()
@@ -245,6 +273,7 @@ export async function updateBaby(
     .update({
       name: baby.name,
       birth_date: baby.birthDate,
+      gender: baby.gender ?? null,
       photo_url: baby.photoUrl ?? null,
     })
     .eq('id', baby.id)

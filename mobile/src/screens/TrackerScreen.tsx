@@ -18,7 +18,7 @@ const PROJECTION_CATEGORIES: string[] = ['feed', 'diaper', 'sleep_nap', 'sleep_a
 
 export default function TrackerScreen() {
   useNotificationSync()
-  const { logs, intervals, baby, members, loading } = useAppState()
+  const { logs, intervals, baby, members, loading, pauseDuringSleep, quietHours } = useAppState()
   const dispatch = useAppDispatch()
   const { user } = useAuth()
   const now = useTimer()
@@ -64,7 +64,7 @@ export default function TrackerScreen() {
   void now
 
   const projections = PROJECTION_CATEGORIES
-    .map((cat) => getNextProjection(logs, cat, intervals, DEFAULT_EVENTS, { pauseDuringSleep: false }))
+    .map((cat) => getNextProjection(logs, cat, intervals, DEFAULT_EVENTS, { pauseDuringSleep, quietHours }))
     .filter(Boolean)
 
   if (loading) {

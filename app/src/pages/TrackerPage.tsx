@@ -16,7 +16,7 @@ import { TrackerSkeleton } from '../components/ui/Skeleton'
 const PROJECTION_CATEGORIES: string[] = ['feed', 'diaper', 'sleep_nap', 'sleep_awake', 'bath']
 
 export default function TrackerPage() {
-  const { logs, intervals, baby, members, loading, pauseDuringSleep } = useAppState()
+  const { logs, intervals, baby, members, loading, pauseDuringSleep, quietHours } = useAppState()
   const dispatch = useAppDispatch()
   const { user } = useAuth()
   const now = useTimer()
@@ -63,7 +63,7 @@ export default function TrackerPage() {
   void now
 
   const projections = PROJECTION_CATEGORIES
-    .map((cat) => getNextProjection(logs, cat, intervals, DEFAULT_EVENTS, { pauseDuringSleep }))
+    .map((cat) => getNextProjection(logs, cat, intervals, DEFAULT_EVENTS, { pauseDuringSleep, quietHours }))
     .filter(Boolean)
 
   if (loading) {

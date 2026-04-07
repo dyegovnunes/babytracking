@@ -35,6 +35,7 @@ export interface Baby {
   id: string
   name: string
   birthDate: string
+  gender?: 'boy' | 'girl'
   photoUrl?: string
 }
 
