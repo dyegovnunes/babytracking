@@ -1,5 +1,5 @@
 import { useCallback, useState, useEffect } from 'react'
-import { useAppState, useAppDispatch, updateBaby, clearAllLogs } from '../contexts/AppContext'
+import { useAppState, useAppDispatch, updateBaby, clearAllLogs, updateMemberRole, removeMember } from '../contexts/AppContext'
 import { useAuth } from '../contexts/AuthContext'
 import type { Baby } from '../types'
 import BabyCard from '../components/profile/BabyCard'
@@ -22,10 +22,14 @@ export default function ProfilePage() {
 
   // User profile
   const [displayName, setDisplayName] = useState('')
+  const [originalName, setOriginalName] = useState('')
   const [editingName, setEditingName] = useState(false)
 
   // Caregivers
   const [caregivers, setCaregivers] = useState<Caregiver[]>([])
+
+  // Member management
+  const [confirmRemove, setConfirmRemove] = useState<string | null>(null)
 
   // Invite
   const [inviteCode, setInviteCode] = useState<string | null>(null)
@@ -106,6 +110,27 @@ export default function ProfilePage() {
     if (ok) setToast('Histórico limpo!')
   }, [dispatch, baby])
 
+  const isParent = user ? members[user.id]?.role === 'parent' : false
+  const parentCount = Object.values(members).filter(m => m.role === 'parent').length
+
+  const handleToggleRole = useCallback(async (userId: string, currentRole: string) => {
+    if (!baby) return
+    if (currentRole === 'parent' && parentCount <= 1) {
+      setToast('Deve haver pelo menos um responsável')
+      return
+    }
+    const newRole = currentRole === 'parent' ? 'caregiver' : 'parent'
+    const ok = await updateMemberRole(dispatch, baby.id, userId, newRole)
+    if (ok) setToast(newRole === 'parent' ? 'Promovido a Responsável!' : 'Alterado para Cuidador!')
+  }, [baby, dispatch, parentCount])
+
+  const handleRemoveMember = useCallback(async (userId: string) => {
+    if (!baby) return
+    const ok = await removeMember(dispatch, baby.id, userId)
+    setConfirmRemove(null)
+    if (ok) setToast('Membro removido!')
+  }, [baby, dispatch])
+
   const birthDateObj = baby?.birthDate ? parseLocalDate(baby.birthDate) : null
   const ageText = birthDateObj ? getAgeText(birthDateObj) : ''
 
@@ -147,24 +172,32 @@ export default function ProfilePage() {
             <div>
               <p className="font-label text-[11px] text-on-surface-variant uppercase tracking-wider mb-1">Nome de exibição</p>
               {editingName ? (
-                <div className="flex gap-2">
+                <div className="space-y-2">
                   <input
                     type="text"
                     value={displayName}
                     onChange={(e) => setDisplayName(e.target.value)}
-                    className="flex-1 bg-surface-container-low rounded-lg px-3 py-2 text-on-surface font-body text-sm outline-none focus:ring-2 focus:ring-primary/40"
+                    className="w-full bg-surface-container-low rounded-lg px-3 py-2.5 text-on-surface font-body text-sm outline-none focus:ring-2 focus:ring-primary/40"
                     autoFocus
                   />
-                  <button onClick={handleSaveDisplayName} className="px-3 py-2 rounded-lg bg-primary text-on-primary font-label text-xs font-semibold">
-                    Salvar
-                  </button>
-                  <button onClick={() => setEditingName(false)} className="px-3 py-2 rounded-lg bg-surface-variant text-on-surface-variant font-label text-xs font-semibold">
-                    Cancelar
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => { setDisplayName(originalName); setEditingName(false) }}
+                      className="flex-1 py-2.5 rounded-lg bg-surface-variant text-on-surface-variant font-label text-xs font-semibold"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      onClick={handleSaveDisplayName}
+                      className="flex-1 py-2.5 rounded-lg bg-primary text-on-primary font-label text-xs font-semibold"
+                    >
+                      Salvar
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <button
-                  onClick={() => setEditingName(true)}
+                  onClick={() => { setOriginalName(displayName); setEditingName(true) }}
                   className="flex items-center gap-2 group"
                 >
                   <span className="font-body text-sm text-on-surface">{displayName || 'Definir nome'}</span>
@@ -204,8 +237,27 @@ export default function ProfilePage() {
                   <p className="font-body text-sm text-on-surface truncate">{c.displayName}</p>
                   <p className="font-label text-xs text-on-surface-variant">{c.role === 'parent' ? 'Responsável' : 'Cuidador'}</p>
                 </div>
-                {c.userId === user?.id && (
+                {c.userId === user?.id ? (
                   <span className="font-label text-[10px] text-primary bg-primary/10 px-2 py-0.5 rounded-full">Você</span>
+                ) : isParent && (
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => handleToggleRole(c.userId, c.role)}
+                      className="w-9 h-9 rounded-lg bg-surface-variant/50 flex items-center justify-center active:bg-surface-variant"
+                      title={c.role === 'parent' ? 'Rebaixar para Cuidador' : 'Promover a Responsável'}
+                    >
+                      <span className="material-symbols-outlined text-on-surface-variant text-base">
+                        {c.role === 'parent' ? 'arrow_downward' : 'arrow_upward'}
+                      </span>
+                    </button>
+                    <button
+                      onClick={() => setConfirmRemove(c.userId)}
+                      className="w-9 h-9 rounded-lg bg-error/10 flex items-center justify-center active:bg-error/20"
+                      title="Remover membro"
+                    >
+                      <span className="material-symbols-outlined text-error text-base">person_remove</span>
+                    </button>
+                  </div>
                 )}
               </div>
             ))}
@@ -240,6 +292,28 @@ export default function ProfilePage() {
         {/* ===== DADOS ===== */}
         <DataManagement logs={logs} babyName={baby.name} onClearHistory={handleClearHistory} />
       </div>
+
+      {confirmRemove && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm" onClick={() => setConfirmRemove(null)}>
+          <div className="bg-surface-container-highest rounded-2xl p-6 mx-6 max-w-sm" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center gap-3 mb-4">
+              <span className="material-symbols-outlined text-error text-2xl">person_remove</span>
+              <h3 className="font-headline text-lg font-bold text-on-surface">Remover membro</h3>
+            </div>
+            <p className="font-body text-sm text-on-surface-variant mb-5">
+              Tem certeza que deseja remover <strong className="text-on-surface">{members[confirmRemove]?.displayName}</strong> do grupo? Essa pessoa perderá acesso aos dados do bebê.
+            </p>
+            <div className="flex gap-2">
+              <button onClick={() => setConfirmRemove(null)} className="flex-1 py-2.5 rounded-xl bg-surface-variant text-on-surface-variant font-label text-sm font-semibold">
+                Cancelar
+              </button>
+              <button onClick={() => handleRemoveMember(confirmRemove)} className="flex-1 py-2.5 rounded-xl bg-error text-on-error font-label text-sm font-semibold">
+                Remover
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {toast && <Toast message={toast} onDismiss={() => setToast(null)} />}
     </div>

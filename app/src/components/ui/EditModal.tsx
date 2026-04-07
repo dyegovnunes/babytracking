@@ -9,8 +9,18 @@ interface Props {
   onClose: () => void
 }
 
+const BREAST_SIDES = [
+  { id: 'breast_left', label: 'Esquerdo' },
+  { id: 'breast_right', label: 'Direito' },
+  { id: 'breast_both', label: 'Ambos' },
+]
+
 export default function EditModal({ log, onSave, onDelete, onClose }: Props) {
-  const event = DEFAULT_EVENTS.find((e) => e.id === log.eventId)
+  const isBreast = log.eventId.startsWith('breast_')
+  const [selectedSide, setSelectedSide] = useState(log.eventId)
+  const displayEvent = isBreast
+    ? DEFAULT_EVENTS.find((e) => e.id === selectedSide)
+    : DEFAULT_EVENTS.find((e) => e.id === log.eventId)
   const d = new Date(log.timestamp)
 
   const [time, setTime] = useState(
@@ -28,6 +38,7 @@ export default function EditModal({ log, onSave, onDelete, onClose }: Props) {
     const timestamp = new Date(y, mo - 1, day, h, m).getTime()
     onSave({
       ...log,
+      eventId: isBreast ? selectedSide : log.eventId,
       timestamp,
       ml: ml ? parseInt(ml) : undefined,
     })
@@ -40,17 +51,17 @@ export default function EditModal({ log, onSave, onDelete, onClose }: Props) {
     >
       <div className="w-full max-w-lg bg-surface-container-highest rounded-t-3xl p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] border-t-2 border-primary-fixed animate-slide-up">
         <div className="flex items-center gap-3 mb-5">
-          {event && (
-            event.emoji ? (
-              <span className="text-2xl">{event.emoji}</span>
+          {displayEvent && (
+            displayEvent.emoji ? (
+              <span className="text-2xl">{displayEvent.emoji}</span>
             ) : (
               <span className="material-symbols-outlined text-primary text-2xl">
-                {event.icon}
+                {displayEvent.icon}
               </span>
             )
           )}
           <h2 className="font-headline text-lg font-bold text-on-surface">
-            Editar — {event?.label}
+            Editar — {displayEvent?.label}
           </h2>
         </div>
 
@@ -79,7 +90,31 @@ export default function EditModal({ log, onSave, onDelete, onClose }: Props) {
           </div>
         </div>
 
-        {event?.hasAmount && (
+        {isBreast && (
+          <div className="mb-4">
+            <label className="font-label text-[11px] text-primary font-semibold uppercase tracking-wider block mb-1.5">
+              Lado
+            </label>
+            <div className="flex gap-2">
+              {BREAST_SIDES.map((opt) => (
+                <button
+                  key={opt.id}
+                  type="button"
+                  onClick={() => setSelectedSide(opt.id)}
+                  className={`flex-1 py-2.5 rounded-lg font-label text-sm font-semibold transition-colors ${
+                    selectedSide === opt.id
+                      ? 'bg-tertiary text-on-tertiary'
+                      : 'bg-surface-variant text-on-surface-variant'
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {displayEvent?.hasAmount && (
           <div className="mb-4">
             <label className="font-label text-[11px] text-primary font-semibold uppercase tracking-wider block mb-1.5">
               Volume (ml)

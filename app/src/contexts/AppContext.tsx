@@ -25,6 +25,8 @@ type Action =
   | { type: 'SET_INTERVALS'; intervals: Record<string, IntervalConfig> }
   | { type: 'SET_BABY'; baby: Baby }
   | { type: 'SWITCH_BABY'; baby: Baby; logs: LogEntry[]; intervals: Record<string, IntervalConfig>; members: Record<string, Member> }
+  | { type: 'UPDATE_MEMBER'; userId: string; role: string }
+  | { type: 'REMOVE_MEMBER'; userId: string }
   | { type: 'CLEAR_LOGS' }
   | { type: 'SET_PAUSE_DURING_SLEEP'; value: boolean }
   | { type: 'SET_QUIET_HOURS'; value: { enabled: boolean; start: number; end: number } }
@@ -59,6 +61,12 @@ function reducer(state: AppState, action: Action): AppState {
       return { ...state, baby: action.baby }
     case 'SWITCH_BABY':
       return { ...state, baby: action.baby, logs: action.logs, intervals: action.intervals, members: action.members, pauseDuringSleep: false, quietHours: { enabled: false, start: 22, end: 7 } }
+    case 'UPDATE_MEMBER':
+      return { ...state, members: { ...state.members, [action.userId]: { ...state.members[action.userId], role: action.role } } }
+    case 'REMOVE_MEMBER': {
+      const { [action.userId]: _, ...rest } = state.members
+      return { ...state, members: rest }
+    }
     case 'CLEAR_LOGS':
       return { ...state, logs: [] }
     case 'SET_PAUSE_DURING_SLEEP':
@@ -328,6 +336,43 @@ export async function clearAllLogs(
   if (error) return false
 
   dispatch({ type: 'CLEAR_LOGS' })
+  return true
+}
+
+// Helper: update member role
+export async function updateMemberRole(
+  dispatch: React.Dispatch<Action>,
+  babyId: string,
+  userId: string,
+  newRole: string,
+): Promise<boolean> {
+  const { error } = await supabase
+    .from('baby_members')
+    .update({ role: newRole })
+    .eq('baby_id', babyId)
+    .eq('user_id', userId)
+
+  if (error) return false
+
+  dispatch({ type: 'UPDATE_MEMBER', userId, role: newRole })
+  return true
+}
+
+// Helper: remove member from baby group
+export async function removeMember(
+  dispatch: React.Dispatch<Action>,
+  babyId: string,
+  userId: string,
+): Promise<boolean> {
+  const { error } = await supabase
+    .from('baby_members')
+    .delete()
+    .eq('baby_id', babyId)
+    .eq('user_id', userId)
+
+  if (error) return false
+
+  dispatch({ type: 'REMOVE_MEMBER', userId })
   return true
 }
 
