@@ -178,6 +178,13 @@ export default function OnboardingPage({ onComplete }: Props) {
               </div>
             </button>
           </div>
+
+          <button
+            onClick={() => supabase.auth.signOut()}
+            className="w-full mt-6 text-center font-label text-sm text-on-surface-variant hover:text-error transition-colors"
+          >
+            Sair da conta
+          </button>
         </div>
       </div>
     )
