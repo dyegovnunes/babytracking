@@ -57,6 +57,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 }
 
 export async function signInWithEmail(email: string): Promise<{ error: string | null }> {
+  // Skip OTP send for test account — reviewer just enters 000000
+  if (email.toLowerCase() === TEST_ACCOUNT_EMAIL) {
+    return { error: null }
+  }
+
   const { error } = await supabase.auth.signInWithOtp({
     email,
     options: {
@@ -66,7 +71,19 @@ export async function signInWithEmail(email: string): Promise<{ error: string | 
   return { error: error?.message ?? null }
 }
 
+const TEST_ACCOUNT_EMAIL = 'teste@yayababy.app'
+const TEST_ACCOUNT_OTP = '000000'
+
 export async function verifyOtp(email: string, token: string): Promise<{ error: string | null }> {
+  // Bypass for Google Play review test account
+  if (email.toLowerCase() === TEST_ACCOUNT_EMAIL && token === TEST_ACCOUNT_OTP) {
+    const { error } = await supabase.auth.signInWithPassword({
+      email: TEST_ACCOUNT_EMAIL,
+      password: TEST_ACCOUNT_OTP,
+    })
+    return { error: error?.message ?? null }
+  }
+
   const { error } = await supabase.auth.verifyOtp({
     email,
     token,

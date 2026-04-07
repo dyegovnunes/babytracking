@@ -8,6 +8,8 @@ import {
 } from '../lib/purchases';
 import { useAuth } from './AuthContext';
 
+const TEST_ACCOUNT_EMAIL = 'teste@yayababy.app';
+
 interface PurchaseContextType {
   isPremium: boolean;
   isLoading: boolean;
@@ -29,13 +31,26 @@ export function PurchaseProvider({ children }: { children: React.ReactNode }) {
   const [isPremium, setIsPremium] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
+  const isTestAccount = user?.email?.toLowerCase() === TEST_ACCOUNT_EMAIL;
+
   const refresh = async () => {
+    if (isTestAccount) {
+      setIsPremium(true);
+      return;
+    }
     const status = await checkIsPremium();
     setIsPremium(status);
   };
 
   useEffect(() => {
     if (!user) {
+      setIsLoading(false);
+      return;
+    }
+
+    // Test account always gets premium
+    if (isTestAccount) {
+      setIsPremium(true);
       setIsLoading(false);
       return;
     }
