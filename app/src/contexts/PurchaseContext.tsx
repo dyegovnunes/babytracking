@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { Capacitor } from '@capacitor/core';
+// import { Capacitor } from '@capacitor/core';
 import {
-  initializePurchases,
+  // initializePurchases,
   checkIsPremium,
   purchaseYayaPlus,
   restorePurchases,
@@ -58,9 +58,10 @@ export function PurchaseProvider({ children }: { children: React.ReactNode }) {
     const init = async () => {
       setIsLoading(true);
       try {
-        if (Capacitor.getPlatform() !== 'web') {
-          await initializePurchases(user.id);
-        }
+        // RevenueCat disabled until production keys are configured
+        // if (Capacitor.getPlatform() !== 'web') {
+        //   await initializePurchases(user.id);
+        // }
         await refresh();
       } finally {
         setIsLoading(false);
