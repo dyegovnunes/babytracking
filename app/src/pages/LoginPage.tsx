@@ -119,7 +119,7 @@ export default function LoginPage() {
         <div className="text-center mb-10">
           <div className="flex items-center justify-center mx-auto mb-5">
             <img
-              src="/logo-symbol.png"
+              src="./logo-symbol.png"
               alt="Yaya"
               className="w-24 h-24"
               style={{ filter: 'brightness(0) saturate(100%) invert(72%) sepia(40%) saturate(1500%) hue-rotate(220deg) brightness(105%) contrast(95%)' }}
