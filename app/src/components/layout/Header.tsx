@@ -4,7 +4,7 @@ export default function Header() {
   const navigate = useNavigate()
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-40 bg-surface/80 backdrop-blur-xl">
+    <header className="fixed top-0 left-0 right-0 z-40 bg-surface/80 backdrop-blur-xl" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
       <div className="flex items-center justify-between px-5 h-14">
         <h1 className="font-headline text-lg font-bold text-on-surface tracking-tight">
           Ya<span className="text-primary">ya</span>
