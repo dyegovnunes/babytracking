@@ -14,24 +14,33 @@ export default function ImageCropModal({ imageFile, onConfirm, onClose }: Props)
   const [dragging, setDragging] = useState(false)
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
   const [processing, setProcessing] = useState(false)
+  const [loadError, setLoadError] = useState(false)
+
+  // Pinch zoom state
+  const lastPinchDist = useRef<number | null>(null)
+  const activeTouches = useRef<Map<number, { x: number; y: number }>>(new Map())
 
   const CANVAS_SIZE = 280
   const CIRCLE_RADIUS = 120
 
   // Load image
   useEffect(() => {
-    const url = URL.createObjectURL(imageFile)
-    const image = new Image()
-    image.onload = () => {
-      setImg(image)
-      // Fit image: scale so smallest side fills the circle
-      const minDim = Math.min(image.width, image.height)
-      const initialScale = (CIRCLE_RADIUS * 2) / minDim
-      setScale(initialScale)
-      setOffset({ x: 0, y: 0 })
+    setLoadError(false)
+    const reader = new FileReader()
+    reader.onload = () => {
+      const image = new Image()
+      image.onload = () => {
+        setImg(image)
+        const minDim = Math.min(image.width, image.height)
+        const initialScale = (CIRCLE_RADIUS * 2) / minDim
+        setScale(initialScale)
+        setOffset({ x: 0, y: 0 })
+      }
+      image.onerror = () => setLoadError(true)
+      image.src = reader.result as string
     }
-    image.src = url
-    return () => URL.revokeObjectURL(url)
+    reader.onerror = () => setLoadError(true)
+    reader.readAsDataURL(imageFile)
   }, [imageFile])
 
   // Draw canvas
@@ -47,24 +56,25 @@ export default function ImageCropModal({ imageFile, onConfirm, onClose }: Props)
 
     ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE)
 
-    // Draw image
+    // 1. Draw the full image
     const w = img.width * scale
     const h = img.height * scale
     const x = cx - w / 2 + offset.x
     const y = cy - h / 2 + offset.y
     ctx.drawImage(img, x, y, w, h)
 
-    // Draw dark overlay with circle cutout
+    // 2. Draw dark overlay ONLY outside the circle
     ctx.save()
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.6)'
-    ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE)
-    ctx.globalCompositeOperation = 'destination-out'
+    // Create a path: full rectangle with circle hole
     ctx.beginPath()
-    ctx.arc(cx, cy, CIRCLE_RADIUS, 0, Math.PI * 2)
+    ctx.rect(0, 0, CANVAS_SIZE, CANVAS_SIZE)
+    ctx.arc(cx, cy, CIRCLE_RADIUS, 0, Math.PI * 2, true) // counterclockwise = hole
+    ctx.closePath()
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.6)'
     ctx.fill()
     ctx.restore()
 
-    // Draw circle border
+    // 3. Draw circle border
     ctx.strokeStyle = 'rgba(183, 159, 255, 0.6)'
     ctx.lineWidth = 2
     ctx.beginPath()
@@ -76,14 +86,77 @@ export default function ImageCropModal({ imageFile, onConfirm, onClose }: Props)
     draw()
   }, [draw])
 
-  // Pointer handlers
+  // Touch handlers for pinch-to-zoom + drag
+  function handleTouchStart(e: React.TouchEvent) {
+    e.preventDefault()
+    for (let i = 0; i < e.changedTouches.length; i++) {
+      const t = e.changedTouches[i]
+      activeTouches.current.set(t.identifier, { x: t.clientX, y: t.clientY })
+    }
+
+    if (activeTouches.current.size === 1) {
+      const t = e.touches[0]
+      setDragging(true)
+      setDragStart({ x: t.clientX - offset.x, y: t.clientY - offset.y })
+    } else if (activeTouches.current.size === 2) {
+      setDragging(false)
+      const touches = Array.from(activeTouches.current.values())
+      lastPinchDist.current = Math.hypot(
+        touches[1].x - touches[0].x,
+        touches[1].y - touches[0].y,
+      )
+    }
+  }
+
+  function handleTouchMove(e: React.TouchEvent) {
+    e.preventDefault()
+    for (let i = 0; i < e.changedTouches.length; i++) {
+      const t = e.changedTouches[i]
+      activeTouches.current.set(t.identifier, { x: t.clientX, y: t.clientY })
+    }
+
+    if (e.touches.length === 1 && dragging) {
+      // Single finger drag
+      const t = e.touches[0]
+      setOffset({
+        x: t.clientX - dragStart.x,
+        y: t.clientY - dragStart.y,
+      })
+    } else if (e.touches.length === 2 && lastPinchDist.current !== null) {
+      // Pinch zoom
+      const touches = Array.from(activeTouches.current.values())
+      const dist = Math.hypot(
+        touches[1].x - touches[0].x,
+        touches[1].y - touches[0].y,
+      )
+      const delta = (dist - lastPinchDist.current) * 0.005
+      setScale((s) => Math.max(0.1, Math.min(5, s + delta)))
+      lastPinchDist.current = dist
+    }
+  }
+
+  function handleTouchEnd(e: React.TouchEvent) {
+    for (let i = 0; i < e.changedTouches.length; i++) {
+      activeTouches.current.delete(e.changedTouches[i].identifier)
+    }
+    if (activeTouches.current.size < 2) {
+      lastPinchDist.current = null
+    }
+    if (activeTouches.current.size === 0) {
+      setDragging(false)
+    }
+  }
+
+  // Mouse/pointer fallback for drag
   function handlePointerDown(e: React.PointerEvent) {
+    if (e.pointerType === 'touch') return // handled by touch events
     setDragging(true)
     setDragStart({ x: e.clientX - offset.x, y: e.clientY - offset.y })
     ;(e.target as HTMLElement).setPointerCapture(e.pointerId)
   }
 
   function handlePointerMove(e: React.PointerEvent) {
+    if (e.pointerType === 'touch') return
     if (!dragging) return
     setOffset({
       x: e.clientX - dragStart.x,
@@ -91,7 +164,8 @@ export default function ImageCropModal({ imageFile, onConfirm, onClose }: Props)
     })
   }
 
-  function handlePointerUp() {
+  function handlePointerUp(e: React.PointerEvent) {
+    if (e.pointerType === 'touch') return
     setDragging(false)
   }
 
@@ -115,7 +189,6 @@ export default function ImageCropModal({ imageFile, onConfirm, onClose }: Props)
     const ctx = outputCanvas.getContext('2d')
     if (!ctx) return
 
-    // Draw cropped circle region
     const cx = CANVAS_SIZE / 2
     const cy = CANVAS_SIZE / 2
     const w = img.width * scale
@@ -123,7 +196,6 @@ export default function ImageCropModal({ imageFile, onConfirm, onClose }: Props)
     const imgX = cx - w / 2 + offset.x
     const imgY = cy - h / 2 + offset.y
 
-    // Map from canvas coords to output coords
     const scaleOut = outputSize / (CIRCLE_RADIUS * 2)
     const srcX = (imgX - (cx - CIRCLE_RADIUS)) * scaleOut
     const srcY = (imgY - (cy - CIRCLE_RADIUS)) * scaleOut
@@ -151,18 +223,31 @@ export default function ImageCropModal({ imageFile, onConfirm, onClose }: Props)
           Ajustar foto
         </h2>
 
-        <div className="flex justify-center mb-4">
-          <canvas
-            ref={canvasRef}
-            width={CANVAS_SIZE}
-            height={CANVAS_SIZE}
-            className="rounded-2xl cursor-grab active:cursor-grabbing touch-none"
-            onPointerDown={handlePointerDown}
-            onPointerMove={handlePointerMove}
-            onPointerUp={handlePointerUp}
-            onWheel={handleWheel}
-          />
-        </div>
+        {loadError ? (
+          <div className="flex flex-col items-center justify-center py-10 gap-3">
+            <span className="material-symbols-outlined text-error text-3xl">broken_image</span>
+            <p className="font-label text-sm text-on-surface-variant text-center">
+              Não foi possível carregar a imagem.<br />Tente outra foto.
+            </p>
+          </div>
+        ) : (
+          <div className="flex justify-center mb-4">
+            <canvas
+              ref={canvasRef}
+              width={CANVAS_SIZE}
+              height={CANVAS_SIZE}
+              className="rounded-2xl cursor-grab active:cursor-grabbing"
+              style={{ touchAction: 'none' }}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+              onPointerDown={handlePointerDown}
+              onPointerMove={handlePointerMove}
+              onPointerUp={handlePointerUp}
+              onWheel={handleWheel}
+            />
+          </div>
+        )}
 
         {/* Zoom controls */}
         <div className="flex items-center justify-center gap-4 mb-5">
@@ -191,7 +276,7 @@ export default function ImageCropModal({ imageFile, onConfirm, onClose }: Props)
         </div>
 
         <p className="text-center font-label text-[10px] text-on-surface-variant mb-4">
-          Arraste para mover, use os botões para zoom
+          Arraste para mover, use pinça para zoom
         </p>
 
         <div className="flex gap-3">
@@ -203,7 +288,7 @@ export default function ImageCropModal({ imageFile, onConfirm, onClose }: Props)
           </button>
           <button
             onClick={handleConfirm}
-            disabled={processing}
+            disabled={processing || loadError}
             className="flex-1 py-2.5 rounded-xl bg-gradient-to-br from-primary to-primary-container text-on-primary font-label font-semibold text-sm disabled:opacity-50"
           >
             {processing ? (
