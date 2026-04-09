@@ -20,9 +20,10 @@ workflows:
         script: |
           cd app
           npm run build
-      - name: Sync Capacitor iOS
+      - name: Add and Sync Capacitor iOS
         script: |
           cd app
+          npx cap add ios || true
           npx cap sync ios
       - name: Install CocoaPods / SPM dependencies
         script: |
