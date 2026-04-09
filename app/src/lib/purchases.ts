@@ -27,28 +27,42 @@ export async function initializePurchases(userId: string) {
   await Purchases.logIn({ appUserID: userId });
 }
 
-export async function checkIsPremium(): Promise<boolean> {
-  // On web, check Supabase profiles table
-  if (Capacitor.getPlatform() === 'web') {
+export async function checkIsPremium(babyId?: string): Promise<boolean> {
+  // Check if any member of the baby's group is premium
+  if (babyId) {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return false;
-      const { data } = await supabase.from('profiles').select('is_premium').eq('id', user.id).single();
-      return data?.is_premium === true;
+      const { data: members } = await supabase
+        .from('baby_members')
+        .select('user_id')
+        .eq('baby_id', babyId);
+
+      if (members && members.length > 0) {
+        const userIds = members.map((m) => m.user_id);
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('is_premium')
+          .in('id', userIds)
+          .eq('is_premium', true)
+          .limit(1);
+
+        if (profiles && profiles.length > 0) return true;
+      }
     } catch {
-      return false;
+      // fallback to individual check below
     }
   }
 
-  // On native, check RevenueCat first, fallback to Supabase
-  try {
-    const { customerInfo } = await Purchases.getCustomerInfo();
-    if (customerInfo.entitlements.active[ENTITLEMENT_YAYA_PLUS] !== undefined) return true;
-  } catch {
-    // fallback below
+  // On native, check RevenueCat first
+  if (Capacitor.getPlatform() !== 'web') {
+    try {
+      const { customerInfo } = await Purchases.getCustomerInfo();
+      if (customerInfo.entitlements.active[ENTITLEMENT_YAYA_PLUS] !== undefined) return true;
+    } catch {
+      // fallback below
+    }
   }
 
-  // Fallback: check Supabase
+  // Fallback: check individual user profile
   try {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return false;

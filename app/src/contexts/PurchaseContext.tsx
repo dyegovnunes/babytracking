@@ -8,6 +8,7 @@ import {
   type SubscriptionInfo,
 } from '../lib/purchases';
 import { useAuth } from './AuthContext';
+import { useAppState } from './AppContext';
 
 const TEST_ACCOUNT_EMAIL = 'teste@yayababy.app';
 
@@ -35,6 +36,7 @@ const PurchaseContext = createContext<PurchaseContextType>({
 
 export function PurchaseProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
+  const { baby } = useAppState();
   const [isPremium, setIsPremium] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [subscriptionPlan, setSubscriptionPlan] = useState<PlanType | null>(null);
@@ -50,7 +52,7 @@ export function PurchaseProvider({ children }: { children: React.ReactNode }) {
       setSubscriptionStatus('active');
       return;
     }
-    const premium = await checkIsPremium();
+    const premium = await checkIsPremium(baby?.id);
     setIsPremium(premium);
 
     const info = await getSubscriptionInfo();
@@ -88,7 +90,7 @@ export function PurchaseProvider({ children }: { children: React.ReactNode }) {
     };
 
     init();
-  }, [user?.id]);
+  }, [user?.id, baby?.id]);
 
   const purchase = async (planType: PlanType): Promise<boolean> => {
     const success = await purchasePackage(planType);

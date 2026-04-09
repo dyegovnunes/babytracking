@@ -68,11 +68,11 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <PurchaseProvider>
-          <AppProvider>
+        <AppProvider>
+          <PurchaseProvider>
             <AppRoutes />
-          </AppProvider>
-        </PurchaseProvider>
+          </PurchaseProvider>
+        </AppProvider>
       </AuthProvider>
     </BrowserRouter>
   )
