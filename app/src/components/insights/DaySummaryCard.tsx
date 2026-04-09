@@ -5,7 +5,7 @@ interface Props {
 }
 
 const stats = [
-  { key: 'feeds', emoji: '🤱', label: 'Mamadas', bg: 'bg-tertiary/10' },
+  { key: 'feeds', emoji: '🤱', label: 'Amamentações', bg: 'bg-tertiary/10' },
   { key: 'diapers', emoji: '💧', label: 'Fraldas', bg: 'bg-secondary/10' },
   { key: 'sleepCycles', emoji: '🌙', label: 'Sonos', bg: 'bg-primary/10' },
 ] as const

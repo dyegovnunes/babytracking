@@ -7,6 +7,7 @@ interface Props {
   onSave: (log: LogEntry) => void
   onDelete: (id: string) => void
   onClose: () => void
+  onAddBottle?: () => void
 }
 
 const BREAST_SIDES = [
@@ -15,7 +16,7 @@ const BREAST_SIDES = [
   { id: 'breast_both', label: 'Ambos' },
 ]
 
-export default function EditModal({ log, onSave, onDelete, onClose }: Props) {
+export default function EditModal({ log, onSave, onDelete, onClose, onAddBottle }: Props) {
   const isBreast = log.eventId.startsWith('breast_')
   const [selectedSide, setSelectedSide] = useState(log.eventId)
   const displayEvent = isBreast
@@ -112,6 +113,16 @@ export default function EditModal({ log, onSave, onDelete, onClose }: Props) {
               ))}
             </div>
           </div>
+        )}
+
+        {isBreast && onAddBottle && (
+          <button
+            type="button"
+            onClick={() => { onClose(); onAddBottle(); }}
+            className="w-full mb-4 py-2.5 rounded-xl bg-primary/15 text-primary font-label text-sm font-semibold flex items-center justify-center gap-2 active:bg-primary/25"
+          >
+            🍼 Complementar com mamadeira
+          </button>
         )}
 
         {displayEvent?.hasAmount && (

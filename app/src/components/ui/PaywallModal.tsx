@@ -14,7 +14,7 @@ const TRIGGER_MESSAGES: Record<string, { title: string; description: string }> =
   },
   insights: {
     title: 'Insights semanais',
-    description: 'Veja padrões de sono, frequência de mamadas e resumos semanais com o Yaya+.',
+    description: 'Veja padrões de sono, frequência de amamentações e resumos semanais com o Yaya+.',
   },
   pdf: {
     title: 'Relatório para pediatra',

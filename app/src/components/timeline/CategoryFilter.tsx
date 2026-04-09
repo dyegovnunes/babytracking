@@ -7,7 +7,7 @@ interface Props {
 
 const categories: { id: EventCategory | 'all'; label: string }[] = [
   { id: 'all', label: 'Tudo' },
-  { id: 'feed', label: 'Mamadas' },
+  { id: 'feed', label: 'Amamentação' },
   { id: 'diaper', label: 'Fraldas' },
   { id: 'sleep', label: 'Sono' },
   { id: 'care', label: 'Cuidados' },

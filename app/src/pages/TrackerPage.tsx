@@ -12,7 +12,7 @@ import RecentLogs from '../components/activity/RecentLogs'
 import BottleModal from '../components/ui/BottleModal'
 import EditModal from '../components/ui/EditModal'
 import Toast from '../components/ui/Toast'
-import FollowUpBar from '../components/ui/FollowUpBar'
+
 import { TrackerSkeleton } from '../components/ui/Skeleton'
 import type { LogEntry } from '../types'
 
@@ -27,7 +27,6 @@ export default function TrackerPage() {
   const [bottleModalOpen, setBottleModalOpen] = useState(false)
   const [editingLog, setEditingLog] = useState<LogEntry | null>(null)
   const [toast, setToast] = useState<string | null>(null)
-  const [followUp, setFollowUp] = useState<{ logId: string; eventId: 'breast_left' | 'breast_right' } | null>(null)
 
   const handleLog = useCallback(
     async (eventId: string) => {
@@ -46,9 +45,6 @@ export default function TrackerPage() {
       if (log) {
         hapticSuccess()
         setToast(`${event.label} registrado!`)
-        if (eventId === 'breast_left' || eventId === 'breast_right') {
-          setFollowUp({ logId: log.id, eventId })
-        }
       }
     },
     [baby, dispatch, user],
@@ -89,26 +85,6 @@ export default function TrackerPage() {
     },
     [dispatch],
   )
-
-  const handleChangeToBoth = useCallback(
-    async (logId: string) => {
-      const logEntry = logs.find(l => l.id === logId)
-      if (!logEntry) return
-      const ok = await updateLog(dispatch, { ...logEntry, eventId: 'breast_both' })
-      setFollowUp(null)
-      if (ok) {
-        hapticSuccess()
-        setToast('Alterado para Ambos os lados!')
-      }
-    },
-    [logs, dispatch],
-  )
-
-  const handleFollowUpBottle = useCallback(() => {
-    setFollowUp(null)
-    hapticLight()
-    setBottleModalOpen(true)
-  }, [])
 
   const [dismissedProjections, setDismissedProjections] = useState<Set<string>>(new Set())
 
@@ -163,16 +139,7 @@ export default function TrackerPage() {
           onSave={handleSaveLog}
           onDelete={handleDeleteLog}
           onClose={() => setEditingLog(null)}
-        />
-      )}
-
-      {followUp && (
-        <FollowUpBar
-          logId={followUp.logId}
-          originalEventId={followUp.eventId}
-          onChangeToBoth={handleChangeToBoth}
-          onAddBottle={handleFollowUpBottle}
-          onDismiss={() => setFollowUp(null)}
+          onAddBottle={() => { setEditingLog(null); setBottleModalOpen(true); }}
         />
       )}
 

@@ -263,7 +263,7 @@ export default function SettingsPage() {
           </div>
 
           <div className="space-y-2">
-            <IntervalRow cat="feed" icon="breastfeeding" label="Mamadas" presets={FEED_PRESETS} />
+            <IntervalRow cat="feed" icon="breastfeeding" label="Amamentação" presets={FEED_PRESETS} />
             <IntervalRow cat="diaper" icon="water_drop" label="Fraldas" presets={DIAPER_PRESETS} />
 
             {/* Sono header com info icon */}
@@ -283,7 +283,7 @@ export default function SettingsPage() {
               <span className="material-symbols-outlined text-on-surface-variant text-lg">pause_circle</span>
               <div className="flex-1">
                 <p className="font-body text-sm text-on-surface">Pausar alertas durante sono</p>
-                <p className="font-label text-[11px] text-on-surface-variant">Mamada e fralda não alertam enquanto dorme</p>
+                <p className="font-label text-[11px] text-on-surface-variant">Amamentação e fralda não alertam enquanto dorme</p>
               </div>
               <Toggle value={pauseDuringSleep} onChange={togglePauseDuringSleep} />
             </div>
@@ -356,7 +356,7 @@ export default function SettingsPage() {
             {prefs.enabled && (
               <div className="bg-surface-container rounded-xl overflow-hidden">
                 {[
-                  { key: 'feed', label: 'Mamadas', icon: 'breastfeeding', desc: `A cada ${mToStr(intervals['feed']?.minutes ?? 180)}` },
+                  { key: 'feed', label: 'Amamentação', icon: 'breastfeeding', desc: `A cada ${mToStr(intervals['feed']?.minutes ?? 180)}` },
                   { key: 'diaper', label: 'Fraldas', icon: 'water_drop', desc: `A cada ${mToStr(intervals['diaper']?.minutes ?? 120)}` },
                   { key: 'sleep', label: 'Sono', icon: 'bedtime', desc: 'Soneca e janela de sono' },
                   { key: 'bath', label: 'Banho', icon: 'bathtub', desc: '15min antes do horário' },
@@ -561,15 +561,15 @@ export default function SettingsPage() {
             </div>
             <div className="space-y-4">
               <div>
-                <p className="font-label text-xs text-primary font-semibold mb-1">Mamada e Fralda</p>
+                <p className="font-label text-xs text-primary font-semibold mb-1">Amamentação e Fralda</p>
                 <p className="font-body text-sm text-on-surface-variant">
                   Você recebe um alerta quando o intervalo está acabando (80%) e outro quando já passou.
                 </p>
                 <div className="bg-surface-container-low rounded-lg p-2.5 mt-2 flex items-start gap-2">
                   <span className="material-symbols-outlined text-primary text-sm mt-0.5">breastfeeding</span>
                   <div>
-                    <p className="font-body text-xs text-on-surface font-semibold">Hora da mamada!</p>
-                    <p className="font-label text-[11px] text-on-surface-variant">Última mamada foi há {mToStr(intervals['feed']?.minutes ?? 180)}.</p>
+                    <p className="font-body text-xs text-on-surface font-semibold">Hora da amamentação!</p>
+                    <p className="font-label text-[11px] text-on-surface-variant">Última amamentação foi há {mToStr(intervals['feed']?.minutes ?? 180)}.</p>
                   </div>
                 </div>
               </div>

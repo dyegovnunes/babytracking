@@ -7,7 +7,7 @@ interface Props {
 }
 
 const CATEGORIES = [
-  { key: 'feed', label: 'Mamadas', icon: 'breastfeeding', description: 'Intervalo entre amamentações' },
+  { key: 'feed', label: 'Amamentação', icon: 'breastfeeding', description: 'Intervalo entre amamentações' },
   { key: 'diaper', label: 'Fraldas', icon: 'water_drop', description: 'Intervalo entre trocas de fralda' },
   { key: 'sleep', label: 'Sono', icon: 'bedtime', description: 'Intervalo entre sonecas' },
   { key: 'bath', label: 'Banho', icon: 'bathtub', description: 'Intervalo entre banhos' },

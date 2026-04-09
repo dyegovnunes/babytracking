@@ -8,7 +8,7 @@ interface Props {
 type Metric = 'feeds' | 'diapers' | 'sleepMinutes'
 
 const metrics: { key: Metric; label: string; emoji: string }[] = [
-  { key: 'feeds', label: 'Mamadas', emoji: '🤱' },
+  { key: 'feeds', label: 'Amamentações', emoji: '🤱' },
   { key: 'diapers', label: 'Fraldas', emoji: '💧' },
   { key: 'sleepMinutes', label: 'Sono (min)', emoji: '🌙' },
 ]

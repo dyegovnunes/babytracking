@@ -16,15 +16,15 @@ function AuthenticatedRoutes() {
   const { user, loading: authLoading } = useAuth()
   const { needsOnboarding, loading: dataLoading } = useAppState()
 
-  // Auth loading
-  if (authLoading) {
+  // Auth loading or data loading — show logo splash
+  if (authLoading || (!user ? false : dataLoading)) {
     return (
-      <div className="min-h-screen bg-surface flex items-center justify-center">
-        <div className="w-16 h-16 rounded-full bg-primary-container/20 flex items-center justify-center animate-pulse-soft">
-          <span className="material-symbols-outlined text-primary text-3xl">
-            child_care
-          </span>
-        </div>
+      <div className="min-h-screen bg-surface flex flex-col items-center justify-center gap-4">
+        <img
+          src="./logo-symbol.png"
+          alt="Yaya"
+          className="w-20 h-20 animate-pulse-soft"
+        />
       </div>
     )
   }
@@ -32,17 +32,6 @@ function AuthenticatedRoutes() {
   // Not logged in
   if (!user) {
     return <LoginPage />
-  }
-
-  // Data loading
-  if (dataLoading) {
-    return (
-      <div className="min-h-screen bg-surface flex items-center justify-center">
-        <span className="material-symbols-outlined text-primary text-4xl animate-spin">
-          progress_activity
-        </span>
-      </div>
-    )
   }
 
   // Needs onboarding (no baby created yet)
