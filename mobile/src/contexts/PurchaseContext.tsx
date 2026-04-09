@@ -52,7 +52,6 @@ export function PurchaseProvider({ children }: { children: React.ReactNode }) {
     }
     const premium = await checkIsPremium();
     setIsPremium(premium);
-
     const info = await getSubscriptionInfo();
     setSubscriptionPlan(info.plan);
     setSubscriptionExpiresAt(info.expiresAt);
@@ -64,8 +63,6 @@ export function PurchaseProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(false);
       return;
     }
-
-    // Test account always gets premium
     if (isTestAccount) {
       setIsPremium(true);
       setSubscriptionPlan('lifetime');
@@ -73,20 +70,14 @@ export function PurchaseProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(false);
       return;
     }
-
     const init = async () => {
       setIsLoading(true);
       try {
-        // RevenueCat disabled until production keys are configured
-        // if (Capacitor.getPlatform() !== 'web') {
-        //   await initializePurchases(user.id);
-        // }
         await refresh();
       } finally {
         setIsLoading(false);
       }
     };
-
     init();
   }, [user?.id]);
 
@@ -104,14 +95,8 @@ export function PurchaseProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <PurchaseContext.Provider value={{
-      isPremium,
-      isLoading,
-      subscriptionPlan,
-      subscriptionExpiresAt,
-      subscriptionStatus,
-      purchase,
-      restore,
-      refresh,
+      isPremium, isLoading, subscriptionPlan, subscriptionExpiresAt, subscriptionStatus,
+      purchase, restore, refresh,
     }}>
       {children}
     </PurchaseContext.Provider>

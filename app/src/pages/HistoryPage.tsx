@@ -10,8 +10,9 @@ import { HistorySkeleton } from '../components/ui/Skeleton'
 import { hapticMedium } from '../lib/haptics'
 import { usePremium } from '../hooks/usePremium'
 import { PaywallModal } from '../components/ui/PaywallModal'
+import { AdBanner } from '../components/ui/AdBanner'
 
-const HISTORY_LIMIT_DAYS = 7
+const HISTORY_LIMIT_DAYS = 3
 
 export default function HistoryPage() {
   const { logs, members, loading } = useAppState()
@@ -126,6 +127,8 @@ export default function HistoryPage() {
         onClose={() => setShowPaywall(false)}
         trigger="history"
       />
+
+      <AdBanner />
     </div>
   )
 }

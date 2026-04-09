@@ -7,6 +7,7 @@ import SleepInsights from '../components/insights/SleepInsights'
 import WeekChart from '../components/insights/WeekChart'
 import { usePremium } from '../hooks/usePremium'
 import { PaywallModal } from '../components/ui/PaywallModal'
+import { AdBanner } from '../components/ui/AdBanner'
 
 export default function InsightsPage() {
   const { logs, loading } = useAppState()
@@ -95,6 +96,8 @@ export default function InsightsPage() {
         onClose={() => setShowPaywall(false)}
         trigger="insights"
       />
+
+      <AdBanner />
     </div>
   )
 }

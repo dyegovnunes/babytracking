@@ -12,6 +12,9 @@ import RecentLogs from '../components/activity/RecentLogs'
 import BottleModal from '../components/ui/BottleModal'
 import EditModal from '../components/ui/EditModal'
 import Toast from '../components/ui/Toast'
+import { RewardedAdModal } from '../components/ui/RewardedAdModal'
+import { PaywallModal } from '../components/ui/PaywallModal'
+import { useDailyLimit } from '../hooks/useDailyLimit'
 
 import { TrackerSkeleton } from '../components/ui/Skeleton'
 import type { LogEntry } from '../types'
@@ -27,6 +30,9 @@ export default function TrackerPage() {
   const [bottleModalOpen, setBottleModalOpen] = useState(false)
   const [editingLog, setEditingLog] = useState<LogEntry | null>(null)
   const [toast, setToast] = useState<string | null>(null)
+  const [showAdModal, setShowAdModal] = useState(false)
+  const [showPaywall, setShowPaywall] = useState(false)
+  const { canRecord, recordsToday, dailyLimit, grantBonusRecords } = useDailyLimit()
 
   const handleLog = useCallback(
     async (eventId: string) => {
@@ -34,6 +40,12 @@ export default function TrackerPage() {
 
       const event = DEFAULT_EVENTS.find((e) => e.id === eventId)
       if (!event) return
+
+      if (!canRecord) {
+        hapticLight()
+        setShowAdModal(true)
+        return
+      }
 
       if (event.hasAmount) {
         hapticLight()
@@ -142,6 +154,21 @@ export default function TrackerPage() {
           onAddBottle={() => { setEditingLog(null); setBottleModalOpen(true); }}
         />
       )}
+
+      <RewardedAdModal
+        isOpen={showAdModal}
+        onClose={() => setShowAdModal(false)}
+        onAdCompleted={grantBonusRecords}
+        onUpgrade={() => setShowPaywall(true)}
+        recordsToday={recordsToday}
+        dailyLimit={dailyLimit}
+      />
+
+      <PaywallModal
+        isOpen={showPaywall}
+        onClose={() => setShowPaywall(false)}
+        trigger="daily_limit"
+      />
 
       {toast && <Toast message={toast} onDismiss={() => setToast(null)} />}
     </div>
