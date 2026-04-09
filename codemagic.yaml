@@ -25,10 +25,6 @@ workflows:
           cd app
           npx cap add ios || true
           npx cap sync ios
-      - name: Install CocoaPods / SPM dependencies
-        script: |
-          cd app/ios/App
-          pod install || true
       - name: Set up code signing
         script: |
           xcode-project use-profiles
@@ -36,7 +32,7 @@ workflows:
         script: |
           cd app/ios/App
           xcode-project build-ipa \
-            --workspace "App.xcworkspace" \
+            --project "App.xcodeproj" \
             --scheme "App" \
             --archive-flags="-destination 'generic/platform=iOS'"
     artifacts:
