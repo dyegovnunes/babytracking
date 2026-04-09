@@ -19,6 +19,7 @@ interface AppState {
 type Action =
   | { type: 'SET_INITIAL'; logs: LogEntry[]; intervals: Record<string, IntervalConfig>; baby: Baby; babies: Baby[]; members: Record<string, Member> }
   | { type: 'SET_NO_BABY' }
+  | { type: 'SET_LOADING' }
   | { type: 'ADD_LOG'; log: LogEntry }
   | { type: 'UPDATE_LOG'; log: LogEntry }
   | { type: 'DELETE_LOG'; id: string }
@@ -49,6 +50,8 @@ function reducer(state: AppState, action: Action): AppState {
       return { ...state, logs: action.logs, intervals: action.intervals, baby: action.baby, babies: action.babies, members: action.members, loading: false, needsOnboarding: false }
     case 'SET_NO_BABY':
       return { ...state, loading: false, needsOnboarding: true }
+    case 'SET_LOADING':
+      return { ...state, loading: true, needsOnboarding: false }
     case 'ADD_LOG':
       return { ...state, logs: [...state.logs, action.log] }
     case 'UPDATE_LOG':
@@ -98,6 +101,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       dispatch({ type: 'SET_NO_BABY' })
       return
     }
+
+    // Reset to loading state immediately to prevent onboarding flash
+    dispatch({ type: 'SET_LOADING' })
 
     async function load() {
       // Find all babies the user has access to

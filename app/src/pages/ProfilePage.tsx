@@ -123,18 +123,35 @@ export default function ProfilePage() {
   }, [user, baby])
 
   const handleDeactivateCode = useCallback(async () => {
-    if (!inviteId) return
-    const { error } = await supabase
-      .from('invite_codes')
-      .update({ active: false })
-      .eq('id', inviteId)
+    if (!inviteId && !baby) return
 
-    if (!error) {
-      setInviteCode(null)
-      setInviteId(null)
-      setToast('Código desativado!')
+    // Try by ID first, then fallback to deactivating all for this baby
+    if (inviteId) {
+      const { error } = await supabase
+        .from('invite_codes')
+        .update({ active: false })
+        .eq('id', inviteId)
+
+      if (error) {
+        // Fallback: deactivate all active codes for this baby
+        await supabase
+          .from('invite_codes')
+          .update({ active: false })
+          .eq('baby_id', baby!.id)
+          .eq('active', true)
+      }
+    } else if (baby) {
+      await supabase
+        .from('invite_codes')
+        .update({ active: false })
+        .eq('baby_id', baby.id)
+        .eq('active', true)
     }
-  }, [inviteId])
+
+    setInviteCode(null)
+    setInviteId(null)
+    setToast('Código desativado!')
+  }, [inviteId, baby])
 
   const handleCopyCode = useCallback(() => {
     if (!inviteCode) return
