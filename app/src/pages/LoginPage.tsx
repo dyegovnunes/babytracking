@@ -302,10 +302,10 @@ export default function LoginPage() {
         )}
       </div>
 
-      <div className="absolute bottom-6 left-0 right-0 text-center">
+      <div className="mt-8 text-center">
         <a
           href="/privacy"
-          className="font-label text-[11px] text-on-surface-variant/50"
+          className="font-label text-[11px] text-on-surface-variant/50 underline"
         >
           Política de Privacidade
         </a>
