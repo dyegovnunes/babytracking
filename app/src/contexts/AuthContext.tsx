@@ -54,25 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (Capacitor.isNativePlatform()) {
       CapApp.addListener('appUrlOpen', async ({ url }) => {
         if (url.startsWith('app.yayababy://login-callback')) {
-          // Close the in-app browser immediately
-          try { await Browser.close() } catch { /* ignore */ }
-
-          // Try PKCE flow first (code in query params)
-          // Parse manually since new URL() may fail with custom schemes
-          const queryStart = url.indexOf('?')
-          const hashStart = url.indexOf('#')
-          const queryString = queryStart !== -1
-            ? url.substring(queryStart + 1, hashStart !== -1 ? hashStart : undefined)
-            : ''
-          const queryParams = new URLSearchParams(queryString)
-          const code = queryParams.get('code')
-
-          if (code) {
-            await supabase.auth.exchangeCodeForSession(code)
-            return
-          }
-
-          // Fallback: implicit flow (tokens in hash fragment)
+          // Extract tokens from the URL fragment
           const hashPart = url.includes('#') ? url.split('#')[1] : ''
           const params = new URLSearchParams(hashPart)
           const accessToken = params.get('access_token')
@@ -84,6 +66,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               refresh_token: refreshToken,
             })
           }
+
+          // Close the in-app browser
+          await Browser.close()
         }
       }).then(listener => { appUrlListener = listener })
     }
