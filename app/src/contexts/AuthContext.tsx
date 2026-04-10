@@ -2,8 +2,10 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from '
 import type { User, Session } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
 import { Capacitor } from '@capacitor/core'
-import { Browser } from '@capacitor/browser'
-import { App as CapApp } from '@capacitor/app'
+
+// Dynamic imports for native-only plugins (not available on Vercel web builds)
+const getBrowser = () => import('@capacitor/browser').then(m => m.Browser)
+const getCapApp = () => import('@capacitor/app').then(m => m.App)
 
 interface AuthState {
   user: User | null
@@ -52,25 +54,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Listen for deep link callbacks (OAuth redirect on native)
     let appUrlListener: { remove: () => void } | undefined
     if (Capacitor.isNativePlatform()) {
-      CapApp.addListener('appUrlOpen', async ({ url }) => {
-        if (url.startsWith('app.yayababy://login-callback')) {
-          // Extract tokens from the URL fragment
-          const hashPart = url.includes('#') ? url.split('#')[1] : ''
-          const params = new URLSearchParams(hashPart)
-          const accessToken = params.get('access_token')
-          const refreshToken = params.get('refresh_token')
+      getCapApp().then(CapApp => {
+        CapApp.addListener('appUrlOpen', async ({ url }: { url: string }) => {
+          if (url.startsWith('app.yayababy://login-callback')) {
+            // Extract tokens from the URL fragment
+            const hashPart = url.includes('#') ? url.split('#')[1] : ''
+            const params = new URLSearchParams(hashPart)
+            const accessToken = params.get('access_token')
+            const refreshToken = params.get('refresh_token')
 
-          if (accessToken && refreshToken) {
-            await supabase.auth.setSession({
-              access_token: accessToken,
-              refresh_token: refreshToken,
-            })
+            if (accessToken && refreshToken) {
+              await supabase.auth.setSession({
+                access_token: accessToken,
+                refresh_token: refreshToken,
+              })
+            }
+
+            // Close the in-app browser
+            const Browser = await getBrowser()
+            await Browser.close()
           }
-
-          // Close the in-app browser
-          await Browser.close()
-        }
-      }).then(listener => { appUrlListener = listener })
+        }).then((listener: { remove: () => void }) => { appUrlListener = listener })
+      })
     }
 
     return () => {
@@ -134,6 +139,7 @@ async function signInWithOAuthProvider(provider: 'google' | 'apple'): Promise<{ 
     })
     if (error) return { error: error.message }
     if (data?.url) {
+      const Browser = await getBrowser()
       await Browser.open({ url: data.url })
     }
     return { error: null }
