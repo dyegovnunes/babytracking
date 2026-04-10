@@ -1,6 +1,9 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import type { User, Session } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
+import { Capacitor } from '@capacitor/core'
+import { Browser } from '@capacitor/browser'
+import { App as CapApp } from '@capacitor/app'
 
 interface AuthState {
   user: User | null
@@ -46,7 +49,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       },
     )
 
-    return () => subscription.unsubscribe()
+    // Listen for deep link callbacks (OAuth redirect on native)
+    let appUrlListener: { remove: () => void } | undefined
+    if (Capacitor.isNativePlatform()) {
+      CapApp.addListener('appUrlOpen', async ({ url }) => {
+        if (url.startsWith('app.yayababy://login-callback')) {
+          // Extract tokens from the URL fragment
+          const hashPart = url.includes('#') ? url.split('#')[1] : ''
+          const params = new URLSearchParams(hashPart)
+          const accessToken = params.get('access_token')
+          const refreshToken = params.get('refresh_token')
+
+          if (accessToken && refreshToken) {
+            await supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken,
+            })
+          }
+
+          // Close the in-app browser
+          await Browser.close()
+        }
+      }).then(listener => { appUrlListener = listener })
+    }
+
+    return () => {
+      subscription.unsubscribe()
+      appUrlListener?.remove()
+    }
   }, [])
 
   return (
@@ -92,9 +122,26 @@ export async function verifyOtp(email: string, token: string): Promise<{ error: 
   return { error: error?.message ?? null }
 }
 
-export async function signInWithGoogle(): Promise<{ error: string | null }> {
+async function signInWithOAuthProvider(provider: 'google' | 'apple'): Promise<{ error: string | null }> {
+  if (Capacitor.isNativePlatform()) {
+    // On native: get the OAuth URL and open in in-app browser
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: 'app.yayababy://login-callback',
+        skipBrowserRedirect: true,
+      },
+    })
+    if (error) return { error: error.message }
+    if (data?.url) {
+      await Browser.open({ url: data.url })
+    }
+    return { error: null }
+  }
+
+  // On web: standard redirect
   const { error } = await supabase.auth.signInWithOAuth({
-    provider: 'google',
+    provider,
     options: {
       redirectTo: window.location.origin,
     },
@@ -102,14 +149,12 @@ export async function signInWithGoogle(): Promise<{ error: string | null }> {
   return { error: error?.message ?? null }
 }
 
+export async function signInWithGoogle(): Promise<{ error: string | null }> {
+  return signInWithOAuthProvider('google')
+}
+
 export async function signInWithApple(): Promise<{ error: string | null }> {
-  const { error } = await supabase.auth.signInWithOAuth({
-    provider: 'apple',
-    options: {
-      redirectTo: window.location.origin,
-    },
-  })
-  return { error: error?.message ?? null }
+  return signInWithOAuthProvider('apple')
 }
 
 export async function signOut(): Promise<void> {

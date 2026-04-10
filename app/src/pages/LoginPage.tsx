@@ -1,5 +1,9 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { signInWithEmail, signInWithGoogle, signInWithApple, verifyOtp } from '../contexts/AuthContext'
+import { Capacitor } from '@capacitor/core'
+
+const isAndroid = Capacitor.getPlatform() === 'android'
+const showAppleAuth = !isAndroid
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -234,7 +238,7 @@ export default function LoginPage() {
               )}
             </button>
 
-            <button
+            {showAppleAuth && <button
               onClick={handleApple}
               disabled={socialLoading}
               className="w-full py-3.5 rounded-xl bg-surface-container-low flex items-center justify-center gap-3 font-label font-semibold text-base text-on-surface active:bg-surface-container-high transition-colors disabled:opacity-50 mt-3"
@@ -251,7 +255,7 @@ export default function LoginPage() {
                   Entrar com Apple
                 </>
               )}
-            </button>
+            </button>}
 
             <div className="flex items-center gap-3 my-6">
               <div className="flex-1 h-px bg-outline-variant/30" />
@@ -296,6 +300,15 @@ export default function LoginPage() {
             </form>
           </div>
         )}
+      </div>
+
+      <div className="absolute bottom-6 left-0 right-0 text-center">
+        <a
+          href="/privacy"
+          className="font-label text-[11px] text-on-surface-variant/50"
+        >
+          Política de Privacidade
+        </a>
       </div>
     </div>
   )
