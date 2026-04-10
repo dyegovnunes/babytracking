@@ -2,15 +2,19 @@ import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { AppProvider, useAppState } from './contexts/AppContext'
 import { PurchaseProvider } from './contexts/PurchaseContext'
+import { Capacitor } from '@capacitor/core'
 import AppShell from './components/layout/AppShell'
 import TrackerPage from './pages/TrackerPage'
 import HistoryPage from './pages/HistoryPage'
 import ProfilePage from './pages/ProfilePage'
 import LoginPage from './pages/LoginPage'
+import LandingPage from './pages/LandingPage'
 import OnboardingPage from './pages/OnboardingPage'
 import SettingsPage from './pages/SettingsPage'
 import InsightsPage from './pages/InsightsPage'
 import PrivacyPage from './pages/PrivacyPage'
+
+const isNative = Capacitor.isNativePlatform()
 
 function AuthenticatedRoutes() {
   const { user, loading: authLoading } = useAuth()
@@ -61,7 +65,37 @@ function AppRoutes() {
     return <PrivacyPage />
   }
 
+  // On web: show landing page at root, login at /login
+  // On native app: go straight to auth flow
+  if (!isNative && location.pathname === '/' ) {
+    return <PublicOrAuth />
+  }
+
+  if (location.pathname === '/login') {
+    return <AuthenticatedRoutes />
+  }
+
   return <AuthenticatedRoutes />
+}
+
+function PublicOrAuth() {
+  const { user, loading } = useAuth()
+
+  // If already logged in, show the app
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-surface flex flex-col items-center justify-center gap-4">
+        <img src="./logo-symbol.png" alt="Yaya" className="w-20 h-20 animate-pulse-soft" />
+      </div>
+    )
+  }
+
+  if (user) {
+    return <AuthenticatedRoutes />
+  }
+
+  // Not logged in on web → show landing page
+  return <LandingPage />
 }
 
 export default function App() {
