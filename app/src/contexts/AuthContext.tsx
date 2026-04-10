@@ -102,6 +102,16 @@ export async function signInWithGoogle(): Promise<{ error: string | null }> {
   return { error: error?.message ?? null }
 }
 
+export async function signInWithApple(): Promise<{ error: string | null }> {
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: 'apple',
+    options: {
+      redirectTo: window.location.origin,
+    },
+  })
+  return { error: error?.message ?? null }
+}
+
 export async function signOut(): Promise<void> {
   await supabase.auth.signOut()
 }
