@@ -4,8 +4,8 @@ import { useEffect } from 'react'
 
 const words = ['A rotina do seu bebê,', 'com 1 toque,', 'na palma da sua mão.']
 
-// Brand colors for the animated gradient
-const COLORS = ['#b79fff', '#ab8ffe', '#ff96b9', '#9580e6']
+// Subtle brand color animation — stays close to base
+const COLORS = ['#1a1145', '#1e1652', '#1a1348', '#1d1450']
 
 function useAnimatedGradient() {
   const color = useMotionValue(COLORS[0])
@@ -20,11 +20,31 @@ function useAnimatedGradient() {
     return controls.stop
   }, [color])
 
-  const backgroundImage = useMotionTemplate`radial-gradient(125% 125% at 50% 0%, #0d0a27 50%, ${color})`
+  const backgroundImage = useMotionTemplate`radial-gradient(125% 125% at 50% 0%, #0d0a27 40%, ${color})`
   const border = useMotionTemplate`1px solid ${color}`
-  const boxShadow = useMotionTemplate`0 4px 24px ${color}`
+  const boxShadow = useMotionTemplate`0 2px 12px ${color}`
 
-  return { backgroundImage, border, boxShadow, color }
+  return { backgroundImage, border, boxShadow }
+}
+
+// Separate subtle glow for buttons
+function useButtonGlow() {
+  const color = useMotionValue('#b79fff20')
+
+  useEffect(() => {
+    const controls = animate(color, ['#b79fff20', '#ab8ffe30', '#ff96b920', '#9580e625'], {
+      ease: 'easeInOut',
+      duration: 8,
+      repeat: Infinity,
+      repeatType: 'mirror',
+    })
+    return controls.stop
+  }, [color])
+
+  const border = useMotionTemplate`1px solid ${color}`
+  const boxShadow = useMotionTemplate`0 2px 16px ${color}`
+
+  return { border, boxShadow }
 }
 
 function Particles() {
@@ -55,7 +75,7 @@ function Particles() {
 
 function StoreBadges({ border, boxShadow }: { border: any; boxShadow: any }) {
   return (
-    <div className="flex flex-col sm:flex-row items-center gap-3">
+    <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3">
       <motion.a
         href="https://apps.apple.com/app/yaya-baby"
         target="_blank"
@@ -63,7 +83,7 @@ function StoreBadges({ border, boxShadow }: { border: any; boxShadow: any }) {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.97 }}
         style={{ border, boxShadow }}
-        className="inline-flex items-center gap-3 px-6 py-3.5 rounded-xl bg-gray-950/40 hover:bg-gray-950/60 transition-colors backdrop-blur-sm"
+        className="inline-flex items-center gap-3 px-6 py-3.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] transition-colors backdrop-blur-sm"
       >
         <svg className="w-7 h-7" viewBox="0 0 24 24" fill="white">
           <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
@@ -80,7 +100,7 @@ function StoreBadges({ border, boxShadow }: { border: any; boxShadow: any }) {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.97 }}
         style={{ border, boxShadow }}
-        className="inline-flex items-center gap-3 px-6 py-3.5 rounded-xl bg-gray-950/40 hover:bg-gray-950/60 transition-colors backdrop-blur-sm"
+        className="inline-flex items-center gap-3 px-6 py-3.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] transition-colors backdrop-blur-sm"
       >
         <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none">
           <path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92z" fill="#4285F4"/>
@@ -98,7 +118,8 @@ function StoreBadges({ border, boxShadow }: { border: any; boxShadow: any }) {
 }
 
 export default function Hero() {
-  const { backgroundImage, border, boxShadow } = useAnimatedGradient()
+  const { backgroundImage } = useAnimatedGradient()
+  const { border: btnBorder, boxShadow: btnShadow } = useButtonGlow()
 
   return (
     <motion.section
@@ -115,7 +136,7 @@ export default function Hero() {
         <img
           src="./landing/logo-light.png"
           alt="Yaya"
-          className="h-12"
+          className="h-8"
         />
         <nav className="hidden sm:flex items-center gap-6">
           <a href="#funcionalidades" className="text-sm text-[#b0adc4] hover:text-white transition-colors">
@@ -127,7 +148,7 @@ export default function Hero() {
         </nav>
         <motion.a
           href="#baixar"
-          className="px-6 py-2.5 rounded-lg bg-gradient-to-r from-[#6b4ec9] to-[#9580e6] text-white text-sm font-semibold hover:opacity-90 transition-opacity"
+          className="px-5 py-2 rounded-lg bg-gradient-to-r from-[#6b4ec9] to-[#9580e6] text-white text-sm font-semibold hover:opacity-90 transition-opacity"
           whileHover={{ scale: 1.015 }}
           whileTap={{ scale: 0.985 }}
         >
@@ -141,15 +162,6 @@ export default function Hero() {
         <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Text */}
           <div className="text-center lg:text-left">
-            <motion.img
-              src="./landing/logo-light.png"
-              alt="Yaya"
-              className="h-20 sm:h-28 mb-8 mx-auto lg:mx-0"
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-            />
-
             <div className="mb-6">
               {words.map((word, i) => (
                 <motion.span
@@ -187,11 +199,11 @@ export default function Hero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 1.2 }}
             >
-              <StoreBadges border={border} boxShadow={boxShadow} />
+              <StoreBadges border={btnBorder} boxShadow={btnShadow} />
             </motion.div>
 
             <motion.p
-              className="mt-4 text-xs text-[#7a7890]"
+              className="mt-4 text-xs text-[#7a7890] text-center lg:text-left"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1.5 }}
