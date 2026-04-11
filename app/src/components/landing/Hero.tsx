@@ -1,7 +1,31 @@
-import { motion } from 'framer-motion'
+import { motion, useMotionTemplate, useMotionValue, animate } from 'framer-motion'
 import { ChevronDown } from 'lucide-react'
+import { useEffect } from 'react'
 
 const words = ['A rotina do seu bebê,', 'com 1 toque,', 'na palma da sua mão.']
+
+// Brand colors for the animated gradient
+const COLORS = ['#b79fff', '#ab8ffe', '#ff96b9', '#9580e6']
+
+function useAnimatedGradient() {
+  const color = useMotionValue(COLORS[0])
+
+  useEffect(() => {
+    const controls = animate(color, COLORS, {
+      ease: 'easeInOut',
+      duration: 10,
+      repeat: Infinity,
+      repeatType: 'mirror',
+    })
+    return controls.stop
+  }, [color])
+
+  const backgroundImage = useMotionTemplate`radial-gradient(125% 125% at 50% 0%, #0d0a27 50%, ${color})`
+  const border = useMotionTemplate`1px solid ${color}`
+  const boxShadow = useMotionTemplate`0 4px 24px ${color}`
+
+  return { backgroundImage, border, boxShadow, color }
+}
 
 function Particles() {
   return (
@@ -29,7 +53,7 @@ function Particles() {
   )
 }
 
-function StoreBadges() {
+function StoreBadges({ border, boxShadow }: { border: any; boxShadow: any }) {
   return (
     <div className="flex flex-col sm:flex-row items-center gap-3">
       <motion.a
@@ -38,7 +62,8 @@ function StoreBadges() {
         rel="noopener noreferrer"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.97 }}
-        className="inline-flex items-center gap-3 px-5 py-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/15 transition-colors"
+        style={{ border, boxShadow }}
+        className="inline-flex items-center gap-3 px-6 py-3.5 rounded-xl bg-gray-950/40 hover:bg-gray-950/60 transition-colors backdrop-blur-sm"
       >
         <svg className="w-7 h-7" viewBox="0 0 24 24" fill="white">
           <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
@@ -54,7 +79,8 @@ function StoreBadges() {
         rel="noopener noreferrer"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.97 }}
-        className="inline-flex items-center gap-3 px-5 py-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/15 transition-colors"
+        style={{ border, boxShadow }}
+        className="inline-flex items-center gap-3 px-6 py-3.5 rounded-xl bg-gray-950/40 hover:bg-gray-950/60 transition-colors backdrop-blur-sm"
       >
         <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none">
           <path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92z" fill="#4285F4"/>
@@ -72,8 +98,13 @@ function StoreBadges() {
 }
 
 export default function Hero() {
+  const { backgroundImage, border, boxShadow } = useAnimatedGradient()
+
   return (
-    <section className="relative min-h-screen flex flex-col overflow-hidden bg-gradient-to-br from-[#0d0a27] via-[#1a1145] to-[#0d0a27]">
+    <motion.section
+      className="relative min-h-screen flex flex-col overflow-hidden"
+      style={{ backgroundImage }}
+    >
       {/* Header */}
       <motion.header
         className="relative z-20 w-full max-w-6xl mx-auto px-6 py-5 flex items-center justify-between"
@@ -84,7 +115,7 @@ export default function Hero() {
         <img
           src="./landing/logo-light.png"
           alt="Yaya"
-          className="h-8"
+          className="h-12"
         />
         <nav className="hidden sm:flex items-center gap-6">
           <a href="#funcionalidades" className="text-sm text-[#b0adc4] hover:text-white transition-colors">
@@ -94,12 +125,14 @@ export default function Hero() {
             Preços
           </a>
         </nav>
-        <a
+        <motion.a
           href="#baixar"
-          className="px-5 py-2 rounded-full bg-gradient-to-r from-[#6b4ec9] to-[#9580e6] text-white text-sm font-semibold hover:opacity-90 transition-opacity"
+          className="px-6 py-2.5 rounded-lg bg-gradient-to-r from-[#6b4ec9] to-[#9580e6] text-white text-sm font-semibold hover:opacity-90 transition-opacity"
+          whileHover={{ scale: 1.015 }}
+          whileTap={{ scale: 0.985 }}
         >
           Baixar
-        </a>
+        </motion.a>
       </motion.header>
 
       <Particles />
@@ -111,7 +144,7 @@ export default function Hero() {
             <motion.img
               src="./landing/logo-light.png"
               alt="Yaya"
-              className="h-16 sm:h-20 mb-8 mx-auto lg:mx-0"
+              className="h-20 sm:h-28 mb-8 mx-auto lg:mx-0"
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
@@ -121,17 +154,17 @@ export default function Hero() {
               {words.map((word, i) => (
                 <motion.span
                   key={i}
-                  className="block font-extrabold text-3xl sm:text-4xl lg:text-5xl leading-tight text-white"
+                  className="block font-extrabold text-3xl sm:text-4xl lg:text-5xl leading-tight"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.3 + i * 0.2 }}
                 >
                   {i === 2 ? (
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#9580e6] to-[#c4b8f0]">
+                    <span className="text-transparent bg-clip-text bg-gradient-to-br from-white to-[#b0adc4]">
                       {word}
                     </span>
                   ) : (
-                    word
+                    <span className="text-white">{word}</span>
                   )}
                 </motion.span>
               ))}
@@ -154,7 +187,7 @@ export default function Hero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 1.2 }}
             >
-              <StoreBadges />
+              <StoreBadges border={border} boxShadow={boxShadow} />
             </motion.div>
 
             <motion.p
@@ -203,6 +236,6 @@ export default function Hero() {
       >
         <ChevronDown className="w-6 h-6 text-white/30" />
       </motion.div>
-    </section>
+    </motion.section>
   )
 }
