@@ -3,6 +3,7 @@ declare module '@capacitor/browser' {
   export const Browser: {
     open(options: { url: string }): Promise<void>
     close(): Promise<void>
+    addListener(event: string, callback: (data?: any) => void): Promise<{ remove: () => void }>
   }
 }
 
