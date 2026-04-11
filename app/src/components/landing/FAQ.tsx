@@ -42,7 +42,7 @@ function FAQItem({ faq, index }: { faq: typeof faqs[0]; index: number }) {
 
   return (
     <motion.div
-      className="border-b border-[#e7e2ff]/30 last:border-0"
+      className="border-b border-white/[0.08] last:border-0"
       initial={{ opacity: 0, y: 15 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
@@ -50,9 +50,9 @@ function FAQItem({ faq, index }: { faq: typeof faqs[0]; index: number }) {
     >
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between gap-4 py-5 text-left group"
+        className="w-full flex items-center justify-between gap-4 py-4 text-left group"
       >
-        <span className="text-base font-semibold text-[#1a1145] group-hover:text-[#6b4ec9] transition-colors">
+        <span className="text-sm sm:text-base font-semibold text-white group-hover:text-[#c4b8f0] transition-colors">
           {faq.q}
         </span>
         <motion.div
@@ -60,7 +60,7 @@ function FAQItem({ faq, index }: { faq: typeof faqs[0]; index: number }) {
           transition={{ duration: 0.2 }}
           className="flex-none"
         >
-          <Plus className="w-5 h-5 text-[#6b4ec9]" />
+          <Plus className="w-4 h-4 text-[#9580e6]" />
         </motion.div>
       </button>
       <AnimatePresence>
@@ -72,7 +72,7 @@ function FAQItem({ faq, index }: { faq: typeof faqs[0]; index: number }) {
             transition={{ duration: 0.3, ease: 'easeInOut' }}
             className="overflow-hidden"
           >
-            <p className="pb-5 text-sm text-[#5a5678] leading-relaxed pr-10">
+            <p className="pb-4 text-sm text-[#b0adc4] leading-relaxed pr-10">
               {faq.a}
             </p>
           </motion.div>
@@ -84,21 +84,21 @@ function FAQItem({ faq, index }: { faq: typeof faqs[0]; index: number }) {
 
 export default function FAQ() {
   return (
-    <section className="bg-[#faf9ff] py-24 sm:py-32">
+    <section className="bg-[#13103a] py-20 sm:py-24">
       <div className="max-w-2xl mx-auto px-6">
         <motion.div
-          className="text-center mb-12"
+          className="text-center mb-10"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1a1145] mb-4">
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-3">
             Perguntas frequentes
           </h2>
         </motion.div>
 
-        <div className="bg-white rounded-2xl border border-[#e7e2ff]/50 shadow-sm px-6">
+        <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] px-6">
           {faqs.map((faq, i) => (
             <FAQItem key={i} faq={faq} index={i} />
           ))}

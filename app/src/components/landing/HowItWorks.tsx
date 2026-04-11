@@ -7,19 +7,19 @@ const steps = [
     number: 1,
     icon: Download,
     title: 'Baixe grátis',
-    description: 'App Store ou Google Play.\nCadastro em 30 segundos.',
+    description: 'App Store ou Google Play. Cadastro em 30 segundos.',
   },
   {
     number: 2,
     icon: Fingerprint,
     title: 'Registre com 1 toque',
-    description: 'Amamentação, sono, fralda.\nTimer incluso. Sem complicação.',
+    description: 'Amamentação, sono, fralda. Timer incluso.',
   },
   {
     number: 3,
     icon: TrendingUp,
     title: 'Acompanhe a evolução',
-    description: 'Insights inteligentes.\nRelatório para o pediatra.',
+    description: 'Insights inteligentes. Relatório para o pediatra.',
   },
 ]
 
@@ -52,26 +52,26 @@ export default function HowItWorks() {
   const inView = useInView(ref, { once: true, margin: '-100px' })
 
   return (
-    <section className="bg-[#faf9ff] py-24 sm:py-32" ref={ref}>
-      <div className="max-w-6xl mx-auto px-6">
+    <section className="bg-[#0d0a27] py-20 sm:py-24" ref={ref}>
+      <div className="max-w-4xl mx-auto px-6">
         <motion.div
-          className="text-center mb-16"
+          className="text-center mb-12"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1a1145] mb-4">
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-3">
             Simples assim.
           </h2>
-          <p className="text-[#5a5678] text-base sm:text-lg">
+          <p className="text-[#b0adc4] text-base sm:text-lg">
             3 passos para nunca mais esquecer.
           </p>
         </motion.div>
 
-        <div className="relative grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+        <div className="relative grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Connecting line (desktop) */}
-          <div className="hidden md:block absolute top-24 left-[20%] right-[20%] h-px">
+          <div className="hidden md:block absolute top-12 left-[20%] right-[20%] h-px">
             <motion.div
               className="h-full bg-gradient-to-r from-transparent via-[#9580e6]/30 to-transparent"
               initial={{ scaleX: 0 }}
@@ -91,30 +91,24 @@ export default function HowItWorks() {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.2 + i * 0.2 }}
+                transition={{ duration: 0.5, delay: 0.2 + i * 0.15 }}
               >
-                {/* Number */}
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#6b4ec9] to-[#9580e6] flex items-center justify-center mx-auto mb-6 shadow-lg shadow-purple-500/20">
-                  <span className="text-2xl font-extrabold text-white">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#6b4ec9] to-[#9580e6] flex items-center justify-center mx-auto mb-4 shadow-lg shadow-purple-500/20">
+                  <span className="text-lg font-extrabold text-white">
                     <NumberTicker value={step.number} inView={inView} />
                   </span>
                 </div>
 
-                {/* Icon */}
-                <div className="w-12 h-12 rounded-xl bg-[#6b4ec9]/10 flex items-center justify-center mx-auto mb-4">
-                  <Icon className="w-6 h-6 text-[#6b4ec9]" />
+                <div className="w-10 h-10 rounded-lg bg-[#6b4ec9]/10 flex items-center justify-center mx-auto mb-3">
+                  <Icon className="w-5 h-5 text-[#9580e6]" />
                 </div>
 
-                <h3 className="text-xl font-bold text-[#1a1145] mb-2">
+                <h3 className="text-lg font-bold text-white mb-1.5">
                   {step.title}
                 </h3>
-                <div className="space-y-1">
-                  {step.description.split('\n').map((line, j) => (
-                    <p key={j} className="text-sm text-[#5a5678]">
-                      {line}
-                    </p>
-                  ))}
-                </div>
+                <p className="text-sm text-[#b0adc4]">
+                  {step.description}
+                </p>
               </motion.div>
             )
           })}

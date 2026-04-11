@@ -22,8 +22,8 @@ const steps = [
 
 export default function ProblemSolution() {
   return (
-    <section className="bg-[#faf9ff] py-24 sm:py-32">
-      <div className="max-w-3xl mx-auto px-6 space-y-32">
+    <section className="bg-gradient-to-b from-[#0d0a27] to-[#13103a] py-24 sm:py-32">
+      <div className="max-w-3xl mx-auto px-6 space-y-24">
         {steps.map((step, i) => (
           <motion.div
             key={i}
@@ -38,7 +38,7 @@ export default function ProblemSolution() {
                 {step.lines.map((line, j) => (
                   <motion.p
                     key={j}
-                    className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#1a1145] italic"
+                    className="text-xl sm:text-2xl lg:text-3xl font-bold text-white/90 italic"
                     initial={{ opacity: 0, y: 15 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
@@ -55,8 +55,8 @@ export default function ProblemSolution() {
                   key={j}
                   className={`text-lg sm:text-xl lg:text-2xl leading-relaxed ${
                     step.highlight
-                      ? 'font-bold text-[#6b4ec9]'
-                      : 'text-[#5a5678]'
+                      ? 'font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#9580e6] to-[#c4b8f0]'
+                      : 'text-[#b0adc4]'
                   }`}
                 >
                   {line}
