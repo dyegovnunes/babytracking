@@ -69,7 +69,7 @@ export default function InsightsPage() {
         ) : (
           <div className="relative">
             {/* Blurred preview */}
-            <div className="blur-sm opacity-50 pointer-events-none select-none">
+            <div className="blur-sm opacity-40 pointer-events-none select-none">
               <FeedingInsights pattern={insights.feedingPattern} />
               <div className="mt-4">
                 <SleepInsights pattern={insights.sleepPattern} />
@@ -77,14 +77,20 @@ export default function InsightsPage() {
             </div>
 
             {/* Upgrade overlay */}
-            <div className="absolute inset-0 flex items-center justify-center">
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
+              <div className="flex flex-col items-center gap-1 text-center px-6">
+                <span className="material-symbols-outlined text-primary text-4xl mb-1">lock</span>
+                <span className="text-on-surface font-label font-bold text-base">Insights completos</span>
+                <span className="text-on-surface-variant font-label text-xs">
+                  Veja padrões de sono, alimentação e resumos semanais
+                </span>
+              </div>
               <button
                 onClick={() => setShowPaywall(true)}
-                className="bg-[#0d0a27]/90 backdrop-blur-sm border border-primary/30 rounded-2xl px-6 py-4 flex flex-col items-center gap-2 active:bg-[#0d0a27] transition-colors"
+                className="bg-primary text-on-primary font-bold font-label text-sm px-8 py-3 rounded-2xl shadow-lg active:scale-95 transition-transform flex items-center gap-2"
               >
-                <span className="material-symbols-outlined text-primary text-3xl">insights</span>
-                <span className="text-on-surface font-label font-bold text-sm">Ver insights completos</span>
-                <span className="text-on-surface-variant font-label text-xs">Desbloqueie com Yaya+</span>
+                <span className="material-symbols-outlined text-base">star</span>
+                Desbloquear com Yaya+
               </button>
             </div>
           </div>

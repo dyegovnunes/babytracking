@@ -32,7 +32,7 @@ export default function TrackerPage() {
   const [toast, setToast] = useState<string | null>(null)
   const [showAdModal, setShowAdModal] = useState(false)
   const [showPaywall, setShowPaywall] = useState(false)
-  const { canRecord, recordsToday, dailyLimit, grantBonusRecords } = useDailyLimit()
+  const { checkAndRecord, recordsToday, dailyLimit, grantBonusRecords } = useDailyLimit()
 
   const handleLog = useCallback(
     async (eventId: string) => {
@@ -41,7 +41,8 @@ export default function TrackerPage() {
       const event = DEFAULT_EVENTS.find((e) => e.id === eventId)
       if (!event) return
 
-      if (!canRecord) {
+      // Check limit at click-time using real-time count (not stale state)
+      if (!checkAndRecord()) {
         hapticLight()
         setShowAdModal(true)
         return
@@ -59,7 +60,7 @@ export default function TrackerPage() {
         setToast(`${event.label} registrado!`)
       }
     },
-    [baby, dispatch, user, canRecord],
+    [baby, dispatch, user, checkAndRecord],
   )
 
   const handleBottleConfirm = useCallback(

@@ -59,7 +59,7 @@ interface PlanOption {
 }
 
 const FALLBACK_PLANS: PlanOption[] = [
-  { type: 'annual', label: 'Anual', price: 'R$16,90/mês', detail: 'R$202,80/ano', badge: 'Melhor valor' },
+  { type: 'annual', label: 'Anual', price: 'R$16,90/mês', detail: 'R$202,80/ano, cobrado uma vez', badge: 'Mais escolhido' },
   { type: 'monthly', label: 'Mensal', price: 'R$29,90/mês', detail: '' },
   { type: 'lifetime', label: 'Vitalício', price: 'R$299,90', detail: 'Uma vez, para sempre' },
 ];
@@ -82,8 +82,8 @@ export function PaywallModal({ isOpen, onClose, trigger = 'generic' }: PaywallMo
           type: 'annual',
           label: 'Anual',
           price: pkgs.annual.product.priceString + '/mês' || 'R$16,90/mês',
-          detail: pkgs.annual.product.priceString || 'R$202,80/ano',
-          badge: 'Melhor valor',
+          detail: (pkgs.annual.product.priceString || 'R$202,80') + '/ano, cobrado uma vez',
+          badge: 'Mais escolhido',
         });
       }
       if (pkgs.monthly) {
@@ -139,8 +139,8 @@ export function PaywallModal({ isOpen, onClose, trigger = 'generic' }: PaywallMo
     : `Assinar Yaya+ — ${selected.price}`;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-t-3xl bg-[#0d0a27] border border-[#b79fff]/20 p-6 pb-10 animate-slide-up max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-sm" style={{ zIndex: 60 }}>
+      <div className="w-full max-w-md rounded-t-3xl bg-[#0d0a27] border border-[#b79fff]/20 p-6 pb-[calc(2.5rem+env(safe-area-inset-bottom))] animate-slide-up max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
           <span className="text-xs font-semibold tracking-widest uppercase text-[#b79fff]">Yaya+</span>
@@ -149,9 +149,19 @@ export function PaywallModal({ isOpen, onClose, trigger = 'generic' }: PaywallMo
           </button>
         </div>
 
-        {/* Trigger context */}
-        <h2 className="text-xl font-bold text-[#e7e2ff] mb-2">{message.title}</h2>
-        <p className="text-sm text-[#e7e2ff]/60 mb-5">{message.description}</p>
+        {/* Main headline */}
+        <h2 className="text-xl font-bold text-[#e7e2ff] mb-1">Desbloqueie o melhor do Yaya</h2>
+
+        {/* Trigger context — subtle */}
+        {trigger !== 'generic' && (
+          <p className="text-xs text-[#b79fff]/80 mb-1 flex items-center gap-1.5">
+            <span className="material-symbols-outlined text-sm">auto_awesome</span>
+            {message.title}: {message.description}
+          </p>
+        )}
+        <p className="text-sm text-[#e7e2ff]/50 mb-5">
+          Tudo o que você precisa para acompanhar a rotina do seu bebê.
+        </p>
 
         {/* Benefits */}
         <ul className="space-y-2 mb-6">
