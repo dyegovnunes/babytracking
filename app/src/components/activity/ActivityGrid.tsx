@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import type { EventType, LogEntry } from '../../types'
 import ActivityButton from './ActivityButton'
 
@@ -8,10 +9,32 @@ interface Props {
 }
 
 export default function ActivityGrid({ events, logs, onLog }: Props) {
-  function getLastLog(eventId: string): LogEntry | undefined {
-    return [...logs]
-      .filter((l) => l.eventId === eventId)
-      .sort((a, b) => b.timestamp - a.timestamp)[0]
+  const { lastLogByEvent, mostRecentEventId, breastLeftLog, breastRightLog } = useMemo(() => {
+    const byEvent: Record<string, LogEntry> = {}
+    let mostRecent: LogEntry | undefined
+
+    for (const log of logs) {
+      const existing = byEvent[log.eventId]
+      if (!existing || log.timestamp > existing.timestamp) {
+        byEvent[log.eventId] = log
+      }
+      if (!mostRecent || log.timestamp > mostRecent.timestamp) {
+        mostRecent = log
+      }
+    }
+
+    return {
+      lastLogByEvent: byEvent,
+      mostRecentEventId: mostRecent?.eventId,
+      breastLeftLog: byEvent['breast_left'],
+      breastRightLog: byEvent['breast_right'],
+    }
+  }, [logs])
+
+  function getBothBreastsLog(eventId: string): LogEntry | undefined {
+    if (eventId === 'breast_left') return breastRightLog
+    if (eventId === 'breast_right') return breastLeftLog
+    return undefined
   }
 
   return (
@@ -21,8 +44,10 @@ export default function ActivityGrid({ events, logs, onLog }: Props) {
           <ActivityButton
             key={event.id}
             event={event}
-            lastLog={getLastLog(event.id)}
+            lastLog={lastLogByEvent[event.id]}
             onPress={() => onLog(event.id)}
+            isMostRecent={event.id === mostRecentEventId}
+            bothBreastsLog={getBothBreastsLog(event.id)}
           />
         ))}
       </div>

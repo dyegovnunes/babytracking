@@ -25,9 +25,9 @@ function AuthenticatedRoutes() {
     return (
       <div className="min-h-screen bg-surface flex flex-col items-center justify-center gap-4">
         <img
-          src="./logo-symbol.png"
+          src="./landing/symbol-light.png"
           alt="Yaya"
-          className="w-20 h-20 animate-pulse-soft"
+          className="w-40 h-40 animate-pulse-soft"
         />
       </div>
     )
@@ -85,7 +85,7 @@ function PublicOrAuth() {
   if (loading) {
     return (
       <div className="min-h-screen bg-surface flex flex-col items-center justify-center gap-4">
-        <img src="./logo-symbol.png" alt="Yaya" className="w-20 h-20 animate-pulse-soft" />
+        <img src="./landing/symbol-light.png" alt="Yaya" className="w-40 h-40 animate-pulse-soft" />
       </div>
     )
   }

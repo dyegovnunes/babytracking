@@ -1,5 +1,12 @@
 import type { Projection } from '../../types'
-import { formatTime, timeSince } from '../../lib/formatters'
+import { formatTime, timeSinceIfRecent } from '../../lib/formatters'
+
+/** Formats a Date as "14h30" Brazilian style */
+function formatTimeBR(date: Date): string {
+  const h = date.getHours().toString().padStart(2, '0')
+  const m = date.getMinutes().toString().padStart(2, '0')
+  return `${h}h${m}`
+}
 
 interface Props {
   projection: Projection
@@ -20,9 +27,9 @@ export default function PredictionCard({ projection, onDismiss }: Props) {
       : 'bg-primary/10'
 
   const statusLabel = projection.isOverdue
-    ? 'Atrasado'
+    ? `Atrasado desde ${formatTimeBR(projection.time)}`
     : projection.isWarning
-      ? 'Em breve'
+      ? `Em breve às ${formatTimeBR(projection.time)}`
       : formatTime(projection.time)
 
   return (
@@ -44,9 +51,11 @@ export default function PredictionCard({ projection, onDismiss }: Props) {
         <p className="font-label text-[10px] text-on-surface-variant">
           Último: {projection.lastEvent}
         </p>
-        <p className="font-label text-[10px] text-on-surface-variant">
-          {timeSince(projection.lastTime.getTime())}
-        </p>
+        {timeSinceIfRecent(projection.lastTime.getTime()) && (
+          <p className="font-label text-[10px] text-on-surface-variant">
+            {timeSinceIfRecent(projection.lastTime.getTime())}
+          </p>
+        )}
       </div>
       {onDismiss && (
         <button

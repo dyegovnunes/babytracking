@@ -6,6 +6,8 @@ interface Props {
   log: LogEntry
   members: Record<string, Member>
   onEdit: (log: LogEntry) => void
+  /** When set, this entry represents a merged "both breasts" session */
+  pairedLog?: LogEntry
 }
 
 const dotColorMap: Record<string, string> = {
@@ -20,13 +22,23 @@ const iconBgMap: Record<string, string> = {
   secondary: 'bg-secondary/15 text-secondary',
 }
 
-export default function TimelineEntry({ log, members, onEdit }: Props) {
+export default function TimelineEntry({ log, members, onEdit, pairedLog }: Props) {
   const event = DEFAULT_EVENTS.find((e) => e.id === log.eventId)
   if (!event) return null
 
-  const dotColor = dotColorMap[event.color] ?? 'bg-primary'
-  const iconBg = iconBgMap[event.color] ?? 'bg-primary/15 text-primary'
+  // If paired, show as "Ambos" (both breasts)
+  const isMergedBoth = !!pairedLog
+  const bothEvent = isMergedBoth ? DEFAULT_EVENTS.find((e) => e.id === 'breast_both') : null
+  const displayEvent = bothEvent ?? event
+
+  const dotColor = dotColorMap[displayEvent.color] ?? 'bg-primary'
+  const iconBg = iconBgMap[displayEvent.color] ?? 'bg-primary/15 text-primary'
   const memberName = log.createdBy ? members[log.createdBy]?.displayName : undefined
+
+  // For merged entries, show the earlier time
+  const displayTime = isMergedBoth
+    ? new Date(Math.min(log.timestamp, pairedLog!.timestamp))
+    : new Date(log.timestamp)
 
   return (
     <button
@@ -35,25 +47,28 @@ export default function TimelineEntry({ log, members, onEdit }: Props) {
     >
       <div className="flex flex-col items-center gap-1 w-10 shrink-0">
         <span className="font-label text-xs font-semibold text-on-surface-variant">
-          {formatTime(new Date(log.timestamp))}
+          {formatTime(displayTime)}
         </span>
         <div className={`w-2.5 h-2.5 rounded-full ${dotColor}`} />
       </div>
 
       <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${iconBg}`}>
-        {event.emoji ? (
-          <span className="text-lg leading-none">{event.emoji}</span>
+        {displayEvent.emoji ? (
+          <span className="text-lg leading-none">{displayEvent.emoji}</span>
         ) : (
           <span className="material-symbols-outlined text-lg">
-            {event.icon}
+            {displayEvent.icon}
           </span>
         )}
       </div>
 
       <div className="flex-1 min-w-0">
         <p className="font-body text-sm font-medium text-on-surface">
-          {event.label}
+          {isMergedBoth ? 'Ambos os peitos' : event.label}
         </p>
+        {isMergedBoth && (
+          <p className="font-label text-xs text-tertiary">Esq. + Dir.</p>
+        )}
         {log.ml && (
           <p className="font-label text-xs text-primary">{log.ml} ml</p>
         )}

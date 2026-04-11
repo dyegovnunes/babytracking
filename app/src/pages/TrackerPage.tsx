@@ -59,7 +59,7 @@ export default function TrackerPage() {
         setToast(`${event.label} registrado!`)
       }
     },
-    [baby, dispatch, user],
+    [baby, dispatch, user, canRecord],
   )
 
   const handleBottleConfirm = useCallback(

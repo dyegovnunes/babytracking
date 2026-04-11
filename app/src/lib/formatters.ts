@@ -59,3 +59,18 @@ export function timeSince(timestamp: number): string {
   if (m === 0) return `há ${h}h`
   return `há ${h}h${m}min`
 }
+
+/** Same as timeSince but returns empty string if more than `thresholdMs` ago (default 4h) */
+export function timeSinceIfRecent(timestamp: number, thresholdMs = 4 * 60 * 60 * 1000): string {
+  const diff = Date.now() - timestamp
+  if (diff > thresholdMs) return ''
+  return timeSince(timestamp)
+}
+
+/** Format timestamp as "14h30" Brazilian style */
+export function formatTimeBR(timestamp: number): string {
+  const d = new Date(timestamp)
+  const h = d.getHours().toString().padStart(2, '0')
+  const m = d.getMinutes().toString().padStart(2, '0')
+  return `${h}h${m}`
+}

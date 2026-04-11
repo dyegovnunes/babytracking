@@ -7,7 +7,7 @@ const BONUS_PER_AD = 5;
 
 export function useDailyLimit() {
   const { logs } = useAppState();
-  const { isPremium } = usePremium();
+  const { isPremium, isLoading } = usePremium();
   const [bonusRecords, setBonusRecords] = useState(0);
 
   const recordsToday = useMemo(() => {
@@ -18,7 +18,8 @@ export function useDailyLimit() {
   }, [logs]);
 
   const effectiveLimit = DAILY_LIMIT + bonusRecords;
-  const canRecord = isPremium || recordsToday < effectiveLimit;
+  // Allow recording while purchase status is loading to avoid blocking the first click
+  const canRecord = isLoading || isPremium || recordsToday < effectiveLimit;
 
   const grantBonusRecords = () => {
     setBonusRecords((prev) => prev + BONUS_PER_AD);

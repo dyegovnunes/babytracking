@@ -1,10 +1,14 @@
 import type { EventType, LogEntry } from '../../types'
-import { timeSince } from '../../lib/formatters'
+import { timeSinceIfRecent, formatTimeBR } from '../../lib/formatters'
 
 interface Props {
   event: EventType
   lastLog?: LogEntry
   onPress: () => void
+  /** Whether this button's lastLog is the most recent across ALL events */
+  isMostRecent?: boolean
+  /** For breast_left/breast_right: the last log of the opposite breast */
+  bothBreastsLog?: LogEntry
 }
 
 const colorMap: Record<string, string> = {
@@ -19,14 +23,36 @@ const badgeColorMap: Record<string, string> = {
   secondary: 'bg-secondary text-surface',
 }
 
-export default function ActivityButton({ event, lastLog, onPress }: Props) {
+export default function ActivityButton({ event, lastLog, onPress, isMostRecent, bothBreastsLog }: Props) {
   const iconClasses = colorMap[event.color] ?? colorMap.primary
   const badgeClasses = badgeColorMap[event.color] ?? badgeColorMap.primary
+
+  // Build the subtitle text
+  let subtitle = ''
+  if (lastLog) {
+    if (isMostRecent) {
+      // Most recent event gets a highlighted badge
+      subtitle = `Último · ${formatTimeBR(lastLog.timestamp)}`
+    } else {
+      // Only show relative time if less than 4 hours ago
+      subtitle = timeSinceIfRecent(lastLog.timestamp)
+    }
+  }
+
+  // For breast_both: if there's a recent log, show "Ambos · HHhMM"
+  // For breast_left/breast_right: if both breasts were used recently (within 30min), show indicator
+  let bothLabel = ''
+  if (bothBreastsLog && lastLog) {
+    const diff = Math.abs(lastLog.timestamp - bothBreastsLog.timestamp)
+    if (diff < 30 * 60 * 1000) {
+      bothLabel = `Ambos · ${formatTimeBR(Math.max(lastLog.timestamp, bothBreastsLog.timestamp))}`
+    }
+  }
 
   return (
     <button
       onClick={onPress}
-      className="flex flex-col items-center gap-1.5 p-3 rounded-lg bg-surface-container-high active:scale-95 active:bg-primary-dim/20 transition-all h-[108px] justify-center"
+      className={`flex flex-col items-center gap-1.5 p-3 rounded-lg bg-surface-container-high active:scale-95 active:bg-primary-dim/20 transition-all h-[108px] justify-center ${isMostRecent ? 'ring-2 ring-primary/40' : ''}`}
     >
       <div className="relative">
         <div className={`w-12 h-12 rounded-full flex items-center justify-center ${iconClasses}`}>
@@ -47,9 +73,19 @@ export default function ActivityButton({ event, lastLog, onPress }: Props) {
       <span className="font-label text-[11px] font-medium text-on-surface leading-tight">
         {event.label}
       </span>
-      <span className="font-label text-[9px] text-on-surface-variant h-3">
-        {lastLog ? timeSince(lastLog.timestamp) : ''}
-      </span>
+      {bothLabel ? (
+        <span className="font-label text-[9px] text-tertiary font-medium h-3">
+          {bothLabel}
+        </span>
+      ) : isMostRecent && subtitle ? (
+        <span className="font-label text-[9px] text-primary font-bold h-3">
+          {subtitle}
+        </span>
+      ) : (
+        <span className="font-label text-[9px] text-on-surface-variant h-3">
+          {subtitle}
+        </span>
+      )}
     </button>
   )
 }

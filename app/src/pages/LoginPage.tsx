@@ -16,6 +16,19 @@ export default function LoginPage() {
   const [resendCooldown, setResendCooldown] = useState(0)
   const inputRefs = useRef<(HTMLInputElement | null)[]>([])
 
+  // On native, listen for in-app browser close to reset socialLoading
+  // (user cancelled auth without completing)
+  useEffect(() => {
+    if (!socialLoading || !Capacitor.isNativePlatform()) return
+    let listener: { remove: () => void } | undefined
+    import('@capacitor/browser').then(({ Browser }) => {
+      Browser.addListener('browserFinished', () => {
+        setSocialLoading(false)
+      }).then((l: { remove: () => void }) => { listener = l })
+    }).catch(() => {})
+    return () => { listener?.remove() }
+  }, [socialLoading])
+
   useEffect(() => {
     if (resendCooldown <= 0) return
     const timer = setTimeout(() => setResendCooldown((c) => c - 1), 1000)
@@ -124,6 +137,25 @@ export default function LoginPage() {
       setVerifying(false)
       setTimeout(() => inputRefs.current[0]?.focus(), 100)
     }
+  }
+
+  // Full-screen loading overlay during social auth
+  if (socialLoading) {
+    return (
+      <div className="min-h-screen bg-surface flex flex-col items-center justify-center gap-4">
+        <img
+          src="./logo-symbol.png"
+          alt="Yaya"
+          className="w-20 h-20 animate-pulse-soft"
+        />
+        <span className="material-symbols-outlined animate-spin text-primary text-3xl">
+          progress_activity
+        </span>
+        <p className="font-label text-sm text-on-surface-variant">
+          Conectando...
+        </p>
+      </div>
+    )
   }
 
   return (
