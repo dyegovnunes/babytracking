@@ -185,7 +185,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         .select('pause_during_sleep, quiet_enabled, quiet_start, quiet_end')
         .eq('user_id', user!.id)
         .eq('baby_id', babyId)
-        .single()
+        .maybeSingle()
 
       if (prefData) {
         if (prefData.pause_during_sleep) {
@@ -197,7 +197,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
     }
 
-    load()
+    load().catch(() => {
+      dispatch({ type: 'SET_NO_BABY' })
+    })
   }, [user])
 
   return (
@@ -444,7 +446,7 @@ export async function switchBaby(
     .from('notification_prefs')
     .select('pause_during_sleep, quiet_enabled, quiet_start, quiet_end')
     .eq('baby_id', babyId)
-    .single()
+    .maybeSingle()
 
   if (prefData) {
     if (prefData.pause_during_sleep) {
