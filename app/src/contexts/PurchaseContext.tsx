@@ -1,7 +1,9 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { Capacitor } from '@capacitor/core';
 import {
   checkIsPremium,
   getSubscriptionInfo,
+  initializePurchases,
   purchasePackage,
   restorePurchases,
   type PlanType,
@@ -79,10 +81,9 @@ export function PurchaseProvider({ children }: { children: React.ReactNode }) {
     const init = async () => {
       setIsLoading(true);
       try {
-        // RevenueCat disabled until production keys are configured
-        // if (Capacitor.getPlatform() !== 'web') {
-        //   await initializePurchases(user.id);
-        // }
+        if (Capacitor.getPlatform() !== 'web') {
+          await initializePurchases(user.id);
+        }
         await refresh();
       } finally {
         setIsLoading(false);
