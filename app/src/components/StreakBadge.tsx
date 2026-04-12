@@ -61,7 +61,7 @@ export default function StreakBadge({ streak }: StreakBadgeProps) {
               {nextBadge && (
                 <div>
                   <div className="flex justify-between text-sm mb-1">
-                    <span className="text-[#e7e2ff]/60">Proximo badge</span>
+                    <span className="text-[#e7e2ff]/60">Próxima conquista</span>
                     <span className="text-[#e7e2ff] font-semibold">{nextBadge.emoji} {nextBadge.label}</span>
                   </div>
                   <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">

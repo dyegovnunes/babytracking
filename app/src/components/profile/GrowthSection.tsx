@@ -14,12 +14,56 @@ interface GrowthSectionProps {
   babyId: string;
 }
 
+/** Aplica mascara: max digits antes da virgula, 1 decimal depois */
+function applyMask(raw: string, maxIntDigits: number): string {
+  // Remove tudo exceto numeros e virgula/ponto
+  let cleaned = raw.replace(/[^0-9.,]/g, '');
+  // Normaliza separador para virgula
+  cleaned = cleaned.replace('.', ',');
+  // Permite apenas uma virgula
+  const parts = cleaned.split(',');
+  if (parts.length > 2) cleaned = parts[0] + ',' + parts.slice(1).join('');
+
+  const intPart = parts[0].slice(0, maxIntDigits);
+  const decPart = parts[1]?.slice(0, 1);
+
+  if (parts.length >= 2) {
+    return intPart + ',' + (decPart || '');
+  }
+
+  // Auto-insert comma if max int digits reached
+  if (intPart.length >= maxIntDigits && !raw.includes(',') && !raw.includes('.')) {
+    return intPart + ',';
+  }
+
+  return intPart;
+}
+
+function weightMask(raw: string): string {
+  return applyMask(raw, 2); // xx,x (max 99,9 kg)
+}
+
+function heightMask(raw: string): string {
+  return applyMask(raw, 3); // xxx,x (max 999,9 cm, mas bebê será < 100)
+}
+
+function parseValue(input: string): number {
+  return parseFloat(input.replace(',', '.'));
+}
+
 export default function GrowthSection({ babyId }: GrowthSectionProps) {
   const [measurements, setMeasurements] = useState<Measurement[]>([]);
   const [weightInput, setWeightInput] = useState('');
   const [heightInput, setHeightInput] = useState('');
   const [saving, setSaving] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState('');
+  const [editDate, setEditDate] = useState('');
+  const [showAddRetro, setShowAddRetro] = useState(false);
+  const [retroDate, setRetroDate] = useState('');
+  const [retroWeight, setRetroWeight] = useState('');
+  const [retroHeight, setRetroHeight] = useState('');
 
   const loadMeasurements = useCallback(async () => {
     const { data } = await supabase
@@ -27,7 +71,7 @@ export default function GrowthSection({ babyId }: GrowthSectionProps) {
       .select('*')
       .eq('baby_id', babyId)
       .order('measured_at', { ascending: false })
-      .limit(20);
+      .limit(50);
     if (data) setMeasurements(data);
   }, [babyId]);
 
@@ -40,7 +84,7 @@ export default function GrowthSection({ babyId }: GrowthSectionProps) {
 
   const handleSave = async (type: 'weight' | 'height') => {
     const rawValue = type === 'weight' ? weightInput : heightInput;
-    const value = parseFloat(rawValue.replace(',', '.'));
+    const value = parseValue(rawValue);
     if (isNaN(value) || value <= 0) return;
 
     setSaving(true);
@@ -71,9 +115,82 @@ export default function GrowthSection({ babyId }: GrowthSectionProps) {
     await loadMeasurements();
   };
 
+  const handleEdit = (m: Measurement) => {
+    hapticLight();
+    setEditingId(m.id);
+    setEditValue(
+      m.type === 'weight'
+        ? Number(m.value).toFixed(1).replace('.', ',')
+        : Number(m.value).toFixed(1).replace('.', ',')
+    );
+    setEditDate(m.measured_at.slice(0, 10));
+  };
+
+  const handleEditSave = async (m: Measurement) => {
+    const value = parseValue(editValue);
+    if (isNaN(value) || value <= 0) return;
+
+    setSaving(true);
+    const { error } = await supabase
+      .from('measurements')
+      .update({
+        value,
+        measured_at: editDate + 'T12:00:00.000Z',
+      })
+      .eq('id', m.id);
+
+    if (!error) {
+      hapticSuccess();
+      setEditingId(null);
+      await loadMeasurements();
+    }
+    setSaving(false);
+  };
+
+  const handleAddRetro = async () => {
+    if (!retroDate) return;
+    const weightVal = parseValue(retroWeight);
+    const heightVal = parseValue(retroHeight);
+    if ((isNaN(weightVal) || weightVal <= 0) && (isNaN(heightVal) || heightVal <= 0)) return;
+
+    setSaving(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    const measuredAt = retroDate + 'T12:00:00.000Z';
+
+    const inserts = [];
+    if (!isNaN(weightVal) && weightVal > 0) {
+      inserts.push({
+        baby_id: babyId, type: 'weight', value: weightVal, unit: 'kg',
+        measured_by: user?.id, measured_at: measuredAt,
+      });
+    }
+    if (!isNaN(heightVal) && heightVal > 0) {
+      inserts.push({
+        baby_id: babyId, type: 'height', value: heightVal, unit: 'cm',
+        measured_by: user?.id, measured_at: measuredAt,
+      });
+    }
+
+    const { error } = await supabase.from('measurements').insert(inserts);
+    if (!error) {
+      hapticSuccess();
+      setRetroDate('');
+      setRetroWeight('');
+      setRetroHeight('');
+      setShowAddRetro(false);
+      await loadMeasurements();
+    }
+    setSaving(false);
+  };
+
   const formatDate = (iso: string) => {
     const d = new Date(iso);
     return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+  };
+
+  const formatDateFull = (iso: string) => {
+    const d = new Date(iso);
+    return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
   };
 
   // Group history by date
@@ -102,10 +219,10 @@ export default function GrowthSection({ babyId }: GrowthSectionProps) {
           <p className="font-label text-[11px] text-on-surface-variant uppercase tracking-wider mb-1">Peso</p>
           {latestWeight ? (
             <p className="font-headline text-lg font-bold text-on-surface">
-              {Number(latestWeight.value).toFixed(2)} <span className="text-xs font-normal text-on-surface-variant">kg</span>
+              {Number(latestWeight.value).toFixed(1).replace('.', ',')} <span className="text-xs font-normal text-on-surface-variant">kg</span>
             </p>
           ) : (
-            <p className="font-body text-sm text-on-surface-variant">—</p>
+            <p className="font-body text-sm text-on-surface-variant">--,-</p>
           )}
           {latestWeight && (
             <p className="font-label text-[10px] text-on-surface-variant mt-0.5">
@@ -113,15 +230,18 @@ export default function GrowthSection({ babyId }: GrowthSectionProps) {
             </p>
           )}
           <div className="flex gap-1.5 mt-2">
-            <input
-              type="text"
-              inputMode="decimal"
-              value={weightInput}
-              onChange={(e) => setWeightInput(e.target.value)}
-              placeholder={latestWeight ? Number(latestWeight.value).toFixed(2) : '0.00'}
-              className="flex-1 min-w-0 bg-surface-container rounded px-2 py-1.5 text-on-surface font-body text-sm outline-none focus:ring-2 focus:ring-primary/40"
-              onKeyDown={(e) => e.key === 'Enter' && handleSave('weight')}
-            />
+            <div className="flex-1 min-w-0 relative">
+              <input
+                type="text"
+                inputMode="decimal"
+                value={weightInput}
+                onChange={(e) => setWeightInput(weightMask(e.target.value))}
+                placeholder="0,0"
+                className="w-full bg-surface-container rounded px-2 py-1.5 pr-7 text-on-surface font-body text-sm outline-none focus:ring-2 focus:ring-primary/40"
+                onKeyDown={(e) => e.key === 'Enter' && handleSave('weight')}
+              />
+              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant/50 text-xs">kg</span>
+            </div>
             <button
               onClick={() => handleSave('weight')}
               disabled={saving || !weightInput}
@@ -137,10 +257,10 @@ export default function GrowthSection({ babyId }: GrowthSectionProps) {
           <p className="font-label text-[11px] text-on-surface-variant uppercase tracking-wider mb-1">Altura</p>
           {latestHeight ? (
             <p className="font-headline text-lg font-bold text-on-surface">
-              {Number(latestHeight.value).toFixed(1)} <span className="text-xs font-normal text-on-surface-variant">cm</span>
+              {Number(latestHeight.value).toFixed(1).replace('.', ',')} <span className="text-xs font-normal text-on-surface-variant">cm</span>
             </p>
           ) : (
-            <p className="font-body text-sm text-on-surface-variant">—</p>
+            <p className="font-body text-sm text-on-surface-variant">--,-</p>
           )}
           {latestHeight && (
             <p className="font-label text-[10px] text-on-surface-variant mt-0.5">
@@ -148,15 +268,18 @@ export default function GrowthSection({ babyId }: GrowthSectionProps) {
             </p>
           )}
           <div className="flex gap-1.5 mt-2">
-            <input
-              type="text"
-              inputMode="decimal"
-              value={heightInput}
-              onChange={(e) => setHeightInput(e.target.value)}
-              placeholder={latestHeight ? Number(latestHeight.value).toFixed(1) : '0.0'}
-              className="flex-1 min-w-0 bg-surface-container rounded px-2 py-1.5 text-on-surface font-body text-sm outline-none focus:ring-2 focus:ring-primary/40"
-              onKeyDown={(e) => e.key === 'Enter' && handleSave('height')}
-            />
+            <div className="flex-1 min-w-0 relative">
+              <input
+                type="text"
+                inputMode="decimal"
+                value={heightInput}
+                onChange={(e) => setHeightInput(heightMask(e.target.value))}
+                placeholder="0,0"
+                className="w-full bg-surface-container rounded px-2 py-1.5 pr-8 text-on-surface font-body text-sm outline-none focus:ring-2 focus:ring-primary/40"
+                onKeyDown={(e) => e.key === 'Enter' && handleSave('height')}
+              />
+              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant/50 text-xs">cm</span>
+            </div>
             <button
               onClick={() => handleSave('height')}
               disabled={saving || !heightInput}
@@ -170,7 +293,7 @@ export default function GrowthSection({ babyId }: GrowthSectionProps) {
 
       {measurements.length === 0 ? (
         <p className="font-body text-xs text-on-surface-variant text-center py-2">
-          Registre o peso e altura do bebe para acompanhar o crescimento
+          Registre o peso e altura do bebê para acompanhar o crescimento
         </p>
       ) : (
         <>
@@ -181,37 +304,164 @@ export default function GrowthSection({ babyId }: GrowthSectionProps) {
             <span className="material-symbols-outlined text-sm">
               {showHistory ? 'expand_less' : 'expand_more'}
             </span>
-            {showHistory ? 'Ocultar historico' : `Ver historico (${historyDates.length})`}
+            {showHistory ? 'Ocultar histórico' : `Ver histórico (${historyDates.length})`}
           </button>
 
           {showHistory && (
-            <div className="mt-2 space-y-1.5 max-h-48 overflow-y-auto">
+            <div className="mt-2 space-y-1.5 max-h-64 overflow-y-auto">
               {historyDates.map((entry) => (
-                <div key={entry.date} className="flex items-center justify-between py-1.5 px-2 bg-surface-container-low rounded">
-                  <span className="font-label text-xs text-on-surface-variant">{formatDate(entry.date + 'T00:00:00')}</span>
-                  <div className="flex items-center gap-3">
-                    {entry.weight && (
-                      <span className="font-body text-xs text-on-surface">
-                        {Number(entry.weight.value).toFixed(2)} kg
+                <div key={entry.date} className="py-1.5 px-2 bg-surface-container-low rounded">
+                  {editingId === entry.weight?.id || editingId === entry.height?.id ? (
+                    /* Modo edição */
+                    <div className="space-y-2">
+                      <input
+                        type="date"
+                        value={editDate}
+                        onChange={(e) => setEditDate(e.target.value)}
+                        className="w-full bg-surface-container rounded px-2 py-1 text-on-surface font-body text-xs outline-none"
+                      />
+                      <div className="flex gap-2">
+                        {editingId === entry.weight?.id && (
+                          <div className="flex-1 relative">
+                            <input
+                              type="text"
+                              inputMode="decimal"
+                              value={editValue}
+                              onChange={(e) => setEditValue(weightMask(e.target.value))}
+                              className="w-full bg-surface-container rounded px-2 py-1 pr-7 text-on-surface font-body text-xs outline-none"
+                            />
+                            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant/50 text-[10px]">kg</span>
+                          </div>
+                        )}
+                        {editingId === entry.height?.id && (
+                          <div className="flex-1 relative">
+                            <input
+                              type="text"
+                              inputMode="decimal"
+                              value={editValue}
+                              onChange={(e) => setEditValue(heightMask(e.target.value))}
+                              className="w-full bg-surface-container rounded px-2 py-1 pr-8 text-on-surface font-body text-xs outline-none"
+                            />
+                            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant/50 text-[10px]">cm</span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex gap-1.5">
+                        <button
+                          onClick={() => {
+                            const m = editingId === entry.weight?.id ? entry.weight : entry.height;
+                            if (m) handleEditSave(m);
+                          }}
+                          disabled={saving}
+                          className="flex-1 py-1 rounded bg-primary/10 text-primary font-label text-[10px] font-semibold disabled:opacity-30"
+                        >
+                          Salvar
+                        </button>
+                        <button
+                          onClick={() => setEditingId(null)}
+                          className="flex-1 py-1 rounded bg-white/5 text-on-surface-variant font-label text-[10px]"
+                        >
+                          Cancelar
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    /* Modo visualização */
+                    <div className="flex items-center justify-between">
+                      <span className="font-label text-xs text-on-surface-variant">
+                        {formatDateFull(entry.date + 'T00:00:00')}
                       </span>
-                    )}
-                    {entry.height && (
-                      <span className="font-body text-xs text-on-surface">
-                        {Number(entry.height.value).toFixed(1)} cm
-                      </span>
-                    )}
+                      <div className="flex items-center gap-2">
+                        {entry.weight && (
+                          <button
+                            onClick={() => handleEdit(entry.weight!)}
+                            className="font-body text-xs text-on-surface active:text-primary"
+                          >
+                            {Number(entry.weight.value).toFixed(1).replace('.', ',')} kg
+                          </button>
+                        )}
+                        {entry.height && (
+                          <button
+                            onClick={() => handleEdit(entry.height!)}
+                            className="font-body text-xs text-on-surface active:text-primary"
+                          >
+                            {Number(entry.height.value).toFixed(1).replace('.', ',')} cm
+                          </button>
+                        )}
+                        <button
+                          onClick={() => {
+                            if (entry.weight) handleDelete(entry.weight.id);
+                            if (entry.height) handleDelete(entry.height.id);
+                          }}
+                          className="text-on-surface-variant/40 active:text-error ml-1"
+                        >
+                          <span className="material-symbols-outlined text-sm">close</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+
+              {/* Botão adicionar dado retroativo */}
+              {!showAddRetro ? (
+                <button
+                  onClick={() => { hapticLight(); setShowAddRetro(true); }}
+                  className="w-full py-2 rounded-lg border border-dashed border-primary/30 text-primary font-label text-xs font-semibold flex items-center justify-center gap-1"
+                >
+                  <span className="material-symbols-outlined text-sm">add</span>
+                  Adicionar medição anterior
+                </button>
+              ) : (
+                <div className="p-3 bg-surface-container-low rounded-lg border border-primary/20 space-y-2">
+                  <p className="font-label text-[11px] text-primary uppercase tracking-wider">Nova medição retroativa</p>
+                  <input
+                    type="date"
+                    value={retroDate}
+                    onChange={(e) => setRetroDate(e.target.value)}
+                    className="w-full bg-surface-container rounded px-2 py-1.5 text-on-surface font-body text-sm outline-none focus:ring-2 focus:ring-primary/40"
+                  />
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="relative">
+                      <input
+                        type="text"
+                        inputMode="decimal"
+                        value={retroWeight}
+                        onChange={(e) => setRetroWeight(weightMask(e.target.value))}
+                        placeholder="Peso"
+                        className="w-full bg-surface-container rounded px-2 py-1.5 pr-7 text-on-surface font-body text-sm outline-none focus:ring-2 focus:ring-primary/40"
+                      />
+                      <span className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant/50 text-xs">kg</span>
+                    </div>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        inputMode="decimal"
+                        value={retroHeight}
+                        onChange={(e) => setRetroHeight(heightMask(e.target.value))}
+                        placeholder="Altura"
+                        className="w-full bg-surface-container rounded px-2 py-1.5 pr-8 text-on-surface font-body text-sm outline-none focus:ring-2 focus:ring-primary/40"
+                      />
+                      <span className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant/50 text-xs">cm</span>
+                    </div>
+                  </div>
+                  <div className="flex gap-1.5">
                     <button
-                      onClick={() => {
-                        if (entry.weight) handleDelete(entry.weight.id);
-                        if (entry.height) handleDelete(entry.height.id);
-                      }}
-                      className="text-on-surface-variant/40 active:text-error"
+                      onClick={handleAddRetro}
+                      disabled={saving || !retroDate || (!retroWeight && !retroHeight)}
+                      className="flex-1 py-2 rounded-lg bg-primary/10 text-primary font-label text-xs font-semibold disabled:opacity-30"
                     >
-                      <span className="material-symbols-outlined text-sm">close</span>
+                      Salvar
+                    </button>
+                    <button
+                      onClick={() => { setShowAddRetro(false); setRetroDate(''); setRetroWeight(''); setRetroHeight(''); }}
+                      className="flex-1 py-2 rounded-lg bg-white/5 text-on-surface-variant font-label text-xs"
+                    >
+                      Cancelar
                     </button>
                   </div>
                 </div>
-              ))}
+              )}
             </div>
           )}
         </>
