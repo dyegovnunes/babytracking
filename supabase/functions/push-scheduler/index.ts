@@ -22,7 +22,8 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-const FCM_SERVER_KEY = Deno.env.get('FCM_SERVER_KEY')!;
+const FCM_SERVICE_ACCOUNT = Deno.env.get('FCM_SERVICE_ACCOUNT')!;
+const FCM_PROJECT_ID = 'babytracking-492412';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
@@ -385,33 +386,124 @@ function getExpiredMessage(cat: string, minutes: number, babyName: string): Push
   }
 }
 
+// ─── FCM V1 API with Service Account JWT ────
+
+let cachedAccessToken: { token: string; expiresAt: number } | null = null;
+
+async function getAccessToken(): Promise<string> {
+  if (cachedAccessToken && Date.now() < cachedAccessToken.expiresAt - 60_000) {
+    return cachedAccessToken.token;
+  }
+
+  const sa = JSON.parse(FCM_SERVICE_ACCOUNT);
+  const now = Math.floor(Date.now() / 1000);
+
+  // Create JWT header and claim set
+  const header = { alg: 'RS256', typ: 'JWT' };
+  const claimSet = {
+    iss: sa.client_email,
+    scope: 'https://www.googleapis.com/auth/firebase.messaging',
+    aud: 'https://oauth2.googleapis.com/token',
+    iat: now,
+    exp: now + 3600,
+  };
+
+  const encoder = new TextEncoder();
+
+  // Base64url encode
+  const b64url = (data: Uint8Array): string => {
+    let binary = '';
+    for (const byte of data) binary += String.fromCharCode(byte);
+    return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  };
+
+  const headerB64 = b64url(encoder.encode(JSON.stringify(header)));
+  const claimB64 = b64url(encoder.encode(JSON.stringify(claimSet)));
+  const signInput = `${headerB64}.${claimB64}`;
+
+  // Import private key and sign
+  const pemBody = sa.private_key
+    .replace(/-----BEGIN PRIVATE KEY-----/, '')
+    .replace(/-----END PRIVATE KEY-----/, '')
+    .replace(/\n/g, '');
+
+  const keyBuffer = Uint8Array.from(atob(pemBody), (c) => c.charCodeAt(0));
+
+  const cryptoKey = await crypto.subtle.importKey(
+    'pkcs8',
+    keyBuffer,
+    { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+
+  const signature = await crypto.subtle.sign(
+    'RSASSA-PKCS1-v1_5',
+    cryptoKey,
+    encoder.encode(signInput)
+  );
+
+  const signatureB64 = b64url(new Uint8Array(signature));
+  const jwt = `${signInput}.${signatureB64}`;
+
+  // Exchange JWT for access token
+  const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${jwt}`,
+  });
+
+  const tokenData = await tokenRes.json();
+
+  cachedAccessToken = {
+    token: tokenData.access_token,
+    expiresAt: Date.now() + tokenData.expires_in * 1000,
+  };
+
+  return cachedAccessToken.token;
+}
+
 async function sendFCMPush(token: string, message: PushMessage): Promise<boolean> {
   try {
-    const res = await fetch('https://fcm.googleapis.com/fcm/send', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `key=${FCM_SERVER_KEY}`,
-      },
-      body: JSON.stringify({
-        to: token,
-        notification: {
-          title: message.title,
-          body: message.body,
-          sound: 'default',
-          badge: 1,
-        },
-        data: {
-          type: message.type,
-          ...message.data,
-        },
-        priority: 'high',
-        content_available: true,
-      }),
-    });
+    const accessToken = await getAccessToken();
 
-    const result = await res.json();
-    return result.success === 1;
+    const res = await fetch(
+      `https://fcm.googleapis.com/v1/projects/${FCM_PROJECT_ID}/messages:send`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+          message: {
+            token,
+            notification: {
+              title: message.title,
+              body: message.body,
+            },
+            data: {
+              type: message.type,
+              ...(message.data ?? {}),
+            },
+            android: {
+              priority: 'HIGH',
+              notification: { sound: 'default' },
+            },
+            apns: {
+              payload: {
+                aps: { sound: 'default', badge: 1, 'content-available': 1 },
+              },
+            },
+          },
+        }),
+      }
+    );
+
+    if (res.ok) return true;
+    const err = await res.text();
+    console.error('FCM V1 error:', err);
+    return false;
   } catch (error) {
     console.error('FCM send error:', error);
     return false;

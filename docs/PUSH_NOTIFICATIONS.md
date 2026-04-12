@@ -23,7 +23,7 @@ O sistema de push notifications do Yaya Baby usa **Firebase Cloud Messaging (FCM
     |                                  |
     |                           - Le logs, intervalos, prefs
     |                           - Calcula quais usuarios precisam de push
-    |                           - Envia via FCM Legacy API
+    |                           - Envia via FCM V1 API
     |                           - Registra em push_log
     |                                  |
     |<---- push notification ---------|
@@ -120,7 +120,7 @@ O sistema de push notifications do Yaya Baby usa **Firebase Cloud Messaging (FCM
    - **Janela de sono**: ultimo `sleep_end` vs janela configurada
    - **Banho**: horario agendado - 15 min
 4. Aplica filtros anti-spam
-5. Envia via FCM Legacy API
+5. Envia via FCM V1 API
 6. Registra em `push_log`
 
 **Tipos de push:**
@@ -178,15 +178,28 @@ As Edge Functions usam 3 secrets do Supabase:
 |--------|-----------|-------------|
 | `SUPABASE_URL` | URL do projeto | Automatico |
 | `SUPABASE_SERVICE_ROLE_KEY` | Service role key | Automatico |
-| `FCM_SERVER_KEY` | Firebase Cloud Messaging server key | **Manual** |
+| `FCM_SERVICE_ACCOUNT` | Firebase Service Account JSON (FCM V1 API) | **Manual** |
 
-### Como configurar FCM_SERVER_KEY:
+### Como configurar FCM_SERVICE_ACCOUNT:
 
-1. Firebase Console → Project Settings → Cloud Messaging
-2. Copie a **Server key** (Legacy)
-3. No Supabase Dashboard → Edge Functions → Secrets:
-   - Name: `FCM_SERVER_KEY`
-   - Value: (a key copiada)
+> **IMPORTANTE:** O sistema usa a **FCM V1 API** (a Legacy API foi descontinuada pelo Google).
+> A autenticacao usa Service Account com JWT (RS256) + OAuth2 token exchange.
+
+1. Firebase Console → Project Settings → Service Accounts
+2. Gere ou baixe o JSON da Service Account (`firebase-adminsdk-*`)
+3. No Supabase Dashboard → Project Settings → Edge Functions → Secrets:
+   - Name: `FCM_SERVICE_ACCOUNT`
+   - Value: (cole o conteudo JSON inteiro do arquivo)
+
+**Arquivo de referencia:** `Stores/Play/babytracking-492412-297ad9141dfc.json`
+
+### Como funciona a autenticacao FCM V1:
+
+1. Edge Function le o JSON do secret `FCM_SERVICE_ACCOUNT`
+2. Cria um JWT assinado com RS256 usando a `private_key` do service account
+3. Troca o JWT por um access token OAuth2 em `https://oauth2.googleapis.com/token`
+4. Usa o access token como Bearer token para enviar mensagens via `https://fcm.googleapis.com/v1/projects/babytracking-492412/messages:send`
+5. Access token e cacheado por ~1h para performance
 
 ---
 
