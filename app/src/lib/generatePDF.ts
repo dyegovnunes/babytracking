@@ -4,848 +4,877 @@ import type { Baby } from '../types';
 import { formatAge } from './formatters';
 import { getOMSWeight, type OMSDataPoint } from './omsData';
 
-// ─── PALETA PREMIUM ────────────────────────────
-const PURPLE: [number, number, number] = [124, 77, 255];
-const PURPLE_LIGHT: [number, number, number] = [183, 159, 255];
-const PURPLE_BG: [number, number, number] = [248, 245, 255];
-const DARK: [number, number, number] = [26, 26, 46];
-const TEXT_BODY: [number, number, number] = [51, 51, 51];
-const GRAY: [number, number, number] = [120, 120, 130];
-const GRAY_LIGHT: [number, number, number] = [200, 200, 205];
-const CARD_BG: [number, number, number] = [248, 248, 252];
+// ─── PALETA PREMIUM (Stitch Design) ────────────
+const PRIMARY: [number, number, number] = [124, 77, 255];    // #7C4DFF
+const PRIMARY_DARK: [number, number, number] = [99, 44, 229]; // #632CE5
+const DARK: [number, number, number] = [26, 26, 46];          // #1A1A2E
+const TEXT: [number, number, number] = [73, 68, 85];           // #494455
+const GRAY: [number, number, number] = [122, 116, 135];       // #7A7487
+const CARD_BG: [number, number, number] = [226, 224, 252];    // #E2E0FC
+const SURFACE_LOW: [number, number, number] = [245, 242, 255]; // #F5F2FF
 const WHITE: [number, number, number] = [255, 255, 255];
-const GREEN_SOFT: [number, number, number] = [76, 175, 80];
-const AMBER_SOFT: [number, number, number] = [255, 179, 0];
-const BLUE_CHART: [number, number, number] = [100, 180, 255];
-const BROWN_CHART: [number, number, number] = [180, 130, 80];
+const GREEN: [number, number, number] = [76, 175, 80];        // #4CAF50
+const BLUE_CHART: [number, number, number] = [52, 152, 219];  // #3498DB
+const PURPLE_CHART: [number, number, number] = [142, 68, 173]; // #8E44AD
+const OUTLINE: [number, number, number] = [202, 195, 216];    // #CAC3D8
 
-const PAGE_WIDTH = 210;
-const PAGE_HEIGHT = 297;
-const MARGIN = 16;
-const CONTENT_WIDTH = PAGE_WIDTH - 2 * MARGIN;
+const PW = 210; // Page width
+const PH = 297; // Page height
+const ML = 15;  // Margin left
+const MR = 15;  // Margin right
+const CW = PW - ML - MR; // Content width
 
-// ─── MAIN EXPORT ───────────────────────────────
 export function generatePediatricPDF(data: PDFData, baby: Baby, qrDataUrl?: string): jsPDF {
   const doc = new jsPDF('p', 'mm', 'a4');
 
-  // ═══════════════════════════════════════════
-  //  PAGINA 1 — Visao Geral + Amamentacao + Sono
-  // ═══════════════════════════════════════════
+  // ═════════════════════════════════════
+  //  PAGE 1
+  // ═════════════════════════════════════
 
-  let y = 0;
-
-  // ── HEADER PREMIUM ──
-  y = drawPremiumHeader(doc, baby, data);
-
-  // ── RESUMO DO PERIODO (4 cards) ──
-  y = drawSectionHeader(doc, 'RESUMO DO PERIODO', y);
-  y = drawSummaryCards(doc, data, y);
-
-  // ── AMAMENTACAO ──
-  y = drawSectionHeader(doc, 'AMAMENTACAO', y);
+  let y = drawPage1Header(doc, baby, data);
+  y = drawKPICards(doc, data, y);
   y = drawFeedingSection(doc, data, y);
-
-  // ── SONO ──
-  y = drawSectionHeader(doc, 'SONO', y);
   y = drawSleepSection(doc, data, y);
+  drawPage1Footer(doc);
 
-  // Footer pagina 1
-  drawPremiumFooter(doc, 1, 2);
-
-  // ═══════════════════════════════════════════
-  //  PAGINA 2 — Fraldas + Crescimento + Padroes
-  // ═══════════════════════════════════════════
+  // ═════════════════════════════════════
+  //  PAGE 2
+  // ═════════════════════════════════════
   doc.addPage();
 
-  // Mini header
-  y = drawMiniHeader(doc, baby, data);
-
-  // ── FRALDAS ──
-  y = drawSectionHeader(doc, 'FRALDAS', y);
-  y = drawDiapersSection(doc, data, y);
-
-  // ── CRESCIMENTO ──
-  y = drawSectionHeader(doc, 'CRESCIMENTO', y);
-  y = drawGrowthSection(doc, data, baby, y);
-
-  // ── PADROES OBSERVADOS ──
-  if (data.patterns.length > 0) {
-    y = drawSectionHeader(doc, 'PADROES OBSERVADOS', y);
-    y = drawPatternsSection(doc, data, y);
-  }
-
-  // ── ESPACO DO PEDIATRA ──
-  y = drawPediatriciansSection(doc, y);
-
-  // ── FOOTER COM QR ──
-  drawPage2Footer(doc, qrDataUrl);
-  drawPremiumFooter(doc, 2, 2);
+  y = drawPage2Header(doc, baby);
+  y = drawPage2Content(doc, data, baby, y, qrDataUrl);
 
   return doc;
 }
 
-// ═══════════════════════════════════════════════
-//  HEADER / FOOTER
-// ═══════════════════════════════════════════════
+// ═════════════════════════════════════════
+//  PAGE 1 — HEADER
+// ═════════════════════════════════════════
 
-function drawPremiumHeader(doc: jsPDF, baby: Baby, data: PDFData): number {
-  // Faixa roxa no topo
-  doc.setFillColor(...PURPLE);
-  doc.rect(0, 0, PAGE_WIDTH, 42, 'F');
+function drawPage1Header(doc: jsPDF, baby: Baby, data: PDFData): number {
+  const headerH = 38;
 
-  // Faixa decorativa mais clara
-  doc.setFillColor(PURPLE[0] + 30, PURPLE[1] + 30, PURPLE[2]);
-  doc.rect(0, 42, PAGE_WIDTH, 2, 'F');
+  // Fundo roxo
+  doc.setFillColor(...PRIMARY);
+  doc.rect(0, 0, PW, headerH, 'F');
 
-  // Logo YAYA
+  // Logo
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(22);
   doc.setTextColor(...WHITE);
-  doc.text('YAYA', MARGIN, 14);
+  doc.text('YAYA', ML, 13);
 
-  // Subtitulo
   doc.setFont('helvetica', 'normal');
-  doc.setFontSize(9);
+  doc.setFontSize(6.5);
   doc.setTextColor(255, 255, 255);
-  doc.text('RELATORIO DE ACOMPANHAMENTO PEDIATRICO', MARGIN, 20);
+  doc.text('PEDIATRIC ANALYTICS', ML, 18);
+
+  // Titulo direita
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10);
+  doc.setTextColor(...WHITE);
+  doc.text('RELATORIO DE ACOMPANHAMENTO PEDIATRICO', PW - MR, 13, { align: 'right' });
 
   // Linha divisoria sutil
   doc.setDrawColor(255, 255, 255);
   doc.setLineWidth(0.15);
-  doc.line(MARGIN, 23, PAGE_WIDTH - MARGIN, 23);
+  const lineY = 22;
+  doc.line(PW - MR - 140, lineY, PW - MR, lineY);
 
-  // Info do bebe — sobre fundo roxo
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(14);
-  doc.setTextColor(...WHITE);
-  doc.text(baby.name.toUpperCase(), MARGIN, 30);
+  // 4 colunas de info
+  const cols = [
+    { label: 'PACIENTE', value: baby.name.toUpperCase() },
+    { label: 'NASCIMENTO', value: formatDateBR(new Date(baby.birthDate)) },
+    { label: 'IDADE', value: formatAge(baby.birthDate) },
+    { label: 'PERIODO', value: `${formatDateShort(data.periodStart)} - ${formatDateShort(data.periodEnd)}` },
+  ];
 
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(8.5);
-  doc.setTextColor(230, 220, 255);
-  const ageText = formatAge(baby.birthDate);
-  doc.text(`Nascimento: ${formatDateBR(new Date(baby.birthDate))}  ·  ${ageText}`, MARGIN, 35);
-
-  const periodText = `Periodo: ${formatDateBR(data.periodStart)} — ${formatDateBR(data.periodEnd)}  ·  ${data.totalLogs} registros`;
-  doc.text(periodText, MARGIN, 40);
-
-  return 50; // y position after header
-}
-
-function drawMiniHeader(doc: jsPDF, baby: Baby, data: PDFData): number {
-  // Faixa roxa fina
-  doc.setFillColor(...PURPLE);
-  doc.rect(0, 0, PAGE_WIDTH, 14, 'F');
-
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(10);
-  doc.setTextColor(...WHITE);
-  doc.text('YAYA', MARGIN, 9);
+  const colStartX = PW - MR - 140;
+  const colSpacing = 35;
 
   doc.setFont('helvetica', 'normal');
-  doc.setFontSize(8);
-  doc.setTextColor(230, 220, 255);
-  doc.text(
-    `${baby.name}  ·  ${formatDateBR(data.periodStart)} — ${formatDateBR(data.periodEnd)}`,
-    MARGIN + 18, 9
-  );
+  cols.forEach((col, i) => {
+    const x = colStartX + i * colSpacing;
+    doc.setFontSize(5.5);
+    doc.setTextColor(230, 220, 255);
+    doc.text(col.label, x, 26);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...WHITE);
+    doc.text(col.value, x, 31);
+    doc.setFont('helvetica', 'normal');
+  });
 
-  return 20;
+  // Linha fina roxa escura embaixo
+  doc.setFillColor(PRIMARY_DARK[0], PRIMARY_DARK[1], PRIMARY_DARK[2]);
+  doc.rect(0, headerH, PW, 1.5, 'F');
+
+  return headerH + 6;
 }
 
-function drawPremiumFooter(doc: jsPDF, page: number, totalPages: number): void {
-  const footerY = PAGE_HEIGHT - 12;
+// ═════════════════════════════════════════
+//  PAGE 1 — KPI CARDS (4 cards, ultimo em roxo)
+// ═════════════════════════════════════════
 
-  // Linha separadora
-  doc.setDrawColor(...GRAY_LIGHT);
-  doc.setLineWidth(0.2);
-  doc.line(MARGIN, footerY - 3, PAGE_WIDTH - MARGIN, footerY - 3);
-
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(6.5);
-  doc.setTextColor(...GRAY);
-  doc.text(
-    'Dados registrados pelos cuidadores via app Yaya Baby. Nao substitui avaliacao clinica.',
-    MARGIN, footerY
-  );
-
-  // Pagina
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(7);
-  doc.setTextColor(...PURPLE);
-  doc.text(`${page}/${totalPages}`, PAGE_WIDTH - MARGIN, footerY, { align: 'right' });
-}
-
-function drawPage2Footer(doc: jsPDF, qrDataUrl?: string): void {
-  const footerTop = PAGE_HEIGHT - 36;
-
-  // Faixa CTA
-  doc.setFillColor(...PURPLE_BG);
-  doc.roundedRect(MARGIN, footerTop, CONTENT_WIDTH, 20, 3, 3, 'F');
-
-  // Borda sutil
-  doc.setDrawColor(...PURPLE_LIGHT);
-  doc.setLineWidth(0.3);
-  doc.roundedRect(MARGIN, footerTop, CONTENT_WIDTH, 20, 3, 3, 'S');
-
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(8.5);
-  doc.setTextColor(...PURPLE);
-  doc.text('Quer que seu pediatra acompanhe pelo Yaya?', MARGIN + 5, footerTop + 7);
-
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(7.5);
-  doc.setTextColor(...TEXT_BODY);
-  doc.text(
-    'Escaneie o QR code para conhecer a plataforma de acompanhamento pediatrico.',
-    MARGIN + 5, footerTop + 12
-  );
-
-  doc.setFontSize(7);
-  doc.setTextColor(...PURPLE);
-  doc.setFont('helvetica', 'bold');
-  doc.text('yayababy.app/pediatra', MARGIN + 5, footerTop + 17);
-
-  // QR Code
-  if (qrDataUrl) {
-    try {
-      const qrSize = 16;
-      const qrX = PAGE_WIDTH - MARGIN - qrSize - 3;
-      const qrY = footerTop + 2;
-      doc.addImage(qrDataUrl, 'PNG', qrX, qrY, qrSize, qrSize);
-    } catch {
-      // QR failed — skip
-    }
-  }
-}
-
-// ═══════════════════════════════════════════════
-//  SECTION HEADERS
-// ═══════════════════════════════════════════════
-
-function drawSectionHeader(doc: jsPDF, title: string, y: number): number {
-  // Bolinha roxa + titulo + linha
-  doc.setFillColor(...PURPLE);
-  doc.circle(MARGIN + 1.5, y - 1, 1.5, 'F');
-
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(9.5);
-  doc.setTextColor(...DARK);
-  doc.text(title, MARGIN + 5, y);
-
-  // Linha que completa ate o final
-  const textW = doc.getTextWidth(title);
-  doc.setDrawColor(...PURPLE_LIGHT);
-  doc.setLineWidth(0.25);
-  doc.line(MARGIN + 5 + textW + 2, y - 1, PAGE_WIDTH - MARGIN, y - 1);
-
-  return y + 5;
-}
-
-// ═══════════════════════════════════════════════
-//  RESUMO — 4 CARDS
-// ═══════════════════════════════════════════════
-
-function drawSummaryCards(doc: jsPDF, data: PDFData, y: number): number {
-  const cardW = (CONTENT_WIDTH - 9) / 4;
-  const cardH = 30;
+function drawKPICards(doc: jsPDF, data: PDFData, y: number): number {
+  const cardW = (CW - 9) / 4;
+  const cardH = 28;
 
   const cards = [
     {
-      icon: 'Amamentacao',
+      label: 'AMAMENTACAO',
       value: data.feeding.avgPerDay.toFixed(1) + 'x',
-      sub: 'por dia',
-      ref: 'ref OMS: 8-12x',
-      inRange: data.feeding.avgPerDay >= 8 && data.feeding.avgPerDay <= 12,
+      unit: '/dia',
+      ref: 'Ref OMS: 8-12x',
+      inRange: data.feeding.avgPerDay >= 7 && data.feeding.avgPerDay <= 13,
+      hero: false,
     },
     {
-      icon: 'Sono',
+      label: 'SONO MEDIO',
       value: formatHours(data.sleep.avgTotalMinutes),
-      sub: 'por dia',
-      ref: 'ref OMS: 14-17h',
-      inRange: data.sleep.avgTotalMinutes >= 840 && data.sleep.avgTotalMinutes <= 1020,
+      unit: '/dia',
+      ref: 'Ref OMS: 14-17h',
+      inRange: data.sleep.avgTotalMinutes >= 780 && data.sleep.avgTotalMinutes <= 1080,
+      hero: false,
     },
     {
-      icon: 'Fraldas',
+      label: 'FRALDAS',
       value: data.diapers.avgPerDay.toFixed(1) + 'x',
-      sub: 'por dia',
-      ref: 'ref: 6-10x',
-      inRange: data.diapers.avgPerDay >= 6 && data.diapers.avgPerDay <= 10,
+      unit: '/dia',
+      ref: 'Ref: 6-10x',
+      inRange: data.diapers.avgPerDay >= 5 && data.diapers.avgPerDay <= 11,
+      hero: false,
     },
     {
-      icon: 'Peso',
-      value: data.growth?.currentWeight ? data.growth.currentWeight.toFixed(2) + 'kg' : '--',
-      sub: data.growth?.weightGain != null ? `+${(data.growth.weightGain * 1000).toFixed(0)}g no periodo` : '',
-      ref: data.growth?.weightPercentile ? `Percentil ${data.growth.weightPercentile}` : 'Sem registro',
+      label: 'PESO ATUAL',
+      value: data.growth?.currentWeight ? data.growth.currentWeight.toFixed(2) + ' kg' : '—',
+      unit: '',
+      ref: data.growth?.weightGain != null ? `+${(data.growth.weightGain * 1000).toFixed(0)}g periodo` : '',
       inRange: true,
+      hero: true,
+      percentile: data.growth?.weightPercentile ?? null,
     },
   ];
 
   cards.forEach((card, i) => {
-    const x = MARGIN + i * (cardW + 3);
+    const x = ML + i * (cardW + 3);
 
-    // Card background
-    doc.setFillColor(...CARD_BG);
-    doc.roundedRect(x, y, cardW, cardH, 2.5, 2.5, 'F');
+    if (card.hero) {
+      // Card roxo hero
+      doc.setFillColor(...PRIMARY);
+      doc.roundedRect(x, y, cardW, cardH, 2, 2, 'F');
 
-    // Borda lateral colorida (indicador visual)
-    doc.setFillColor(...PURPLE);
-    doc.roundedRect(x, y, 1.2, cardH, 0.6, 0.6, 'F');
-
-    // Label
-    doc.setFontSize(6.5);
-    doc.setTextColor(...PURPLE);
-    doc.setFont('helvetica', 'bold');
-    doc.text(card.icon.toUpperCase(), x + 4, y + 5);
-
-    // Valor grande
-    doc.setFontSize(16);
-    doc.setTextColor(...DARK);
-    doc.setFont('helvetica', 'bold');
-    doc.text(card.value, x + 4, y + 15);
-
-    // Sub
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(6.5);
-    doc.setTextColor(...GRAY);
-    doc.text(card.sub, x + 4, y + 20);
-
-    // Ref com indicador de cor
-    if (card.ref !== 'Sem registro') {
-      const refColor = card.inRange ? GREEN_SOFT : AMBER_SOFT;
-      doc.setFillColor(...refColor);
-      doc.circle(x + 5, y + 25.5, 1, 'F');
       doc.setFontSize(6);
-      doc.setTextColor(...GRAY);
-      doc.text(card.ref, x + 7.5, y + 26.5);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(255, 255, 255);
+      doc.text(card.label, x + 3, y + 5.5);
+
+      // Valor grande
+      doc.setFontSize(15);
+      doc.setFont('helvetica', 'bold');
+      doc.text(card.value, x + 3, y + 16);
+
+      // Ref + Percentil
+      doc.setFontSize(6);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(230, 220, 255);
+      doc.text(card.ref, x + 3, y + 21);
+
+      if ((card as any).percentile) {
+        // Badge percentil
+        doc.setFillColor(255, 255, 255);
+        doc.setGState(new (doc as any).GState({ opacity: 0.2 }));
+        doc.roundedRect(x + cardW - 14, y + 22, 11, 4.5, 2, 2, 'F');
+        doc.setGState(new (doc as any).GState({ opacity: 1 }));
+        doc.setFontSize(6);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(...WHITE);
+        doc.text((card as any).percentile, x + cardW - 8.5, y + 25.2, { align: 'center' });
+      }
     } else {
+      // Card normal
+      doc.setFillColor(...CARD_BG);
+      doc.roundedRect(x, y, cardW, cardH, 2, 2, 'F');
+
+      // Indicador verde/amber
+      const dotColor = card.inRange ? GREEN : [255, 179, 0] as [number, number, number];
+      doc.setFillColor(...dotColor);
+      doc.circle(x + cardW - 5, y + 5, 1.2, 'F');
+
+      // Label
       doc.setFontSize(6);
-      doc.setTextColor(...GRAY_LIGHT);
-      doc.text(card.ref, x + 4, y + 26.5);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(...TEXT);
+      doc.text(card.label, x + 3, y + 5.5);
+
+      // Valor grande
+      doc.setFontSize(15);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(...DARK);
+      const valParts = card.value.split(/(?=[/x])/);
+      doc.text(valParts[0], x + 3, y + 16);
+      if (card.unit) {
+        const valW = doc.getTextWidth(valParts[0]);
+        doc.setFontSize(8);
+        doc.setFont('helvetica', 'normal');
+        doc.text(card.unit, x + 3 + valW + 1, y + 16);
+      }
+
+      // Ref
+      doc.setFontSize(6);
+      doc.setFont('helvetica', 'italic');
+      doc.setTextColor(...GRAY);
+      doc.text(card.ref, x + 3, y + 22);
     }
   });
 
   return y + cardH + 6;
 }
 
-// ═══════════════════════════════════════════════
-//  AMAMENTACAO
-// ═══════════════════════════════════════════════
+// ═════════════════════════════════════════
+//  PAGE 1 — AMAMENTACAO (sidebar + chart)
+// ═════════════════════════════════════════
 
 function drawFeedingSection(doc: jsPDF, data: PDFData, y: number): number {
-  // Dados textuais
+  // Titulo com linha
+  y = drawSectionTitle(doc, 'Amamentacao', y);
+
+  const sidebarW = 38;
+  const chartX = ML + sidebarW + 4;
+  const chartW = CW - sidebarW - 4;
+  const sectionH = 38;
+
+  // Sidebar — 2 mini cards empilhados
+  // Card Media Diaria
+  doc.setFillColor(...SURFACE_LOW);
+  doc.roundedRect(ML, y, sidebarW, 16, 1.5, 1.5, 'F');
+  doc.setFontSize(5.5);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...PRIMARY);
+  doc.text('MEDIA DIARIA', ML + 3, y + 4.5);
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...DARK);
+  doc.text(`${data.feeding.avgPerDay.toFixed(1)} sessoes`, ML + 3, y + 11);
+
+  // Card Intervalo Medio
+  doc.setFillColor(...SURFACE_LOW);
+  doc.roundedRect(ML, y + 19, sidebarW, 16, 1.5, 1.5, 'F');
+  doc.setFontSize(5.5);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...PRIMARY);
+  doc.text('INTERVALO MEDIO', ML + 3, y + 23.5);
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...DARK);
+  const avgInt = data.feeding.avgIntervalDaytime > 0 ? formatMinutes(data.feeding.avgIntervalDaytime) : '--';
+  doc.text(avgInt, ML + 3, y + 30);
+
+  // Grafico area direita
+  doc.setFillColor(...WHITE);
+  doc.setDrawColor(...OUTLINE);
+  doc.setLineWidth(0.15);
+  doc.roundedRect(chartX, y, chartW, sectionH, 2, 2, 'FD');
+
+  // Titulo do grafico + legenda OMS
+  doc.setFontSize(5.5);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...TEXT);
+  doc.text('FREQUENCIA DIARIA (30 DIAS)', chartX + 4, y + 4.5);
+
+  // Legenda OMS
+  doc.setDrawColor(144, 69, 0); // tertiary
+  doc.setLineWidth(0.4);
+  drawDashedH(doc, chartX + chartW - 40, y + 3, chartX + chartW - 36, 1.5, 1);
+  doc.setFontSize(5);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(144, 69, 0);
+  doc.text('META OMS (8 MIN)', chartX + chartW - 34, y + 4.5);
+
+  // Barras
+  const values = data.feeding.dailyCounts.map(d => d.count);
+  const maxVal = Math.max(...values, 1);
+  const chartInnerX = chartX + 4;
+  const chartInnerW = chartW - 8;
+  const chartTop = y + 8;
+  const chartBottom = y + sectionH - 5;
+  const barAreaH = chartBottom - chartTop;
+  const barW = chartInnerW / values.length;
+
+  // Linha referencia OMS (8x)
+  const refY = chartBottom - (8 / maxVal) * barAreaH;
+  doc.setDrawColor(144, 69, 0);
+  doc.setLineWidth(0.3);
+  drawDashedH(doc, chartInnerX, refY, chartInnerX + chartInnerW, 2, 1.5);
+
+  // Barras
+  values.forEach((val, i) => {
+    const barH = (val / maxVal) * barAreaH;
+    const x = chartInnerX + i * barW;
+    if (barH > 0.3) {
+      const opacity = i % 2 === 0 ? 0.5 : 0.85;
+      doc.setFillColor(...PRIMARY);
+      doc.setGState(new (doc as any).GState({ opacity }));
+      doc.rect(x + 0.2, chartBottom - barH, barW - 0.4, barH, 'F');
+    }
+  });
+  doc.setGState(new (doc as any).GState({ opacity: 1 }));
+
+  // X labels
+  doc.setFontSize(4.5);
+  doc.setTextColor(...GRAY);
   doc.setFont('helvetica', 'normal');
-  doc.setFontSize(8.5);
-  doc.setTextColor(...TEXT_BODY);
+  doc.text('Dia 01', chartInnerX, chartBottom + 3);
+  doc.text('Dia 15', chartInnerX + chartInnerW / 2, chartBottom + 3, { align: 'center' });
+  doc.text('Dia 30', chartInnerX + chartInnerW, chartBottom + 3, { align: 'right' });
 
-  doc.text(`Media: ${data.feeding.avgPerDay.toFixed(1)} amamentacoes/dia`, MARGIN, y);
-  y += 4.5;
-
-  if (data.feeding.avgIntervalDaytime > 0 || data.feeding.avgIntervalNighttime > 0) {
-    doc.text(
-      `Intervalo medio: ${formatMinutes(data.feeding.avgIntervalDaytime)} (diurno) / ${formatMinutes(data.feeding.avgIntervalNighttime)} (noturno)`,
-      MARGIN, y
-    );
-    y += 4.5;
-  }
-
-  const sideText = data.feeding.dominantSide === 'equal'
-    ? 'Sem preferencia de lado'
-    : `Lado mais frequente: ${data.feeding.dominantSide === 'left' ? 'esquerdo' : data.feeding.dominantSide === 'right' ? 'direito' : 'ambos'}`;
-  doc.text(sideText, MARGIN, y);
-  y += 4.5;
-
-  // Mamadeira
-  if (data.feeding.bottleCount > 0) {
-    doc.text(`Mamadeira: ${data.feeding.bottleCount}x (${data.feeding.totalBottleMl}ml total)`, MARGIN, y);
-    y += 4.5;
-  }
-
-  const trendText = data.feeding.trend === 'stable'
-    ? 'Tendencia: estavel (variacao < 15%)'
-    : data.feeding.trend === 'increasing'
-      ? 'Tendencia: frequencia aumentando'
-      : 'Tendencia: frequencia diminuindo';
-
-  // Indicador de trend com cor
-  const trendColor = data.feeding.trend === 'stable' ? GREEN_SOFT : AMBER_SOFT;
-  doc.setFillColor(...trendColor);
-  doc.circle(MARGIN + 1, y - 0.8, 0.8, 'F');
-  doc.text(trendText, MARGIN + 3, y);
-  y += 6;
-
-  // Grafico de barras
-  y = drawPremiumBarChart(doc, data.feeding.dailyCounts.map(d => d.count), y, 26, PURPLE, 'Amamentacoes/dia');
-
-  return y + 4;
+  return y + sectionH + 5;
 }
 
-// ═══════════════════════════════════════════════
-//  SONO
-// ═══════════════════════════════════════════════
+// ═════════════════════════════════════════
+//  PAGE 1 — SONO
+// ═════════════════════════════════════════
 
 function drawSleepSection(doc: jsPDF, data: PDFData, y: number): number {
-  // Dados em 2 colunas usando mini-cards
-  const halfW = (CONTENT_WIDTH - 4) / 2;
+  y = drawSectionTitle(doc, 'Higiene do Sono', y);
 
-  // Card sono noturno
-  doc.setFillColor(...CARD_BG);
-  doc.roundedRect(MARGIN, y, halfW, 18, 2, 2, 'F');
-  doc.setFontSize(6.5);
-  doc.setTextColor(...PURPLE);
-  doc.setFont('helvetica', 'bold');
-  doc.text('SONO NOTURNO', MARGIN + 3, y + 4.5);
-  doc.setFontSize(12);
-  doc.setTextColor(...DARK);
-  doc.text(formatHours(data.sleep.avgNocturnalMinutes), MARGIN + 3, y + 11);
-  doc.setFontSize(6.5);
-  doc.setTextColor(...GRAY);
-  doc.setFont('helvetica', 'normal');
-  doc.text(`Maior bloco: ${formatMinutes(data.sleep.longestBlockMinutes)}`, MARGIN + 3, y + 15.5);
-
-  // Card sono diurno
-  const xRight = MARGIN + halfW + 4;
-  doc.setFillColor(...CARD_BG);
-  doc.roundedRect(xRight, y, halfW, 18, 2, 2, 'F');
-  doc.setFontSize(6.5);
-  doc.setTextColor(...PURPLE);
-  doc.setFont('helvetica', 'bold');
-  doc.text('SONO DIURNO (SONECAS)', xRight + 3, y + 4.5);
-  doc.setFontSize(12);
-  doc.setTextColor(...DARK);
-  doc.text(formatHours(data.sleep.avgDiurnalMinutes), xRight + 3, y + 11);
-  doc.setFontSize(6.5);
-  doc.setTextColor(...GRAY);
-  doc.setFont('helvetica', 'normal');
-  doc.text(`${data.sleep.avgNapsPerDay.toFixed(1)}x/dia · Media: ${formatMinutes(data.sleep.avgNapDuration)}`, xRight + 3, y + 15.5);
-
-  y += 22;
-
-  // Total
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(8.5);
-  doc.setTextColor(...TEXT_BODY);
-  doc.text(`Sono medio total: ${formatHours(data.sleep.avgTotalMinutes)}/dia`, MARGIN, y);
-  y += 5;
-
-  // Grafico area
-  y = drawPremiumAreaChart(doc, data.sleep.dailyMinutes, y, 26, PURPLE, 'Horas de sono/dia');
-
-  return y + 3;
-}
-
-// ═══════════════════════════════════════════════
-//  FRALDAS
-// ═══════════════════════════════════════════════
-
-function drawDiapersSection(doc: jsPDF, data: PDFData, y: number): number {
-  // Info textual
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(8.5);
-  doc.setTextColor(...TEXT_BODY);
-  doc.text(
-    `Media: ${data.diapers.avgPerDay.toFixed(1)} fraldas/dia  ·  Xixi: ${data.diapers.avgWetPerDay.toFixed(1)}  ·  Coco: ${data.diapers.avgDirtyPerDay.toFixed(1)}`,
-    MARGIN, y
-  );
-  y += 4.5;
-
-  // Referencia com indicador
-  const inRange = data.diapers.avgWetPerDay >= 6;
-  doc.setFillColor(...(inRange ? GREEN_SOFT : AMBER_SOFT));
-  doc.circle(MARGIN + 1, y - 0.8, 0.8, 'F');
-  doc.setFontSize(8);
-  doc.setTextColor(...GRAY);
-  doc.text(`Referencia: minimo 6 fraldas molhadas/dia`, MARGIN + 3, y);
-  y += 6;
-
-  // Mini grafico empilhado
-  y = drawPremiumStackedBarChart(doc, data.diapers.dailyCounts, y, 20);
-
-  return y + 5;
-}
-
-// ═══════════════════════════════════════════════
-//  CRESCIMENTO
-// ═══════════════════════════════════════════════
-
-function drawGrowthSection(doc: jsPDF, data: PDFData, baby: Baby, y: number): number {
-  if (!data.growth || (!data.growth.currentWeight && !data.growth.currentHeight)) {
-    // Placeholder elegante
-    doc.setFillColor(...CARD_BG);
-    doc.roundedRect(MARGIN, y, CONTENT_WIDTH, 16, 2.5, 2.5, 'F');
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
-    doc.setTextColor(...GRAY);
-    doc.text('Nenhuma medicao de peso ou altura registrada.', MARGIN + 5, y + 7);
-    doc.text('Registre na aba Perfil para incluir dados de crescimento no relatorio.', MARGIN + 5, y + 12);
-    return y + 22;
-  }
-
-  const halfW = (CONTENT_WIDTH - 6) / 2;
-
-  // Card Peso
-  if (data.growth.currentWeight) {
-    doc.setFillColor(...CARD_BG);
-    doc.roundedRect(MARGIN, y, halfW, 30, 2.5, 2.5, 'F');
-
-    // Barra lateral
-    doc.setFillColor(...PURPLE);
-    doc.roundedRect(MARGIN, y, 1.2, 30, 0.6, 0.6, 'F');
-
-    doc.setFontSize(6.5);
-    doc.setTextColor(...PURPLE);
-    doc.setFont('helvetica', 'bold');
-    doc.text('PESO', MARGIN + 4, y + 5);
-
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(14);
-    doc.setTextColor(...DARK);
-    doc.text(`${data.growth.currentWeight.toFixed(2)} kg`, MARGIN + 4, y + 13);
-
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(7.5);
-    doc.setTextColor(...GRAY);
-    let detailY = y + 18;
-
-    if (data.growth.birthWeight) {
-      doc.text(`Nascimento: ${data.growth.birthWeight.toFixed(2)} kg`, MARGIN + 4, detailY);
-      detailY += 4;
-    }
-    if (data.growth.weightGain != null) {
-      const gain = data.growth.weightGain * 1000;
-      doc.text(`Variacao: ${gain >= 0 ? '+' : ''}${gain.toFixed(0)}g`, MARGIN + 4, detailY);
-      detailY += 4;
-    }
-    if (data.growth.weightPercentile) {
-      doc.text(`Percentil: ${data.growth.weightPercentile}`, MARGIN + 4, detailY);
-    }
-  }
-
-  // Card Comprimento
-  if (data.growth.currentHeight) {
-    const xR = MARGIN + halfW + 6;
-    doc.setFillColor(...CARD_BG);
-    doc.roundedRect(xR, y, halfW, 30, 2.5, 2.5, 'F');
-
-    // Barra lateral
-    doc.setFillColor(...PURPLE_LIGHT);
-    doc.roundedRect(xR, y, 1.2, 30, 0.6, 0.6, 'F');
-
-    doc.setFontSize(6.5);
-    doc.setTextColor(...PURPLE);
-    doc.setFont('helvetica', 'bold');
-    doc.text('COMPRIMENTO', xR + 4, y + 5);
-
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(14);
-    doc.setTextColor(...DARK);
-    doc.text(`${data.growth.currentHeight.toFixed(1)} cm`, xR + 4, y + 13);
-
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(7.5);
-    doc.setTextColor(...GRAY);
-    let detailY = y + 18;
-
-    if (data.growth.birthHeight) {
-      doc.text(`Nascimento: ${data.growth.birthHeight.toFixed(1)} cm`, xR + 4, detailY);
-      detailY += 4;
-    }
-    if (data.growth.heightGain != null) {
-      doc.text(`Variacao: +${data.growth.heightGain.toFixed(1)} cm`, xR + 4, detailY);
-      detailY += 4;
-    }
-    if (data.growth.heightPercentile) {
-      doc.text(`Percentil: ${data.growth.heightPercentile}`, xR + 4, detailY);
-    }
-  }
-
-  y += 35;
-
-  // Curva OMS
-  if (data.growth.weightHistory.length >= 2) {
-    y = drawPremiumOMSCurve(doc, data.growth.weightHistory, baby, y, 38);
-    y += 3;
-  }
-
-  return y;
-}
-
-// ═══════════════════════════════════════════════
-//  PADROES OBSERVADOS
-// ═══════════════════════════════════════════════
-
-function drawPatternsSection(doc: jsPDF, data: PDFData, y: number): number {
-  // Card com fundo sutil
-  const patternLines: string[] = [];
-  for (const p of data.patterns) {
-    const wrapped = doc.splitTextToSize(p, CONTENT_WIDTH - 12);
-    patternLines.push(...wrapped);
-  }
-
-  const cardH = Math.max(patternLines.length * 4.5 + 6, 14);
-  doc.setFillColor(...CARD_BG);
-  doc.roundedRect(MARGIN, y, CONTENT_WIDTH, cardH, 2.5, 2.5, 'F');
-
-  // Barra lateral
-  doc.setFillColor(...GREEN_SOFT);
-  doc.roundedRect(MARGIN, y, 1.2, cardH, 0.6, 0.6, 'F');
-
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(8);
-  doc.setTextColor(...TEXT_BODY);
-
-  let textY = y + 5;
-  for (const pattern of data.patterns) {
-    const lines = doc.splitTextToSize(`•  ${pattern}`, CONTENT_WIDTH - 12);
-    doc.text(lines, MARGIN + 5, textY);
-    textY += lines.length * 4.5;
-  }
-
-  return y + cardH + 4;
-}
-
-// ═══════════════════════════════════════════════
-//  ESPACO DO PEDIATRA
-// ═══════════════════════════════════════════════
-
-function drawPediatriciansSection(doc: jsPDF, y: number): number {
-  y = drawSectionHeader(doc, 'ANOTACOES DO PEDIATRA', y);
-
-  // Caixa pontilhada elegante
-  doc.setDrawColor(...PURPLE_LIGHT);
-  doc.setLineWidth(0.3);
-  // Desenha borda pontilhada manualmente
-  const boxH = 24;
-  const dashLen = 2;
-  const gapLen = 1.5;
-
-  // Top
-  drawDashedLine(doc, MARGIN, y, PAGE_WIDTH - MARGIN, y, dashLen, gapLen);
-  // Bottom
-  drawDashedLine(doc, MARGIN, y + boxH, PAGE_WIDTH - MARGIN, y + boxH, dashLen, gapLen);
-  // Left
-  drawDashedLineV(doc, MARGIN, y, MARGIN, y + boxH, dashLen, gapLen);
-  // Right
-  drawDashedLineV(doc, PAGE_WIDTH - MARGIN, y, PAGE_WIDTH - MARGIN, y + boxH, dashLen, gapLen);
-
-  // Texto placeholder
-  doc.setFont('helvetica', 'italic');
-  doc.setFontSize(7.5);
-  doc.setTextColor(...GRAY_LIGHT);
-  doc.text('Espaco reservado para anotacoes da consulta', MARGIN + 5, y + 8);
-  doc.text('Na proxima versao do Yaya, o pediatra podera preencher diretamente pelo app.', MARGIN + 5, y + 13);
-
-  // Linhas de escrita
-  doc.setDrawColor(240, 240, 242);
+  // Container principal
+  const boxH = 56;
+  doc.setFillColor(...WHITE);
+  doc.setDrawColor(...OUTLINE);
   doc.setLineWidth(0.15);
-  for (let lineY = y + 17; lineY < y + boxH - 1; lineY += 5) {
-    doc.line(MARGIN + 3, lineY, PAGE_WIDTH - MARGIN - 3, lineY);
+  doc.roundedRect(ML, y, CW, boxH, 2, 2, 'FD');
+
+  // Stats row: Noturno | Diurno | Qualidade
+  const statsY = y + 3;
+
+  // Icone noturno (quadrado escuro)
+  doc.setFillColor(47, 46, 67); // #2F2E43
+  doc.roundedRect(ML + 4, statsY, 7, 7, 1.5, 1.5, 'F');
+  // Lua icon placeholder - small circle
+  doc.setFillColor(...WHITE);
+  doc.circle(ML + 7.5, statsY + 3.5, 1.5, 'F');
+
+  doc.setFontSize(5.5);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...TEXT);
+  doc.text('SONO NOTURNO', ML + 13, statsY + 2.5);
+  doc.setFontSize(11);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...DARK);
+  doc.text(formatHours(data.sleep.avgNocturnalMinutes), ML + 13, statsY + 7.5);
+
+  // Icone diurno (quadrado roxo)
+  const diurX = ML + 55;
+  doc.setFillColor(...PRIMARY);
+  doc.roundedRect(diurX, statsY, 7, 7, 1.5, 1.5, 'F');
+  doc.setFillColor(...WHITE);
+  doc.circle(diurX + 3.5, statsY + 3.5, 1.5, 'F');
+
+  doc.setFontSize(5.5);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...TEXT);
+  doc.text('SONO DIURNO', diurX + 9, statsY + 2.5);
+  doc.setFontSize(11);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...DARK);
+  doc.text(formatHours(data.sleep.avgDiurnalMinutes), diurX + 9, statsY + 7.5);
+
+  // Qualidade media
+  const qualX = PW - MR - 30;
+  doc.setFontSize(5.5);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...TEXT);
+  doc.text('QUALIDADE MEDIA', qualX, statsY + 2.5);
+  const totalSleep = data.sleep.avgTotalMinutes;
+  const qualLabel = totalSleep >= 840 ? 'Excelente' : totalSleep >= 720 ? 'Bom' : 'Atencao';
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...PRIMARY);
+  doc.text(qualLabel, qualX, statsY + 7.5);
+
+  // Area chart de sono
+  const chartY = statsY + 12;
+  const chartH = 28;
+  const chartBottom = chartY + chartH;
+  const sleepData = data.sleep.dailyMinutes;
+  const maxSleep = Math.max(...sleepData.map(d => d.nocturnal + d.diurnal), 1);
+
+  // Fundo do chart
+  doc.setFillColor(...SURFACE_LOW);
+  doc.setGState(new (doc as any).GState({ opacity: 0.3 }));
+  doc.roundedRect(ML + 3, chartY, CW - 6, chartH, 1, 1, 'F');
+  doc.setGState(new (doc as any).GState({ opacity: 1 }));
+
+  // Grid lines
+  doc.setDrawColor(226, 224, 252);
+  doc.setLineWidth(0.1);
+  for (let g = 1; g <= 3; g++) {
+    const gy = chartBottom - chartH * (g / 4);
+    doc.line(ML + 3, gy, PW - MR - 3, gy);
   }
+
+  const stepX = (CW - 6) / sleepData.length;
+
+  // Noturno (escuro)
+  sleepData.forEach((d, i) => {
+    const totalH = ((d.nocturnal + d.diurnal) / maxSleep) * (chartH - 2);
+    const noctH = (d.nocturnal / maxSleep) * (chartH - 2);
+    const x = ML + 3 + i * stepX;
+
+    // Total (diurno claro)
+    if (totalH > 0.3) {
+      doc.setFillColor(...PRIMARY);
+      doc.setGState(new (doc as any).GState({ opacity: 0.35 }));
+      doc.rect(x + 0.15, chartBottom - totalH, stepX - 0.3, totalH, 'F');
+    }
+    // Noturno (escuro)
+    if (noctH > 0.3) {
+      doc.setFillColor(47, 46, 67);
+      doc.setGState(new (doc as any).GState({ opacity: 0.85 }));
+      doc.rect(x + 0.15, chartBottom - noctH, stepX - 0.3, noctH, 'F');
+    }
+  });
+  doc.setGState(new (doc as any).GState({ opacity: 1 }));
+
+  // Label no chart
+  doc.setFontSize(5.5);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...DARK);
+  doc.text('Progressao Mensal de Ciclos', ML + 6, chartBottom - 2);
+
+  // X labels semanas
+  doc.setFontSize(5);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(...GRAY);
+  const weekLabels = ['Semana 01', 'Semana 02', 'Semana 03', 'Semana 04'];
+  weekLabels.forEach((label, i) => {
+    const x = ML + 3 + (CW - 6) * (i / (weekLabels.length - 1));
+    doc.text(label, x, chartBottom + 3.5, { align: i === 0 ? 'left' : i === weekLabels.length - 1 ? 'right' : 'center' });
+  });
 
   return y + boxH + 4;
 }
 
-// ═══════════════════════════════════════════════
-//  GRAFICOS PREMIUM
-// ═══════════════════════════════════════════════
+// ═════════════════════════════════════════
+//  PAGE 1 — FOOTER
+// ═════════════════════════════════════════
 
-function drawPremiumBarChart(
-  doc: jsPDF,
-  values: number[],
-  y: number,
-  height: number,
-  color: [number, number, number],
-  _label: string
-): number {
-  if (values.length === 0) return y;
+function drawPage1Footer(doc: jsPDF): void {
+  const footerY = PH - 18;
 
-  const chartLeft = MARGIN;
-  const chartRight = PAGE_WIDTH - MARGIN;
-  const chartW = chartRight - chartLeft;
-  const maxVal = Math.max(...values, 1);
-  const barW = chartW / values.length;
-  const chartBottom = y + height;
+  // Faixa de fundo
+  doc.setFillColor(239, 236, 255); // surface-container
+  doc.rect(0, footerY, PW, 18, 'F');
 
-  // Fundo do grafico
-  doc.setFillColor(252, 252, 255);
-  doc.roundedRect(chartLeft, y, chartW, height, 1.5, 1.5, 'F');
+  // Linha topo
+  doc.setDrawColor(...OUTLINE);
+  doc.setLineWidth(0.15);
+  doc.line(0, footerY, PW, footerY);
 
-  // Grid lines horizontais (sutis)
-  doc.setDrawColor(240, 240, 245);
-  doc.setLineWidth(0.1);
-  for (let i = 1; i <= 3; i++) {
-    const lineY = chartBottom - (height - 3) * (i / 4);
-    doc.line(chartLeft + 1, lineY, chartRight - 1, lineY);
-  }
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(6);
+  doc.setTextColor(...PRIMARY);
+  doc.text('YAYA PEDIATRIC ANALYTICS', ML, footerY + 5);
 
-  // Barras com gradiente (mais escuras na base)
-  values.forEach((val, i) => {
-    const barH = (val / maxVal) * (height - 5);
-    const x = chartLeft + i * barW;
-    if (barH > 0.5) {
-      // Barra principal
-      doc.setFillColor(color[0], color[1], color[2]);
-      doc.setGState(new (doc as any).GState({ opacity: 0.7 }));
-      doc.roundedRect(x + 0.4, chartBottom - barH, barW - 0.8, barH, 0.4, 0.4, 'F');
-      doc.setGState(new (doc as any).GState({ opacity: 1 }));
-    }
-  });
-
-  // Labels eixo X (a cada 7 dias)
-  doc.setFontSize(5);
-  doc.setTextColor(...GRAY);
   doc.setFont('helvetica', 'normal');
-  for (let i = 0; i < values.length; i += 7) {
-    const x = chartLeft + i * barW + barW / 2;
-    doc.text(`${i + 1}`, x, chartBottom + 3, { align: 'center' });
-  }
-  // Ultimo dia
-  if (values.length > 7) {
-    const lastX = chartLeft + (values.length - 1) * barW + barW / 2;
-    doc.text(`${values.length}`, lastX, chartBottom + 3, { align: 'center' });
-  }
-
-  // Label "dias" no eixo
   doc.setFontSize(5);
-  doc.setTextColor(...GRAY_LIGHT);
-  doc.text('dias', chartLeft + chartW / 2, chartBottom + 6, { align: 'center' });
+  doc.setTextColor(...GRAY);
+  doc.text('Este relatorio e um documento informativo e nao substitui a consulta medica.', ML, footerY + 9);
+  doc.text('Referencia clinica: WHO Child Growth Standards.', ML, footerY + 12.5);
 
-  return chartBottom + 7;
+  // Pagina
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(5);
+  doc.setTextColor(...GRAY);
+  doc.text('PAGINA', PW - MR - 10, footerY + 5);
+  doc.setFontSize(10);
+  doc.setTextColor(...DARK);
+  doc.text('01', PW - MR - 6, footerY + 12);
+  doc.setFontSize(7);
+  doc.setTextColor(...GRAY);
+  doc.setGState(new (doc as any).GState({ opacity: 0.4 }));
+  doc.text('/ 02', PW - MR - 1, footerY + 12);
+  doc.setGState(new (doc as any).GState({ opacity: 1 }));
 }
 
-function drawPremiumAreaChart(
-  doc: jsPDF,
-  data: { date: string; nocturnal: number; diurnal: number }[],
-  y: number,
-  height: number,
-  color: [number, number, number],
-  _label: string
-): number {
-  if (data.length === 0) return y;
+// ═════════════════════════════════════════
+//  PAGE 2 — HEADER
+// ═════════════════════════════════════════
 
-  const chartLeft = MARGIN;
-  const chartW = CONTENT_WIDTH;
-  const maxVal = Math.max(...data.map(d => d.nocturnal + d.diurnal), 1);
-  const chartBottom = y + height;
-  const stepX = chartW / data.length;
+function drawPage2Header(doc: jsPDF, baby: Baby): number {
+  // Linha inferior com YAYA | Nome
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(12);
+  doc.setTextColor(...PRIMARY);
+  doc.text('YAYA', ML, 12);
 
-  // Fundo
-  doc.setFillColor(252, 252, 255);
-  doc.roundedRect(chartLeft, y, chartW, height, 1.5, 1.5, 'F');
+  // Separador vertical
+  doc.setDrawColor(...OUTLINE);
+  doc.setLineWidth(0.3);
+  doc.line(ML + 16, 7, ML + 16, 14);
 
-  // Grid
-  doc.setDrawColor(240, 240, 245);
-  doc.setLineWidth(0.1);
-  for (let i = 1; i <= 3; i++) {
-    const lineY = chartBottom - (height - 3) * (i / 4);
-    doc.line(chartLeft + 1, lineY, chartLeft + chartW - 1, lineY);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10);
+  doc.setTextColor(...DARK);
+  doc.text(baby.name, ML + 19, 12);
+
+  // Info direita
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(6);
+  doc.setTextColor(...GRAY);
+  doc.text(`DOB: ${formatDateBR(new Date(baby.birthDate))}`, PW - MR - 50, 12);
+  doc.text(`RELATORIO: ${formatDateShort(new Date())}`, PW - MR, 12, { align: 'right' });
+
+  // Linha separadora
+  doc.setDrawColor(...PRIMARY);
+  doc.setLineWidth(0.5);
+  doc.setGState(new (doc as any).GState({ opacity: 0.2 }));
+  doc.line(ML, 16, PW - MR, 16);
+  doc.setGState(new (doc as any).GState({ opacity: 1 }));
+
+  return 21;
+}
+
+// ═════════════════════════════════════════
+//  PAGE 2 — CONTEUDO (grid 8+4)
+// ═════════════════════════════════════════
+
+function drawPage2Content(doc: jsPDF, data: PDFData, baby: Baby, y: number, qrDataUrl?: string): number {
+  // Coluna esquerda: 8/12 = ~118mm
+  const leftW = CW * 0.62;
+  const rightX = ML + leftW + 6;
+  const rightW = CW - leftW - 6;
+
+  // ═══ LEFT COLUMN ═══
+
+  // Crescimento titulo
+  let ly = y;
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10);
+  doc.setTextColor(...PRIMARY);
+  doc.text('Monitoramento de Crescimento', ML, ly);
+  ly += 5;
+
+  // Cards peso + comprimento
+  const growthCardW = (leftW - 4) / 2;
+  const growthCardH = 28;
+
+  if (data.growth && data.growth.currentWeight) {
+    // Card Peso
+    doc.setFillColor(...SURFACE_LOW);
+    doc.roundedRect(ML, ly, growthCardW, growthCardH, 2, 2, 'F');
+
+    doc.setFontSize(5.5);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...PRIMARY);
+    doc.text('PESO ATUAL', ML + 3, ly + 5);
+
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...DARK);
+    const wVal = data.growth.currentWeight.toFixed(1);
+    doc.text(wVal, ML + 3, ly + 14);
+    const wValW = doc.getTextWidth(wVal);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.text('kg', ML + 3 + wValW + 1, ly + 14);
+
+    // Linha divisoria
+    doc.setDrawColor(...PRIMARY);
+    doc.setLineWidth(0.1);
+    doc.setGState(new (doc as any).GState({ opacity: 0.15 }));
+    doc.line(ML + 3, ly + 17, ML + growthCardW - 3, ly + 17);
+    doc.setGState(new (doc as any).GState({ opacity: 1 }));
+
+    // Nascimento / Percentil
+    doc.setFontSize(5.5);
+    doc.setTextColor(...GRAY);
+    doc.setGState(new (doc as any).GState({ opacity: 0.6 }));
+    doc.text('Nascimento', ML + 3, ly + 21);
+    doc.text('Percentil', ML + growthCardW - 3, ly + 21, { align: 'right' });
+    doc.setGState(new (doc as any).GState({ opacity: 1 }));
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...DARK);
+    doc.text(data.growth.birthWeight ? `${data.growth.birthWeight.toFixed(1)}kg` : '--', ML + 3, ly + 25);
+    doc.setTextColor(...PRIMARY);
+    doc.text(data.growth.weightPercentile ?? '--', ML + growthCardW - 3, ly + 25, { align: 'right' });
   }
 
-  // Barras
-  data.forEach((d, i) => {
-    const totalH = ((d.nocturnal + d.diurnal) / maxVal) * (height - 4);
-    const noctH = (d.nocturnal / maxVal) * (height - 4);
-    const x = chartLeft + i * stepX;
+  if (data.growth && data.growth.currentHeight) {
+    // Card Comprimento
+    const cx = ML + growthCardW + 4;
+    doc.setFillColor(...SURFACE_LOW);
+    doc.roundedRect(cx, ly, growthCardW, growthCardH, 2, 2, 'F');
 
-    // Total (diurno + noturno) - claro
-    if (totalH > 0.5) {
-      doc.setFillColor(color[0], color[1], color[2]);
-      doc.setGState(new (doc as any).GState({ opacity: 0.2 }));
-      doc.rect(x + 0.2, chartBottom - totalH, stepX - 0.4, totalH, 'F');
-      doc.setGState(new (doc as any).GState({ opacity: 1 }));
+    doc.setFontSize(5.5);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...PRIMARY);
+    doc.text('COMPRIMENTO', cx + 3, ly + 5);
+
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...DARK);
+    const hVal = data.growth.currentHeight.toFixed(1);
+    doc.text(hVal, cx + 3, ly + 14);
+    const hValW = doc.getTextWidth(hVal);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.text('cm', cx + 3 + hValW + 1, ly + 14);
+
+    doc.setDrawColor(...PRIMARY);
+    doc.setLineWidth(0.1);
+    doc.setGState(new (doc as any).GState({ opacity: 0.15 }));
+    doc.line(cx + 3, ly + 17, cx + growthCardW - 3, ly + 17);
+    doc.setGState(new (doc as any).GState({ opacity: 1 }));
+
+    doc.setFontSize(5.5);
+    doc.setTextColor(...GRAY);
+    doc.setGState(new (doc as any).GState({ opacity: 0.6 }));
+    doc.text('Nascimento', cx + 3, ly + 21);
+    doc.text('Percentil', cx + growthCardW - 3, ly + 21, { align: 'right' });
+    doc.setGState(new (doc as any).GState({ opacity: 1 }));
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...DARK);
+    doc.text(data.growth.birthHeight ? `${data.growth.birthHeight.toFixed(1)}cm` : '--', cx + 3, ly + 25);
+    doc.setTextColor(...PRIMARY);
+    doc.text(data.growth.heightPercentile ?? '--', cx + growthCardW - 3, ly + 25, { align: 'right' });
+  }
+
+  if (!data.growth || (!data.growth.currentWeight && !data.growth.currentHeight)) {
+    doc.setFillColor(...SURFACE_LOW);
+    doc.roundedRect(ML, ly, leftW, 14, 2, 2, 'F');
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7);
+    doc.setTextColor(...GRAY);
+    doc.text('Nenhuma medicao registrada. Adicione peso/altura no perfil.', ML + 4, ly + 8);
+  }
+
+  ly += growthCardH + 5;
+
+  // Curva OMS
+  if (data.growth && data.growth.weightHistory.length >= 2) {
+    ly = drawOMSCurve(doc, data.growth.weightHistory, baby, ML, ly, leftW, 60);
+    ly += 3;
+  }
+
+  // Padroes observados
+  if (data.patterns.length > 0) {
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.setTextColor(...PRIMARY);
+    doc.text('Padroes Observados', ML, ly + 2);
+    ly += 6;
+
+    // Card com borda esquerda verde
+    const patLines: string[] = [];
+    for (const p of data.patterns) {
+      patLines.push(...doc.splitTextToSize(p, leftW - 14));
+    }
+    const patCardH = Math.max(data.patterns.length * 8 + 6, 18);
+
+    doc.setFillColor(...SURFACE_LOW);
+    doc.roundedRect(ML, ly, leftW, patCardH, 2, 2, 'F');
+    // Borda verde esquerda
+    doc.setFillColor(...GREEN);
+    doc.rect(ML, ly, 1.5, patCardH, 'F');
+
+    let patY = ly + 5;
+    for (const pattern of data.patterns) {
+      // Icone check verde
+      doc.setFillColor(...GREEN);
+      doc.circle(ML + 5, patY - 0.5, 1.2, 'F');
+      doc.setFillColor(...WHITE);
+      // Small check mark approximation
+      doc.setFontSize(4);
+      doc.setTextColor(...WHITE);
+      doc.text('v', ML + 4.4, patY + 0.2);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(7);
+      doc.setTextColor(...DARK);
+      const lines = doc.splitTextToSize(pattern, leftW - 14);
+      doc.text(lines, ML + 9, patY);
+      patY += lines.length * 4 + 3;
     }
 
-    // Noturno - solido
-    if (noctH > 0.5) {
-      doc.setFillColor(color[0], color[1], color[2]);
-      doc.setGState(new (doc as any).GState({ opacity: 0.65 }));
-      doc.rect(x + 0.2, chartBottom - noctH, stepX - 0.4, noctH, 'F');
-      doc.setGState(new (doc as any).GState({ opacity: 1 }));
-    }
-  });
+    ly += patCardH + 3;
+  }
 
-  // Legenda
-  doc.setFontSize(6);
-  doc.setTextColor(...GRAY);
-  doc.setFillColor(color[0], color[1], color[2]);
-  doc.setGState(new (doc as any).GState({ opacity: 0.65 }));
-  doc.roundedRect(chartLeft, chartBottom + 2, 5, 2.5, 0.5, 0.5, 'F');
+  // ═══ RIGHT COLUMN ═══
+
+  let ry = y;
+
+  // Fraldas
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(8);
+  doc.setTextColor(...PRIMARY);
+  doc.text('Higiene: Ultimos 30 dias', rightX, ry);
+  ry += 4;
+
+  // Card fraldas
+  const diaperCardH = 42;
+  doc.setFillColor(...CARD_BG);
+  doc.setGState(new (doc as any).GState({ opacity: 0.4 }));
+  doc.roundedRect(rightX, ry, rightW, diaperCardH, 2, 2, 'F');
   doc.setGState(new (doc as any).GState({ opacity: 1 }));
-  doc.text('Noturno', chartLeft + 6, chartBottom + 4);
 
-  doc.setFillColor(color[0], color[1], color[2]);
-  doc.setGState(new (doc as any).GState({ opacity: 0.2 }));
-  doc.roundedRect(chartLeft + 28, chartBottom + 2, 5, 2.5, 0.5, 0.5, 'F');
-  doc.setGState(new (doc as any).GState({ opacity: 1 }));
-  doc.text('Diurno', chartLeft + 34, chartBottom + 4);
+  doc.setFontSize(5.5);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...TEXT);
+  doc.text('VOLUME DE TROCAS DIARIAS', rightX + 3, ry + 5);
 
-  return chartBottom + 7;
-}
+  // Barras empilhadas fraldas
+  const diaperData = data.diapers.dailyCounts;
+  const maxDiaper = Math.max(...diaperData.map(d => d.wet + d.dirty), 1);
+  const dBarW = (rightW - 8) / diaperData.length;
+  const dChartBottom = ry + diaperCardH - 10;
+  const dChartH = 22;
 
-function drawPremiumStackedBarChart(
-  doc: jsPDF,
-  data: { date: string; wet: number; dirty: number }[],
-  y: number,
-  height: number
-): number {
-  if (data.length === 0) return y;
+  diaperData.forEach((d, i) => {
+    const wetH = (d.wet / maxDiaper) * dChartH;
+    const dirtyH = (d.dirty / maxDiaper) * dChartH;
+    const x = rightX + 4 + i * dBarW;
 
-  const chartLeft = MARGIN;
-  const chartW = CONTENT_WIDTH;
-  const maxVal = Math.max(...data.map(d => d.wet + d.dirty), 1);
-  const chartBottom = y + height;
-  const barW = chartW / data.length;
-
-  // Fundo
-  doc.setFillColor(252, 252, 255);
-  doc.roundedRect(chartLeft, y, chartW, height, 1.5, 1.5, 'F');
-
-  data.forEach((d, i) => {
-    const totalH = ((d.wet + d.dirty) / maxVal) * (height - 3);
-    const dirtyH = (d.dirty / maxVal) * (height - 3);
-    const x = chartLeft + i * barW;
-
-    // Xixi (azul)
-    if (totalH > 0.5) {
+    if (wetH > 0.2) {
       doc.setFillColor(...BLUE_CHART);
-      doc.setGState(new (doc as any).GState({ opacity: 0.6 }));
-      doc.rect(x + 0.2, chartBottom - totalH, barW - 0.4, totalH, 'F');
-      doc.setGState(new (doc as any).GState({ opacity: 1 }));
+      doc.rect(x, dChartBottom - wetH - dirtyH, dBarW - 0.3, wetH, 'F');
     }
-
-    // Coco (marrom, empilhado)
-    if (dirtyH > 0.5) {
-      doc.setFillColor(...BROWN_CHART);
-      doc.setGState(new (doc as any).GState({ opacity: 0.7 }));
-      doc.rect(x + 0.2, chartBottom - dirtyH, barW - 0.4, dirtyH, 'F');
-      doc.setGState(new (doc as any).GState({ opacity: 1 }));
+    if (dirtyH > 0.2) {
+      doc.setFillColor(...PURPLE_CHART);
+      doc.rect(x, dChartBottom - dirtyH, dBarW - 0.3, dirtyH, 'F');
     }
   });
 
-  // Legenda
-  doc.setFontSize(6);
+  // Legenda fraldas
+  doc.setFontSize(5);
+  doc.setFont('helvetica', 'bold');
   doc.setTextColor(...GRAY);
-
   doc.setFillColor(...BLUE_CHART);
-  doc.setGState(new (doc as any).GState({ opacity: 0.6 }));
-  doc.roundedRect(chartLeft, chartBottom + 2, 5, 2.5, 0.5, 0.5, 'F');
-  doc.setGState(new (doc as any).GState({ opacity: 1 }));
-  doc.text('Xixi', chartLeft + 6, chartBottom + 4);
+  doc.circle(rightX + 4, dChartBottom + 4, 0.8, 'F');
+  doc.text(`Xixi (Med. ${data.diapers.avgWetPerDay.toFixed(1)})`, rightX + 6, dChartBottom + 5);
+  doc.setFillColor(...PURPLE_CHART);
+  doc.circle(rightX + rightW / 2 + 2, dChartBottom + 4, 0.8, 'F');
+  doc.text(`Coco (Med. ${data.diapers.avgDirtyPerDay.toFixed(1)})`, rightX + rightW / 2 + 4, dChartBottom + 5);
 
-  doc.setFillColor(...BROWN_CHART);
-  doc.setGState(new (doc as any).GState({ opacity: 0.7 }));
-  doc.roundedRect(chartLeft + 20, chartBottom + 2, 5, 2.5, 0.5, 0.5, 'F');
-  doc.setGState(new (doc as any).GState({ opacity: 1 }));
-  doc.text('Coco', chartLeft + 26, chartBottom + 4);
+  ry += diaperCardH + 6;
 
-  return chartBottom + 7;
+  // Espaco do Pediatra
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(8);
+  doc.setTextColor(...PRIMARY);
+  doc.text('Espaco do Pediatra', rightX, ry);
+  ry += 4;
+
+  const pedH = PH - ry - 60; // Preenche ate o footer
+  // Caixa pontilhada
+  doc.setDrawColor(...OUTLINE);
+  doc.setLineWidth(0.4);
+  drawDashedRect(doc, rightX, ry, rightW, pedH);
+
+  // Linhas de escrita
+  doc.setDrawColor(...OUTLINE);
+  doc.setLineWidth(0.1);
+  doc.setGState(new (doc as any).GState({ opacity: 0.3 }));
+  for (let lineY = ry + 8; lineY < ry + pedH - 18; lineY += 6) {
+    doc.line(rightX + 3, lineY, rightX + rightW - 3, lineY);
+  }
+  doc.setGState(new (doc as any).GState({ opacity: 1 }));
+
+  // Carimbo e assinatura
+  doc.setDrawColor(...DARK);
+  doc.setLineWidth(0.3);
+  const sigY = ry + pedH - 12;
+  doc.line(rightX + rightW / 2 - 15, sigY, rightX + rightW / 2 + 15, sigY);
+  doc.setFontSize(4.5);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...GRAY);
+  doc.text('CARIMBO E ASSINATURA', rightX + rightW / 2, sigY + 3, { align: 'center' });
+
+  // ═══ FOOTER CTA ═══
+  drawPage2Footer(doc, qrDataUrl);
+
+  return Math.max(ly, ry);
 }
 
-function drawPremiumOMSCurve(
+function drawPage2Footer(doc: jsPDF, qrDataUrl?: string): void {
+  const footerY = PH - 42;
+
+  // CTA card
+  doc.setFillColor(...PRIMARY);
+  doc.setGState(new (doc as any).GState({ opacity: 0.05 }));
+  doc.roundedRect(ML, footerY, CW, 22, 3, 3, 'F');
+  doc.setGState(new (doc as any).GState({ opacity: 1 }));
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10);
+  doc.setTextColor(...PRIMARY);
+  doc.text('Quer que seu pediatra acompanhe pelo Yaya?', ML + 5, footerY + 7);
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7);
+  doc.setTextColor(...TEXT);
+  doc.text('Compartilhe o historico em tempo real e facilite o diagnostico clinico atraves de dados precisos.', ML + 5, footerY + 12);
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(7);
+  doc.setTextColor(...PRIMARY);
+  doc.text('yayababy.app/pediatra', ML + 5, footerY + 17);
+
+  // QR code
+  if (qrDataUrl) {
+    try {
+      const qrSize = 15;
+      const qrX = PW - MR - qrSize - 5;
+      // Fundo branco para QR
+      doc.setFillColor(...WHITE);
+      doc.roundedRect(qrX - 1, footerY + 2, qrSize + 2, qrSize + 2 + 5, 1.5, 1.5, 'F');
+      // Borda sutil
+      doc.setDrawColor(...CARD_BG);
+      doc.setLineWidth(0.3);
+      doc.roundedRect(qrX - 1, footerY + 2, qrSize + 2, qrSize + 2 + 5, 1.5, 1.5, 'S');
+
+      doc.setFontSize(4.5);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(...GRAY);
+      doc.text('ACESSO MEDICO', qrX + qrSize / 2, footerY + 4, { align: 'center' });
+
+      doc.addImage(qrDataUrl, 'PNG', qrX, footerY + 5.5, qrSize, qrSize);
+    } catch {
+      // skip
+    }
+  }
+
+  // Disclaimer bottom
+  const discY = PH - 16;
+  doc.setDrawColor(...OUTLINE);
+  doc.setLineWidth(0.1);
+  doc.line(ML, discY - 2, PW - MR, discY - 2);
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(5);
+  doc.setTextColor(...GRAY);
+  doc.text('© 2026 YAYA Pediatric Analytics', ML, discY + 1);
+  doc.text('WHO Child Growth Standards Reference', ML + 50, discY + 1);
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(7);
+  doc.setTextColor(...DARK);
+  doc.text('Pagina 2 / 2', PW - MR, discY + 1, { align: 'right' });
+}
+
+// ═════════════════════════════════════════
+//  CURVA OMS
+// ═════════════════════════════════════════
+
+function drawOMSCurve(
   doc: jsPDF,
   weightHistory: { date: string; value: number }[],
   baby: Baby,
+  startX: number,
   y: number,
+  width: number,
   height: number
 ): number {
   const gender = baby.gender || 'boy';
@@ -862,124 +891,166 @@ function drawPremiumOMSCurve(
   const relevantOMS = omsData.filter(p => p.months <= maxMonths + 2);
   if (relevantOMS.length < 2) return y;
 
-  const chartBottom = y + height;
-  const chartLeft = MARGIN + 8;
-  const chartRight = PAGE_WIDTH - MARGIN;
-  const chartW = chartRight - chartLeft;
+  // Titulo
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(8);
+  doc.setTextColor(...DARK);
+  doc.text('Curva de Peso (OMS)', startX, y);
 
-  const minVal = Math.min(...relevantOMS.map(p => p.p3)) * 0.9;
-  const maxVal = Math.max(...relevantOMS.map(p => p.p97)) * 1.05;
+  // Legenda
+  doc.setFontSize(5);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(...GRAY);
+  doc.setDrawColor(...OUTLINE);
+  doc.setLineWidth(0.3);
+  doc.line(startX + width - 42, y - 1, startX + width - 38, y - 1);
+  doc.text('P3-P97', startX + width - 36, y);
+
+  doc.setDrawColor(...PRIMARY);
+  doc.setLineWidth(0.5);
+  doc.line(startX + width - 20, y - 1, startX + width - 16, y - 1);
+  doc.setTextColor(...PRIMARY);
+  doc.text(baby.name, startX + width - 14, y);
+
+  y += 4;
+
+  // Chart container
+  doc.setFillColor(...WHITE);
+  doc.setDrawColor(...CARD_BG);
+  doc.setLineWidth(0.2);
+  doc.roundedRect(startX, y, width, height, 2, 2, 'FD');
+
+  const chartL = startX + 8;
+  const chartR = startX + width - 4;
+  const chartT = y + 4;
+  const chartB = y + height - 8;
+  const chartW = chartR - chartL;
+  const chartH = chartB - chartT;
+
+  const minVal = Math.min(...relevantOMS.map(p => p.p3)) * 0.85;
+  const maxVal = Math.max(...relevantOMS.map(p => p.p97)) * 1.1;
   const monthRange = relevantOMS[relevantOMS.length - 1].months;
 
-  const scaleX = (months: number) => chartLeft + (months / monthRange) * chartW;
-  const scaleY = (val: number) => chartBottom - ((val - minVal) / (maxVal - minVal)) * (height - 6);
+  const scaleX = (months: number) => chartL + (months / monthRange) * chartW;
+  const scaleY = (val: number) => chartB - ((val - minVal) / (maxVal - minVal)) * chartH;
 
-  // Titulo do grafico
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(7);
-  doc.setTextColor(...PURPLE);
-  doc.text('CURVA DE PESO — OMS', MARGIN, y + 3);
-  y += 2;
+  // Grid points
+  doc.setDrawColor(...OUTLINE);
+  doc.setLineWidth(0.05);
+  doc.setGState(new (doc as any).GState({ opacity: 0.15 }));
+  for (let gx = 0; gx <= monthRange; gx += (monthRange <= 6 ? 1 : 2)) {
+    doc.line(scaleX(gx), chartT, scaleX(gx), chartB);
+  }
+  const valStep = (maxVal - minVal) / 4;
+  for (let i = 0; i <= 4; i++) {
+    const gy = chartT + chartH * (i / 4);
+    doc.line(chartL, gy, chartR, gy);
+  }
+  doc.setGState(new (doc as any).GState({ opacity: 1 }));
 
-  // Fundo
-  doc.setFillColor(252, 252, 255);
-  doc.roundedRect(MARGIN, y, CONTENT_WIDTH, height, 2, 2, 'F');
-
-  // Linhas de percentil OMS
-  const percentiles: { key: keyof OMSDataPoint; label: string; dash: boolean }[] = [
-    { key: 'p3', label: 'P3', dash: true },
-    { key: 'p15' as any, label: '', dash: false }, // skip if not available
-    { key: 'p50', label: 'P50', dash: false },
-    { key: 'p97', label: 'P97', dash: true },
+  // Percentil lines
+  const percLines: { key: keyof OMSDataPoint; dash: boolean }[] = [
+    { key: 'p3', dash: true },
+    { key: 'p50', dash: false },
+    { key: 'p97', dash: true },
   ];
 
-  for (const perc of percentiles) {
-    if (!relevantOMS[0][perc.key]) continue;
-
-    doc.setDrawColor(210, 220, 210);
-    doc.setLineWidth(perc.key === 'p50' ? 0.4 : 0.2);
+  for (const perc of percLines) {
+    doc.setDrawColor(...OUTLINE);
+    doc.setLineWidth(perc.key === 'p50' ? 0.4 : 0.25);
 
     for (let i = 1; i < relevantOMS.length; i++) {
-      doc.line(
-        scaleX(relevantOMS[i - 1].months),
-        scaleY(relevantOMS[i - 1][perc.key] as number),
-        scaleX(relevantOMS[i].months),
-        scaleY(relevantOMS[i][perc.key] as number)
-      );
-    }
-
-    // Label
-    if (perc.label) {
-      const last = relevantOMS[relevantOMS.length - 1];
-      doc.setFontSize(5);
-      doc.setTextColor(180, 190, 180);
-      doc.setFont('helvetica', 'normal');
-      doc.text(perc.label, scaleX(last.months) + 1, scaleY(last[perc.key] as number) + 1);
-    }
-  }
-
-  // Pontos do bebe — linha conectando
-  if (measurements.length >= 2) {
-    doc.setDrawColor(...PURPLE);
-    doc.setLineWidth(0.7);
-    for (let i = 1; i < measurements.length; i++) {
-      doc.line(
-        scaleX(measurements[i - 1].months),
-        scaleY(measurements[i - 1].value),
-        scaleX(measurements[i].months),
-        scaleY(measurements[i].value)
-      );
+      if (perc.dash) {
+        drawDashedH(doc,
+          scaleX(relevantOMS[i - 1].months),
+          scaleY(relevantOMS[i - 1][perc.key] as number),
+          scaleX(relevantOMS[i].months),
+          1, 1
+        );
+      } else {
+        doc.line(
+          scaleX(relevantOMS[i - 1].months),
+          scaleY(relevantOMS[i - 1][perc.key] as number),
+          scaleX(relevantOMS[i].months),
+          scaleY(relevantOMS[i][perc.key] as number)
+        );
+      }
     }
   }
 
-  // Pontos
+  // Baby curve
+  doc.setDrawColor(...PRIMARY_DARK);
+  doc.setLineWidth(0.8);
+  for (let i = 1; i < measurements.length; i++) {
+    doc.line(
+      scaleX(measurements[i - 1].months),
+      scaleY(measurements[i - 1].value),
+      scaleX(measurements[i].months),
+      scaleY(measurements[i].value)
+    );
+  }
+
+  // Data points
   for (const m of measurements) {
-    const cx = scaleX(m.months);
-    const cy = scaleY(m.value);
-
-    // Halo branco
-    doc.setFillColor(...WHITE);
-    doc.circle(cx, cy, 1.8, 'F');
-    // Ponto roxo
-    doc.setFillColor(...PURPLE);
-    doc.circle(cx, cy, 1.2, 'F');
+    doc.setFillColor(...PRIMARY_DARK);
+    doc.circle(scaleX(m.months), scaleY(m.value), 1, 'F');
   }
 
-  // Eixo X label
-  doc.setFontSize(5.5);
+  // Label "Hoje" no ultimo ponto
+  const last = measurements[measurements.length - 1];
+  doc.setFontSize(5);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...PRIMARY_DARK);
+  doc.text(`Hoje: ${last.value.toFixed(1)}kg`, scaleX(last.months) - 1, scaleY(last.value) - 2.5, { align: 'right' });
+
+  // X axis labels
+  doc.setFontSize(4.5);
+  doc.setFont('helvetica', 'bold');
   doc.setTextColor(...GRAY);
-  doc.setFont('helvetica', 'normal');
-  doc.text('meses', chartLeft + chartW / 2, chartBottom + 4, { align: 'center' });
-
-  // Escala no eixo X
-  const monthStep = monthRange <= 6 ? 1 : monthRange <= 12 ? 2 : 3;
-  for (let m = 0; m <= monthRange; m += monthStep) {
-    doc.text(`${m}`, scaleX(m), chartBottom + 2, { align: 'center' });
+  const mStep = monthRange <= 6 ? 2 : monthRange <= 12 ? 3 : 6;
+  for (let m = 0; m <= monthRange; m += mStep) {
+    doc.text(`${Math.round(m)} Meses`, scaleX(m), chartB + 4, { align: 'center' });
   }
 
-  // Escala eixo Y (peso em kg)
-  const valRange = maxVal - minVal;
-  const yStep = valRange <= 5 ? 1 : valRange <= 10 ? 2 : 5;
-  for (let v = Math.ceil(minVal); v <= maxVal; v += yStep) {
-    const yPos = scaleY(v);
-    if (yPos > y + 3 && yPos < chartBottom - 2) {
-      doc.setFontSize(5);
-      doc.setTextColor(...GRAY_LIGHT);
-      doc.text(`${v}kg`, MARGIN, yPos + 1);
-    }
+  // Y axis labels
+  for (let i = 0; i <= 4; i++) {
+    const val = maxVal - valStep * i;
+    doc.text(`${val.toFixed(0)}kg`, startX + 1, chartT + chartH * (i / 4) + 1);
   }
 
-  return chartBottom + 5;
+  return y + height + 2;
 }
 
-// ═══════════════════════════════════════════════
-//  UTILIDADES
-// ═══════════════════════════════════════════════
+// ═════════════════════════════════════════
+//  HELPERS
+// ═════════════════════════════════════════
+
+function drawSectionTitle(doc: jsPDF, title: string, y: number): number {
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10);
+  doc.setTextColor(...DARK);
+  doc.text(title, ML, y);
+
+  const tw = doc.getTextWidth(title);
+  doc.setDrawColor(...PRIMARY);
+  doc.setLineWidth(0.3);
+  doc.setGState(new (doc as any).GState({ opacity: 0.2 }));
+  doc.line(ML + tw + 3, y - 1, PW - MR, y - 1);
+  doc.setGState(new (doc as any).GState({ opacity: 1 }));
+
+  return y + 5;
+}
 
 function formatDateBR(date: Date): string {
   const d = date.getDate().toString().padStart(2, '0');
   const m = (date.getMonth() + 1).toString().padStart(2, '0');
-  const y = date.getFullYear();
+  return `${d}/${m}/${date.getFullYear()}`;
+}
+
+function formatDateShort(date: Date): string {
+  const d = date.getDate().toString().padStart(2, '0');
+  const m = (date.getMonth() + 1).toString().padStart(2, '0');
+  const y = date.getFullYear().toString().slice(-2);
   return `${d}/${m}/${y}`;
 }
 
@@ -994,29 +1065,34 @@ function formatMinutes(minutes: number): string {
   if (minutes <= 0) return '0min';
   const h = Math.floor(minutes / 60);
   const m = Math.round(minutes % 60);
-  if (h > 0) return `${h}h${m.toString().padStart(2, '0')}`;
+  if (h > 0) return `${h}h ${m.toString().padStart(2, '0')}min`;
   return `${m}min`;
 }
 
-function drawDashedLine(doc: jsPDF, x1: number, y1: number, x2: number, _y2: number, dashLen: number, gapLen: number): void {
-  const totalLen = x2 - x1;
+function drawDashedH(doc: jsPDF, x1: number, y1: number, x2: number, dashLen: number, gapLen: number): void {
   let pos = 0;
-  while (pos < totalLen) {
-    const start = x1 + pos;
-    const end = Math.min(start + dashLen, x2);
-    doc.line(start, y1, end, y1);
+  const total = x2 - x1;
+  while (pos < total) {
+    const sx = x1 + pos;
+    const ex = Math.min(sx + dashLen, x2);
+    doc.line(sx, y1, ex, y1);
     pos += dashLen + gapLen;
   }
 }
 
-function drawDashedLineV(doc: jsPDF, x1: number, y1: number, _x2: number, y2: number, dashLen: number, gapLen: number): void {
-  const totalLen = y2 - y1;
+function drawDashedRect(doc: jsPDF, x: number, y: number, w: number, h: number): void {
+  const dash = 2;
+  const gap = 1.5;
+  // Top
   let pos = 0;
-  while (pos < totalLen) {
-    const start = y1 + pos;
-    const end = Math.min(start + dashLen, y2);
-    doc.line(x1, start, x1, end);
-    pos += dashLen + gapLen;
-  }
+  while (pos < w) { const s = x + pos; const e = Math.min(s + dash, x + w); doc.line(s, y, e, y); pos += dash + gap; }
+  // Bottom
+  pos = 0;
+  while (pos < w) { const s = x + pos; const e = Math.min(s + dash, x + w); doc.line(s, y + h, e, y + h); pos += dash + gap; }
+  // Left
+  pos = 0;
+  while (pos < h) { const s = y + pos; const e = Math.min(s + dash, y + h); doc.line(x, s, x, e); pos += dash + gap; }
+  // Right
+  pos = 0;
+  while (pos < h) { const s = y + pos; const e = Math.min(s + dash, y + h); doc.line(x + w, s, x + w, e); pos += dash + gap; }
 }
-
