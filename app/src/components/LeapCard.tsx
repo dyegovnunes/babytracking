@@ -1,14 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import type { DevelopmentLeap } from '../lib/developmentLeaps';
+import { DEVELOPMENT_LEAPS } from '../lib/developmentLeaps';
 
 interface LeapCardProps {
   leap: DevelopmentLeap;
   babyName: string;
+  birthDate: string;
   isUpcoming?: boolean;
   weeksUntil?: number;
 }
 
-export default function LeapCard({ leap, babyName, isUpcoming, weeksUntil }: LeapCardProps) {
+export default function LeapCard({ leap, babyName, birthDate, isUpcoming, weeksUntil }: LeapCardProps) {
   const [dismissed, setDismissed] = useState(false);
   const [showDetail, setShowDetail] = useState(false);
 
@@ -30,6 +32,13 @@ export default function LeapCard({ leap, babyName, isUpcoming, weeksUntil }: Lea
     setDismissed(true);
   };
 
+  // Calculate baby age in weeks
+  const babyAgeWeeks = useMemo(() => {
+    const birth = new Date(birthDate);
+    const now = new Date();
+    return (now.getTime() - birth.getTime()) / (7 * 86400000);
+  }, [birthDate]);
+
   return (
     <>
       <div className="rounded-xl bg-gradient-to-r from-[#7C4DFF]/10 to-[#b79fff]/10 border border-[#b79fff]/15 p-4">
@@ -50,6 +59,10 @@ export default function LeapCard({ leap, babyName, isUpcoming, weeksUntil }: Lea
                 : `${babyName} pode estar mais agitado. Normal!`
               }
             </p>
+
+            {/* Mini timeline */}
+            <LeapTimeline currentLeapId={leap.id} babyAgeWeeks={babyAgeWeeks} />
+
             <div className="flex gap-2 mt-2">
               <button
                 onClick={() => setShowDetail(true)}
@@ -69,13 +82,81 @@ export default function LeapCard({ leap, babyName, isUpcoming, weeksUntil }: Lea
       </div>
 
       {showDetail && (
-        <LeapDetail leap={leap} babyName={babyName} onClose={() => setShowDetail(false)} />
+        <LeapDetail leap={leap} babyName={babyName} birthDate={birthDate} babyAgeWeeks={babyAgeWeeks} onClose={() => setShowDetail(false)} />
       )}
     </>
   );
 }
 
-function LeapDetail({ leap, onClose }: { leap: DevelopmentLeap; babyName?: string; onClose: () => void }) {
+/** Mini timeline showing nearby leaps */
+function LeapTimeline({ currentLeapId, babyAgeWeeks }: { currentLeapId: number; babyAgeWeeks: number }) {
+  // Show current leap and 1 before + 2 after for context
+  const visibleLeaps = DEVELOPMENT_LEAPS.filter(
+    (l) => l.id >= currentLeapId - 1 && l.id <= currentLeapId + 2
+  );
+
+  if (visibleLeaps.length === 0) return null;
+
+  const minWeek = Math.max(0, visibleLeaps[0].weekStart - 2);
+  const maxWeek = visibleLeaps[visibleLeaps.length - 1].weekEnd + 2;
+  const range = maxWeek - minWeek;
+
+  const toPercent = (week: number) => ((week - minWeek) / range) * 100;
+  const babyPos = Math.max(0, Math.min(100, toPercent(babyAgeWeeks)));
+
+  return (
+    <div className="mt-2.5 mb-1">
+      <div className="relative h-5">
+        {/* Base line */}
+        <div className="absolute top-[9px] left-0 right-0 h-[2px] bg-white/10 rounded-full" />
+
+        {/* Leap blocks */}
+        {visibleLeaps.map((l) => {
+          const left = toPercent(l.weekStart);
+          const width = toPercent(l.weekEnd) - left;
+          const isCurrent = l.id === currentLeapId;
+          const isPast = l.weekEnd < babyAgeWeeks;
+
+          return (
+            <div
+              key={l.id}
+              className={`absolute top-[5px] h-[10px] rounded-full ${
+                isCurrent
+                  ? 'bg-[#b79fff]'
+                  : isPast
+                    ? 'bg-[#b79fff]/30'
+                    : 'bg-white/15'
+              }`}
+              style={{ left: `${left}%`, width: `${Math.max(width, 2)}%` }}
+            >
+              <span className={`absolute -top-[11px] left-1/2 -translate-x-1/2 text-[8px] font-bold ${
+                isCurrent ? 'text-[#b79fff]' : 'text-[#e7e2ff]/30'
+              }`}>
+                {l.id}
+              </span>
+            </div>
+          );
+        })}
+
+        {/* Baby position marker */}
+        <div
+          className="absolute top-[3px] w-3.5 h-3.5 -translate-x-1/2 z-10"
+          style={{ left: `${babyPos}%` }}
+        >
+          <div className="w-full h-full rounded-full bg-[#e7e2ff] border-2 border-[#0d0a27] shadow-sm" />
+        </div>
+      </div>
+
+      {/* Week labels */}
+      <div className="flex justify-between mt-0.5">
+        <span className="text-[8px] text-[#e7e2ff]/25">sem {Math.round(minWeek)}</span>
+        <span className="text-[8px] text-[#e7e2ff]/25">sem {Math.round(maxWeek)}</span>
+      </div>
+    </div>
+  );
+}
+
+function LeapDetail({ leap, onClose, birthDate, babyAgeWeeks }: { leap: DevelopmentLeap; babyName?: string; birthDate: string; babyAgeWeeks: number; onClose: () => void }) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-sm"
@@ -96,6 +177,9 @@ function LeapDetail({ leap, onClose }: { leap: DevelopmentLeap; babyName?: strin
             <span className="material-symbols-outlined">close</span>
           </button>
         </div>
+
+        {/* Full timeline of all leaps */}
+        <FullLeapTimeline currentLeapId={leap.id} babyAgeWeeks={babyAgeWeeks} birthDate={birthDate} />
 
         <p className="text-sm text-[#e7e2ff]/70 mb-4">
           {leap.description}
@@ -142,6 +226,87 @@ function LeapDetail({ leap, onClose }: { leap: DevelopmentLeap; babyName?: strin
         >
           Entendi
         </button>
+      </div>
+    </div>
+  );
+}
+
+/** Full timeline of all 10 leaps for the detail modal */
+function FullLeapTimeline({ currentLeapId, babyAgeWeeks }: { currentLeapId: number; babyAgeWeeks: number; birthDate: string }) {
+  return (
+    <div className="bg-white/[0.03] rounded-xl p-3 mb-4">
+      <p className="text-[10px] text-[#e7e2ff]/40 uppercase tracking-wider mb-2">Linha do tempo dos saltos</p>
+      <div className="space-y-1">
+        {DEVELOPMENT_LEAPS.map((l) => {
+          const isCurrent = l.id === currentLeapId;
+          const isPast = l.weekEnd < babyAgeWeeks;
+          const isFuture = l.weekStart > babyAgeWeeks;
+          return (
+            <div key={l.id} className="flex items-center gap-2">
+              {/* Leap number */}
+              <span className={`w-4 text-[9px] font-bold text-right flex-shrink-0 ${
+                isCurrent ? 'text-[#b79fff]' : isPast ? 'text-[#e7e2ff]/30' : 'text-[#e7e2ff]/20'
+              }`}>
+                {l.id}
+              </span>
+
+              {/* Bar */}
+              <div className="flex-1 h-4 relative">
+                <div
+                  className={`h-full rounded-sm flex items-center px-1.5 ${
+                    isCurrent
+                      ? 'bg-[#b79fff] shadow-sm shadow-[#b79fff]/30'
+                      : isPast
+                        ? 'bg-[#b79fff]/20'
+                        : 'bg-white/[0.06]'
+                  }`}
+                >
+                  <span className={`text-[8px] font-semibold truncate ${
+                    isCurrent ? 'text-[#0d0a27]' : isPast ? 'text-[#e7e2ff]/40' : 'text-[#e7e2ff]/25'
+                  }`}>
+                    {l.name}
+                  </span>
+                </div>
+
+                {/* Baby marker on current leap */}
+                {isCurrent && babyAgeWeeks >= l.weekStart && babyAgeWeeks <= l.weekEnd && (
+                  <div
+                    className="absolute top-0 w-0.5 h-full bg-[#e7e2ff] rounded-full"
+                    style={{
+                      left: `${((babyAgeWeeks - l.weekStart) / (l.weekEnd - l.weekStart)) * 100}%`,
+                    }}
+                  />
+                )}
+              </div>
+
+              {/* Dates */}
+              <span className={`text-[8px] flex-shrink-0 w-[72px] text-right ${
+                isCurrent ? 'text-[#e7e2ff]/70' : 'text-[#e7e2ff]/20'
+              }`}>
+                {isFuture
+                  ? `daqui ${Math.round(l.weekStart - babyAgeWeeks)}sem`
+                  : `sem ${l.weekStart}-${l.weekEnd}`
+                }
+              </span>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Legend */}
+      <div className="flex items-center gap-3 mt-2 pt-2 border-t border-white/5">
+        <div className="flex items-center gap-1">
+          <div className="w-2 h-2 rounded-sm bg-[#b79fff]" />
+          <span className="text-[8px] text-[#e7e2ff]/40">Atual</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <div className="w-2 h-2 rounded-sm bg-[#b79fff]/20" />
+          <span className="text-[8px] text-[#e7e2ff]/40">Passou</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <div className="w-2 h-2 rounded-sm bg-white/[0.06]" />
+          <span className="text-[8px] text-[#e7e2ff]/40">Futuro</span>
+        </div>
       </div>
     </div>
   );

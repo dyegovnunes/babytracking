@@ -135,12 +135,13 @@ export default function TrackerPage() {
       {(activeLeap || showUpcoming) && baby && (
         <section className="px-5 mt-4">
           {activeLeap && (
-            <LeapCard leap={activeLeap} babyName={baby.name} />
+            <LeapCard leap={activeLeap} babyName={baby.name} birthDate={baby.birthDate} />
           )}
           {!activeLeap && showUpcoming && (
             <LeapCard
               leap={upcomingLeapInfo!.leap}
               babyName={baby.name}
+              birthDate={baby.birthDate}
               isUpcoming
               weeksUntil={upcomingLeapInfo!.weeksUntil}
             />

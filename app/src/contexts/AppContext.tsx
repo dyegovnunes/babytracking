@@ -1,9 +1,10 @@
-import { createContext, useContext, useReducer, useEffect, type ReactNode } from 'react'
+import { createContext, useContext, useReducer, useEffect, useCallback, useRef, type ReactNode } from 'react'
 import type { LogEntry, IntervalConfig, Baby, Member } from '../types'
 import { supabase } from '../lib/supabase'
 import { DEFAULT_INTERVALS } from '../lib/constants'
 import { useAuth } from './AuthContext'
 import { updateStreak, getStreak, type StreakData } from '../lib/streak'
+import { Capacitor } from '@capacitor/core'
 
 interface AppState {
   logs: LogEntry[]
@@ -211,6 +212,79 @@ export function AppProvider({ children }: { children: ReactNode }) {
       dispatch({ type: 'SET_NO_BABY' })
     })
   }, [user])
+
+  // Background sync: refresh logs when app resumes from background
+  const lastResumeRef = useRef(Date.now())
+
+  const refreshLogs = useCallback(async () => {
+    if (!user || !state.baby) return
+
+    // Debounce: skip if last refresh was < 5s ago
+    if (Date.now() - lastResumeRef.current < 5000) return
+    lastResumeRef.current = Date.now()
+
+    try {
+      const [logsRes, streakData] = await Promise.all([
+        supabase
+          .from('logs')
+          .select('*')
+          .eq('baby_id', state.baby.id)
+          .order('timestamp', { ascending: true }),
+        getStreak(state.baby.id),
+      ])
+
+      if (logsRes.data) {
+        const freshLogs: LogEntry[] = logsRes.data.map((row) => ({
+          id: row.id,
+          eventId: row.event_id,
+          timestamp: row.timestamp,
+          ml: row.ml ?? undefined,
+          duration: row.duration ?? undefined,
+          notes: row.notes ?? undefined,
+          createdBy: row.created_by ?? undefined,
+        }))
+
+        // Only update if logs actually changed
+        if (JSON.stringify(freshLogs.map(l => l.id)) !== JSON.stringify(state.logs.map(l => l.id))) {
+          dispatch({ type: 'SET_INITIAL', logs: freshLogs, intervals: state.intervals, baby: state.baby, babies: state.babies, members: state.members })
+        }
+      }
+
+      if (streakData) {
+        dispatch({ type: 'SET_STREAK', streak: streakData })
+      }
+    } catch {
+      // Silent fail — user still has cached data
+    }
+  }, [user, state.baby, state.logs, state.intervals, state.babies, state.members])
+
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform()) {
+      // Web: use visibilitychange
+      const handleVisibility = () => {
+        if (document.visibilityState === 'visible') {
+          refreshLogs()
+        }
+      }
+      document.addEventListener('visibilitychange', handleVisibility)
+      return () => document.removeEventListener('visibilitychange', handleVisibility)
+    }
+
+    // Native: use Capacitor App plugin
+    let removeListener: (() => void) | null = null
+
+    import('@capacitor/app').then(({ App }) => {
+      (App as any).addListener('appStateChange', (state: any) => {
+        if (state.isActive) refreshLogs()
+      }).then((handle: any) => {
+        removeListener = () => handle.remove()
+      })
+    }).catch(() => {})
+
+    return () => {
+      removeListener?.()
+    }
+  }, [refreshLogs])
 
   return (
     <StateContext.Provider value={state}>
