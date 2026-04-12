@@ -5,6 +5,7 @@ import { DEFAULT_INTERVALS } from '../lib/constants'
 import { useAuth } from './AuthContext'
 import { updateStreak, getStreak, type StreakData } from '../lib/streak'
 import { Capacitor } from '@capacitor/core'
+import { initPushNotifications, updateLastSeen } from '../lib/pushNotifications'
 
 interface AppState {
   logs: LogEntry[]
@@ -186,6 +187,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       dispatch({ type: 'SET_INITIAL', logs, intervals, baby, babies: allBabies, members })
 
+      // Init push notifications if user has logs (not first-time user)
+      if (logs.length > 0) {
+        initPushNotifications(user!.id, babyId).catch(() => {})
+      }
+
       // Load streak
       const streakData = await getStreak(babyId)
       dispatch({ type: 'SET_STREAK', streak: streakData })
@@ -222,6 +228,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
     // Debounce: skip if last refresh was < 5s ago
     if (Date.now() - lastResumeRef.current < 5000) return
     lastResumeRef.current = Date.now()
+
+    // Update last_seen for anti-spam
+    updateLastSeen(user.id).catch(() => {})
 
     try {
       const [logsRes, streakData] = await Promise.all([
@@ -328,6 +337,11 @@ export async function addLog(
   }
 
   dispatch({ type: 'ADD_LOG', log })
+
+  // Init push on first log (if not already initialized)
+  if (userId) {
+    initPushNotifications(userId, babyId).catch(() => {})
+  }
 
   // Update streak on every log
   updateStreak(babyId).then((streakData) => {
