@@ -3,6 +3,7 @@ import type { LogEntry, IntervalConfig, Baby, Member } from '../types'
 import { supabase } from '../lib/supabase'
 import { DEFAULT_INTERVALS } from '../lib/constants'
 import { useAuth } from './AuthContext'
+import { updateStreak, getStreak, type StreakData } from '../lib/streak'
 
 interface AppState {
   logs: LogEntry[]
@@ -14,6 +15,7 @@ interface AppState {
   needsOnboarding: boolean
   pauseDuringSleep: boolean
   quietHours: { enabled: boolean; start: number; end: number }
+  streak: StreakData | null
 }
 
 type Action =
@@ -31,6 +33,7 @@ type Action =
   | { type: 'CLEAR_LOGS' }
   | { type: 'SET_PAUSE_DURING_SLEEP'; value: boolean }
   | { type: 'SET_QUIET_HOURS'; value: { enabled: boolean; start: number; end: number } }
+  | { type: 'SET_STREAK'; streak: StreakData | null }
 
 const initialState: AppState = {
   logs: [],
@@ -42,6 +45,7 @@ const initialState: AppState = {
   needsOnboarding: false,
   pauseDuringSleep: false,
   quietHours: { enabled: false, start: 22, end: 7 },
+  streak: null,
 }
 
 function reducer(state: AppState, action: Action): AppState {
@@ -76,6 +80,8 @@ function reducer(state: AppState, action: Action): AppState {
       return { ...state, pauseDuringSleep: action.value }
     case 'SET_QUIET_HOURS':
       return { ...state, quietHours: action.value }
+    case 'SET_STREAK':
+      return { ...state, streak: action.streak }
     default:
       return state
   }
@@ -179,6 +185,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       dispatch({ type: 'SET_INITIAL', logs, intervals, baby, babies: allBabies, members })
 
+      // Load streak
+      const streakData = await getStreak(babyId)
+      dispatch({ type: 'SET_STREAK', streak: streakData })
+
       // Load notification preferences
       const { data: prefData } = await supabase
         .from('notification_prefs')
@@ -244,6 +254,12 @@ export async function addLog(
   }
 
   dispatch({ type: 'ADD_LOG', log })
+
+  // Update streak on every log
+  updateStreak(babyId).then((streakData) => {
+    dispatch({ type: 'SET_STREAK', streak: streakData })
+  }).catch(() => {})
+
   return log
 }
 

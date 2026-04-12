@@ -3,8 +3,14 @@ import { useTimer } from '../../hooks/useTimer'
 import { useAppState } from '../../contexts/AppContext'
 import { formatTime, formatAge } from '../../lib/formatters'
 import BabySwitcher from '../ui/BabySwitcher'
+import StreakBadge from '../StreakBadge'
+import type { StreakData } from '../../lib/streak'
 
-export default function HeroIdentity() {
+interface HeroIdentityProps {
+  streak?: StreakData | null;
+}
+
+export default function HeroIdentity({ streak }: HeroIdentityProps) {
   const now = useTimer()
   const { baby, babies } = useAppState()
   const [switcherOpen, setSwitcherOpen] = useState(false)
@@ -48,6 +54,7 @@ export default function HeroIdentity() {
               </span>
             )}
           </div>
+          {streak && <StreakBadge streak={streak} />}
           <span className="font-headline text-xl font-extrabold text-on-surface tracking-tight">
             {formatTime(now)}
           </span>

@@ -15,6 +15,8 @@ import Toast from '../components/ui/Toast'
 import { RewardedAdModal } from '../components/ui/RewardedAdModal'
 import { PaywallModal } from '../components/ui/PaywallModal'
 import { useDailyLimit } from '../hooks/useDailyLimit'
+import LeapCard from '../components/LeapCard'
+import { getActiveLeap, getUpcomingLeap } from '../lib/developmentLeaps'
 
 import { TrackerSkeleton } from '../components/ui/Skeleton'
 import type { LogEntry } from '../types'
@@ -22,7 +24,7 @@ import type { LogEntry } from '../types'
 const PROJECTION_CATEGORIES: string[] = ['feed', 'diaper', 'sleep_nap', 'sleep_awake', 'bath']
 
 export default function TrackerPage() {
-  const { logs, intervals, baby, members, loading, pauseDuringSleep, quietHours } = useAppState()
+  const { logs, intervals, baby, members, loading, pauseDuringSleep, quietHours, streak } = useAppState()
   const dispatch = useAppDispatch()
   const { user } = useAuth()
   const now = useTimer()
@@ -118,11 +120,33 @@ export default function TrackerPage() {
     return <TrackerSkeleton />
   }
 
+  // Development leaps
+  const activeLeap = baby?.birthDate ? getActiveLeap(baby.birthDate) : null;
+  const upcomingLeapInfo = baby?.birthDate ? getUpcomingLeap(baby.birthDate) : null;
+  const showUpcoming = upcomingLeapInfo && upcomingLeapInfo.weeksUntil <= 2;
+
   return (
     <div className="pb-4 page-enter">
-      <HeroIdentity />
+      <HeroIdentity streak={streak} />
 
       <ActivityGrid events={DEFAULT_EVENTS} logs={logs} onLog={handleLog} />
+
+      {/* Development Leap Card */}
+      {(activeLeap || showUpcoming) && baby && (
+        <section className="px-5 mt-4">
+          {activeLeap && (
+            <LeapCard leap={activeLeap} babyName={baby.name} />
+          )}
+          {!activeLeap && showUpcoming && (
+            <LeapCard
+              leap={upcomingLeapInfo!.leap}
+              babyName={baby.name}
+              isUpcoming
+              weeksUntil={upcomingLeapInfo!.weeksUntil}
+            />
+          )}
+        </section>
+      )}
 
       {projections.length > 0 && (
         <section className="px-5 mt-6">

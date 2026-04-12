@@ -59,8 +59,8 @@ interface PlanOption {
 }
 
 const FALLBACK_PLANS: PlanOption[] = [
-  { type: 'annual', label: 'Anual', price: 'R$16,90/mês', detail: 'R$202,80/ano, cobrado uma vez', badge: 'Mais escolhido' },
-  { type: 'monthly', label: 'Mensal', price: 'R$29,90/mês', detail: '' },
+  { type: 'annual', label: 'Anual', price: 'R$16,90/mês', detail: 'R$202,80 cobrado anualmente', badge: 'Mais escolhido' },
+  { type: 'monthly', label: 'Mensal', price: 'R$29,90/mês', detail: 'Cobrado mensalmente' },
   { type: 'lifetime', label: 'Vitalício', price: 'R$299,90', detail: 'Uma vez, para sempre' },
 ];
 
@@ -68,6 +68,7 @@ export function PaywallModal({ isOpen, onClose, trigger = 'generic' }: PaywallMo
   const { purchase, restore } = usePurchase();
   const [loading, setLoading] = useState(false);
   const [restoring, setRestoring] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [selectedPlan, setSelectedPlan] = useState<PlanType>('annual');
   const [plans, setPlans] = useState<PlanOption[]>(FALLBACK_PLANS);
 
@@ -82,7 +83,7 @@ export function PaywallModal({ isOpen, onClose, trigger = 'generic' }: PaywallMo
           type: 'annual',
           label: 'Anual',
           price: pkgs.annual.product.priceString + '/mês' || 'R$16,90/mês',
-          detail: (pkgs.annual.product.priceString || 'R$202,80') + '/ano, cobrado uma vez',
+          detail: (pkgs.annual.product.priceString || 'R$202,80') + ' cobrado anualmente',
           badge: 'Mais escolhido',
         });
       }
@@ -91,7 +92,7 @@ export function PaywallModal({ isOpen, onClose, trigger = 'generic' }: PaywallMo
           type: 'monthly',
           label: 'Mensal',
           price: pkgs.monthly.product.priceString + '/mês' || 'R$29,90/mês',
-          detail: '',
+          detail: 'Cobrado mensalmente',
         });
       }
       if (pkgs.lifetime) {
@@ -114,9 +115,13 @@ export function PaywallModal({ isOpen, onClose, trigger = 'generic' }: PaywallMo
 
   const handlePurchase = async () => {
     setLoading(true);
+    setError(null);
     try {
       const success = await purchase(selectedPlan);
       if (success) onClose();
+      else setError('Compra cancelada ou não disponível.');
+    } catch (e: any) {
+      setError(e?.message || 'Erro ao processar compra.');
     } finally {
       setLoading(false);
     }
@@ -140,103 +145,110 @@ export function PaywallModal({ isOpen, onClose, trigger = 'generic' }: PaywallMo
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-sm" style={{ zIndex: 60 }}>
-      <div className="w-full max-w-md rounded-t-3xl bg-[#0d0a27] border border-[#b79fff]/20 p-6 pb-[calc(2.5rem+env(safe-area-inset-bottom))] animate-slide-up max-h-[90vh] overflow-y-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-5">
-          <span className="text-xs font-semibold tracking-widest uppercase text-[#b79fff]">Yaya+</span>
-          <button onClick={onClose} className="text-[#e7e2ff]/40 hover:text-[#e7e2ff] text-xl leading-none">
-            <span className="material-symbols-outlined">close</span>
-          </button>
-        </div>
+      <div className="w-full max-w-md rounded-t-3xl bg-[#0d0a27] border border-[#b79fff]/20 animate-slide-up max-h-[92vh] flex flex-col">
+        {/* Scrollable content */}
+        <div className="flex-1 overflow-y-auto px-5 pt-5 pb-3">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-xs font-semibold tracking-widest uppercase text-[#b79fff]">Yaya+</span>
+            <button onClick={onClose} className="text-[#e7e2ff]/40 hover:text-[#e7e2ff] text-xl leading-none">
+              <span className="material-symbols-outlined">close</span>
+            </button>
+          </div>
 
-        {/* Main headline */}
-        <h2 className="text-xl font-bold text-[#e7e2ff] mb-1">Desbloqueie o melhor do Yaya</h2>
+          {/* Main headline */}
+          <h2 className="text-lg font-bold text-[#e7e2ff] mb-1">Desbloqueie o melhor do Yaya</h2>
 
-        {/* Trigger context — subtle */}
-        {trigger !== 'generic' && (
-          <p className="text-xs text-[#b79fff]/80 mb-1 flex items-center gap-1.5">
-            <span className="material-symbols-outlined text-sm">auto_awesome</span>
-            {message.title}: {message.description}
+          {/* Trigger context */}
+          {trigger !== 'generic' && (
+            <p className="text-xs text-[#b79fff]/80 mb-1 flex items-start gap-1.5">
+              <span className="material-symbols-outlined text-sm mt-0.5">auto_awesome</span>
+              <span>{message.title}: {message.description}</span>
+            </p>
+          )}
+          <p className="text-xs text-[#e7e2ff]/50 mb-4">
+            Tudo o que você precisa para acompanhar a rotina do seu bebê.
           </p>
-        )}
-        <p className="text-sm text-[#e7e2ff]/50 mb-5">
-          Tudo o que você precisa para acompanhar a rotina do seu bebê.
-        </p>
 
-        {/* Benefits */}
-        <ul className="space-y-2 mb-6">
-          {BENEFITS.map((benefit) => (
-            <li key={benefit} className="flex items-center gap-3 text-sm text-[#e7e2ff]/80">
-              <span className="material-symbols-outlined text-[#b79fff] text-base">check_circle</span>
-              {benefit}
-            </li>
-          ))}
-        </ul>
-
-        {/* Plan cards */}
-        <div className="space-y-2 mb-6">
-          {plans.map((plan) => (
-            <button
-              key={plan.type}
-              onClick={() => setSelectedPlan(plan.type)}
-              className={`w-full flex items-center gap-3 p-4 rounded-2xl border-2 transition-all ${
-                selectedPlan === plan.type
-                  ? 'border-[#b79fff] bg-[#b79fff]/10'
-                  : 'border-[#474464]/50 bg-[#181538]/50'
-              }`}
-            >
-              {/* Radio */}
-              <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
-                selectedPlan === plan.type ? 'border-[#b79fff]' : 'border-[#474464]'
-              }`}>
-                {selectedPlan === plan.type && (
-                  <div className="w-2.5 h-2.5 rounded-full bg-[#b79fff]" />
-                )}
+          {/* Benefits — compact 2-column */}
+          <div className="grid grid-cols-2 gap-x-2 gap-y-1.5 mb-4">
+            {BENEFITS.map((benefit) => (
+              <div key={benefit} className="flex items-center gap-1.5 text-xs text-[#e7e2ff]/80">
+                <span className="material-symbols-outlined text-[#b79fff] text-sm">check_circle</span>
+                {benefit}
               </div>
+            ))}
+          </div>
 
-              {/* Info */}
-              <div className="flex-1 text-left">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-bold text-[#e7e2ff]">{plan.label}</span>
-                  {plan.badge && (
-                    <span className="text-[10px] font-semibold uppercase tracking-wider bg-[#b79fff] text-[#0d0a27] px-2 py-0.5 rounded-full">
-                      {plan.badge}
-                    </span>
+          {/* Plan cards — uniform height */}
+          <div className="space-y-2 mb-2">
+            {plans.map((plan) => (
+              <button
+                key={plan.type}
+                onClick={() => setSelectedPlan(plan.type)}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl border-2 transition-all ${
+                  selectedPlan === plan.type
+                    ? 'border-[#b79fff] bg-[#b79fff]/10'
+                    : 'border-[#474464]/50 bg-[#181538]/50'
+                }`}
+              >
+                {/* Radio */}
+                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+                  selectedPlan === plan.type ? 'border-[#b79fff]' : 'border-[#474464]'
+                }`}>
+                  {selectedPlan === plan.type && (
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#b79fff]" />
                   )}
                 </div>
-                {plan.detail && (
-                  <span className="text-xs text-[#e7e2ff]/50">{plan.detail}</span>
-                )}
-              </div>
 
-              {/* Price */}
-              <span className="text-sm font-bold text-[#b79fff]">{plan.price}</span>
-            </button>
-          ))}
+                {/* Info */}
+                <div className="flex-1 text-left min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-bold text-[#e7e2ff]">{plan.label}</span>
+                    {plan.badge && (
+                      <span className="text-[9px] font-semibold uppercase tracking-wider bg-[#b79fff] text-[#0d0a27] px-1.5 py-0.5 rounded-full">
+                        {plan.badge}
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-[11px] text-[#e7e2ff]/50">{plan.detail || '\u00A0'}</span>
+                </div>
+
+                {/* Price */}
+                <span className="text-sm font-bold text-[#b79fff] flex-shrink-0">{plan.price}</span>
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* CTA */}
-        <button
-          onClick={handlePurchase}
-          disabled={loading}
-          className="w-full py-4 rounded-2xl bg-[#b79fff] text-[#0d0a27] font-bold text-base mb-3 disabled:opacity-50 transition-opacity"
-        >
-          {loading ? 'Processando...' : ctaText}
-        </button>
+        {/* Fixed bottom — CTA always visible */}
+        <div className="px-5 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-2 border-t border-[#474464]/30 bg-[#0d0a27]">
+          {error && (
+            <p className="text-center text-xs text-red-400 mb-2">{error}</p>
+          )}
+          <button
+            onClick={handlePurchase}
+            disabled={loading}
+            className="w-full py-3.5 rounded-xl bg-[#b79fff] text-[#0d0a27] font-bold text-base mb-2 disabled:opacity-50 transition-opacity"
+          >
+            {loading ? 'Processando...' : ctaText}
+          </button>
 
-        {/* Legal + Restore */}
-        <p className="text-center text-[11px] text-[#e7e2ff]/30 mb-3">
-          {selectedPlan === 'lifetime'
-            ? 'Compra única. Acesso permanente.'
-            : 'Cancele quando quiser. Renovação automática.'}
-        </p>
-        <button
-          onClick={handleRestore}
-          disabled={restoring}
-          className="w-full text-center text-xs text-[#e7e2ff]/40 hover:text-[#e7e2ff]/70 py-2 transition-colors"
-        >
-          {restoring ? 'Verificando...' : 'Já comprei — restaurar acesso'}
-        </button>
+          <div className="flex items-center justify-between">
+            <p className="text-[10px] text-[#e7e2ff]/30">
+              {selectedPlan === 'lifetime'
+                ? 'Compra única.'
+                : 'Cancele quando quiser.'}
+            </p>
+            <button
+              onClick={handleRestore}
+              disabled={restoring}
+              className="text-[11px] text-[#e7e2ff]/40 hover:text-[#e7e2ff]/70 transition-colors"
+            >
+              {restoring ? 'Verificando...' : 'Restaurar compra'}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

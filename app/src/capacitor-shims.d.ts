@@ -12,3 +12,14 @@ declare module '@capacitor/app' {
     addListener(event: string, callback: (data: { url: string }) => void): Promise<{ remove: () => void }>
   }
 }
+
+declare module '@capacitor/push-notifications' {
+  export interface Token { value: string }
+  export interface ActionPerformed { notification: { data: Record<string, any> } }
+  export const PushNotifications: {
+    checkPermissions(): Promise<{ receive: string }>
+    requestPermissions(): Promise<{ receive: string }>
+    register(): Promise<void>
+    addListener(event: string, callback: (data: any) => void): Promise<{ remove: () => void }>
+  }
+}

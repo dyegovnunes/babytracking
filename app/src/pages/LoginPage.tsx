@@ -24,8 +24,8 @@ export default function LoginPage() {
     import('@capacitor/browser').then(({ Browser }) => {
       Browser.addListener('browserFinished', () => {
         setSocialLoading(false)
-      }).then((l: { remove: () => void }) => { listener = l })
-    }).catch(() => {})
+      }).then((l) => { listener = l })
+    }).catch(() => { setSocialLoading(false) })
     return () => { listener?.remove() }
   }, [socialLoading])
 
@@ -334,10 +334,10 @@ export default function LoginPage() {
         )}
       </div>
 
-      <div className="mt-8 text-center">
+      <div className="mt-8 pb-4 text-center">
         <a
           href="/privacy"
-          className="font-label text-[11px] text-on-surface-variant/50 underline"
+          className="font-label text-[11px] text-on-surface-variant/50 underline relative z-0"
         >
           Política de Privacidade
         </a>

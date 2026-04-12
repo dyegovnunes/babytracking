@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { Capacitor } from '@capacitor/core';
+import { App as CapApp } from '@capacitor/app';
 import {
   checkIsPremium,
   getSubscriptionInfo,
@@ -11,6 +12,8 @@ import {
 } from '../lib/purchases';
 import { useAuth } from './AuthContext';
 import { useAppState } from './AppContext';
+
+const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes
 
 const TEST_ACCOUNT_EMAIL = 'teste@yayababy.app';
 
@@ -46,8 +49,9 @@ export function PurchaseProvider({ children }: { children: React.ReactNode }) {
   const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionInfo['status']>('free');
 
   const isTestAccount = user?.email?.toLowerCase() === TEST_ACCOUNT_EMAIL;
+  const lastRefreshRef = useRef<number>(0);
 
-  const refresh = async () => {
+  const refresh = useCallback(async () => {
     if (isTestAccount) {
       setIsPremium(true);
       setSubscriptionPlan('lifetime');
@@ -61,15 +65,16 @@ export function PurchaseProvider({ children }: { children: React.ReactNode }) {
     setSubscriptionPlan(info.plan);
     setSubscriptionExpiresAt(info.expiresAt);
     setSubscriptionStatus(info.status);
-  };
+    lastRefreshRef.current = Date.now();
+  }, [isTestAccount, baby?.id]);
 
+  // Initial load
   useEffect(() => {
     if (!user) {
       setIsLoading(false);
       return;
     }
 
-    // Test account always gets premium
     if (isTestAccount) {
       setIsPremium(true);
       setSubscriptionPlan('lifetime');
@@ -92,6 +97,29 @@ export function PurchaseProvider({ children }: { children: React.ReactNode }) {
 
     init();
   }, [user?.id, baby?.id]);
+
+  // Periodic refresh every 5 minutes
+  useEffect(() => {
+    if (!user || isTestAccount) return;
+    const interval = setInterval(() => {
+      refresh().catch(() => {});
+    }, REFRESH_INTERVAL);
+    return () => clearInterval(interval);
+  }, [user?.id, isTestAccount, refresh]);
+
+  // Refresh when app returns to foreground
+  useEffect(() => {
+    if (!user || isTestAccount || !Capacitor.isNativePlatform()) return;
+    let listener: { remove: () => void } | undefined;
+
+    CapApp.addListener('appStateChange', (state: any) => {
+      if (state.isActive && Date.now() - lastRefreshRef.current > 60_000) {
+        refresh().catch(() => {});
+      }
+    }).then((l) => { listener = l });
+
+    return () => { listener?.remove() };
+  }, [user?.id, isTestAccount, refresh]);
 
   const purchase = async (planType: PlanType): Promise<boolean> => {
     const success = await purchasePackage(planType);
