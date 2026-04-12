@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yaya v1.5.0 — Checklist de Testes</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0d0a27; color: #e7e2ff; padding: 20px; max-width: 800px; margin: 0 auto; }
+  h1 { font-size: 1.8rem; margin-bottom: 4px; }
+  .subtitle { color: #b79fff; font-size: 0.9rem; margin-bottom: 24px; }
+  .version-badge { display: inline-block; background: #7C4DFF; color: white; padding: 2px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; margin-left: 8px; }
+  h2 { font-size: 1.2rem; margin: 28px 0 12px; padding-bottom: 8px; border-bottom: 1px solid #b79fff33; display: flex; align-items: center; gap: 8px; }
+  h2 .icon { font-size: 1.3rem; }
+  .section { background: #1a1535; border-radius: 12px; padding: 16px; margin-bottom: 16px; border: 1px solid #b79fff15; }
+  .section-title { font-weight: 700; font-size: 0.85rem; color: #b79fff; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+  .test-item { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid #ffffff08; }
+  .test-item:last-child { border-bottom: none; }
+  .test-item input[type="checkbox"] { margin-top: 3px; accent-color: #7C4DFF; width: 18px; height: 18px; flex-shrink: 0; cursor: pointer; }
+  .test-item label { cursor: pointer; font-size: 0.9rem; line-height: 1.4; }
+  .test-item .detail { font-size: 0.78rem; color: #e7e2ff80; margin-top: 2px; }
+  .priority-high { border-left: 3px solid #ff5252; padding-left: 10px; }
+  .priority-medium { border-left: 3px solid #FFB300; padding-left: 10px; }
+  .priority-low { border-left: 3px solid #4CAF50; padding-left: 10px; }
+  .legend { display: flex; gap: 16px; margin-bottom: 20px; font-size: 0.8rem; color: #e7e2ff80; }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-dot { width: 12px; height: 3px; border-radius: 2px; }
+  .legend-dot.high { background: #ff5252; }
+  .legend-dot.medium { background: #FFB300; }
+  .legend-dot.low { background: #4CAF50; }
+  .progress-bar { width: 100%; height: 6px; background: #ffffff10; border-radius: 3px; margin: 12px 0; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, #7C4DFF, #b79fff); border-radius: 3px; transition: width 0.3s; }
+  .progress-text { font-size: 0.8rem; color: #b79fff; text-align: center; }
+  .bug-report { background: #ff525215; border: 1px solid #ff525230; border-radius: 8px; padding: 12px; margin-top: 20px; }
+  .bug-report h3 { font-size: 0.9rem; color: #ff5252; margin-bottom: 8px; }
+  .bug-report textarea { width: 100%; min-height: 80px; background: #0d0a27; border: 1px solid #ffffff15; border-radius: 6px; padding: 8px; color: #e7e2ff; font-family: inherit; font-size: 0.85rem; resize: vertical; }
+  summary { cursor: pointer; font-weight: 600; color: #b79fff; padding: 4px 0; }
+  details { margin-bottom: 8px; }
+</style>
+</head>
+<body>
+
+<h1>Yaya Baby <span class="version-badge">v1.5.0</span></h1>
+<p class="subtitle">Checklist de Qualidade — 12 de Abril de 2026</p>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot high"></div> Critico</div>
+  <div class="legend-item"><div class="legend-dot medium"></div> Importante</div>
+  <div class="legend-item"><div class="legend-dot low"></div> Menor</div>
+</div>
+
+<div class="progress-bar"><div class="progress-fill" id="progressFill" style="width: 0%"></div></div>
+<p class="progress-text" id="progressText">0 / 0 testes completos</p>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- FEATURES ANTERIORES (REGRESSAO)        -->
+<!-- ═══════════════════════════════════════ -->
+
+<h2><span class="icon">🔄</span> Regressao — Features Existentes</h2>
+
+<div class="section">
+  <div class="section-title">Login & Autenticacao</div>
+
+  <div class="test-item priority-high">
+    <input type="checkbox" id="t1"><label for="t1">
+      <strong>Google OAuth funciona</strong>
+      <div class="detail">Clicar em "Entrar com Google" → abre seletor de conta → retorna logado no app</div>
+    </label>
+  </div>
+
+  <div class="test-item priority-high">
+    <input type="checkbox" id="t2"><label for="t2">
+      <strong>Login com email funciona</strong>
+      <div class="detail">Inserir email/senha → acesso ao app com dados do bebe</div>
+    </label>
+  </div>
+
+  <div class="test-item priority-medium">
+    <input type="checkbox" id="t3"><label for="t3">
+      <strong>Logout e re-login</strong>
+      <div class="detail">Sair → re-logar → dados do bebe continuam intactos</div>
+    </label>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">Registro de Atividades</div>
+
+  <div class="test-item priority-high">
+    <input type="checkbox" id="t4"><label for="t4">
+      <strong>Registrar amamentacao (peito esq/dir/ambos)</strong>
+      <div class="detail">Tap no botao → haptic feedback → toast "registrado!" → aparece em Registros Recentes</div>
+    </label>
+  </div>
+
+  <div class="test-item priority-high">
+    <input type="checkbox" id="t5"><label for="t5">
+      <strong>Registrar mamadeira com ml</strong>
+      <div class="detail">Tap em Mamadeira → abre modal → definir ml → confirmar → toast com ml registrado</div>
+    </label>
+  </div>
+
+  <div class="test-item priority-high">
+    <input type="checkbox" id="t6"><label for="t6">
+      <strong>Registrar fralda (xixi e coco)</strong>
+      <div class="detail">Ambos os botoes devem funcionar com haptic e toast</div>
+    </label>
+  </div>
+
+  <div class="test-item priority-medium">
+    <input type="checkbox" id="t7"><label for="t7">
+      <strong>Registrar sono (dormiu/acordou)</strong>
+      <div class="detail">Tap "Dormiu" → tap "Acordou" → duracao calculada corretamente</div>
+    </label>
+  </div>
+
+  <div class="test-item priority-medium">
+    <input type="checkbox" id="t8"><label for="t8">
+      <strong>Registrar banho</strong>
+      <div class="detail">Tap → toast → aparece nos registros recentes</div>
+    </label>
+  </div>
+
+  <div class="test-item priority-medium">
+    <input type="checkbox" id="t9"><label for="t9">
+      <strong>Editar registro existente</strong>
+      <div class="detail">Tap em registro recente → modal de edicao → alterar hora → salvar → atualizado</div>
+    </label>
+  </div>
+
+  <div class="test-item priority-medium">
+    <input type="checkbox" id="t10"><label for="t10">
+      <strong>Excluir registro</strong>
+      <div class="detail">Editar → Excluir → confirmar → registro removido da lista</div>
+    </label>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">Projecoes & Tela Principal</div>
+
+  <div class="test-item priority-medium">
+    <input type="checkbox" id="t11"><label for="t11">
+      <strong>Projecoes aparecem apos registros</strong>
+      <div class="detail">Apos registrar amamentacao/fralda/sono, projecoes devem aparecer com tempo estimado</div>
+    </label>
+  </div>
+
+  <div class="test-item priority-low">
+    <input type="checkbox" id="t12"><label for="t12">
+      <strong>Dispensar projecao</strong>
+      <div class="detail">Swipe ou botao para dispensar → projecao some</div>
+    </label>
+  </div>
+
+  <div class="test-item priority-low">
+    <input type="checkbox" id="t13"><label for="t13">
+      <strong>Relogio atualiza em tempo real</strong>
+      <div class="detail">O horario no topo deve atualizar a cada minuto</div>
+    </label>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">Paywall & Premium</div>
+
+  <div class="test-item priority-high">
+    <input type="checkbox" id="t14"><label for="t14">
+      <strong>PaywallModal abre corretamente</strong>
+      <div class="detail">Ao atingir limite diario → modal aparece → conteudo cabe na tela → botoes visiveis</div>
+    </label>
+  </div>
+
+  <div class="test-item priority-medium">
+    <input type="checkbox" id="t15"><label for="t15">
+      <strong>Botoes de preco uniformes</strong>
+      <div class="detail">Mensal/Anual/Vitalicio com mesmo tamanho. Anual: "R$202,80 cobrado anualmente"</div>
+    </label>
+  </div>
+
+  <div class="test-item priority-medium">
+    <input type="checkbox" id="t16"><label for="t16">
+      <strong>Botao "Assinar" visivel e funcional</strong>
+      <div class="detail">CTA fixo no rodape → clicar → abre fluxo de compra do Google Play (ou erro informativo)</div>
+    </label>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- NOVAS FEATURES v1.4.0 (STREAKS & LEAPS)-->
+<!-- ═══════════════════════════════════════ -->
+
+<h2><span class="icon">🔥</span> Streaks (v1.4.0)</h2>
+
+<div class="section">
+  <div class="section-title">Badge de Sequencia</div>
+
+  <div class="test-item priority-high">
+    <input type="checkbox" id="t17"><label for="t17">
+      <strong>Streak badge aparece apos registrar</strong>
+      <div class="detail">Registre qualquer atividade → "🔥 1" aparece ao lado do nome do bebe no topo</div>
+    </label>
+  </div>
+
+  <div class="test-item priority-medium">
+    <input type="checkbox" id="t18"><label for="t18">
+      <strong>Tap no badge abre detalhes</strong>
+      <div class="detail">Modal com: streak atual, recorde pessoal, proximo badge, barra de progresso</div>
+    </label>
+  </div>
+
+  <div class="test-item priority-low">
+    <input type="checkbox" id="t19"><label for="t19">
+      <strong>Badge em risco apos 20h</strong>
+      <div class="detail">Se nenhum registro hoje e horario > 20h → badge pulsa em amarelo (testar alterando hora do celular)</div>
+    </label>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- NOVAS FEATURES v1.4.0 (LEAPS)          -->
+<!-- ═══════════════════════════════════════ -->
+
+<h2><span class="icon">⚡</span> Saltos de Desenvolvimento (v1.4.0)</h2>
+
+<div class="section">
+  <div class="section-title">LeapCard</div>
+
+  <div class="test-item priority-medium">
+    <input type="checkbox" id="t20"><label for="t20">
+      <strong>Card de salto aparece se bebe esta na idade correta</strong>
+      <div class="detail">Se o bebe tem entre 4.5 e 5.5 semanas, por ex, deve mostrar "Salto 1". Verificar idade do bebe vs tabela de saltos</div>
+    </label>
+  </div>
+
+  <div class="test-item priority-medium">
+    <input type="checkbox" id="t21"><label for="t21">
+      <strong>"Saiba mais" abre detalhes</strong>
+      <div class="detail">Bottom sheet com: descricao, "O que esperar", "Dicas", "Impacto nos registros"</div>
+    </label>
+  </div>
+
+  <div class="test-item priority-low">
+    <input type="checkbox" id="t22"><label for="t22">
+      <strong>"Dispensar" esconde por 7 dias</strong>
+      <div class="detail">Tap "Dispensar" → card some. Reabrir app → continua escondido. Apos 7 dias voltaria.</div>
+    </label>
+  </div>
+
+  <div class="test-item priority-low">
+    <input type="checkbox" id="t23"><label for="t23">
+      <strong>Salto proximo (upcoming) aparece com <= 2 semanas</strong>
+      <div class="detail">Se o proximo salto esta a 1-2 semanas, mostra "Salto X em Y semana(s)"</div>
+    </label>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- NOVAS FEATURES v1.5.0 (CRESCIMENTO)    -->
+<!-- ═══════════════════════════════════════ -->
+
+<h2><span class="icon">📏</span> Registro de Crescimento (v1.5.0 — NOVO)</h2>
+
+<div class="section">
+  <div class="section-title">Secao de Crescimento no Perfil</div>
+
+  <div class="test-item priority-high">
+    <input type="checkbox" id="t24"><label for="t24">
+      <strong>Secao "Crescimento" visivel no Perfil</strong>
+      <div class="detail">Abrir aba Perfil → abaixo do card do bebe e da idade, deve haver a secao "📏 Crescimento" com campos Peso e Altura</div>
+    </label>
+  </div>
+
+  <div class="test-item priority-high">
+    <input type="checkbox" id="t25"><label for="t25">
+      <strong>Registrar peso</strong>
+      <div class="detail">Digitar "3.88" ou "3,88" no campo Peso → tap "+" → haptic → valor aparece como peso atual → "3.88 kg" + data</div>
+    </label>
+  </div>
+
+  <div class="test-item priority-high">
+    <input type="checkbox" id="t26"><label for="t26">
+      <strong>Registrar altura</strong>
+      <div class="detail">Digitar "55" no campo Altura → tap "+" → haptic → valor aparece como "55.0 cm" + data</div>
+    </label>
+  </div>
+
+  <div class="test-item priority-medium">
+    <input type="checkbox" id="t27"><label for="t27">
+      <strong>Historico aparece corretamente</strong>
+      <div class="detail">Tap "Ver historico" → lista com data + peso + altura de cada registro, ordenado do mais recente</div>
+    </label>
+  </div>
+
+  <div class="test-item priority-medium">
+    <input type="checkbox" id="t28"><label for="t28">
+      <strong>Excluir medicao do historico</strong>
+      <div class="detail">Tap no "X" ao lado de uma medicao → registro removido → lista atualiza</div>
+    </label>
+  </div>
+
+  <div class="test-item priority-low">
+    <input type="checkbox" id="t29"><label for="t29">
+      <strong>Estado vazio gracioso</strong>
+      <div class="detail">Sem nenhuma medicao registrada → mensagem "Registre o peso e altura do bebe..."</div>
+    </label>
+  </div>
+
+  <div class="test-item priority-low">
+    <input type="checkbox" id="t30"><label for="t30">
+      <strong>Teclado numerico abre para inputs</strong>
+      <div class="detail">Ao focar no campo peso/altura, deve abrir teclado numerico (inputMode="decimal")</div>
+    </label>
+  </div>
+
+  <div class="test-item priority-low">
+    <input type="checkbox" id="t31"><label for="t31">
+      <strong>Enter no teclado salva a medicao</strong>
+      <div class="detail">Digitar valor → pressionar Enter → salva sem precisar clicar no "+"</div>
+    </label>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- NOVAS FEATURES v1.5.0 (PDF)            -->
+<!-- ═══════════════════════════════════════ -->
+
+<h2><span class="icon">📋</span> Relatorio PDF do Pediatra (v1.5.0 — NOVO)</h2>
+
+<div class="section">
+  <div class="section-title">Botao & Acesso</div>
+
+  <div class="test-item priority-high">
+    <input type="checkbox" id="t32"><label for="t32">
+      <strong>Botao "Preparar para consulta" visivel no Perfil</strong>
+      <div class="detail">Abaixo da secao Crescimento, acima de "Exportar relatorio". Card com icone, titulo e subtitulo</div>
+    </label>
+  </div>
+
+  <div class="test-item priority-high">
+    <input type="checkbox" id="t33"><label for="t33">
+      <strong>Feature gate: usuario free ve PaywallModal</strong>
+      <div class="detail">Se usuario nao e premium → tap no botao → abre PaywallModal com trigger="pdf" → titulo "Relatorio para pediatra"</div>
+    </label>
+  </div>
+
+  <div class="test-item priority-high">
+    <input type="checkbox" id="t34"><label for="t34">
+      <strong>Usuario premium abre bottom sheet de configuracao</strong>
+      <div class="detail">Tap → bottom sheet com seletor de periodo (7/15/30 dias) + info do conteudo + contagem de registros + botao "Gerar"</div>
+    </label>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">Geracao do PDF</div>
+
+  <div class="test-item priority-high">
+    <input type="checkbox" id="t35"><label for="t35">
+      <strong>PDF gera com sucesso</strong>
+      <div class="detail">Selecionar periodo → "Gerar Relatorio" → loading (2-3s) → tela "Relatorio pronto!" com check verde</div>
+    </label>
+  </div>
+
+  <div class="test-item priority-high">
+    <input type="checkbox" id="t36"><label for="t36">
+      <strong>PDF tem 2 paginas</strong>
+      <div class="detail">Abrir o PDF e verificar: Pag 1 (resumo, amamentacao, sono) e Pag 2 (fraldas, crescimento, padroes, dados do pediatra)</div>
+    </label>
+  </div>
+
+  <div class="test-item priority-high">
+    <input type="checkbox" id="t37"><label for="t37">
+      <strong>Dados corretos no PDF</strong>
+      <div class="detail">Comparar: nome do bebe, idade, periodo, contagem de registros, medias — devem bater com o que esta no app</div>
+    </label>
+  </div>
+
+  <div class="test-item priority-medium">
+    <input type="checkbox" id="t38"><label for="t38">
+      <strong>Graficos de barras visiveis</strong>
+      <div class="detail">Pagina 1: grafico de amamentacao/dia (barras roxas) e grafico de sono/dia (barras empilhadas). Pagina 2: grafico de fraldas (barras azuis/marrons)</div>
+    </label>
+  </div>
+
+  <div class="test-item priority-medium">
+    <input type="checkbox" id="t39"><label for="t39">
+      <strong>Secao Crescimento no PDF — COM dados</strong>
+      <div class="detail">Se registrou peso/altura: cards com peso atual, nascimento, variacao, percentil OMS</div>
+    </label>
+  </div>
+
+  <div class="test-item priority-medium">
+    <input type="checkbox" id="t40"><label for="t40">
+      <strong>Secao Crescimento no PDF — SEM dados (degradacao graciosa)</strong>
+      <div class="detail">Se NAO registrou peso/altura: mensagem "Nenhuma medicao registrada. Registre na aba Perfil..."</div>
+    </label>
+  </div>
+
+  <div class="test-item priority-medium">
+    <input type="checkbox" id="t41"><label for="t41">
+      <strong>Curva OMS aparece se >= 2 medicoes de peso</strong>
+      <div class="detail">Se registrou peso 2+ vezes: grafico com linhas OMS (p3, p50, p97) em cinza e pontos roxos do bebe conectados</div>
+    </label>
+  </div>
+
+  <div class="test-item priority-medium">
+    <input type="checkbox" id="t42"><label for="t42">
+      <strong>Padroes observados aparecem</strong>
+      <div class="detail">Lista de observacoes textuais: tendencia de sono, estabilidade amamentacao, ganho de peso, etc.</div>
+    </label>
+  </div>
+
+  <div class="test-item priority-low">
+    <input type="checkbox" id="t43"><label for="t43">
+      <strong>Disclaimer em todas as paginas</strong>
+      <div class="detail">"Dados registrados pelos cuidadores via app Yaya Baby. Nao substitui avaliacao clinica." — rodape pag 1 e pag 2</div>
+    </label>
+  </div>
+
+  <div class="test-item priority-low">
+    <input type="checkbox" id="t44"><label for="t44">
+      <strong>QR code no rodape da pagina 2</strong>
+      <div class="detail">QR roxo apontando para yayababy.app/pediatra (pode nao aparecer se lib falhou — ok)</div>
+    </label>
+  </div>
+
+  <div class="test-item priority-low">
+    <input type="checkbox" id="t45"><label for="t45">
+      <strong>Espaco "Dados do Pediatra" na pagina 2</strong>
+      <div class="detail">Retangulo com texto placeholder sobre versao futura</div>
+    </label>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">Compartilhamento</div>
+
+  <div class="test-item priority-high">
+    <input type="checkbox" id="t46"><label for="t46">
+      <strong>Compartilhar PDF (Android nativo)</strong>
+      <div class="detail">Tap "Compartilhar" → abre share sheet nativo → enviar via WhatsApp/email → PDF chega legivel</div>
+    </label>
+  </div>
+
+  <div class="test-item priority-medium">
+    <input type="checkbox" id="t47"><label for="t47">
+      <strong>Salvar PDF no dispositivo</strong>
+      <div class="detail">Tap "Salvar no dispositivo" → download do arquivo .pdf → arquivo abre corretamente</div>
+    </label>
+  </div>
+
+  <div class="test-item priority-medium">
+    <input type="checkbox" id="t48"><label for="t48">
+      <strong>Periodos diferentes geram dados diferentes</strong>
+      <div class="detail">Gerar com 7 dias → dados menores. Gerar com 30 dias → mais dados. Contagem de registros muda.</div>
+    </label>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">Linguagem & Compliance</div>
+
+  <div class="test-item priority-high">
+    <input type="checkbox" id="t49"><label for="t49">
+      <strong>Nenhuma conclusao medica no PDF</strong>
+      <div class="detail">Verificar que NAO ha: "insuficiente", "irregular", "atrasado", "alerta", "recomendamos", "normal"</div>
+    </label>
+  </div>
+
+  <div class="test-item priority-medium">
+    <input type="checkbox" id="t50"><label for="t50">
+      <strong>Percentis OMS sem qualificacao</strong>
+      <div class="detail">Se mostra percentil, deve ser "~p50-85" e NUNCA "peso adequado" ou "peso baixo"</div>
+    </label>
+  </div>
+
+  <div class="test-item priority-medium">
+    <input type="checkbox" id="t51"><label for="t51">
+      <strong>Nenhuma mencao a duracao de amamentacao</strong>
+      <div class="detail">PDF deve mostrar apenas contagem e intervalos, NUNCA duracao de mamadas (feature nao existe)</div>
+    </label>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- NAVEGACAO & UX GERAL                   -->
+<!-- ═══════════════════════════════════════ -->
+
+<h2><span class="icon">📱</span> Navegacao & UX Geral</h2>
+
+<div class="section">
+  <div class="section-title">Abas & Navegacao</div>
+
+  <div class="test-item priority-medium">
+    <input type="checkbox" id="t52"><label for="t52">
+      <strong>Todas as abas navegam corretamente</strong>
+      <div class="detail">Tracker → Insights → Configuracoes → Perfil → sem crashes, animacoes suaves</div>
+    </label>
+  </div>
+
+  <div class="test-item priority-medium">
+    <input type="checkbox" id="t53"><label for="t53">
+      <strong>App nao crasha ao voltar do background</strong>
+      <div class="detail">Minimizar app → esperar 30s → reabrir → app funciona normalmente</div>
+    </label>
+  </div>
+
+  <div class="test-item priority-low">
+    <input type="checkbox" id="t54"><label for="t54">
+      <strong>Modais fecham com tap no overlay</strong>
+      <div class="detail">Qualquer bottom sheet/modal → tap fora do conteudo → fecha</div>
+    </label>
+  </div>
+
+  <div class="test-item priority-low">
+    <input type="checkbox" id="t55"><label for="t55">
+      <strong>Haptic feedback funciona</strong>
+      <div class="detail">Ao registrar atividades, abrir modais, confirmar acoes → vibracao sutil do celular</div>
+    </label>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- RELATORIO DE BUGS                       -->
+<!-- ═══════════════════════════════════════ -->
+
+<h2><span class="icon">🐛</span> Relatorio de Bugs</h2>
+
+<div class="bug-report">
+  <h3>Encontrou um bug? Anote aqui:</h3>
+  <textarea placeholder="Descreva o bug: o que voce fez, o que esperava, o que aconteceu..."></textarea>
+</div>
+
+<div class="bug-report" style="margin-top: 12px;">
+  <h3>Sugestoes de melhoria:</h3>
+  <textarea placeholder="Algo que poderia ser melhor na experiencia..."></textarea>
+</div>
+
+<br><br>
+
+<script>
+  // Progress tracking
+  const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+  const progressFill = document.getElementById('progressFill');
+  const progressText = document.getElementById('progressText');
+
+  function updateProgress() {
+    const total = checkboxes.length;
+    const checked = document.querySelectorAll('input[type="checkbox"]:checked').length;
+    const pct = total > 0 ? (checked / total * 100) : 0;
+    progressFill.style.width = pct + '%';
+    progressText.textContent = `${checked} / ${total} testes completos (${Math.round(pct)}%)`;
+
+    // Save state
+    const state = {};
+    checkboxes.forEach(cb => { state[cb.id] = cb.checked; });
+    localStorage.setItem('yaya_test_state_v1.5', JSON.stringify(state));
+  }
+
+  // Restore state
+  try {
+    const saved = JSON.parse(localStorage.getItem('yaya_test_state_v1.5') || '{}');
+    checkboxes.forEach(cb => { if (saved[cb.id]) cb.checked = true; });
+  } catch {}
+
+  checkboxes.forEach(cb => cb.addEventListener('change', updateProgress));
+  updateProgress();
+</script>
+
+</body>
+</html>

@@ -10,7 +10,7 @@ export default defineConfig({
   build: {
     rollupOptions: {
       // Only externalize native plugins for Vercel web builds
-      ...(isVercel ? { external: ['@capacitor/browser', '@capacitor/app'] } : {}),
+      ...(isVercel ? { external: ['@capacitor/browser', '@capacitor/app', '@capacitor/share', '@capacitor/filesystem'] } : {}),
     },
   },
 })

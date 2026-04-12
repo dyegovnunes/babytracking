@@ -13,6 +13,28 @@ declare module '@capacitor/app' {
   }
 }
 
+declare module '@capacitor/share' {
+  export const Share: {
+    share(options: { title?: string; text?: string; url?: string; dialogTitle?: string }): Promise<{ activityType?: string }>
+  }
+}
+
+declare module '@capacitor/filesystem' {
+  export enum Directory {
+    Documents = 'DOCUMENTS',
+    Data = 'DATA',
+    Library = 'LIBRARY',
+    Cache = 'CACHE',
+    External = 'EXTERNAL',
+    ExternalStorage = 'EXTERNAL_STORAGE',
+  }
+  export const Filesystem: {
+    writeFile(options: { path: string; data: string; directory: Directory; recursive?: boolean }): Promise<{ uri: string }>
+    readFile(options: { path: string; directory: Directory }): Promise<{ data: string }>
+    deleteFile(options: { path: string; directory: Directory }): Promise<void>
+  }
+}
+
 declare module '@capacitor/push-notifications' {
   export interface Token { value: string }
   export interface ActionPerformed { notification: { data: Record<string, any> } }

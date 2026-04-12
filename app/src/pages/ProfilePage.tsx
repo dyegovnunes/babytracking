@@ -3,6 +3,8 @@ import { useAppState, useAppDispatch, updateBaby, clearAllLogs, updateMemberRole
 import { useAuth } from '../contexts/AuthContext'
 import type { Baby } from '../types'
 import BabyCard from '../components/profile/BabyCard'
+import GrowthSection from '../components/profile/GrowthSection'
+import PrepareConsultation from '../components/profile/PrepareConsultation'
 import DataManagement from '../components/profile/DataManagement'
 import Toast from '../components/ui/Toast'
 import { supabase } from '../lib/supabase'
@@ -355,6 +357,12 @@ export default function ProfilePage() {
             </button>
           )}
         </div>
+
+        {/* ===== CRESCIMENTO ===== */}
+        <GrowthSection babyId={baby.id} />
+
+        {/* ===== RELATORIO PEDIATRA ===== */}
+        <PrepareConsultation />
 
         {/* ===== DADOS ===== */}
         <DataManagement logs={logs} babyName={baby.name} onClearHistory={handleClearHistory} />
