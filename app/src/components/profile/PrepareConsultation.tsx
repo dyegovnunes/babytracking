@@ -105,11 +105,65 @@ export default function PrepareConsultation() {
     }
   };
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     if (!pdfUrl || !baby) return;
     hapticLight();
     const fileName = `yaya-${baby.name.toLowerCase().replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.pdf`;
-    downloadPDF(pdfUrl, fileName);
+
+    if (Capacitor.isNativePlatform()) {
+      try {
+        const { Filesystem, Directory } = await import('@capacitor/filesystem');
+
+        const response = await fetch(pdfUrl);
+        const blob = await response.blob();
+        const reader = new FileReader();
+
+        reader.onload = async () => {
+          const base64Data = (reader.result as string).split(',')[1];
+
+          await Filesystem.writeFile({
+            path: `Download/${fileName}`,
+            data: base64Data,
+            directory: Directory.ExternalStorage,
+            recursive: true,
+          });
+
+          hapticSuccess();
+          alert('PDF salvo na pasta Downloads!');
+        };
+        reader.readAsDataURL(blob);
+      } catch {
+        // Fallback: tenta salvar no cache e compartilhar
+        try {
+          const { Filesystem, Directory } = await import('@capacitor/filesystem');
+          const { Share } = await import('@capacitor/share');
+
+          const response = await fetch(pdfUrl);
+          const blob = await response.blob();
+          const reader = new FileReader();
+
+          reader.onload = async () => {
+            const base64Data = (reader.result as string).split(',')[1];
+            const result = await Filesystem.writeFile({
+              path: fileName,
+              data: base64Data,
+              directory: Directory.Cache,
+            });
+
+            await Share.share({
+              title: `Salvar ${fileName}`,
+              url: result.uri,
+              dialogTitle: 'Salvar PDF',
+            });
+          };
+          reader.readAsDataURL(blob);
+        } catch {
+          downloadPDF(pdfUrl, fileName);
+        }
+      }
+    } else {
+      downloadPDF(pdfUrl, fileName);
+    }
   };
 
   const handleClose = () => {

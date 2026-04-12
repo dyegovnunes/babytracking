@@ -277,21 +277,31 @@ export function generatePediatricPDF(data: PDFData, baby: Baby, qrDataUrl?: stri
   doc.text('preencher este espaco diretamente pelo app.', MARGIN + 5, y + 19);
 
   // Footer pagina 2 com CTA e QR
-  doc.setFontSize(8);
-  doc.setTextColor(...PURPLE);
-  doc.text(
-    'Quer que seu pediatra acompanhe pelo Yaya? Saiba mais: yayababy.app/pediatra',
-    MARGIN,
-    PAGE_HEIGHT - 22
-  );
-
   if (qrDataUrl) {
     try {
-      doc.addImage(qrDataUrl, 'PNG', PAGE_WIDTH - MARGIN - 20, PAGE_HEIGHT - 38, 18, 18);
+      const qrSize = 18;
+      const qrX = PAGE_WIDTH - MARGIN - qrSize;
+      const qrY = PAGE_HEIGHT - 38;
+      doc.addImage(qrDataUrl, 'PNG', qrX, qrY, qrSize, qrSize);
+
+      // Link abaixo do QR
+      doc.setFontSize(5.5);
+      doc.setTextColor(...PURPLE);
+      doc.setFont('helvetica', 'bold');
+      doc.text('yayababy.app/pediatra', qrX + qrSize / 2, qrY + qrSize + 3, { align: 'center' });
     } catch {
       // QR code failed — skip silently
     }
   }
+
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(...PURPLE);
+  doc.text(
+    'Quer que seu pediatra acompanhe pelo Yaya? Escaneie o QR code.',
+    MARGIN,
+    PAGE_HEIGHT - 22
+  );
 
   drawFooter(doc, 2);
 
