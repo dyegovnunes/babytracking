@@ -12,6 +12,7 @@ import {
 } from '../lib/purchases';
 import { useAuth } from './AuthContext';
 import { useAppState } from './AppContext';
+import { initAdMob } from '../lib/admob';
 
 const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes
 
@@ -88,6 +89,7 @@ export function PurchaseProvider({ children }: { children: React.ReactNode }) {
       try {
         if (Capacitor.getPlatform() !== 'web') {
           await initializePurchases(user.id);
+          await initAdMob();
         }
         await refresh();
       } finally {

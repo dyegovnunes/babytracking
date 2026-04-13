@@ -1,14 +1,12 @@
 import { useCallback, useState, useEffect } from 'react'
-import { useAppState, useAppDispatch, updateBaby, clearAllLogs, updateMemberRole, removeMember } from '../contexts/AppContext'
-import { useAuth } from '../contexts/AuthContext'
+import { useAppState, useAppDispatch, updateBaby, updateMemberRole, removeMember } from '../contexts/AppContext'
+import { useAuth, signOut } from '../contexts/AuthContext'
 import type { Baby } from '../types'
 import BabyCard from '../components/profile/BabyCard'
 import GrowthSection from '../components/profile/GrowthSection'
-import PrepareConsultation from '../components/profile/PrepareConsultation'
-import DataManagement from '../components/profile/DataManagement'
 import Toast from '../components/ui/Toast'
+import { AdBanner } from '../components/ui/AdBanner'
 import { supabase } from '../lib/supabase'
-import { parseLocalDate } from '../lib/formatters'
 
 interface Caregiver {
   userId: string
@@ -17,15 +15,10 @@ interface Caregiver {
 }
 
 export default function ProfilePage() {
-  const { baby, logs, members, loading } = useAppState()
+  const { baby, members, loading } = useAppState()
   const { user } = useAuth()
   const dispatch = useAppDispatch()
   const [toast, setToast] = useState<string | null>(null)
-
-  // User profile
-  const [displayName, setDisplayName] = useState('')
-  const [originalName, setOriginalName] = useState('')
-  const [editingName, setEditingName] = useState(false)
 
   // Caregivers
   const [caregivers, setCaregivers] = useState<Caregiver[]>([])
@@ -57,10 +50,7 @@ export default function ProfilePage() {
   }, [baby])
 
   useEffect(() => {
-    if (members && user) {
-      const me = members[user.id]
-      if (me) setDisplayName(me.displayName)
-
+    if (members) {
       const list = Object.entries(members).map(([uid, m]) => ({
         userId: uid,
         displayName: m.displayName,
@@ -68,7 +58,7 @@ export default function ProfilePage() {
       }))
       setCaregivers(list)
     }
-  }, [members, user])
+  }, [members])
 
   const handleSaveBaby = useCallback(
     async (updated: Baby) => {
@@ -77,19 +67,6 @@ export default function ProfilePage() {
     },
     [dispatch],
   )
-
-  const handleSaveDisplayName = useCallback(async () => {
-    if (!user || !baby || !displayName.trim()) return
-    const { error } = await supabase
-      .from('baby_members')
-      .update({ display_name: displayName.trim() })
-      .eq('user_id', user.id)
-      .eq('baby_id', baby.id)
-    if (!error) {
-      setEditingName(false)
-      setToast('Nome atualizado!')
-    }
-  }, [user, baby, displayName])
 
   const handleGenerateInvite = useCallback(async () => {
     if (!user || !baby) return
@@ -167,12 +144,6 @@ export default function ProfilePage() {
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank')
   }, [inviteCode, baby])
 
-  const handleClearHistory = useCallback(async () => {
-    if (!baby) return
-    const ok = await clearAllLogs(dispatch, baby.id)
-    if (ok) setToast('Histórico limpo!')
-  }, [dispatch, baby])
-
   const isParent = user ? members[user.id]?.role === 'parent' : false
   const parentCount = Object.values(members).filter(m => m.role === 'parent').length
 
@@ -194,8 +165,6 @@ export default function ProfilePage() {
     if (ok) setToast('Membro removido!')
   }, [baby, dispatch])
 
-  const birthDateObj = baby?.birthDate ? parseLocalDate(baby.birthDate) : null
-  const ageText = birthDateObj ? getAgeText(birthDateObj) : ''
 
   if (loading || !baby) {
     return (
@@ -214,72 +183,16 @@ export default function ProfilePage() {
           Perfil
         </h1>
         <p className="font-label text-sm text-on-surface-variant">
-          Seus dados e do bebê
+          Dados do bebê
         </p>
       </section>
 
       <div className="px-5 space-y-4">
-        {/* ===== PERFIL DO USUÁRIO ===== */}
-        <div className="bg-surface-container rounded-lg p-4">
-          <div className="flex items-center gap-3 mb-3">
-            <span className="material-symbols-outlined text-primary text-xl">person</span>
-            <h3 className="text-on-surface font-headline text-sm font-bold">Seu perfil</h3>
-          </div>
-
-          <div className="space-y-3">
-            <div>
-              <p className="font-label text-[11px] text-on-surface-variant uppercase tracking-wider mb-1">Email</p>
-              <p className="font-body text-sm text-on-surface">{user?.email}</p>
-            </div>
-
-            <div>
-              <p className="font-label text-[11px] text-on-surface-variant uppercase tracking-wider mb-1">Nome de exibição</p>
-              {editingName ? (
-                <div className="space-y-2">
-                  <input
-                    type="text"
-                    value={displayName}
-                    onChange={(e) => setDisplayName(e.target.value)}
-                    className="w-full bg-surface-container-low rounded-lg px-3 py-2.5 text-on-surface font-body text-sm outline-none focus:ring-2 focus:ring-primary/40"
-                    autoFocus
-                  />
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => { setDisplayName(originalName); setEditingName(false) }}
-                      className="flex-1 py-2.5 rounded-lg bg-surface-variant text-on-surface-variant font-label text-xs font-semibold"
-                    >
-                      Cancelar
-                    </button>
-                    <button
-                      onClick={handleSaveDisplayName}
-                      className="flex-1 py-2.5 rounded-lg bg-primary text-on-primary font-label text-xs font-semibold"
-                    >
-                      Salvar
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <button
-                  onClick={() => { setOriginalName(displayName); setEditingName(true) }}
-                  className="flex items-center gap-2 group"
-                >
-                  <span className="font-body text-sm text-on-surface">{displayName || 'Definir nome'}</span>
-                  <span className="material-symbols-outlined text-on-surface-variant text-sm opacity-0 group-hover:opacity-100 transition-opacity">edit</span>
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-
         {/* ===== PERFIL DO BEBÊ ===== */}
         <BabyCard baby={baby} onSave={handleSaveBaby} />
 
-        {ageText && (
-          <div className="bg-surface-container rounded-lg p-4 flex items-center gap-3">
-            <span className="material-symbols-outlined text-primary text-xl">cake</span>
-            <p className="font-body text-sm text-on-surface">{ageText}</p>
-          </div>
-        )}
+        {/* ===== CRESCIMENTO ===== */}
+        <GrowthSection babyId={baby.id} />
 
         {/* ===== CUIDADORES ===== */}
         <div className="bg-surface-container rounded-lg p-4">
@@ -358,15 +271,13 @@ export default function ProfilePage() {
           )}
         </div>
 
-        {/* ===== CRESCIMENTO ===== */}
-        <GrowthSection babyId={baby.id} />
-
-        {/* ===== RELATORIO PEDIATRA ===== */}
-        <PrepareConsultation />
-
-        {/* ===== DADOS ===== */}
-        <DataManagement logs={logs} babyName={baby.name} onClearHistory={handleClearHistory} />
+        {/* ===== SAIR ===== */}
+        <button onClick={signOut} className="w-full py-2.5 rounded-xl bg-error/10 text-error font-label font-semibold text-sm">
+          Sair da conta
+        </button>
       </div>
+
+      <AdBanner />
 
       {confirmRemove && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm" onClick={() => setConfirmRemove(null)}>
@@ -393,28 +304,4 @@ export default function ProfilePage() {
       {toast && <Toast message={toast} onDismiss={() => setToast(null)} />}
     </div>
   )
-}
-
-function getAgeText(birthDate: Date): string {
-  const now = new Date()
-  const diffMs = now.getTime() - birthDate.getTime()
-  const days = Math.floor(diffMs / (1000 * 60 * 60 * 24))
-
-  if (days < 0) return ''
-  if (days === 0) return 'Nascido(a) hoje!'
-  if (days < 30) return `${days} dia${days > 1 ? 's' : ''} de vida`
-
-  const months = Math.floor(days / 30.44)
-  const remainingDays = Math.floor(days - months * 30.44)
-  if (months < 12) {
-    return remainingDays > 0
-      ? `${months} ${months === 1 ? 'mês' : 'meses'} e ${remainingDays} dias`
-      : `${months} ${months === 1 ? 'mês' : 'meses'}`
-  }
-
-  const years = Math.floor(months / 12)
-  const remainingMonths = months % 12
-  return remainingMonths > 0
-    ? `${years} ano${years > 1 ? 's' : ''} e ${remainingMonths} ${remainingMonths === 1 ? 'mês' : 'meses'}`
-    : `${years} ano${years > 1 ? 's' : ''}`
 }

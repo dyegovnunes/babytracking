@@ -16,6 +16,7 @@ import { RewardedAdModal } from '../components/ui/RewardedAdModal'
 import { PaywallModal } from '../components/ui/PaywallModal'
 import { useDailyLimit } from '../hooks/useDailyLimit'
 import LeapCard from '../components/LeapCard'
+import { AdBanner } from '../components/ui/AdBanner'
 import { getActiveLeap, getUpcomingLeap } from '../lib/developmentLeaps'
 
 import { TrackerSkeleton } from '../components/ui/Skeleton'
@@ -161,6 +162,8 @@ export default function TrackerPage() {
           </div>
         </section>
       )}
+
+      <AdBanner />
 
       <RecentLogs logs={logs} members={members} onEdit={handleEditLog} />
 

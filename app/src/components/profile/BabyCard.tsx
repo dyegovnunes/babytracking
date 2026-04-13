@@ -3,6 +3,8 @@ import type { Baby } from '../../types'
 import { formatAge, formatBirthDate } from '../../lib/formatters'
 import { supabase } from '../../lib/supabase'
 import ImageCropModal from '../ui/ImageCropModal'
+import { usePremium } from '../../hooks/usePremium'
+import { showRewardedAd } from '../../lib/admob'
 
 interface Props {
   baby: Baby
@@ -10,6 +12,7 @@ interface Props {
 }
 
 export default function BabyCard({ baby, onSave }: Props) {
+  const { isPremium } = usePremium()
   const [editing, setEditing] = useState(false)
   const [name, setName] = useState(baby.name)
   const [birthDate, setBirthDate] = useState(baby.birthDate)
@@ -55,8 +58,12 @@ export default function BabyCard({ baby, onSave }: Props) {
     setUploading(false)
   }
 
-  function openFilePicker() {
+  async function openFilePicker() {
     setShowPhotoMenu(false)
+    if (!isPremium) {
+      const rewarded = await showRewardedAd()
+      if (!rewarded) return
+    }
     setTimeout(() => fileRef.current?.click(), 100)
   }
 

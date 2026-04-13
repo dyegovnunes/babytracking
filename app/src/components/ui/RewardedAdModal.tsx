@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { showRewardedAd } from '../../lib/admob';
 
 interface Props {
   isOpen: boolean;
@@ -16,12 +17,12 @@ export function RewardedAdModal({ isOpen, onClose, onAdCompleted, onUpgrade, rec
 
   const handleWatchAd = async () => {
     setWatching(true);
-    // Mock: simulate ad completion after 1.5s
-    // TODO: Replace with real AdMob rewarded ad integration
-    await new Promise((r) => setTimeout(r, 1500));
+    const rewarded = await showRewardedAd();
     setWatching(false);
-    onAdCompleted();
-    onClose();
+    if (rewarded) {
+      onAdCompleted();
+      onClose();
+    }
   };
 
   return (
@@ -33,7 +34,7 @@ export function RewardedAdModal({ isOpen, onClose, onAdCompleted, onUpgrade, rec
           </div>
           <h3 className="text-lg font-bold text-[#e7e2ff] mb-1">Limite de registros</h3>
           <p className="text-sm text-[#e7e2ff]/60">
-            Você já fez {recordsToday} de {dailyLimit} registros hoje. Assista um vídeo curto para liberar mais 5.
+            Você já fez {recordsToday} de {dailyLimit} registros hoje. Assista um vídeo curto para liberar mais 2.
           </p>
         </div>
 
@@ -44,7 +45,7 @@ export function RewardedAdModal({ isOpen, onClose, onAdCompleted, onUpgrade, rec
             className="w-full py-3.5 rounded-2xl bg-[#b79fff]/15 text-[#b79fff] font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-50"
           >
             <span className="material-symbols-outlined text-base">play_circle</span>
-            {watching ? 'Carregando...' : 'Assistir vídeo (+5 registros)'}
+            {watching ? 'Carregando anúncio...' : 'Assistir vídeo (+2 registros)'}
           </button>
 
           <button

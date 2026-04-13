@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../../lib/supabase';
 import { hapticSuccess, hapticLight } from '../../lib/haptics';
+import { usePremium } from '../../hooks/usePremium';
+import { showRewardedAd } from '../../lib/admob';
 
 interface Measurement {
   id: string;
@@ -14,37 +16,28 @@ interface GrowthSectionProps {
   babyId: string;
 }
 
-/** Aplica mascara: max digits antes da virgula, 1 decimal depois */
-function applyMask(raw: string, maxIntDigits: number): string {
-  // Remove tudo exceto numeros e virgula/ponto
-  let cleaned = raw.replace(/[^0-9.,]/g, '');
-  // Normaliza separador para virgula
-  cleaned = cleaned.replace('.', ',');
-  // Permite apenas uma virgula
-  const parts = cleaned.split(',');
-  if (parts.length > 2) cleaned = parts[0] + ',' + parts.slice(1).join('');
-
-  const intPart = parts[0].slice(0, maxIntDigits);
-  const decPart = parts[1]?.slice(0, 1);
-
-  if (parts.length >= 2) {
-    return intPart + ',' + (decPart || '');
-  }
-
-  // Auto-insert comma if max int digits reached
-  if (intPart.length >= maxIntDigits && !raw.includes(',') && !raw.includes('.')) {
-    return intPart + ',';
-  }
-
-  return intPart;
-}
-
+/** Máscara de peso: direita para esquerda, 1 decimal. Ex: "36" → "3,6", "360" → "36,0" */
 function weightMask(raw: string): string {
-  return applyMask(raw, 2); // xx,x (max 99,9 kg)
+  const digits = raw.replace(/\D/g, '');
+  if (!digits) return '';
+  const limited = digits.slice(0, 3); // max 99,9 kg
+  if (limited.length === 1) return `0,${limited}`;
+  const intPart = limited.slice(0, -1);
+  const decPart = limited.slice(-1);
+  const cleanInt = intPart.replace(/^0+/, '') || '0';
+  return `${cleanInt},${decPart}`;
 }
 
+/** Máscara de altura: direita para esquerda, 1 decimal. Ex: "505" → "50,5" */
 function heightMask(raw: string): string {
-  return applyMask(raw, 3); // xxx,x (max 999,9 cm, mas bebê será < 100)
+  const digits = raw.replace(/\D/g, '');
+  if (!digits) return '';
+  const limited = digits.slice(0, 4); // max 999,9 cm
+  if (limited.length === 1) return `0,${limited}`;
+  const intPart = limited.slice(0, -1);
+  const decPart = limited.slice(-1);
+  const cleanInt = intPart.replace(/^0+/, '') || '0';
+  return `${cleanInt},${decPart}`;
 }
 
 function parseValue(input: string): number {
@@ -52,10 +45,12 @@ function parseValue(input: string): number {
 }
 
 export default function GrowthSection({ babyId }: GrowthSectionProps) {
+  const { isPremium } = usePremium();
   const [measurements, setMeasurements] = useState<Measurement[]>([]);
   const [weightInput, setWeightInput] = useState('');
   const [heightInput, setHeightInput] = useState('');
   const [saving, setSaving] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
@@ -86,6 +81,12 @@ export default function GrowthSection({ babyId }: GrowthSectionProps) {
     const rawValue = type === 'weight' ? weightInput : heightInput;
     const value = parseValue(rawValue);
     if (isNaN(value) || value <= 0) return;
+
+    // Free users must watch rewarded ad
+    if (!isPremium) {
+      const rewarded = await showRewardedAd();
+      if (!rewarded) return;
+    }
 
     setSaving(true);
     const unit = type === 'weight' ? 'kg' : 'cm';
@@ -153,6 +154,12 @@ export default function GrowthSection({ babyId }: GrowthSectionProps) {
     const heightVal = parseValue(retroHeight);
     if ((isNaN(weightVal) || weightVal <= 0) && (isNaN(heightVal) || heightVal <= 0)) return;
 
+    // Free users must watch rewarded ad
+    if (!isPremium) {
+      const rewarded = await showRewardedAd();
+      if (!rewarded) return;
+    }
+
     setSaving(true);
     const { data: { user } } = await supabase.auth.getUser();
     const measuredAt = retroDate + 'T12:00:00.000Z';
@@ -208,11 +215,39 @@ export default function GrowthSection({ babyId }: GrowthSectionProps) {
 
   return (
     <div className="bg-surface-container rounded-lg p-4">
-      <div className="flex items-center gap-3 mb-3">
+      {/* Collapsed header — always visible */}
+      <button
+        onClick={() => { hapticLight(); setExpanded(!expanded); }}
+        className="w-full flex items-center gap-3"
+      >
         <span className="material-symbols-outlined text-primary text-xl">straighten</span>
-        <h3 className="text-on-surface font-headline text-sm font-bold">Crescimento</h3>
-      </div>
+        <h3 className="text-on-surface font-headline text-sm font-bold flex-1 text-left">Crescimento</h3>
+        {!expanded && (
+          <div className="flex items-center gap-3 text-right">
+            <div>
+              <span className="font-headline text-sm font-bold text-on-surface">
+                {latestWeight ? `${Number(latestWeight.value).toFixed(1).replace('.', ',')}kg` : '--'}
+              </span>
+              <span className="text-on-surface-variant/50 mx-1">·</span>
+              <span className="font-headline text-sm font-bold text-on-surface">
+                {latestHeight ? `${Number(latestHeight.value).toFixed(1).replace('.', ',')}cm` : '--'}
+              </span>
+              {(latestWeight || latestHeight) && (
+                <p className="font-label text-[9px] text-on-surface-variant">
+                  {formatDate((latestWeight || latestHeight)!.measured_at)}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+        <span className={`material-symbols-outlined text-on-surface-variant text-base transition-transform ${expanded ? 'rotate-180' : ''}`}>
+          expand_more
+        </span>
+      </button>
 
+      {/* Expanded content */}
+      {expanded && (
+      <div className="mt-3">
       <div className="grid grid-cols-2 gap-3 mb-3">
         {/* Peso */}
         <div className="bg-surface-container-low rounded-lg p-3">
@@ -292,9 +327,50 @@ export default function GrowthSection({ babyId }: GrowthSectionProps) {
       </div>
 
       {measurements.length === 0 ? (
-        <p className="font-body text-xs text-on-surface-variant text-center py-2">
-          Registre o peso e altura do bebê para acompanhar o crescimento
-        </p>
+        <div className="space-y-2">
+          <p className="font-body text-xs text-on-surface-variant text-center py-2">
+            Registre o peso e altura do bebê para acompanhar o crescimento
+          </p>
+          {!showAddRetro ? (
+            <button
+              onClick={() => { hapticLight(); setShowAddRetro(true); }}
+              className="w-full py-2 rounded-lg border border-dashed border-primary/30 text-primary font-label text-xs font-semibold flex items-center justify-center gap-1"
+            >
+              <span className="material-symbols-outlined text-sm">add</span>
+              Adicionar medição anterior
+            </button>
+          ) : (
+            <div className="p-3 bg-surface-container-low rounded-lg border border-primary/20 space-y-2">
+              <p className="font-label text-[11px] text-primary uppercase tracking-wider">Nova medição retroativa</p>
+              <input
+                type="date"
+                value={retroDate}
+                onChange={(e) => setRetroDate(e.target.value)}
+                className="w-full bg-surface-container rounded px-2 py-1.5 text-on-surface font-body text-sm outline-none focus:ring-2 focus:ring-primary/40"
+              />
+              <div className="grid grid-cols-2 gap-2">
+                <div className="relative">
+                  <input type="text" inputMode="decimal" value={retroWeight}
+                    onChange={(e) => setRetroWeight(weightMask(e.target.value))} placeholder="Peso"
+                    className="w-full bg-surface-container rounded px-2 py-1.5 pr-7 text-on-surface font-body text-sm outline-none focus:ring-2 focus:ring-primary/40" />
+                  <span className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant/50 text-xs">kg</span>
+                </div>
+                <div className="relative">
+                  <input type="text" inputMode="decimal" value={retroHeight}
+                    onChange={(e) => setRetroHeight(heightMask(e.target.value))} placeholder="Altura"
+                    className="w-full bg-surface-container rounded px-2 py-1.5 pr-8 text-on-surface font-body text-sm outline-none focus:ring-2 focus:ring-primary/40" />
+                  <span className="absolute right-2 top-1/2 -translate-y-1/2 text-on-surface-variant/50 text-xs">cm</span>
+                </div>
+              </div>
+              <div className="flex gap-1.5">
+                <button onClick={handleAddRetro} disabled={saving || !retroDate || (!retroWeight && !retroHeight)}
+                  className="flex-1 py-2 rounded-lg bg-primary/10 text-primary font-label text-xs font-semibold disabled:opacity-30">Salvar</button>
+                <button onClick={() => { setShowAddRetro(false); setRetroDate(''); setRetroWeight(''); setRetroHeight(''); }}
+                  className="flex-1 py-2 rounded-lg bg-white/5 text-on-surface-variant font-label text-xs">Cancelar</button>
+              </div>
+            </div>
+          )}
+        </div>
       ) : (
         <>
           <button
@@ -465,6 +541,8 @@ export default function GrowthSection({ babyId }: GrowthSectionProps) {
             </div>
           )}
         </>
+      )}
+      </div>
       )}
     </div>
   );

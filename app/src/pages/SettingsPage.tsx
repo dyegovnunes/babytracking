@@ -1,8 +1,9 @@
 import { useNavigate } from 'react-router-dom'
-import { useAppState, useAppDispatch, updateIntervals } from '../contexts/AppContext'
+import { useAppState, useAppDispatch, updateIntervals, clearAllLogs } from '../contexts/AppContext'
 import { useAuth, signOut } from '../contexts/AuthContext'
 import { useState, useCallback, useEffect } from 'react'
 import Toast from '../components/ui/Toast'
+import { AdBanner } from '../components/ui/AdBanner'
 import { supabase } from '../lib/supabase'
 
 // ========== PRESETS ==========
@@ -32,8 +33,6 @@ const SLEEP_AWAKE_PRESETS = [
   { label: '2h30', minutes: 150, warn: 120 },
   { label: '3h', minutes: 180, warn: 150 },
 ]
-const BATH_COUNTS = [1, 2, 3]
-
 // ========== TYPES ==========
 
 interface NotifPrefs {
@@ -69,6 +68,7 @@ export default function SettingsPage() {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const [toast, setToast] = useState<string | null>(null)
+  const [confirmClear, setConfirmClear] = useState(false)
 
   // UI state
   const [expanded, setExpanded] = useState<string | null>(null)
@@ -78,6 +78,7 @@ export default function SettingsPage() {
   const [customM, setCustomM] = useState('')
   const [pickingQuietHour, setPickingQuietHour] = useState<'start' | 'end' | null>(null)
   const [pickingBathHour, setPickingBathHour] = useState(false)
+  const [editingBathIdx, setEditingBathIdx] = useState<number | null>(null)
   const [infoModal, setInfoModal] = useState<'sleep' | 'notifications' | null>(null)
 
   // Load prefs
@@ -155,15 +156,6 @@ export default function SettingsPage() {
     const ok = await updateIntervals(dispatch, baby.id, updated)
     if (!ok) setToast('Erro ao salvar')
   }, [intervals, baby, dispatch])
-
-  const handleBathCount = useCallback(async (count: number) => {
-    let h = [...bathHours]
-    const defaults = [7, 12, 18]
-    while (h.length < count) { const next = defaults.find(x => !h.includes(x)) ?? h[h.length - 1] + 4; h.push(next) }
-    h = h.slice(0, count)
-    await setBathHours(h)
-    setToast('Atualizado!')
-  }, [bathHours, setBathHours])
 
   const addBathHour = useCallback(async (hour: number) => {
     if (bathHours.includes(hour)) return
@@ -288,46 +280,95 @@ export default function SettingsPage() {
               <Toggle value={pauseDuringSleep} onChange={togglePauseDuringSleep} />
             </div>
 
-            {/* Banho header */}
-            <div className="flex items-center gap-2 pt-2">
-              <span className="material-symbols-outlined text-on-surface-variant text-base">bathtub</span>
-              <span className="font-label text-xs text-on-surface-variant font-semibold">Banho</span>
+            {/* Horário de sono noturno (moved from Notifications) */}
+            <div className="bg-surface-container rounded-xl px-4 py-3.5">
+              <div className="flex items-center gap-3">
+                <span className="material-symbols-outlined text-on-surface-variant text-lg">dark_mode</span>
+                <div className="flex-1">
+                  <p className="font-body text-sm text-on-surface">Horário de sono noturno</p>
+                  <p className="font-label text-[11px] text-on-surface-variant">Notificações pausadas neste período</p>
+                </div>
+                <Toggle
+                  value={prefs.quietHours.enabled}
+                  onChange={() => savePrefs({ ...prefs, quietHours: { ...prefs.quietHours, enabled: !prefs.quietHours.enabled } })}
+                />
+              </div>
+              {prefs.quietHours.enabled && (
+                <div className="flex items-center gap-3 mt-3 ml-9">
+                  <button onClick={() => setPickingQuietHour('start')} className="px-4 py-2.5 rounded-lg bg-surface-container-low active:bg-surface-container-high min-h-[44px]">
+                    <span className="font-headline text-sm text-on-surface font-bold">{padH(prefs.quietHours.start)}</span>
+                  </button>
+                  <span className="font-label text-xs text-on-surface-variant">até</span>
+                  <button onClick={() => setPickingQuietHour('end')} className="px-4 py-2.5 rounded-lg bg-surface-container-low active:bg-surface-container-high min-h-[44px]">
+                    <span className="font-headline text-sm text-on-surface font-bold">{padH(prefs.quietHours.end)}</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+
+        {/* ================================================ */}
+        {/* SEÇÃO BANHO                                      */}
+        {/* ================================================ */}
+        <section>
+          <div className="bg-surface-container rounded-xl p-4">
+            <div className="flex items-center gap-3 mb-1">
+              <span className="material-symbols-outlined text-primary text-lg">bathtub</span>
+              <div className="flex-1">
+                <h2 className="font-headline text-sm font-bold text-on-surface">Banho</h2>
+                <p className="font-label text-[11px] text-on-surface-variant">Aviso 15 min antes · máx. 4 horários</p>
+              </div>
             </div>
 
-            {/* Banho count + times */}
-            <div className="bg-surface-container rounded-xl p-4 space-y-3">
-              <div className="flex gap-2">
-                {BATH_COUNTS.map(c => (
-                  <button key={c} onClick={() => handleBathCount(c)}
-                    className={`flex-1 py-2 rounded-lg font-label text-sm font-semibold transition-colors ${bathHours.length === c ? 'bg-primary text-on-primary' : 'bg-surface-variant text-on-surface-variant'}`}>
-                    {c}x
-                  </button>
-                ))}
-              </div>
-
-              {bathHours.map(h => (
-                <div key={h} className="flex items-center justify-between bg-surface-container-low rounded-lg px-4 py-2.5">
-                  <div className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-primary text-base">schedule</span>
-                    <span className="font-headline text-sm text-on-surface font-bold">{padH(h)}</span>
-                  </div>
+            <div className="flex flex-wrap items-center gap-2 mt-3">
+              {[...bathHours].sort((a, b) => a - b).map((h, idx) => (
+                <div key={h} className="flex items-center gap-1 bg-surface-container-low rounded-lg pl-1 pr-1 py-1">
+                  {editingBathIdx === idx ? (
+                    <input
+                      type="time"
+                      autoFocus
+                      defaultValue={padH(h)}
+                      onBlur={(e) => {
+                        const newH = parseInt(e.target.value.split(':')[0], 10)
+                        setEditingBathIdx(null)
+                        if (isNaN(newH) || newH === h) return
+                        if (bathHours.includes(newH)) { setToast('Horário já existe'); return }
+                        const updated = bathHours.map(x => x === h ? newH : x)
+                        setBathHours(updated)
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') (e.target as HTMLInputElement).blur()
+                      }}
+                      className="w-20 bg-transparent text-on-surface font-headline text-sm font-bold text-center outline-none"
+                    />
+                  ) : (
+                    <button
+                      onClick={() => setEditingBathIdx(idx)}
+                      className="px-2.5 py-1.5 rounded-md active:bg-surface-container-high min-h-[36px]"
+                    >
+                      <span className="font-headline text-sm text-on-surface font-bold">{padH(h)}</span>
+                    </button>
+                  )}
                   {bathHours.length > 1 && (
-                    <button onClick={() => removeBathHour(h)} className="w-9 h-9 rounded-full flex items-center justify-center active:bg-error/10">
-                      <span className="material-symbols-outlined text-error text-base">close</span>
+                    <button onClick={() => removeBathHour(h)} className="w-7 h-7 rounded-full flex items-center justify-center active:bg-error/10">
+                      <span className="material-symbols-outlined text-error/60 text-sm">close</span>
                     </button>
                   )}
                 </div>
               ))}
 
-              <button onClick={() => setPickingBathHour(true)}
-                className="w-full py-2 rounded-lg bg-primary/10 text-primary font-label font-semibold text-xs flex items-center justify-center gap-1.5 active:bg-primary/20">
-                <span className="material-symbols-outlined text-sm">edit</span>
-                Alterar horário
-              </button>
-
-              <p className="font-label text-[11px] text-on-surface-variant text-center">
-                Aviso 15 min antes do horário agendado
-              </p>
+              {bathHours.length < 4 && (
+                <button
+                  onClick={() => {
+                    if (bathHours.length >= 4) { setToast('Máximo de 4 horários'); return }
+                    setPickingBathHour(true)
+                  }}
+                  className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center active:bg-primary/20"
+                >
+                  <span className="material-symbols-outlined text-primary text-lg">add</span>
+                </button>
+              )}
             </div>
           </div>
         </section>
@@ -346,9 +387,15 @@ export default function SettingsPage() {
 
           <div className="space-y-2">
             {/* Global */}
-            <div className="bg-surface-container rounded-xl px-4 py-3.5 flex items-center gap-3">
-              <span className="material-symbols-outlined text-on-surface-variant text-lg">notifications_active</span>
-              <span className="flex-1 font-body text-sm text-on-surface">Ativar notificações</span>
+            <div className={`rounded-xl px-4 py-4 flex items-center gap-3 transition-colors ${prefs.enabled ? 'bg-primary/15 border border-primary/30' : 'bg-tertiary/10 border border-tertiary/30'}`}>
+              <span className={`material-symbols-outlined text-lg ${prefs.enabled ? 'text-primary' : 'text-tertiary'}`} style={prefs.enabled ? { fontVariationSettings: "'FILL' 1" } : undefined}>
+                {prefs.enabled ? 'notifications_active' : 'notifications_off'}
+              </span>
+              <div className="flex-1">
+                <span className={`font-body text-sm font-semibold ${prefs.enabled ? 'text-primary' : 'text-tertiary'}`}>
+                  {prefs.enabled ? 'Notificações ativas' : 'Notificações desativadas'}
+                </span>
+              </div>
               <Toggle value={prefs.enabled} onChange={() => savePrefs({ ...prefs, enabled: !prefs.enabled })} />
             </div>
 
@@ -376,33 +423,6 @@ export default function SettingsPage() {
               </div>
             )}
 
-            {/* Quiet hours */}
-            {prefs.enabled && (
-              <div className="bg-surface-container rounded-xl px-4 py-3.5">
-                <div className="flex items-center gap-3">
-                  <span className="material-symbols-outlined text-on-surface-variant text-lg">dark_mode</span>
-                  <div className="flex-1">
-                    <p className="font-body text-sm text-on-surface">Horário silencioso</p>
-                    <p className="font-label text-[11px] text-on-surface-variant">Ideal para o sono noturno</p>
-                  </div>
-                  <Toggle
-                    value={prefs.quietHours.enabled}
-                    onChange={() => savePrefs({ ...prefs, quietHours: { ...prefs.quietHours, enabled: !prefs.quietHours.enabled } })}
-                  />
-                </div>
-                {prefs.quietHours.enabled && (
-                  <div className="flex items-center gap-3 mt-3 ml-9">
-                    <button onClick={() => setPickingQuietHour('start')} className="px-4 py-2.5 rounded-lg bg-surface-container-low active:bg-surface-container-high min-h-[44px]">
-                      <span className="font-headline text-sm text-on-surface font-bold">{padH(prefs.quietHours.start)}</span>
-                    </button>
-                    <span className="font-label text-xs text-on-surface-variant">até</span>
-                    <button onClick={() => setPickingQuietHour('end')} className="px-4 py-2.5 rounded-lg bg-surface-container-low active:bg-surface-container-high min-h-[44px]">
-                      <span className="font-headline text-sm text-on-surface font-bold">{padH(prefs.quietHours.end)}</span>
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
           </div>
         </section>
 
@@ -428,7 +448,7 @@ export default function SettingsPage() {
 
       {/* Custom interval */}
       {customModal && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm">
           <div className="bg-surface-container w-full max-w-sm rounded-t-2xl sm:rounded-2xl p-6 sm:mx-4">
             <h3 className="font-headline text-lg font-bold text-on-surface mb-4">Personalizar</h3>
             <div className="flex items-center gap-4 justify-center mb-6">
@@ -454,10 +474,10 @@ export default function SettingsPage() {
 
       {/* Quiet hour picker */}
       {pickingQuietHour && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setPickingQuietHour(null)}>
+        <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setPickingQuietHour(null)}>
           <div className="bg-surface-container w-full max-w-sm rounded-t-2xl sm:rounded-2xl p-5 sm:mx-4" onClick={e => e.stopPropagation()}>
             <h3 className="font-headline text-lg font-bold text-on-surface mb-4">
-              {pickingQuietHour === 'start' ? 'Início do silêncio' : 'Fim do silêncio'}
+              {pickingQuietHour === 'start' ? 'Início do sono noturno' : 'Fim do sono noturno'}
             </h3>
             <div className="flex justify-center mb-5">
               <input
@@ -479,42 +499,38 @@ export default function SettingsPage() {
 
       {/* Bath hour picker */}
       {pickingBathHour && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setPickingBathHour(false)}>
+        <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setPickingBathHour(false)}>
           <div className="bg-surface-container w-full max-w-sm rounded-t-2xl sm:rounded-2xl p-5 sm:mx-4" onClick={e => e.stopPropagation()}>
-            <h3 className="font-headline text-lg font-bold text-on-surface mb-4">Horário do banho</h3>
+            <h3 className="font-headline text-lg font-bold text-on-surface mb-4">Adicionar horário</h3>
             <div className="flex justify-center mb-5">
               <input
                 type="time"
-                value={padH(bathHours.length > 0 ? bathHours[bathHours.length - 1] : 18)}
+                defaultValue="12:00"
                 onChange={e => {
                   const h = parseInt(e.target.value.split(':')[0], 10)
-                  if (!isNaN(h) && !bathHours.includes(h)) {
+                  if (!isNaN(h)) {
+                    if (bathHours.includes(h)) {
+                      setToast('Horário já existe')
+                      return
+                    }
+                    if (bathHours.length >= 4) {
+                      setToast('Máximo de 4 horários')
+                      return
+                    }
                     addBathHour(h)
                   }
                 }}
                 className="bg-surface-container-low rounded-xl px-6 py-4 text-on-surface font-headline text-3xl text-center outline-none focus:ring-2 focus:ring-primary/40"
               />
             </div>
-            {bathHours.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-4 justify-center">
-                {[...bathHours].sort((a, b) => a - b).map(h => (
-                  <div key={h} className="flex items-center gap-1 bg-primary/15 rounded-lg px-3 py-1.5">
-                    <span className="font-label text-sm font-medium text-primary">{padH(h)}</span>
-                    <button onClick={() => removeBathHour(h)} className="text-primary/60 hover:text-error">
-                      <span className="material-symbols-outlined text-sm">close</span>
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-            <button onClick={() => setPickingBathHour(false)} className="w-full py-2.5 rounded-xl bg-primary text-on-primary font-label font-semibold text-sm">OK</button>
+            <button onClick={() => setPickingBathHour(false)} className="w-full py-2.5 rounded-xl bg-surface-variant text-on-surface-variant font-label font-semibold text-sm">Cancelar</button>
           </div>
         </div>
       )}
 
       {/* Info modal - Sleep */}
       {infoModal === 'sleep' && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setInfoModal(null)}>
+        <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setInfoModal(null)}>
           <div className="bg-surface-container w-full max-w-sm rounded-t-2xl sm:rounded-2xl p-5 sm:mx-4" onClick={e => e.stopPropagation()}>
             <div className="flex items-center gap-2 mb-4">
               <span className="material-symbols-outlined text-primary text-xl">bedtime</span>
@@ -542,7 +558,7 @@ export default function SettingsPage() {
                   <span className="font-label text-xs text-primary font-bold">3</span>
                 </span>
                 <p className="font-body text-sm text-on-surface-variant">
-                  À noite, ative o <strong className="text-on-surface">horário silencioso</strong> para pausar os alertas de sono noturno.
+                  À noite, ative o <strong className="text-on-surface">horário de sono noturno</strong> para pausar os alertas automaticamente.
                 </p>
               </div>
             </div>
@@ -553,7 +569,7 @@ export default function SettingsPage() {
 
       {/* Info modal - Notifications */}
       {infoModal === 'notifications' && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setInfoModal(null)}>
+        <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setInfoModal(null)}>
           <div className="bg-surface-container w-full max-w-sm rounded-t-2xl sm:rounded-2xl p-5 sm:mx-4" onClick={e => e.stopPropagation()}>
             <div className="flex items-center gap-2 mb-4">
               <span className="material-symbols-outlined text-primary text-xl">notifications</span>
@@ -580,9 +596,9 @@ export default function SettingsPage() {
                 </p>
               </div>
               <div>
-                <p className="font-label text-xs text-primary font-semibold mb-1">Horário silencioso</p>
+                <p className="font-label text-xs text-primary font-semibold mb-1">Horário de sono noturno</p>
                 <p className="font-body text-sm text-on-surface-variant">
-                  Nenhum alerta durante o período configurado. Ideal para o sono noturno.
+                  Nenhum alerta durante o período configurado. Configure na seção de sono.
                 </p>
               </div>
             </div>
@@ -590,6 +606,51 @@ export default function SettingsPage() {
           </div>
         </div>
       )}
+
+      {/* ===== LIMPAR HISTÓRICO ===== */}
+      <div className="px-5 mt-6">
+        {!confirmClear ? (
+          <button
+            onClick={() => setConfirmClear(true)}
+            className="w-full bg-surface-container rounded-lg p-4 flex items-center gap-3 active:bg-surface-container-high transition-colors"
+          >
+            <span className="material-symbols-outlined text-error text-xl">delete_sweep</span>
+            <div className="flex-1 text-left">
+              <p className="text-on-surface font-body text-sm font-medium">Limpar histórico</p>
+              <p className="text-on-surface-variant font-label text-xs">Remove todos os registros</p>
+            </div>
+            <span className="material-symbols-outlined text-on-surface-variant text-xl">chevron_right</span>
+          </button>
+        ) : (
+          <div className="bg-error/10 rounded-lg p-4">
+            <p className="text-error font-body text-sm font-medium mb-3">
+              Tem certeza? Isso apagará todos os registros.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setConfirmClear(false)}
+                className="flex-1 py-2.5 rounded-xl bg-surface-variant text-on-surface-variant font-label font-semibold text-sm"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={async () => {
+                  if (baby) {
+                    const ok = await clearAllLogs(dispatch, baby.id)
+                    if (ok) setToast('Histórico limpo!')
+                  }
+                  setConfirmClear(false)
+                }}
+                className="flex-1 py-2.5 rounded-xl bg-gradient-to-br from-error-dim to-error text-on-error font-label font-semibold text-sm"
+              >
+                Confirmar
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <AdBanner />
 
       {toast && <Toast message={toast} onDismiss={() => setToast(null)} />}
     </div>

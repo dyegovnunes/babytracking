@@ -3,7 +3,7 @@ import { useAppState } from '../contexts/AppContext';
 import { usePremium } from './usePremium';
 
 const DAILY_LIMIT = 5;
-const BONUS_PER_AD = 5;
+const BONUS_PER_AD = 2;
 
 function countToday(logs: { timestamp: number }[]): number {
   const todayStart = new Date();
