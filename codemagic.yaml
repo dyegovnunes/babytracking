@@ -32,7 +32,7 @@ workflows:
         script: |
           cd app/ios/App
           agvtool new-marketing-version 1.6.1
-          agvtool new-version -all 25
+          agvtool new-version -all 26
       - name: Build iOS
         script: |
           cd app/ios/App
