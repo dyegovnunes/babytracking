@@ -19,7 +19,7 @@ workflows:
       - name: Build web assets
         script: |
           cd app
-          npm run build
+          CAPACITOR_BUILD=1 npm run build
       - name: Add and Sync Capacitor iOS
         script: |
           cd app
