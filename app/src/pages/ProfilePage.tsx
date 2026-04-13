@@ -6,6 +6,7 @@ import BabyCard from '../components/profile/BabyCard'
 import GrowthSection from '../components/profile/GrowthSection'
 import Toast from '../components/ui/Toast'
 import { AdBanner } from '../components/ui/AdBanner'
+import SharedReports from '../components/profile/SharedReports'
 import { supabase } from '../lib/supabase'
 
 interface Caregiver {
@@ -270,6 +271,9 @@ export default function ProfilePage() {
             </button>
           )}
         </div>
+
+        {/* ===== SUPER RELATÓRIO ===== */}
+        <SharedReports />
 
         {/* ===== SAIR ===== */}
         <button onClick={signOut} className="w-full py-2.5 rounded-xl bg-error/10 text-error font-label font-semibold text-sm">
