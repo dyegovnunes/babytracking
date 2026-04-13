@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import type { LogEntry } from '../../types'
 import { DEFAULT_EVENTS } from '../../lib/constants'
 
@@ -17,6 +17,20 @@ const BREAST_SIDES = [
 ]
 
 export default function EditModal({ log, onSave, onDelete, onClose, onAddBottle }: Props) {
+  // Android back button: close modal instead of navigating
+  const stableOnClose = useCallback(onClose, [])
+  useEffect(() => {
+    window.history.pushState({ modal: 'edit' }, '')
+    const handlePopState = () => { stableOnClose() }
+    window.addEventListener('popstate', handlePopState)
+    return () => {
+      window.removeEventListener('popstate', handlePopState)
+      if (window.history.state?.modal === 'edit') {
+        window.history.back()
+      }
+    }
+  }, [stableOnClose])
+
   const isBreast = log.eventId.startsWith('breast_')
   const [selectedSide, setSelectedSide] = useState(log.eventId)
   const displayEvent = isBreast

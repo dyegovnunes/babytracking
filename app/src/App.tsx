@@ -13,6 +13,7 @@ import OnboardingPage from './pages/OnboardingPage'
 import SettingsPage from './pages/SettingsPage'
 import InsightsPage from './pages/InsightsPage'
 import PrivacyPage from './pages/PrivacyPage'
+import SharedReportPage from './pages/SharedReportPage'
 
 const isNative = Capacitor.isNativePlatform()
 
@@ -63,6 +64,10 @@ function AppRoutes() {
   // Public routes (no auth required)
   if (location.pathname === '/privacy') {
     return <PrivacyPage />
+  }
+
+  if (location.pathname.startsWith('/r/')) {
+    return <SharedReportPage />
   }
 
   // On web: show landing page at root, login at /login

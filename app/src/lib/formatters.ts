@@ -39,14 +39,14 @@ export function formatAge(birthDate: string): string {
   const birth = parseLocalDate(birthDate)
   const now = new Date()
   const diffMs = now.getTime() - birth.getTime()
-  const days = Math.floor(diffMs / (1000 * 60 * 60 * 24))
-  if (days < 7) return `${days} dia${days !== 1 ? 's' : ''}`
-  if (days < 30) {
-    const weeks = Math.floor(days / 7)
-    return `${weeks} semana${weeks !== 1 ? 's' : ''}`
-  }
-  const months = Math.floor(days / 30)
-  return `${months} ${months !== 1 ? 'meses' : 'mês'}`
+  const totalDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+  if (totalDays < 0) return 'Recém-nascido'
+  if (totalDays < 30) return `${totalDays} dia${totalDays !== 1 ? 's' : ''}`
+  const months = Math.floor(totalDays / 30.44)
+  const remainDays = Math.floor(totalDays - months * 30.44)
+  const monthStr = `${months} ${months !== 1 ? 'meses' : 'mês'}`
+  if (remainDays > 0) return `${monthStr} e ${remainDays} dia${remainDays !== 1 ? 's' : ''}`
+  return monthStr
 }
 
 export function timeSince(timestamp: number): string {

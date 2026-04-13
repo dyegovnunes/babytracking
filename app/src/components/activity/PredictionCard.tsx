@@ -104,23 +104,17 @@ export default function PredictionCard({ projection, onDismiss }: Props) {
           {statusLabel}
         </p>
       </div>
-      <div className="text-right">
-        <p className="font-label text-[10px] text-on-surface-variant">
-          Último: {projection.lastEvent}
-        </p>
-        {timeSinceIfRecent(projection.lastTime.getTime()) && (
+      {projection.lastEvent && !projection.label.toLowerCase().startsWith('banho') && (
+        <div className="text-right">
           <p className="font-label text-[10px] text-on-surface-variant">
-            {timeSinceIfRecent(projection.lastTime.getTime())}
+            Último: {projection.lastEvent}
           </p>
-        )}
-      </div>
-      {onDismiss && (
-        <button
-          onClick={(e) => { e.stopPropagation(); onDismiss(projection.label) }}
-          className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center border border-white/10 active:bg-surface-container-high"
-        >
-          <span className="material-symbols-outlined text-on-surface-variant text-base">close</span>
-        </button>
+          {timeSinceIfRecent(projection.lastTime.getTime()) && (
+            <p className="font-label text-[10px] text-on-surface-variant">
+              {timeSinceIfRecent(projection.lastTime.getTime())}
+            </p>
+          )}
+        </div>
       )}
     </div>
   )

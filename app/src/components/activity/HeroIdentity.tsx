@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useTimer } from '../../hooks/useTimer'
 import { useAppState } from '../../contexts/AppContext'
 import { formatTime, formatAge } from '../../lib/formatters'
@@ -12,6 +13,7 @@ interface HeroIdentityProps {
 
 export default function HeroIdentity({ streak }: HeroIdentityProps) {
   const now = useTimer()
+  const navigate = useNavigate()
   const { baby, babies } = useAppState()
   const [switcherOpen, setSwitcherOpen] = useState(false)
 
@@ -37,8 +39,8 @@ export default function HeroIdentity({ streak }: HeroIdentityProps) {
     <>
       <section className="px-5 pt-4 pb-2">
         <div
-          className={`flex items-center gap-3${hasMultiple ? ' cursor-pointer active:opacity-80 transition-opacity' : ''}`}
-          onClick={hasMultiple ? () => setSwitcherOpen(true) : undefined}
+          className="flex items-center gap-3 cursor-pointer active:opacity-80 transition-opacity"
+          onClick={() => navigate('/profile')}
         >
           {avatar}
           <div className="flex-1 min-w-0 flex items-baseline gap-1.5 overflow-hidden">
@@ -49,9 +51,12 @@ export default function HeroIdentity({ streak }: HeroIdentityProps) {
               · {formatAge(baby.birthDate)}
             </span>
             {hasMultiple && (
-              <span className="material-symbols-outlined text-on-surface-variant text-base shrink-0">
+              <button
+                className="material-symbols-outlined text-on-surface-variant text-base shrink-0"
+                onClick={(e) => { e.stopPropagation(); setSwitcherOpen(true) }}
+              >
                 expand_more
-              </span>
+              </button>
             )}
           </div>
           {streak && <StreakBadge streak={streak} />}

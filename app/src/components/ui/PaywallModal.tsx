@@ -6,7 +6,7 @@ import { Capacitor } from '@capacitor/core';
 interface PaywallModalProps {
   isOpen: boolean;
   onClose: () => void;
-  trigger?: 'history' | 'insights' | 'pdf' | 'multi_caregiver' | 'multi_profile' | 'daily_limit' | 'generic';
+  trigger?: 'history' | 'insights' | 'pdf' | 'multi_caregiver' | 'multi_profile' | 'daily_limit' | 'generic' | 'shared_report';
 }
 
 const TRIGGER_MESSAGES: Record<string, { title: string; description: string }> = {

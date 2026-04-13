@@ -2,6 +2,15 @@ import { useState, useEffect, useMemo } from 'react';
 import type { DevelopmentLeap } from '../lib/developmentLeaps';
 import { DEVELOPMENT_LEAPS } from '../lib/developmentLeaps';
 
+function weekToDate(birthDate: string, week: number): Date {
+  const birth = new Date(birthDate);
+  return new Date(birth.getTime() + week * 7 * 86400000);
+}
+
+function formatDDMM(date: Date): string {
+  return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}`;
+}
+
 interface LeapCardProps {
   leap: DevelopmentLeap;
   babyName: string;
@@ -10,7 +19,7 @@ interface LeapCardProps {
   weeksUntil?: number;
 }
 
-export default function LeapCard({ leap, babyName, birthDate, isUpcoming, weeksUntil }: LeapCardProps) {
+export default function LeapCard({ leap, babyName, birthDate, isUpcoming }: LeapCardProps) {
   const [dismissed, setDismissed] = useState(false);
   const [showDetail, setShowDetail] = useState(false);
 
@@ -49,19 +58,19 @@ export default function LeapCard({ leap, babyName, birthDate, isUpcoming, weeksU
           <div className="flex-1 min-w-0">
             <h4 className="text-sm font-bold text-[#e7e2ff]">
               {isUpcoming
-                ? `Salto ${leap.id} em ${weeksUntil} semana${weeksUntil! > 1 ? 's' : ''}`
+                ? `Salto ${leap.id} a partir de ${formatDDMM(weekToDate(birthDate, leap.weekStart))}`
                 : `Salto ${leap.id} — ${leap.name}`
               }
             </h4>
             <p className="text-xs text-[#e7e2ff]/60 mt-0.5">
               {isUpcoming
-                ? `${leap.subtitle} (semanas ${leap.weekStart}-${leap.weekEnd})`
+                ? `${leap.subtitle} (${formatDDMM(weekToDate(birthDate, leap.weekStart))} — ${formatDDMM(weekToDate(birthDate, leap.weekEnd))})`
                 : `${babyName} pode estar mais agitado. Normal!`
               }
             </p>
 
             {/* Mini timeline */}
-            <LeapTimeline currentLeapId={leap.id} babyAgeWeeks={babyAgeWeeks} />
+            <LeapTimeline currentLeapId={leap.id} babyAgeWeeks={babyAgeWeeks} birthDate={birthDate} />
 
             <div className="flex gap-2 mt-2">
               <button
@@ -89,7 +98,7 @@ export default function LeapCard({ leap, babyName, birthDate, isUpcoming, weeksU
 }
 
 /** Mini timeline showing nearby leaps */
-function LeapTimeline({ currentLeapId, babyAgeWeeks }: { currentLeapId: number; babyAgeWeeks: number }) {
+function LeapTimeline({ currentLeapId, babyAgeWeeks, birthDate }: { currentLeapId: number; babyAgeWeeks: number; birthDate: string }) {
   // Show current leap and 1 before + 2 after for context
   const visibleLeaps = DEVELOPMENT_LEAPS.filter(
     (l) => l.id >= currentLeapId - 1 && l.id <= currentLeapId + 2
@@ -147,10 +156,10 @@ function LeapTimeline({ currentLeapId, babyAgeWeeks }: { currentLeapId: number; 
         </div>
       </div>
 
-      {/* Week labels */}
+      {/* Date labels */}
       <div className="flex justify-between mt-0.5">
-        <span className="text-[8px] text-[#e7e2ff]/25">sem {Math.round(minWeek)}</span>
-        <span className="text-[8px] text-[#e7e2ff]/25">sem {Math.round(maxWeek)}</span>
+        <span className="text-[8px] text-[#e7e2ff]/25">{formatDDMM(weekToDate(birthDate, minWeek))}</span>
+        <span className="text-[8px] text-[#e7e2ff]/25">{formatDDMM(weekToDate(birthDate, maxWeek))}</span>
       </div>
     </div>
   );
@@ -232,7 +241,7 @@ function LeapDetail({ leap, onClose, birthDate, babyAgeWeeks }: { leap: Developm
 }
 
 /** Full timeline of all 10 leaps for the detail modal */
-function FullLeapTimeline({ currentLeapId, babyAgeWeeks }: { currentLeapId: number; babyAgeWeeks: number; birthDate: string }) {
+function FullLeapTimeline({ currentLeapId, babyAgeWeeks, birthDate }: { currentLeapId: number; babyAgeWeeks: number; birthDate: string }) {
   return (
     <div className="bg-white/[0.03] rounded-xl p-3 mb-4">
       <p className="text-[10px] text-[#e7e2ff]/40 uppercase tracking-wider mb-2">Linha do tempo dos saltos</p>
@@ -284,8 +293,8 @@ function FullLeapTimeline({ currentLeapId, babyAgeWeeks }: { currentLeapId: numb
                 isCurrent ? 'text-[#e7e2ff]/70' : 'text-[#e7e2ff]/20'
               }`}>
                 {isFuture
-                  ? `daqui ${Math.round(l.weekStart - babyAgeWeeks)}sem`
-                  : `sem ${l.weekStart}-${l.weekEnd}`
+                  ? `a partir ${formatDDMM(weekToDate(birthDate, l.weekStart))}`
+                  : `${formatDDMM(weekToDate(birthDate, l.weekStart))} — ${formatDDMM(weekToDate(birthDate, l.weekEnd))}`
                 }
               </span>
             </div>

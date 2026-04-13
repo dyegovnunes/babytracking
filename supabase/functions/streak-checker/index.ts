@@ -247,6 +247,9 @@ async function sendFCMPush(token: string, message: { title: string; body: string
     if (res.ok) return true;
     const err = await res.text();
     console.error('FCM V1 error:', err);
+    if (err.includes('UNREGISTERED') || err.includes('INVALID_ARGUMENT')) {
+      await supabase.from('push_tokens').delete().eq('token', token);
+    }
     return false;
   } catch {
     return false;

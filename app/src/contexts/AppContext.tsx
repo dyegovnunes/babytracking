@@ -45,7 +45,7 @@ const initialState: AppState = {
   members: {},
   loading: true,
   needsOnboarding: false,
-  pauseDuringSleep: false,
+  pauseDuringSleep: true,
   quietHours: { enabled: false, start: 22, end: 7 },
   streak: null,
 }
@@ -69,7 +69,7 @@ function reducer(state: AppState, action: Action): AppState {
     case 'SET_BABY':
       return { ...state, baby: action.baby }
     case 'SWITCH_BABY':
-      return { ...state, baby: action.baby, logs: action.logs, intervals: action.intervals, members: action.members, pauseDuringSleep: false, quietHours: { enabled: false, start: 22, end: 7 } }
+      return { ...state, baby: action.baby, logs: action.logs, intervals: action.intervals, members: action.members, pauseDuringSleep: true, quietHours: { enabled: false, start: 22, end: 7 } }
     case 'UPDATE_MEMBER':
       return { ...state, members: { ...state.members, [action.userId]: { ...state.members[action.userId], role: action.role } } }
     case 'REMOVE_MEMBER': {
@@ -205,9 +205,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         .maybeSingle()
 
       if (prefData) {
-        if (prefData.pause_during_sleep) {
-          dispatch({ type: 'SET_PAUSE_DURING_SLEEP', value: true })
-        }
+        // pause_during_sleep defaults to true if null/undefined
+        dispatch({ type: 'SET_PAUSE_DURING_SLEEP', value: prefData.pause_during_sleep !== false })
         if (prefData.quiet_enabled) {
           dispatch({ type: 'SET_QUIET_HOURS', value: { enabled: true, start: prefData.quiet_start, end: prefData.quiet_end } })
         }
@@ -553,9 +552,7 @@ export async function switchBaby(
     .maybeSingle()
 
   if (prefData) {
-    if (prefData.pause_during_sleep) {
-      dispatch({ type: 'SET_PAUSE_DURING_SLEEP', value: true })
-    }
+    dispatch({ type: 'SET_PAUSE_DURING_SLEEP', value: prefData.pause_during_sleep !== false })
     if (prefData.quiet_enabled) {
       dispatch({ type: 'SET_QUIET_HOURS', value: { enabled: true, start: prefData.quiet_start, end: prefData.quiet_end } })
     }
