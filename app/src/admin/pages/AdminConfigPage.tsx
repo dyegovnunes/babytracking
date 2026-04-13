@@ -24,51 +24,84 @@ export default function AdminConfigPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+      <div style={{ display: 'flex', justifyContent: 'center', padding: 80 }}>
+        <div style={{ width: 32, height: 32, border: '2px solid #b79fff', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
       </div>
     );
   }
 
-  return (
-    <div className="space-y-4 py-2">
-      <h2 className="text-base font-bold text-gray-200">Configuracoes</h2>
+  const cardStyle: React.CSSProperties = {
+    background: 'rgba(255,255,255,0.06)',
+    border: '1px solid rgba(183,159,255,0.08)',
+    borderRadius: 14,
+    padding: '16px 20px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: 16,
+  };
 
-      <div className="space-y-2">
+  return (
+    <div>
+      <h2 style={{ fontSize: 20, fontWeight: 700, color: '#e7e2ff', marginBottom: 20 }}>Configuracoes</h2>
+
+      <div style={{ fontSize: 11, color: 'rgba(231,226,255,0.4)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 10 }}>Feature flags</div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 28 }}>
         {flags.map(flag => (
-          <div key={flag.id} className="bg-gray-900 rounded-xl px-4 py-3.5 flex items-center gap-3">
-            <div className="flex-1">
-              <p className="text-white text-sm">{flag.description || flag.id}</p>
-              <p className="text-gray-600 text-[10px] font-mono">{flag.id}</p>
+          <div key={flag.id} style={cardStyle}>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 14, color: '#e7e2ff', fontWeight: 500 }}>{flag.description || flag.id}</div>
+              <div style={{ fontSize: 11, color: 'rgba(231,226,255,0.3)', fontFamily: 'monospace', marginTop: 2 }}>{flag.id}</div>
             </div>
             <button
               onClick={() => toggleFlag(flag.id, flag.enabled)}
-              className={`w-11 h-6 rounded-full relative transition-colors ${flag.enabled ? 'bg-purple-500' : 'bg-gray-700'}`}
+              style={{
+                width: 44, height: 26, borderRadius: 13, border: 'none', cursor: 'pointer', position: 'relative',
+                background: flag.enabled ? '#b79fff' : 'rgba(255,255,255,0.12)',
+                transition: 'background 0.2s',
+              }}
             >
-              <div className={`w-5 h-5 rounded-full bg-white absolute top-0.5 transition-all ${flag.enabled ? 'right-0.5' : 'left-0.5'}`} />
+              <div style={{
+                width: 20, height: 20, borderRadius: 10, background: 'white',
+                position: 'absolute', top: 3,
+                left: flag.enabled ? 21 : 3,
+                transition: 'left 0.2s',
+              }} />
             </button>
           </div>
         ))}
       </div>
 
-      <div className="space-y-2 pt-2">
-        <p className="text-gray-500 text-xs">Links rapidos</p>
+      <div style={{ fontSize: 11, color: 'rgba(231,226,255,0.4)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 10 }}>Links rapidos</div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {[
-          { label: '\u{1F5C4}\uFE0F Supabase Dashboard', url: 'https://supabase.com/dashboard/project/kgfjfdizxziacblgvplh' },
-          { label: '\u{1F4B3} RevenueCat', url: 'https://app.revenuecat.com' },
-          { label: '\u{1F525} Firebase Console', url: 'https://console.firebase.google.com' },
+          { label: 'Supabase Dashboard', url: 'https://supabase.com/dashboard/project/kgfjfdizxziacblgvplh' },
+          { label: 'RevenueCat', url: 'https://app.revenuecat.com' },
+          { label: 'Firebase Console', url: 'https://console.firebase.google.com' },
+          { label: 'Google Play Console', url: 'https://play.google.com/console' },
+          { label: 'App Store Connect', url: 'https://appstoreconnect.apple.com' },
+          { label: 'Vercel', url: 'https://vercel.com' },
+          { label: 'Codemagic', url: 'https://codemagic.io' },
         ].map(link => (
           <a
             key={link.url}
             href={link.url}
             target="_blank"
             rel="noreferrer"
-            className="block w-full bg-gray-900 rounded-xl px-4 py-3 text-sm text-gray-300 active:bg-gray-800"
+            style={{
+              ...cardStyle,
+              textDecoration: 'none',
+              color: '#e7e2ff',
+              fontSize: 14,
+              cursor: 'pointer',
+            }}
           >
-            {link.label}
+            <span style={{ flex: 1 }}>{link.label}</span>
+            <span style={{ color: 'rgba(231,226,255,0.3)', fontSize: 12 }}>{'\u2197'}</span>
           </a>
         ))}
       </div>
+
+      <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
     </div>
   );
 }

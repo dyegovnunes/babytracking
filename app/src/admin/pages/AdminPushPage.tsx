@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 
 export default function AdminPushPage() {
-  const [stats, setStats] = useState({ today: 0, week: 0, delivered: 0 });
+  const [stats, setStats] = useState({ today: 0, week: 0, delivered: 0, totalTokens: 0 });
   const [broadcasts, setBroadcasts] = useState<any[]>([]);
   const [showComposer, setShowComposer] = useState(false);
   const [title, setTitle] = useState('');
@@ -17,31 +17,28 @@ export default function AdminPushPage() {
     const today = new Date().toISOString().slice(0, 10);
     const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString();
 
-    const [todayRes, weekRes, deliveredRes, broadcastsRes] = await Promise.all([
+    const [todayRes, weekRes, deliveredRes, broadcastsRes, tokensRes] = await Promise.all([
       supabase.from('push_log').select('*', { count: 'exact', head: true }).gte('sent_at', today),
       supabase.from('push_log').select('*', { count: 'exact', head: true }).gte('sent_at', weekAgo),
       supabase.from('push_log').select('*', { count: 'exact', head: true }).eq('delivered', true).gte('sent_at', weekAgo),
       supabase.from('admin_broadcasts').select('*').order('sent_at', { ascending: false }).limit(10),
+      supabase.from('push_tokens').select('*', { count: 'exact', head: true }),
     ]);
 
-    setStats({ today: todayRes.count ?? 0, week: weekRes.count ?? 0, delivered: deliveredRes.count ?? 0 });
+    setStats({ today: todayRes.count ?? 0, week: weekRes.count ?? 0, delivered: deliveredRes.count ?? 0, totalTokens: tokensRes.count ?? 0 });
     setBroadcasts(broadcastsRes.data ?? []);
   }
 
   async function sendBroadcast() {
     if (!title || !body) return;
     setSending(true);
-
     const { data: { user } } = await supabase.auth.getUser();
 
     let tokenQuery = supabase.from('push_tokens').select('token, user_id');
     if (segment !== 'all') {
-      const { data: profiles } = await supabase.from('profiles')
-        .select('id').eq('is_premium', segment === 'premium');
+      const { data: profiles } = await supabase.from('profiles').select('id').eq('is_premium', segment === 'premium');
       const ids = (profiles ?? []).map((p: any) => p.id);
-      if (ids.length > 0) {
-        tokenQuery = tokenQuery.in('user_id', ids);
-      }
+      if (ids.length > 0) tokenQuery = tokenQuery.in('user_id', ids);
     }
 
     const { data: tokens } = await tokenQuery;
@@ -64,115 +61,111 @@ export default function AdminPushPage() {
     setTimeout(() => setToast(''), 4000);
   }
 
+  const cardStyle: React.CSSProperties = {
+    background: 'rgba(255,255,255,0.06)',
+    border: '1px solid rgba(183,159,255,0.08)',
+    borderRadius: 14,
+    padding: '18px 20px',
+  };
+
+  const inputStyle: React.CSSProperties = {
+    width: '100%', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(183,159,255,0.1)',
+    borderRadius: 12, padding: '12px 16px', color: '#e7e2ff', fontSize: 14, outline: 'none',
+  };
+
   return (
-    <div className="space-y-4 py-2">
-      <div className="flex items-center justify-between">
-        <h2 className="text-base font-bold text-gray-200">Push Notifications</h2>
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+        <h2 style={{ fontSize: 20, fontWeight: 700, color: '#e7e2ff' }}>Push Notifications</h2>
         <button
           onClick={() => setShowComposer(true)}
-          className="bg-purple-600 text-white text-xs font-semibold px-3 py-2 rounded-lg active:bg-purple-700"
+          style={{ background: '#b79fff', color: '#0d0a27', fontSize: 13, fontWeight: 600, padding: '10px 18px', borderRadius: 10, border: 'none', cursor: 'pointer' }}
         >
-          + Broadcast
+          + Novo Broadcast
         </button>
       </div>
 
-      <div className="grid grid-cols-3 gap-2">
-        <div className="bg-gray-900 rounded-xl p-3 text-center">
-          <div className="text-white font-bold text-xl">{stats.today}</div>
-          <div className="text-gray-500 text-[10px]">Hoje</div>
+      {/* Stats */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 12, marginBottom: 24 }}>
+        <div style={cardStyle}>
+          <div style={{ fontSize: 28, fontWeight: 700, color: '#ff96b9' }}>{stats.today}</div>
+          <div style={{ fontSize: 11, color: 'rgba(231,226,255,0.45)' }}>Enviados hoje</div>
         </div>
-        <div className="bg-gray-900 rounded-xl p-3 text-center">
-          <div className="text-white font-bold text-xl">{stats.week}</div>
-          <div className="text-gray-500 text-[10px]">7 dias</div>
+        <div style={cardStyle}>
+          <div style={{ fontSize: 28, fontWeight: 700, color: '#e7e2ff' }}>{stats.week}</div>
+          <div style={{ fontSize: 11, color: 'rgba(231,226,255,0.45)' }}>Ultimos 7 dias</div>
         </div>
-        <div className="bg-gray-900 rounded-xl p-3 text-center">
-          <div className="text-white font-bold text-xl">{stats.delivered}</div>
-          <div className="text-gray-500 text-[10px]">Entregues</div>
+        <div style={cardStyle}>
+          <div style={{ fontSize: 28, fontWeight: 700, color: '#4CAF50' }}>{stats.delivered}</div>
+          <div style={{ fontSize: 11, color: 'rgba(231,226,255,0.45)' }}>Entregues (7d)</div>
+        </div>
+        <div style={cardStyle}>
+          <div style={{ fontSize: 28, fontWeight: 700, color: '#b79fff' }}>{stats.totalTokens}</div>
+          <div style={{ fontSize: 11, color: 'rgba(231,226,255,0.45)' }}>Tokens ativos</div>
         </div>
       </div>
 
-      <div>
-        <p className="text-gray-500 text-xs mb-2">Ultimos broadcasts</p>
-        {broadcasts.length === 0 ? (
-          <p className="text-gray-600 text-sm text-center py-4">Nenhum broadcast enviado</p>
-        ) : (
-          <div className="space-y-2">
-            {broadcasts.map(b => (
-              <div key={b.id} className="bg-gray-900 rounded-xl p-3">
-                <p className="text-white text-sm font-semibold">{b.title}</p>
-                <p className="text-gray-400 text-xs mt-0.5">{b.body}</p>
-                <div className="flex items-center justify-between mt-2">
-                  <span className="text-gray-600 text-[10px]">
-                    {new Date(b.sent_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
-                  </span>
-                  <span className="text-gray-500 text-[10px]">{b.target_count} dispositivos</span>
-                </div>
+      {/* Broadcast history */}
+      <div style={{ fontSize: 11, color: 'rgba(231,226,255,0.4)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 10 }}>Historico de broadcasts</div>
+      {broadcasts.length === 0 ? (
+        <div style={{ ...cardStyle, textAlign: 'center', color: 'rgba(231,226,255,0.3)', fontSize: 14 }}>Nenhum broadcast enviado</div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {broadcasts.map(b => (
+            <div key={b.id} style={cardStyle}>
+              <div style={{ fontSize: 15, fontWeight: 600, color: '#e7e2ff' }}>{b.title}</div>
+              <div style={{ fontSize: 13, color: 'rgba(231,226,255,0.5)', marginTop: 4 }}>{b.body}</div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, fontSize: 11, color: 'rgba(231,226,255,0.3)' }}>
+                <span>{new Date(b.sent_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</span>
+                <span>{b.target_count} dispositivos</span>
               </div>
-            ))}
-          </div>
-        )}
-      </div>
+            </div>
+          ))}
+        </div>
+      )}
 
+      {/* Toast */}
       {toast && (
-        <div className="fixed bottom-24 left-4 right-4 bg-green-600 text-white text-sm text-center py-3 rounded-xl z-50">
+        <div style={{ position: 'fixed', bottom: 80, left: 20, right: 20, background: '#4CAF50', color: 'white', fontSize: 14, textAlign: 'center', padding: 14, borderRadius: 14, zIndex: 100, maxWidth: 400, margin: '0 auto' }}>
           {toast}
         </div>
       )}
 
+      {/* Composer modal */}
       {showComposer && (
-        <div className="fixed inset-0 bg-black/80 flex items-end z-50" onClick={() => setShowComposer(false)}>
-          <div className="bg-gray-900 w-full rounded-t-2xl p-6 space-y-4" onClick={e => e.stopPropagation()}>
-            <h3 className="text-white font-bold text-lg">Novo Broadcast</h3>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, padding: 20 }} onClick={() => setShowComposer(false)}>
+          <div style={{ background: '#1a1540', borderRadius: 20, padding: 28, width: '100%', maxWidth: 440, border: '1px solid rgba(183,159,255,0.15)' }} onClick={e => e.stopPropagation()}>
+            <h3 style={{ fontSize: 18, fontWeight: 700, color: '#e7e2ff', marginBottom: 20 }}>Novo Broadcast</h3>
 
-            <input
-              value={title}
-              onChange={e => setTitle(e.target.value)}
-              placeholder="Titulo da notificacao"
-              className="w-full bg-gray-800 text-white rounded-xl px-4 py-3 text-sm outline-none"
-            />
-            <textarea
-              value={body}
-              onChange={e => setBody(e.target.value)}
-              placeholder="Corpo da mensagem"
-              rows={3}
-              className="w-full bg-gray-800 text-white rounded-xl px-4 py-3 text-sm outline-none resize-none"
-            />
+            <input value={title} onChange={e => setTitle(e.target.value)} placeholder="Titulo da notificacao" style={{ ...inputStyle, marginBottom: 12 }} />
+            <textarea value={body} onChange={e => setBody(e.target.value)} placeholder="Corpo da mensagem" rows={3} style={{ ...inputStyle, resize: 'none', marginBottom: 16 }} />
 
-            <div>
-              <p className="text-gray-400 text-xs mb-2">Segmento</p>
-              <div className="flex gap-2">
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ fontSize: 11, color: 'rgba(231,226,255,0.4)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}>Segmento</div>
+              <div style={{ display: 'flex', gap: 8 }}>
                 {(['all', 'premium', 'free'] as const).map(s => (
-                  <button
-                    key={s}
-                    onClick={() => setSegment(s)}
-                    className={`flex-1 py-2 rounded-lg text-xs font-semibold ${
-                      segment === s ? 'bg-purple-600 text-white' : 'bg-gray-800 text-gray-400'
-                    }`}
-                  >
+                  <button key={s} onClick={() => setSegment(s)} style={{
+                    flex: 1, padding: '10px 0', borderRadius: 10, border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 600,
+                    background: segment === s ? 'rgba(183,159,255,0.2)' : 'rgba(255,255,255,0.04)',
+                    color: segment === s ? '#b79fff' : 'rgba(231,226,255,0.5)',
+                  }}>
                     {s === 'all' ? 'Todos' : s === 'premium' ? 'Yaya+' : 'Free'}
                   </button>
                 ))}
               </div>
             </div>
 
-            <div className="flex gap-2 pt-2">
-              <button
-                onClick={() => setShowComposer(false)}
-                className="flex-1 bg-gray-800 text-gray-400 rounded-xl py-3 text-sm font-semibold"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={sendBroadcast}
-                disabled={sending || !title || !body}
-                className="flex-[2] bg-purple-600 text-white rounded-xl py-3 text-sm font-semibold disabled:opacity-50"
-              >
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button onClick={() => setShowComposer(false)} style={{ flex: 1, padding: 14, borderRadius: 12, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 600, background: 'rgba(255,255,255,0.06)', color: 'rgba(231,226,255,0.5)' }}>Cancelar</button>
+              <button onClick={sendBroadcast} disabled={sending || !title || !body} style={{ flex: 2, padding: 14, borderRadius: 12, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 600, background: '#b79fff', color: '#0d0a27', opacity: (sending || !title || !body) ? 0.5 : 1 }}>
                 {sending ? 'Enviando...' : 'Enviar'}
               </button>
             </div>
           </div>
         </div>
       )}
+
+      <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
     </div>
   );
 }

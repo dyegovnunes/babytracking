@@ -1,101 +1,108 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 
-interface KPIs {
-  totalUsers: number;
-  newToday: number;
-  newThisWeek: number;
-  premiumUsers: number;
-  activeStreak: number;
-  totalLogs: number;
-  logsToday: number;
+interface Stats {
+  total_users: number;
+  new_today: number;
+  new_this_week: number;
+  premium_users: number;
+  free_users: number;
+  total_babies: number;
+  total_logs: number;
+  logs_today: number;
+  logs_this_week: number;
+  active_streaks: number;
+  dau: number;
+  wau: number;
+  mau: number;
+  avg_users_per_baby: number;
+  multi_caregiver_babies: number;
 }
 
 export default function AdminDashboardPage() {
-  const [kpis, setKpis] = useState<KPIs | null>(null);
+  const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadKPIs();
+    supabase.rpc('admin_get_stats').then(({ data }) => {
+      if (data) setStats(data as Stats);
+      setLoading(false);
+    });
   }, []);
 
-  async function loadKPIs() {
-    const today = new Date().toISOString().slice(0, 10);
-    const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString();
-
-    const [
-      { count: totalUsers },
-      { count: newToday },
-      { count: newThisWeek },
-      { count: premiumUsers },
-      { count: activeStreak },
-      { count: totalLogs },
-      { count: logsToday },
-    ] = await Promise.all([
-      supabase.from('profiles').select('*', { count: 'exact', head: true }),
-      supabase.from('profiles').select('*', { count: 'exact', head: true })
-        .gte('created_at', today),
-      supabase.from('profiles').select('*', { count: 'exact', head: true })
-        .gte('created_at', weekAgo),
-      supabase.from('profiles').select('*', { count: 'exact', head: true })
-        .eq('is_premium', true),
-      supabase.from('streaks').select('*', { count: 'exact', head: true })
-        .gt('current_streak', 0),
-      supabase.from('logs').select('*', { count: 'exact', head: true }),
-      supabase.from('logs').select('*', { count: 'exact', head: true })
-        .gte('timestamp', Date.parse(today)),
-    ]);
-
-    setKpis({
-      totalUsers: totalUsers ?? 0,
-      newToday: newToday ?? 0,
-      newThisWeek: newThisWeek ?? 0,
-      premiumUsers: premiumUsers ?? 0,
-      activeStreak: activeStreak ?? 0,
-      totalLogs: totalLogs ?? 0,
-      logsToday: logsToday ?? 0,
-    });
-    setLoading(false);
-  }
-
-  if (loading || !kpis) {
+  if (loading || !stats) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+      <div style={{ display: 'flex', justifyContent: 'center', padding: 80 }}>
+        <div style={{ width: 32, height: 32, border: '2px solid #b79fff', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
       </div>
     );
   }
 
-  const conversionRate = kpis.totalUsers > 0
-    ? ((kpis.premiumUsers / kpis.totalUsers) * 100).toFixed(1)
+  const conversionRate = stats.total_users > 0
+    ? ((stats.premium_users / stats.total_users) * 100).toFixed(1)
     : '0';
 
   return (
-    <div className="space-y-4 py-2">
-      <h2 className="text-base font-bold text-gray-200">Visao Geral</h2>
+    <div>
+      <h2 style={{ fontSize: 20, fontWeight: 700, color: '#e7e2ff', marginBottom: 20 }}>Visao Geral</h2>
 
-      <div className="grid grid-cols-2 gap-3">
-        <StatCard label="Total Usuarios" value={kpis.totalUsers} icon={'\u{1F464}'} />
-        <StatCard label="Novos Hoje" value={kpis.newToday} icon={'\u{1F195}'} highlight />
-        <StatCard label="Esta Semana" value={kpis.newThisWeek} icon={'\u{1F4C5}'} />
-        <StatCard label="Yaya+" value={kpis.premiumUsers} icon={'\u2B50'} />
-        <StatCard label="Conversao" value={`${conversionRate}%`} icon={'\u{1F4B0}'} />
-        <StatCard label="Com Streak" value={kpis.activeStreak} icon={'\u{1F525}'} />
-        <StatCard label="Logs Hoje" value={kpis.logsToday} icon={'\u{1F4DD}'} highlight />
-        <StatCard label="Total Logs" value={kpis.totalLogs} icon={'\u{1F4DA}'} />
+      {/* Top row — key metrics */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12, marginBottom: 20 }}>
+        <Card label="Usuarios" value={stats.total_users} sub={`+${stats.new_this_week} esta semana`} accent />
+        <Card label="Bebes" value={stats.total_babies} sub={`${stats.avg_users_per_baby} cuid./bebe`} />
+        <Card label="Premium (Yaya+)" value={stats.premium_users} sub={`${conversionRate}% conversao`} accent />
+        <Card label="Free" value={stats.free_users} sub={`${stats.total_users - stats.premium_users - stats.free_users} indefinidos`} />
       </div>
+
+      {/* Activity */}
+      <h3 style={{ fontSize: 14, fontWeight: 600, color: 'rgba(231,226,255,0.55)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: 1 }}>Atividade</h3>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12, marginBottom: 20 }}>
+        <MiniCard label="DAU" value={stats.dau} />
+        <MiniCard label="WAU (7d)" value={stats.wau} />
+        <MiniCard label="MAU (30d)" value={stats.mau} />
+        <MiniCard label="Registros hoje" value={stats.logs_today} highlight />
+        <MiniCard label="Registros (7d)" value={stats.logs_this_week} />
+        <MiniCard label="Total registros" value={stats.total_logs} />
+      </div>
+
+      {/* Engagement */}
+      <h3 style={{ fontSize: 14, fontWeight: 600, color: 'rgba(231,226,255,0.55)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: 1 }}>Engajamento</h3>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12 }}>
+        <MiniCard label="Streaks ativos" value={stats.active_streaks} />
+        <MiniCard label="Bebes 2+ cuidadores" value={stats.multi_caregiver_babies} />
+        <MiniCard label="Novos hoje" value={stats.new_today} highlight />
+      </div>
+
+      <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
     </div>
   );
 }
 
-function StatCard({ label, value, icon, highlight }: {
-  label: string; value: number | string; icon: string; highlight?: boolean
-}) {
+function Card({ label, value, sub, accent }: { label: string; value: number | string; sub?: string; accent?: boolean }) {
   return (
-    <div className={`rounded-xl p-4 ${highlight ? 'bg-purple-900/40 border border-purple-700/40' : 'bg-gray-900'}`}>
-      <div className="text-xl mb-1">{icon}</div>
-      <div className={`text-2xl font-bold ${highlight ? 'text-purple-300' : 'text-white'}`}>{value}</div>
-      <div className="text-[11px] text-gray-500 mt-0.5">{label}</div>
+    <div style={{
+      background: accent ? 'rgba(183,159,255,0.1)' : 'rgba(255,255,255,0.06)',
+      border: `1px solid ${accent ? 'rgba(183,159,255,0.2)' : 'rgba(183,159,255,0.08)'}`,
+      borderRadius: 14,
+      padding: '20px 18px',
+    }}>
+      <div style={{ fontSize: 11, color: 'rgba(231,226,255,0.5)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}>{label}</div>
+      <div style={{ fontSize: 32, fontWeight: 700, color: accent ? '#b79fff' : '#e7e2ff' }}>{value}</div>
+      {sub && <div style={{ fontSize: 12, color: 'rgba(231,226,255,0.4)', marginTop: 4 }}>{sub}</div>}
+    </div>
+  );
+}
+
+function MiniCard({ label, value, highlight }: { label: string; value: number | string; highlight?: boolean }) {
+  return (
+    <div style={{
+      background: highlight ? 'rgba(255,150,185,0.08)' : 'rgba(255,255,255,0.04)',
+      border: `1px solid ${highlight ? 'rgba(255,150,185,0.15)' : 'rgba(183,159,255,0.06)'}`,
+      borderRadius: 12,
+      padding: '14px 16px',
+    }}>
+      <div style={{ fontSize: 24, fontWeight: 700, color: highlight ? '#ff96b9' : '#e7e2ff' }}>{value}</div>
+      <div style={{ fontSize: 11, color: 'rgba(231,226,255,0.45)', marginTop: 2 }}>{label}</div>
     </div>
   );
 }

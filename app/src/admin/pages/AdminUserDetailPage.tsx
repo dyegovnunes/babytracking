@@ -6,6 +6,7 @@ export default function AdminUserDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
+  const [email, setEmail] = useState('');
   const [babies, setBabies] = useState<any[]>([]);
   const [logCount, setLogCount] = useState(0);
   const [streak, setStreak] = useState<any>(null);
@@ -18,21 +19,26 @@ export default function AdminUserDetailPage() {
   useEffect(() => { if (id) loadUser(id); }, [id]);
 
   async function loadUser(userId: string) {
-    const [profileRes, babiesRes] = await Promise.all([
-      supabase.from('profiles').select('*').eq('id', userId).single(),
-      supabase.from('baby_members').select('baby_id, display_name, role, babies(name, birth_date, gender)').eq('user_id', userId),
-    ]);
+    // Get user with email from admin function
+    const { data: users } = await supabase.rpc('admin_get_users');
+    const found = (users as any[])?.find((u: any) => u.id === userId);
+    if (found) {
+      setUser(found);
+      setEmail(found.email);
+    }
 
-    setUser(profileRes.data);
+    const { data: babiesData } = await supabase
+      .from('baby_members')
+      .select('baby_id, display_name, role, babies(name, birth_date, gender)')
+      .eq('user_id', userId);
 
-    const babyData = babiesRes.data ?? [];
+    const babyData = babiesData ?? [];
     setBabies(babyData);
 
     const babyIds = babyData.map((b: any) => b.baby_id);
     if (babyIds.length > 0) {
       const [logRes, streakRes] = await Promise.all([
-        supabase.from('logs').select('*', { count: 'exact', head: true })
-          .in('baby_id', babyIds),
+        supabase.from('logs').select('*', { count: 'exact', head: true }).in('baby_id', babyIds),
         supabase.from('streaks').select('*').in('baby_id', babyIds).limit(1).maybeSingle(),
       ]);
       setLogCount(logRes.count ?? 0);
@@ -40,10 +46,23 @@ export default function AdminUserDetailPage() {
     }
   }
 
+  async function togglePremium() {
+    if (!id || !user) return;
+    setSaving(true);
+    const newValue = !user.is_premium;
+    await supabase.from('profiles').update({
+      is_premium: newValue,
+      subscription_plan: newValue ? 'admin_granted' : null,
+    }).eq('id', id);
+    setUser({ ...user, is_premium: newValue });
+    setToast(newValue ? 'Usuario promovido para Yaya+' : 'Usuario rebaixado para Free');
+    setSaving(false);
+    setTimeout(() => setToast(''), 3000);
+  }
+
   async function grantCourtesy() {
     if (!id || !courtesyDays) return;
     setSaving(true);
-
     const days = parseInt(courtesyDays);
     const expiresAt = new Date(Date.now() + days * 86400000).toISOString();
     const { data: { user: adminUser } } = await supabase.auth.getUser();
@@ -66,129 +85,190 @@ export default function AdminUserDetailPage() {
 
     setSaving(false);
     setShowCourtesy(false);
+    setCourtesyReason('');
     setToast(`Cortesia de ${days} dias concedida!`);
     loadUser(id);
     setTimeout(() => setToast(''), 3000);
   }
 
   if (!user) return (
-    <div className="flex justify-center py-16">
-      <div className="w-6 h-6 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+    <div style={{ display: 'flex', justifyContent: 'center', padding: 80 }}>
+      <div style={{ width: 24, height: 24, border: '2px solid #b79fff', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
     </div>
   );
 
   const isCourtesyActive = user.courtesy_expires_at && new Date(user.courtesy_expires_at) > new Date();
 
+  const cardStyle: React.CSSProperties = {
+    background: 'rgba(255,255,255,0.06)',
+    border: '1px solid rgba(183,159,255,0.08)',
+    borderRadius: 14,
+    padding: '18px 20px',
+    marginBottom: 12,
+  };
+
+  const labelStyle: React.CSSProperties = {
+    fontSize: 11, color: 'rgba(231,226,255,0.4)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 6,
+  };
+
   return (
-    <div className="space-y-4 py-2">
-      <button onClick={() => navigate(-1)} className="text-gray-500 text-sm flex items-center gap-1">
+    <div style={{ maxWidth: 640 }}>
+      <button
+        onClick={() => navigate(-1)}
+        style={{ color: '#b79fff', fontSize: 13, background: 'none', border: 'none', cursor: 'pointer', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 6 }}
+      >
         {'\u2190'} Voltar
       </button>
 
-      {/* Header */}
-      <div className="bg-gray-900 rounded-xl p-4">
-        <div className="flex items-start justify-between mb-3">
+      {/* User header */}
+      <div style={{
+        ...cardStyle,
+        background: 'rgba(183,159,255,0.08)',
+        border: '1px solid rgba(183,159,255,0.15)',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'start', justifyContent: 'space-between', marginBottom: 16 }}>
           <div>
-            <p className="text-white text-sm font-semibold font-mono">{id?.slice(0, 16)}...</p>
-            <p className="text-gray-500 text-xs mt-0.5">
-              Cadastro: {new Date(user.created_at).toLocaleDateString('pt-BR')}
-            </p>
+            <div style={{ fontSize: 18, fontWeight: 600, color: '#e7e2ff' }}>{email}</div>
+            <div style={{ fontSize: 12, color: 'rgba(231,226,255,0.4)', marginTop: 4 }}>
+              Cadastro: {new Date(user.created_at).toLocaleDateString('pt-BR')} · ID: {id?.slice(0, 8)}
+            </div>
           </div>
           {isCourtesyActive ? (
-            <span className="text-[10px] bg-amber-600/20 text-amber-400 px-2 py-0.5 rounded-full">Cortesia</span>
+            <span style={{ fontSize: 12, background: 'rgba(255,179,0,0.15)', color: '#FFB300', padding: '4px 12px', borderRadius: 20 }}>Cortesia</span>
           ) : user.is_premium ? (
-            <span className="text-[10px] bg-purple-600/20 text-purple-400 px-2 py-0.5 rounded-full">Yaya+</span>
+            <span style={{ fontSize: 12, background: 'rgba(183,159,255,0.2)', color: '#b79fff', padding: '4px 12px', borderRadius: 20 }}>Yaya+</span>
           ) : (
-            <span className="text-[10px] bg-gray-800 text-gray-500 px-2 py-0.5 rounded-full">Free</span>
+            <span style={{ fontSize: 12, background: 'rgba(255,255,255,0.08)', color: 'rgba(231,226,255,0.5)', padding: '4px 12px', borderRadius: 20 }}>Free</span>
           )}
         </div>
 
-        <div className="grid grid-cols-3 gap-2">
-          <div className="bg-gray-800 rounded-lg p-2 text-center">
-            <div className="text-white font-bold">{babies.length}</div>
-            <div className="text-gray-500 text-[10px]">Bebes</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+          <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: 10, padding: '10px 12px', textAlign: 'center' }}>
+            <div style={{ fontSize: 22, fontWeight: 700, color: '#e7e2ff' }}>{babies.length}</div>
+            <div style={{ fontSize: 10, color: 'rgba(231,226,255,0.4)' }}>Bebes</div>
           </div>
-          <div className="bg-gray-800 rounded-lg p-2 text-center">
-            <div className="text-white font-bold">{logCount}</div>
-            <div className="text-gray-500 text-[10px]">Registros</div>
+          <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: 10, padding: '10px 12px', textAlign: 'center' }}>
+            <div style={{ fontSize: 22, fontWeight: 700, color: '#e7e2ff' }}>{logCount}</div>
+            <div style={{ fontSize: 10, color: 'rgba(231,226,255,0.4)' }}>Registros</div>
           </div>
-          <div className="bg-gray-800 rounded-lg p-2 text-center">
-            <div className="text-white font-bold">{streak?.current_streak ?? 0}{'\u{1F525}'}</div>
-            <div className="text-gray-500 text-[10px]">Streak</div>
+          <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: 10, padding: '10px 12px', textAlign: 'center' }}>
+            <div style={{ fontSize: 22, fontWeight: 700, color: '#e7e2ff' }}>{streak?.current_streak ?? 0}</div>
+            <div style={{ fontSize: 10, color: 'rgba(231,226,255,0.4)' }}>Streak</div>
           </div>
         </div>
       </div>
 
       {/* Babies */}
       {babies.length > 0 && (
-        <div className="bg-gray-900 rounded-xl p-4">
-          <p className="text-gray-500 text-xs mb-2">Bebes</p>
+        <div style={cardStyle}>
+          <div style={labelStyle}>Bebes</div>
           {babies.map((b: any) => (
-            <div key={b.baby_id} className="flex items-center gap-2 py-1">
-              <span className="text-sm">{b.babies?.gender === 'boy' ? '\u{1F466}' : b.babies?.gender === 'girl' ? '\u{1F467}' : '\u{1F476}'}</span>
-              <span className="text-white text-sm">{b.babies?.name}</span>
-              <span className="text-gray-600 text-xs">
-                {b.babies?.birth_date ? new Date(b.babies.birth_date).toLocaleDateString('pt-BR') : ''}
-              </span>
+            <div key={b.baby_id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 0' }}>
+              <span style={{ fontSize: 16 }}>{b.babies?.gender === 'boy' ? '\u{1F466}' : b.babies?.gender === 'girl' ? '\u{1F467}' : '\u{1F476}'}</span>
+              <div>
+                <span style={{ fontSize: 14, color: '#e7e2ff' }}>{b.babies?.name}</span>
+                <span style={{ fontSize: 12, color: 'rgba(231,226,255,0.35)', marginLeft: 8 }}>
+                  {b.babies?.birth_date ? new Date(b.babies.birth_date).toLocaleDateString('pt-BR') : ''} · {b.role}
+                </span>
+              </div>
             </div>
           ))}
         </div>
       )}
 
-      {/* Platform */}
-      <div className="bg-gray-900 rounded-xl p-4">
-        <p className="text-gray-500 text-xs mb-2">Plataforma</p>
-        <p className="text-white text-sm">
-          {user.signup_platform === 'android' ? '\u{1F916} Android' :
-           user.signup_platform === 'ios' ? '\u{1F34E} iOS' : '\u{1F310} Web'}
-        </p>
+      {/* Details */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
+        <div style={cardStyle}>
+          <div style={labelStyle}>Plataforma</div>
+          <div style={{ fontSize: 14, color: '#e7e2ff' }}>
+            {user.signup_platform === 'android' ? 'Android' : user.signup_platform === 'ios' ? 'iOS' : 'Web'}
+          </div>
+        </div>
+        <div style={cardStyle}>
+          <div style={labelStyle}>Plano</div>
+          <div style={{ fontSize: 14, color: '#e7e2ff', textTransform: 'capitalize' }}>
+            {user.subscription_plan || (user.is_premium ? 'premium' : 'free')}
+          </div>
+        </div>
       </div>
 
-      {/* Subscription */}
-      {user.is_premium && (
-        <div className="bg-gray-900 rounded-xl p-4">
-          <p className="text-gray-500 text-xs mb-2">Assinatura</p>
-          <p className="text-white text-sm capitalize">{user.subscription_plan ?? 'premium'}</p>
-          {isCourtesyActive && (
-            <p className="text-amber-400 text-xs mt-1">
-              Cortesia ate {new Date(user.courtesy_expires_at).toLocaleDateString('pt-BR')}
-              {user.courtesy_reason && ` — ${user.courtesy_reason}`}
-            </p>
-          )}
+      {isCourtesyActive && (
+        <div style={{ ...cardStyle, background: 'rgba(255,179,0,0.06)', border: '1px solid rgba(255,179,0,0.15)' }}>
+          <div style={labelStyle}>Cortesia ativa</div>
+          <div style={{ fontSize: 14, color: '#FFB300' }}>
+            Ate {new Date(user.courtesy_expires_at).toLocaleDateString('pt-BR')}
+            {user.courtesy_reason && <span style={{ color: 'rgba(231,226,255,0.4)' }}> — {user.courtesy_reason}</span>}
+          </div>
         </div>
       )}
 
       {/* Actions */}
-      <button
-        onClick={() => setShowCourtesy(true)}
-        className="w-full bg-amber-600/20 text-amber-400 rounded-xl py-3 text-sm font-semibold active:bg-amber-600/30"
-      >
-        {'\u{1F381}'} Dar cortesia temporaria
-      </button>
+      <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
+        <button
+          onClick={togglePremium}
+          disabled={saving}
+          style={{
+            flex: 1,
+            padding: '14px 16px',
+            borderRadius: 12,
+            border: 'none',
+            cursor: 'pointer',
+            fontSize: 14,
+            fontWeight: 600,
+            background: user.is_premium ? 'rgba(239,83,80,0.12)' : 'rgba(183,159,255,0.15)',
+            color: user.is_premium ? '#EF5350' : '#b79fff',
+          }}
+        >
+          {user.is_premium ? 'Rebaixar para Free' : 'Promover para Yaya+'}
+        </button>
+        <button
+          onClick={() => setShowCourtesy(true)}
+          style={{
+            flex: 1,
+            padding: '14px 16px',
+            borderRadius: 12,
+            border: 'none',
+            cursor: 'pointer',
+            fontSize: 14,
+            fontWeight: 600,
+            background: 'rgba(255,179,0,0.12)',
+            color: '#FFB300',
+          }}
+        >
+          Dar cortesia
+        </button>
+      </div>
 
       {/* Toast */}
       {toast && (
-        <div className="fixed bottom-24 left-4 right-4 bg-green-600 text-white text-sm text-center py-3 rounded-xl z-50">
+        <div style={{
+          position: 'fixed', bottom: 80, left: 20, right: 20,
+          background: '#4CAF50', color: 'white', fontSize: 14, textAlign: 'center',
+          padding: '14px', borderRadius: 14, zIndex: 100, maxWidth: 400, margin: '0 auto',
+        }}>
           {toast}
         </div>
       )}
 
       {/* Courtesy Modal */}
       {showCourtesy && (
-        <div className="fixed inset-0 bg-black/80 flex items-end z-50" onClick={() => setShowCourtesy(false)}>
-          <div className="bg-gray-900 w-full rounded-t-2xl p-6 space-y-4" onClick={e => e.stopPropagation()}>
-            <h3 className="text-white font-bold text-lg">Conceder cortesia</h3>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, padding: 20 }} onClick={() => setShowCourtesy(false)}>
+          <div style={{ background: '#1a1540', borderRadius: 20, padding: 28, width: '100%', maxWidth: 400, border: '1px solid rgba(183,159,255,0.15)' }} onClick={e => e.stopPropagation()}>
+            <h3 style={{ fontSize: 18, fontWeight: 700, color: '#e7e2ff', marginBottom: 20 }}>Conceder cortesia</h3>
 
-            <div>
-              <label className="text-gray-400 text-xs mb-1 block">Dias de Yaya+</label>
-              <div className="flex gap-2">
-                {['7', '14', '30', '60'].map(d => (
+            <div style={{ marginBottom: 16 }}>
+              <div style={labelStyle}>Dias de Yaya+</div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                {['7', '14', '30', '60', '90'].map(d => (
                   <button
                     key={d}
                     onClick={() => setCourtesyDays(d)}
-                    className={`flex-1 py-2.5 rounded-lg text-sm font-semibold ${
-                      courtesyDays === d ? 'bg-purple-600 text-white' : 'bg-gray-800 text-gray-400'
-                    }`}
+                    style={{
+                      flex: 1, padding: '10px 0', borderRadius: 10, border: 'none', cursor: 'pointer',
+                      fontSize: 14, fontWeight: 600,
+                      background: courtesyDays === d ? '#b79fff' : 'rgba(255,255,255,0.06)',
+                      color: courtesyDays === d ? '#0d0a27' : 'rgba(231,226,255,0.5)',
+                    }}
                   >
                     {d}d
                   </button>
@@ -196,35 +276,33 @@ export default function AdminUserDetailPage() {
               </div>
             </div>
 
-            <div>
-              <label className="text-gray-400 text-xs mb-1 block">Motivo (opcional)</label>
+            <div style={{ marginBottom: 20 }}>
+              <div style={labelStyle}>Motivo (opcional)</div>
               <input
                 type="text"
                 value={courtesyReason}
                 onChange={e => setCourtesyReason(e.target.value)}
                 placeholder="ex: Pedido via email, influencer..."
-                className="w-full bg-gray-800 text-white rounded-xl px-4 py-3 text-sm outline-none"
+                style={{
+                  width: '100%', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(183,159,255,0.1)',
+                  borderRadius: 12, padding: '12px 16px', color: '#e7e2ff', fontSize: 14, outline: 'none',
+                }}
               />
             </div>
 
-            <div className="flex gap-2 pt-2">
-              <button
-                onClick={() => setShowCourtesy(false)}
-                className="flex-1 bg-gray-800 text-gray-400 rounded-xl py-3 text-sm font-semibold"
-              >
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button onClick={() => setShowCourtesy(false)} style={{ flex: 1, padding: 14, borderRadius: 12, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 600, background: 'rgba(255,255,255,0.06)', color: 'rgba(231,226,255,0.5)' }}>
                 Cancelar
               </button>
-              <button
-                onClick={grantCourtesy}
-                disabled={saving}
-                className="flex-[2] bg-purple-600 text-white rounded-xl py-3 text-sm font-semibold disabled:opacity-50"
-              >
+              <button onClick={grantCourtesy} disabled={saving} style={{ flex: 2, padding: 14, borderRadius: 12, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 600, background: '#b79fff', color: '#0d0a27', opacity: saving ? 0.5 : 1 }}>
                 {saving ? 'Salvando...' : `Conceder ${courtesyDays} dias`}
               </button>
             </div>
           </div>
         </div>
       )}
+
+      <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
     </div>
   );
 }
