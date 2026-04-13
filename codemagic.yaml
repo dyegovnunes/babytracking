@@ -38,9 +38,9 @@ workflows:
           /usr/libexec/PlistBuddy -c "Add :GADApplicationIdentifier string ca-app-pub-5445931232409285~9773184902" Info.plist || /usr/libexec/PlistBuddy -c "Set :GADApplicationIdentifier ca-app-pub-5445931232409285~9773184902" Info.plist
       - name: Set version and build number
         script: |
-          cd app/ios/App
-          agvtool new-marketing-version 1.6.2
-          agvtool new-version -all 30
+          PLIST="app/ios/App/App/Info.plist"
+          /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString 1.6.2" "$PLIST"
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion 30" "$PLIST"
       - name: Build iOS
         script: |
           cd app/ios/App
