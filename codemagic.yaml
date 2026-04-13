@@ -28,6 +28,9 @@ workflows:
       - name: Set up code signing
         script: |
           xcode-project use-profiles
+      - name: Set app icon
+        script: |
+          cp app/assets/app-icon-1024.png app/ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png
       - name: Configure iOS plist
         script: |
           cd app/ios/App/App
@@ -37,7 +40,7 @@ workflows:
         script: |
           cd app/ios/App
           agvtool new-marketing-version 1.6.1
-          agvtool new-version -all 26
+          agvtool new-version -all 27
       - name: Build iOS
         script: |
           cd app/ios/App
