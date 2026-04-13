@@ -2,10 +2,15 @@ import { AdMob, BannerAdSize, BannerAdPosition, RewardAdPluginEvents } from '@ca
 import type { BannerAdOptions, RewardAdOptions, AdMobRewardItem } from '@capacitor-community/admob';
 import { Capacitor } from '@capacitor/core';
 
-const AD_IDS = {
-  banner: 'ca-app-pub-5445931232409285/7747442352',
-  rewarded: 'ca-app-pub-5445931232409285/4421832054',
-};
+const AD_IDS = Capacitor.getPlatform() === 'ios'
+  ? {
+      banner: 'ca-app-pub-5445931232409285/8485808958',
+      rewarded: 'ca-app-pub-5445931232409285/6609011699',
+    }
+  : {
+      banner: 'ca-app-pub-5445931232409285/7747442352',
+      rewarded: 'ca-app-pub-5445931232409285/4421832054',
+    };
 
 let initialized = false;
 
