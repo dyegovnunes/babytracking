@@ -28,6 +28,11 @@ workflows:
       - name: Set up code signing
         script: |
           xcode-project use-profiles
+      - name: Set version and build number
+        script: |
+          cd app/ios/App
+          agvtool new-marketing-version 1.6.1
+          agvtool new-version -all 25
       - name: Build iOS
         script: |
           cd app/ios/App
