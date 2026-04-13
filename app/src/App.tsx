@@ -1,8 +1,11 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
+import { lazy, Suspense } from 'react'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { AppProvider, useAppState } from './contexts/AppContext'
 import { PurchaseProvider } from './contexts/PurchaseContext'
 import { Capacitor } from '@capacitor/core'
+
+const AdminApp = lazy(() => import('./admin/AdminApp'))
 import AppShell from './components/layout/AppShell'
 import TrackerPage from './pages/TrackerPage'
 import HistoryPage from './pages/HistoryPage'
@@ -68,6 +71,17 @@ function AppRoutes() {
 
   if (location.pathname.startsWith('/r/')) {
     return <SharedReportPage />
+  }
+
+  // Admin panel — completely independent auth
+  if (location.pathname.startsWith('/paineladmin')) {
+    return (
+      <Suspense fallback={<div className="min-h-screen bg-gray-950" />}>
+        <Routes>
+          <Route path="/paineladmin/*" element={<AdminApp />} />
+        </Routes>
+      </Suspense>
+    )
   }
 
   // On web: show landing page at root, login at /login
