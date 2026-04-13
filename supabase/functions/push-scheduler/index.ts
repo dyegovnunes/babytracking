@@ -51,7 +51,9 @@ serve(async (req) => {
 
     const now = new Date();
     const nowTs = now.getTime();
-    const currentHour = now.getUTCHours(); // Note: need to adjust for user timezone
+    // BRT = UTC-3 (all users are in Brazil for now)
+    const BRT_OFFSET = -3;
+    const brtHour = (now.getUTCHours() + BRT_OFFSET + 24) % 24;
 
     // 1. Get all babies with active tokens
     const { data: tokens } = await supabase
@@ -227,7 +229,7 @@ serve(async (req) => {
       const bathConfig = intervalMap.get(`${babyId}_bath`);
       if (bathConfig?.scheduled_hours) {
         const hours: number[] = JSON.parse(bathConfig.scheduled_hours);
-        const userHour = now.getHours(); // TODO: user timezone
+        const userHour = (now.getUTCHours() - 3 + 24) % 24; // BRT = UTC-3
         const userMinute = now.getMinutes();
 
         for (const h of hours) {
@@ -280,8 +282,8 @@ serve(async (req) => {
 function eventToCategory(eventId: string): string | null {
   if (eventId.startsWith('breast_') || eventId === 'bottle') return 'feed';
   if (eventId === 'diaper_wet' || eventId === 'diaper_dirty') return 'diaper';
-  if (eventId === 'sleep_start') return 'sleep_nap';
-  if (eventId === 'sleep_end') return 'sleep_awake';
+  if (eventId === 'sleep_start' || eventId === 'sleep') return 'sleep_nap';
+  if (eventId === 'sleep_end' || eventId === 'wake') return 'sleep_awake';
   if (eventId === 'bath') return 'bath';
   return null;
 }
@@ -296,7 +298,8 @@ function isCategoryEnabled(prefs: any, cat: string): boolean {
 
 function isInQuietHours(prefs: any, now: Date): boolean {
   if (!prefs.quiet_enabled) return false;
-  const hour = now.getHours(); // TODO: user timezone
+  // Convert UTC to BRT (UTC-3) — all users are in Brazil for now
+  const hour = (now.getUTCHours() - 3 + 24) % 24;
   const start = prefs.quiet_start ?? 22;
   const end = prefs.quiet_end ?? 7;
 
@@ -503,6 +506,11 @@ async function sendFCMPush(token: string, message: PushMessage): Promise<boolean
     if (res.ok) return true;
     const err = await res.text();
     console.error('FCM V1 error:', err);
+    // Remove stale tokens (UNREGISTERED, INVALID_ARGUMENT)
+    if (err.includes('UNREGISTERED') || err.includes('INVALID_ARGUMENT')) {
+      await supabase.from('push_tokens').delete().eq('token', token);
+      console.log('Removed stale token:', token.slice(0, 20));
+    }
     return false;
   } catch (error) {
     console.error('FCM send error:', error);

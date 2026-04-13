@@ -78,9 +78,16 @@ function dateStr(ts: number): string {
   return new Date(ts).toISOString().slice(0, 10);
 }
 
-function isDaytime(ts: number): boolean {
+function isDaytime(ts: number, nightStart: number, nightEnd: number): boolean {
   const h = new Date(ts).getHours();
-  return h >= 8 && h < 20;
+  // Night hours wrap overnight (e.g., 22-7): daytime is everything outside that range
+  if (nightStart > nightEnd) {
+    // Overnight: night = [nightStart..24) + [0..nightEnd)
+    return h >= nightEnd && h < nightStart;
+  } else {
+    // Same-day: night = [nightStart..nightEnd)
+    return h < nightStart || h >= nightEnd;
+  }
 }
 
 function computeSleepPairs(logs: LogEntry[]): { start: number; end: number }[] {
@@ -102,7 +109,7 @@ function computeSleepPairs(logs: LogEntry[]): { start: number; end: number }[] {
 }
 
 export function usePDFData(periodDays: number = 30): PDFData | null {
-  const { logs, baby } = useAppState();
+  const { logs, baby, quietHours } = useAppState();
   const [measurements, setMeasurements] = useState<Measurement[]>([]);
   const [loaded, setLoaded] = useState(false);
 
@@ -133,6 +140,10 @@ export function usePDFData(periodDays: number = 30): PDFData | null {
 
     const calendarDays = periodDays;
 
+    // Night period from parent settings (quiet hours), defaults to 22-7
+    const nightStart = quietHours.start ?? 22;
+    const nightEnd = quietHours.end ?? 7;
+
     // ── AMAMENTAÇÃO ──
     const feedLogs = periodLogs.filter((l) => FEED_IDS.has(l.eventId));
     const breastLeftCount = feedLogs.filter((l) => l.eventId === 'breast_left').length;
@@ -152,7 +163,7 @@ export function usePDFData(periodDays: number = 30): PDFData | null {
     for (let i = 1; i < sortedFeeds.length; i++) {
       const diff = (sortedFeeds[i].timestamp - sortedFeeds[i - 1].timestamp) / 60000;
       if (diff > 720) continue; // skip gaps > 12h
-      if (isDaytime(sortedFeeds[i - 1].timestamp)) {
+      if (isDaytime(sortedFeeds[i - 1].timestamp, nightStart, nightEnd)) {
         dayIntervals.push(diff);
       } else {
         nightIntervals.push(diff);
@@ -201,8 +212,8 @@ export function usePDFData(periodDays: number = 30): PDFData | null {
     const sleepPairs = computeSleepPairs(periodLogs);
 
     // Classify each pair as nocturnal or diurnal
-    const nocturnalPairs = sleepPairs.filter((p) => !isDaytime(p.start));
-    const diurnalPairs = sleepPairs.filter((p) => isDaytime(p.start));
+    const nocturnalPairs = sleepPairs.filter((p) => !isDaytime(p.start, nightStart, nightEnd));
+    const diurnalPairs = sleepPairs.filter((p) => isDaytime(p.start, nightStart, nightEnd));
 
     const totalNocturnal = nocturnalPairs.reduce((s, p) => s + (p.end - p.start) / 60000, 0);
     const totalDiurnal = diurnalPairs.reduce((s, p) => s + (p.end - p.start) / 60000, 0);
@@ -241,8 +252,8 @@ export function usePDFData(periodDays: number = 30): PDFData | null {
       const dayEnd = dayStart + 86400000;
       const ds = dateStr(dayStart);
       const dayPairs = sleepPairs.filter((p) => p.start >= dayStart && p.start < dayEnd);
-      const noct = dayPairs.filter((p) => !isDaytime(p.start)).reduce((s, p) => s + (p.end - p.start) / 60000, 0);
-      const diur = dayPairs.filter((p) => isDaytime(p.start)).reduce((s, p) => s + (p.end - p.start) / 60000, 0);
+      const noct = dayPairs.filter((p) => !isDaytime(p.start, nightStart, nightEnd)).reduce((s, p) => s + (p.end - p.start) / 60000, 0);
+      const diur = dayPairs.filter((p) => isDaytime(p.start, nightStart, nightEnd)).reduce((s, p) => s + (p.end - p.start) / 60000, 0);
       sleepDailyMinutes.push({ date: ds, nocturnal: noct, diurnal: diur });
     }
 
@@ -405,5 +416,5 @@ export function usePDFData(periodDays: number = 30): PDFData | null {
       growth,
       patterns,
     };
-  }, [logs, baby, measurements, loaded, periodDays]);
+  }, [logs, baby, measurements, loaded, periodDays, quietHours]);
 }
