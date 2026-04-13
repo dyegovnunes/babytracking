@@ -28,6 +28,11 @@ workflows:
       - name: Set up code signing
         script: |
           xcode-project use-profiles
+      - name: Configure iOS plist
+        script: |
+          cd app/ios/App/App
+          /usr/libexec/PlistBuddy -c "Add :ITSAppUsesNonExemptEncryption bool false" Info.plist || /usr/libexec/PlistBuddy -c "Set :ITSAppUsesNonExemptEncryption false" Info.plist
+          /usr/libexec/PlistBuddy -c "Add :GADApplicationIdentifier string ca-app-pub-5445931232409285~9773184902" Info.plist || /usr/libexec/PlistBuddy -c "Set :GADApplicationIdentifier ca-app-pub-5445931232409285~9773184902" Info.plist
       - name: Set version and build number
         script: |
           cd app/ios/App
@@ -45,6 +50,4 @@ workflows:
     publishing:
       app_store_connect:
         auth: integration
-        submit_to_testflight: true
-        beta_groups:
-          - Testadores
+        submit_to_testflight: false
