@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { getLocalDateString } from './formatters';
 
 export interface StreakData {
   currentStreak: number;
@@ -20,7 +21,7 @@ export const STREAK_BADGES = [
  * Chamar dentro de addLog no AppContext.
  */
 export async function updateStreak(babyId: string): Promise<StreakData> {
-  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+  const today = getLocalDateString(); // YYYY-MM-DD in LOCAL timezone
 
   // Buscar streak atual
   const { data: streak } = await supabase

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { getCurrentBadge, STREAK_BADGES, type StreakData } from '../lib/streak';
+import { getLocalDateString } from '../lib/formatters';
 
 interface StreakBadgeProps {
   streak: StreakData;
@@ -13,9 +14,9 @@ export default function StreakBadge({ streak }: StreakBadgeProps) {
   const badge = getCurrentBadge(streak.currentStreak);
   const nextBadge = STREAK_BADGES.find(b => streak.currentStreak < b.days);
 
-  // Check if streak is at risk (no log today after 20h)
+  // Check if streak is at risk (no log today after 20h LOCAL time)
   const now = new Date();
-  const today = now.toISOString().split('T')[0];
+  const today = getLocalDateString(now);
   const isAtRisk = streak.lastActiveDate !== today && now.getHours() >= 20;
 
   return (

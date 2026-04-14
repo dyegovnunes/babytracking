@@ -75,6 +75,8 @@ function AuthenticatedRoutes() {
         <Route path="insights" element={<InsightsPage />} />
         <Route path="profile" element={<ProfilePage />} />
         <Route path="settings" element={<SettingsPage />} />
+        {/* Catch-all: any unknown route falls back to the tracker instead of rendering blank */}
+        <Route path="*" element={<TrackerPage />} />
       </Route>
     </Routes>
   )
@@ -138,15 +140,33 @@ function PublicOrAuth() {
 
 function PushNavigationHandler() {
   const navigate = useNavigate()
+  const { user, loading: authLoading } = useAuth()
+  const { loading: dataLoading } = useAppState()
 
   useEffect(() => {
     function onPushNavigate(e: Event) {
       const { route } = (e as CustomEvent).detail
+      // If app still loading or no user, defer navigation. Store pending route.
+      if (authLoading || dataLoading || !user) {
+        ;(window as any).__pendingPushRoute = route
+        return
+      }
       navigate(route, { replace: true })
     }
     window.addEventListener('push-navigate', onPushNavigate)
     return () => window.removeEventListener('push-navigate', onPushNavigate)
-  }, [navigate])
+  }, [navigate, authLoading, dataLoading, user])
+
+  // When app finishes loading, replay any pending push navigation
+  useEffect(() => {
+    if (!authLoading && !dataLoading && user) {
+      const pending = (window as any).__pendingPushRoute
+      if (pending) {
+        ;(window as any).__pendingPushRoute = null
+        navigate(pending, { replace: true })
+      }
+    }
+  }, [authLoading, dataLoading, user, navigate])
 
   return null
 }
@@ -154,10 +174,10 @@ function PushNavigationHandler() {
 export default function App() {
   return (
     <BrowserRouter>
-      <PushNavigationHandler />
       <AuthProvider>
         <AppProvider>
           <PurchaseProvider>
+            <PushNavigationHandler />
             <AppRoutes />
           </PurchaseProvider>
         </AppProvider>

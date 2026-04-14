@@ -21,11 +21,35 @@ const FCM_PROJECT_ID = 'babytracking-492412';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+/** Computes today's date in Brazil local time (UTC-3) as YYYY-MM-DD */
+function getBrazilTodayString(now: Date): string {
+  const brazilMs = now.getTime() - 3 * 60 * 60 * 1000;
+  const brazilDate = new Date(brazilMs);
+  const y = brazilDate.getUTCFullYear();
+  const m = (brazilDate.getUTCMonth() + 1).toString().padStart(2, '0');
+  const d = brazilDate.getUTCDate().toString().padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+/** Returns the current hour (0-23) in Brazil local time */
+function getBrazilHour(now: Date): number {
+  return (now.getUTCHours() - 3 + 24) % 24;
+}
+
+/** Checks if current Brazil time is within quiet hours */
+function isInQuietHours(prefs: any, now: Date): boolean {
+  if (!prefs?.quiet_enabled) return false;
+  const hour = getBrazilHour(now);
+  const start = prefs.quiet_start ?? 22;
+  const end = prefs.quiet_end ?? 7;
+  if (start < end) return hour >= start && hour < end;
+  return hour >= start || hour < end;
+}
+
 serve(async (req) => {
   try {
     const now = new Date();
-    const todayStr = now.toISOString().split('T')[0];
-    const todayStart = new Date(todayStr + 'T00:00:00.000Z').getTime();
+    const todayStr = getBrazilTodayString(now);
 
     // 1. Get all active streaks
     const { data: streaks } = await supabase
@@ -56,10 +80,10 @@ serve(async (req) => {
       return jsonResponse({ sent: 0, reason: 'no tokens for at-risk babies' });
     }
 
-    // 3. Get notification prefs
+    // 3. Get notification prefs (including quiet hours and pause_during_sleep)
     const { data: allPrefs } = await supabase
       .from('notification_prefs')
-      .select('user_id, baby_id, enabled, streak_alerts')
+      .select('user_id, baby_id, enabled, streak_alerts, quiet_enabled, quiet_start, quiet_end, pause_during_sleep')
       .in('baby_id', babyIds);
 
     const prefsMap = new Map<string, any>();
@@ -108,6 +132,9 @@ serve(async (req) => {
 
       // Check streak_alerts toggle
       if (prefs && prefs.streak_alerts === false) continue;
+
+      // Respect quiet hours
+      if (prefs && isInQuietHours(prefs, now)) continue;
 
       // Check duplicate
       if (sentToday.has(`${token.user_id}_${token.baby_id}`)) continue;

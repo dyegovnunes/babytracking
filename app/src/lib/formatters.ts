@@ -30,6 +30,16 @@ export function parseLocalDate(dateStr: string): Date {
   return new Date(y, m - 1, d)
 }
 
+/** Returns today's date as YYYY-MM-DD in the user's LOCAL timezone (not UTC).
+ *  Critical for streak/day boundary logic: `new Date().toISOString()` returns UTC,
+ *  which in Brazil (UTC-3) already rolls over to the next day at 21:00 local time. */
+export function getLocalDateString(d: Date = new Date()): string {
+  const y = d.getFullYear()
+  const m = (d.getMonth() + 1).toString().padStart(2, '0')
+  const day = d.getDate().toString().padStart(2, '0')
+  return `${y}-${m}-${day}`
+}
+
 /** Format a birth date string (YYYY-MM-DD) to pt-BR locale */
 export function formatBirthDate(dateStr: string): string {
   return parseLocalDate(dateStr).toLocaleDateString('pt-BR')
