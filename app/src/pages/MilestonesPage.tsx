@@ -21,6 +21,7 @@ import MilestoneShareImage from '../components/milestones/MilestoneShareImage'
 import { PaywallModal } from '../components/ui/PaywallModal'
 import Toast from '../components/ui/Toast'
 import { hapticLight } from '../lib/haptics'
+import { contractionDe } from '../lib/genderUtils'
 
 type FilterMode = 'all' | 'achieved' | 'pending'
 
@@ -179,10 +180,10 @@ export default function MilestonesPage() {
         </button>
         <div className="flex-1 min-w-0">
           <h1 className="font-headline text-xl font-bold text-on-surface truncate">
-            Marcos de {baby.name}
+            Marcos {contractionDe(baby.gender)} {baby.name}
           </h1>
           <p className="font-label text-xs text-on-surface-variant">
-            Conquistas do desenvolvimento
+            Evoluções do desenvolvimento
           </p>
         </div>
       </section>

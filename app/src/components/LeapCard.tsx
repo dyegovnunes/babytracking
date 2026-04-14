@@ -14,12 +14,14 @@ function formatDDMM(date: Date): string {
 interface LeapCardProps {
   leap: DevelopmentLeap;
   babyName: string;
+  babyGender?: 'boy' | 'girl';
   birthDate: string;
   isUpcoming?: boolean;
   weeksUntil?: number;
 }
 
-export default function LeapCard({ leap, babyName, birthDate, isUpcoming }: LeapCardProps) {
+export default function LeapCard({ leap, babyName, babyGender, birthDate, isUpcoming }: LeapCardProps) {
+  const adjAgitado = babyGender === 'girl' ? 'agitada' : 'agitado';
   const [dismissed, setDismissed] = useState(false);
   const [showDetail, setShowDetail] = useState(false);
 
@@ -65,7 +67,7 @@ export default function LeapCard({ leap, babyName, birthDate, isUpcoming }: Leap
             <p className="text-xs text-[#e7e2ff]/60 mt-0.5">
               {isUpcoming
                 ? `${leap.subtitle} (${formatDDMM(weekToDate(birthDate, leap.weekStart))} — ${formatDDMM(weekToDate(birthDate, leap.weekEnd))})`
-                : `${babyName} pode estar mais agitado. Normal!`
+                : `${babyName} pode estar mais ${adjAgitado}. Normal!`
               }
             </p>
 

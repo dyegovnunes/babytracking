@@ -24,6 +24,9 @@ export default function SharedReports() {
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState(false);
+
+  const genderContraction = baby?.gender === 'boy' ? 'do' : baby?.gender === 'girl' ? 'da' : 'de';
 
   // Create form
   const [name, setName] = useState('');
@@ -104,7 +107,7 @@ export default function SharedReports() {
   const handleShareWhatsApp = (report: SharedReport) => {
     hapticLight();
     const url = getReportUrl(report.token);
-    const text = `Oi! Compartilhei o acompanhamento do(a) ${baby?.name} com voce. Acesse: ${url}`;
+    const text = `Oi! Compartilhei o acompanhamento ${genderContraction} ${baby?.name} com você. Acesse: ${url}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
   };
 
@@ -128,17 +131,31 @@ export default function SharedReports() {
     <>
       {/* Main card */}
       <div className="bg-surface-container rounded-lg p-4">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-3">
-            <span className="material-symbols-outlined text-primary text-xl">link</span>
-            <h3 className="text-on-surface font-headline text-sm font-bold">Super relatório {baby?.gender === 'boy' ? 'do' : baby?.gender === 'girl' ? 'da' : 'de'} {baby?.name}</h3>
+        <button
+          onClick={() => { hapticLight(); setExpanded(!expanded); }}
+          className="w-full flex items-start gap-3 text-left"
+        >
+          <span className="material-symbols-outlined text-primary text-xl mt-0.5">link</span>
+          <div className="flex-1 min-w-0">
+            <h3 className="text-on-surface font-headline text-sm font-bold">
+              Super relatório {genderContraction} {baby?.name}
+            </h3>
+            <p className="font-body text-xs text-on-surface-variant mt-0.5">
+              Crie links seguros para pediatras, consultoras ou babás acessarem o relatório pelo navegador.
+            </p>
+            {!expanded && reports.length > 0 && (
+              <p className="font-label text-[11px] text-primary mt-1.5">
+                {reports.length} {reports.length === 1 ? 'link ativo' : 'links ativos'}
+              </p>
+            )}
           </div>
-        </div>
+          <span className={`material-symbols-outlined text-on-surface-variant text-base transition-transform mt-0.5 ${expanded ? 'rotate-180' : ''}`}>
+            expand_more
+          </span>
+        </button>
 
-        <p className="font-body text-xs text-on-surface-variant mb-4">
-          Crie links seguros para pediatras, consultoras ou babas acessarem o relatorio pelo navegador.
-        </p>
-
+        {expanded && (
+        <div className="mt-4">
         {/* Existing reports list */}
         {loading ? (
           <div className="flex justify-center py-4">
@@ -244,6 +261,8 @@ export default function SharedReports() {
           <span className="material-symbols-outlined text-lg">add_link</span>
           Novo link de acesso
         </button>
+        </div>
+        )}
       </div>
 
       {/* Create bottom sheet */}
@@ -389,7 +408,7 @@ export default function SharedReports() {
                   <button
                     onClick={() => {
                       hapticLight();
-                      const text = `Oi! Compartilhei o acompanhamento do(a) ${baby?.name} com voce.\n\nAcesse: ${createdReport!.url}\nSenha: ${createdReport!.password}`;
+                      const text = `Oi! Compartilhei o acompanhamento ${genderContraction} ${baby?.name} com você.\n\nAcesse: ${createdReport!.url}\nSenha: ${createdReport!.password}`;
                       window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
                     }}
                     className="w-full py-3 rounded-xl bg-[#25D366] text-white font-semibold text-sm flex items-center justify-center gap-2"

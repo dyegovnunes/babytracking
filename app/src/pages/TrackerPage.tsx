@@ -21,6 +21,7 @@ import MilestoneHomeCard from '../components/milestones/MilestoneHomeCard'
 import { AdBanner } from '../components/ui/AdBanner'
 import { getActiveLeap, getUpcomingLeap } from '../lib/developmentLeaps'
 import { getAgeBand, getHighlightedEvents } from '../lib/ageUtils'
+import { contractionDe } from '../lib/genderUtils'
 import { useMilestones } from '../hooks/useMilestones'
 import { getNextMilestoneForHome, MILESTONES } from '../lib/milestoneData'
 
@@ -165,12 +166,13 @@ export default function TrackerPage() {
       {(activeLeap || showUpcoming) && baby && (
         <section className="px-5 mt-4">
           {activeLeap && (
-            <LeapCard leap={activeLeap} babyName={baby.name} birthDate={baby.birthDate} />
+            <LeapCard leap={activeLeap} babyName={baby.name} babyGender={baby.gender} birthDate={baby.birthDate} />
           )}
           {!activeLeap && showUpcoming && (
             <LeapCard
               leap={upcomingLeapInfo!.leap}
               babyName={baby.name}
+              babyGender={baby.gender}
               birthDate={baby.birthDate}
               isUpcoming
               weeksUntil={upcomingLeapInfo!.weeksUntil}
@@ -192,7 +194,7 @@ export default function TrackerPage() {
             onDismiss={(m) => {
               localStorage.setItem(`milestone_dismissed_${m.code}`, Date.now().toString())
               setMilestoneDismissTick((t) => t + 1)
-              setToast(`Você pode acessar os marcos no perfil do(a) ${baby.name}`)
+              setToast(`Você pode acessar os marcos no perfil ${contractionDe(baby.gender)} ${baby.name}`)
             }}
             onOpenAll={() => navigate('/marcos')}
           />

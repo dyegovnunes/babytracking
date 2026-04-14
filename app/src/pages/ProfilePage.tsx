@@ -9,6 +9,8 @@ import Toast from '../components/ui/Toast'
 import { AdBanner } from '../components/ui/AdBanner'
 import SharedReports from '../components/profile/SharedReports'
 import { supabase } from '../lib/supabase'
+import { hapticLight } from '../lib/haptics'
+import { contractionDe } from '../lib/genderUtils'
 
 interface Caregiver {
   userId: string
@@ -25,13 +27,14 @@ export default function ProfilePage() {
 
   // Caregivers
   const [caregivers, setCaregivers] = useState<Caregiver[]>([])
+  const [caregiversExpanded, setCaregiversExpanded] = useState(false)
 
   // Member management
   const [confirmRemove, setConfirmRemove] = useState<string | null>(null)
 
   // Invite
   const [inviteCode, setInviteCode] = useState<string | null>(null)
-  const [inviteId, setInviteId] = useState<string | null>(null)
+  const [, setInviteId] = useState<string | null>(null)
   const [generatingCode, setGeneratingCode] = useState(false)
 
   // Load active invite code
@@ -105,35 +108,27 @@ export default function ProfilePage() {
   }, [user, baby])
 
   const handleDeactivateCode = useCallback(async () => {
-    if (!inviteId && !baby) return
+    if (!baby) return
 
-    // Try by ID first, then fallback to deactivating all for this baby
-    if (inviteId) {
-      const { error } = await supabase
-        .from('invite_codes')
-        .update({ active: false })
-        .eq('id', inviteId)
+    // Deactivate ALL active codes for this baby (safer than relying on a stale inviteId).
+    // Use .select() to confirm at least one row was updated — so we can surface an error
+    // if RLS silently blocks the UPDATE.
+    const { data, error } = await supabase
+      .from('invite_codes')
+      .update({ active: false })
+      .eq('baby_id', baby.id)
+      .eq('active', true)
+      .select('id')
 
-      if (error) {
-        // Fallback: deactivate all active codes for this baby
-        await supabase
-          .from('invite_codes')
-          .update({ active: false })
-          .eq('baby_id', baby!.id)
-          .eq('active', true)
-      }
-    } else if (baby) {
-      await supabase
-        .from('invite_codes')
-        .update({ active: false })
-        .eq('baby_id', baby.id)
-        .eq('active', true)
+    if (error || !data || data.length === 0) {
+      setToast('Não foi possível desativar o código. Tente novamente.')
+      return
     }
 
     setInviteCode(null)
     setInviteId(null)
     setToast('Código desativado!')
-  }, [inviteId, baby])
+  }, [baby])
 
   const handleCopyCode = useCallback(() => {
     if (!inviteCode) return
@@ -143,7 +138,8 @@ export default function ProfilePage() {
 
   const handleShareWhatsApp = useCallback(() => {
     if (!inviteCode || !baby) return
-    const text = `Oi! Use o código *${inviteCode}* para acompanhar o(a) ${baby.name} no app Yaya. Baixe em yayababy.app`
+    const de = contractionDe(baby.gender)
+    const text = `Oi! Use o código *${inviteCode}* para acompanhar ${de} ${baby.name} no app Yaya. Baixe em yayababy.app`
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank')
   }, [inviteCode, baby])
 
@@ -202,21 +198,45 @@ export default function ProfilePage() {
           onClick={() => navigate('/marcos')}
           className="w-full bg-surface-container rounded-lg p-4 flex items-center gap-3 active:bg-surface-container-high transition-colors"
         >
-          <span className="text-xl">🎯</span>
+          <span className="material-symbols-outlined text-primary text-xl">flag</span>
           <div className="flex-1 text-left">
             <h3 className="text-on-surface font-headline text-sm font-bold">Marcos do Desenvolvimento</h3>
-            <p className="text-on-surface-variant font-label text-xs">Registre e acompanhe as conquistas</p>
+            <p className="text-on-surface-variant font-label text-xs">
+              Registre e acompanhe a evolução {contractionDe(baby.gender)} {baby.name}
+            </p>
           </div>
           <span className="material-symbols-outlined text-on-surface-variant text-lg">chevron_right</span>
         </button>
 
         {/* ===== CUIDADORES ===== */}
         <div className="bg-surface-container rounded-lg p-4">
-          <div className="flex items-center gap-3 mb-3">
-            <span className="material-symbols-outlined text-primary text-xl">group</span>
-            <h3 className="text-on-surface font-headline text-sm font-bold">Cuidadores</h3>
-          </div>
+          <button
+            onClick={() => { hapticLight(); setCaregiversExpanded(!caregiversExpanded) }}
+            className="w-full flex items-start gap-3 text-left"
+          >
+            <span className="material-symbols-outlined text-primary text-xl mt-0.5">group</span>
+            <div className="flex-1 min-w-0">
+              <h3 className="text-on-surface font-headline text-sm font-bold">Cuidadores</h3>
+              {!caregiversExpanded && (
+                <>
+                  <p className="font-body text-xs text-on-surface-variant mt-0.5 truncate">
+                    {caregivers.length > 0
+                      ? caregivers.map((c) => c.displayName.split(' ')[0]).join(', ')
+                      : 'Nenhum cuidador ainda'}
+                  </p>
+                  <p className="font-label text-[11px] text-primary mt-1">
+                    {inviteCode ? 'Código de convite ativo · toque para gerenciar' : 'Toque para convidar outro cuidador'}
+                  </p>
+                </>
+              )}
+            </div>
+            <span className={`material-symbols-outlined text-on-surface-variant text-base mt-0.5 transition-transform ${caregiversExpanded ? 'rotate-180' : ''}`}>
+              expand_more
+            </span>
+          </button>
 
+          {caregiversExpanded && (
+          <div className="mt-4">
           <div className="space-y-2 mb-4">
             {caregivers.map((c) => (
               <div key={c.userId} className="flex items-center gap-3 py-2">
@@ -284,6 +304,8 @@ export default function ProfilePage() {
               <span className="material-symbols-outlined text-lg">person_add</span>
               {generatingCode ? 'Gerando...' : 'Gerar código de convite'}
             </button>
+          )}
+          </div>
           )}
         </div>
 
