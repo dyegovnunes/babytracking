@@ -17,6 +17,7 @@ import OnboardingPage from './pages/OnboardingPage'
 import WelcomePage from './pages/WelcomePage'
 import SettingsPage from './pages/SettingsPage'
 import InsightsPage from './pages/InsightsPage'
+import MilestonesPage from './pages/MilestonesPage'
 import PrivacyPage from './pages/PrivacyPage'
 import SharedReportPage from './pages/SharedReportPage'
 
@@ -73,6 +74,7 @@ function AuthenticatedRoutes() {
         <Route index element={<TrackerPage />} />
         <Route path="history" element={<HistoryPage />} />
         <Route path="insights" element={<InsightsPage />} />
+        <Route path="marcos" element={<MilestonesPage />} />
         <Route path="profile" element={<ProfilePage />} />
         <Route path="settings" element={<SettingsPage />} />
         {/* Catch-all: any unknown route falls back to the tracker instead of rendering blank */}

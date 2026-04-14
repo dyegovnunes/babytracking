@@ -6,7 +6,7 @@ import { Capacitor } from '@capacitor/core';
 interface PaywallModalProps {
   isOpen: boolean;
   onClose: () => void;
-  trigger?: 'history' | 'insights' | 'pdf' | 'multi_caregiver' | 'multi_profile' | 'daily_limit' | 'generic' | 'shared_report';
+  trigger?: 'history' | 'insights' | 'pdf' | 'multi_caregiver' | 'multi_profile' | 'daily_limit' | 'generic' | 'shared_report' | 'milestones';
 }
 
 const TRIGGER_MESSAGES: Record<string, { title: string; description: string }> = {
@@ -37,6 +37,10 @@ const TRIGGER_MESSAGES: Record<string, { title: string; description: string }> =
   generic: {
     title: 'Yaya+',
     description: 'Desbloqueie o melhor do Yaya.',
+  },
+  milestones: {
+    title: 'Todos os marcos',
+    description: 'Veja e registre marcos de desenvolvimento até os 24 meses com o Yaya+.',
   },
 };
 

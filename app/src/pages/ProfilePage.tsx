@@ -1,4 +1,5 @@
 import { useCallback, useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAppState, useAppDispatch, updateBaby, updateMemberRole, removeMember } from '../contexts/AppContext'
 import { useAuth, signOut } from '../contexts/AuthContext'
 import type { Baby } from '../types'
@@ -19,6 +20,7 @@ export default function ProfilePage() {
   const { baby, members, loading } = useAppState()
   const { user } = useAuth()
   const dispatch = useAppDispatch()
+  const navigate = useNavigate()
   const [toast, setToast] = useState<string | null>(null)
 
   // Caregivers
@@ -194,6 +196,19 @@ export default function ProfilePage() {
 
         {/* ===== CRESCIMENTO ===== */}
         <GrowthSection babyId={baby.id} />
+
+        {/* ===== MARCOS DO DESENVOLVIMENTO ===== */}
+        <button
+          onClick={() => navigate('/marcos')}
+          className="w-full bg-surface-container rounded-lg p-4 flex items-center gap-3 active:bg-surface-container-high transition-colors"
+        >
+          <span className="text-xl">🎯</span>
+          <div className="flex-1 text-left">
+            <h3 className="text-on-surface font-headline text-sm font-bold">Marcos do Desenvolvimento</h3>
+            <p className="text-on-surface-variant font-label text-xs">Registre e acompanhe as conquistas</p>
+          </div>
+          <span className="material-symbols-outlined text-on-surface-variant text-lg">chevron_right</span>
+        </button>
 
         {/* ===== CUIDADORES ===== */}
         <div className="bg-surface-container rounded-lg p-4">

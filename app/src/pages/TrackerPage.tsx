@@ -1,4 +1,5 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAppState, useAppDispatch, addLog, updateLog, deleteLog } from '../contexts/AppContext'
 import { useAuth } from '../contexts/AuthContext'
 import { DEFAULT_EVENTS } from '../lib/constants'
@@ -16,9 +17,12 @@ import { RewardedAdModal } from '../components/ui/RewardedAdModal'
 import { PaywallModal } from '../components/ui/PaywallModal'
 import { useDailyLimit } from '../hooks/useDailyLimit'
 import LeapCard from '../components/LeapCard'
+import MilestoneHomeCard from '../components/milestones/MilestoneHomeCard'
 import { AdBanner } from '../components/ui/AdBanner'
 import { getActiveLeap, getUpcomingLeap } from '../lib/developmentLeaps'
 import { getAgeBand, getHighlightedEvents } from '../lib/ageUtils'
+import { useMilestones } from '../hooks/useMilestones'
+import { getNextMilestoneForHome, MILESTONES } from '../lib/milestoneData'
 
 import { TrackerSkeleton } from '../components/ui/Skeleton'
 import type { LogEntry } from '../types'
@@ -30,6 +34,26 @@ export default function TrackerPage() {
   const dispatch = useAppDispatch()
   const { user } = useAuth()
   const now = useTimer()
+  const navigate = useNavigate()
+
+  // Milestones (home card)
+  const { achievedCodes, ageDays } = useMilestones(baby?.id, baby?.birthDate)
+  const [milestoneDismissTick, setMilestoneDismissTick] = useState(0)
+  const dismissedMilestoneCodes = useMemo(() => {
+    void milestoneDismissTick
+    const set = new Set<string>()
+    const FOURTEEN_DAYS = 14 * 86400000
+    MILESTONES.forEach((m) => {
+      const ts = localStorage.getItem(`milestone_dismissed_${m.code}`)
+      if (ts && Date.now() - parseInt(ts, 10) < FOURTEEN_DAYS) {
+        set.add(m.code)
+      }
+    })
+    return set
+  }, [milestoneDismissTick])
+  const nextMilestone = baby?.birthDate
+    ? getNextMilestoneForHome(achievedCodes, ageDays, dismissedMilestoneCodes)
+    : null
 
   const [bottleModalOpen, setBottleModalOpen] = useState(false)
   const [editingLog, setEditingLog] = useState<LogEntry | null>(null)
@@ -152,6 +176,26 @@ export default function TrackerPage() {
               weeksUntil={upcomingLeapInfo!.weeksUntil}
             />
           )}
+        </section>
+      )}
+
+      {/* Milestone Home Card */}
+      {nextMilestone && baby && (
+        <section className="px-5 mt-3">
+          <MilestoneHomeCard
+            milestone={nextMilestone}
+            babyName={baby.name}
+            babyGender={baby.gender}
+            onRegister={(m) => {
+              navigate(`/marcos?register=${m.code}`)
+            }}
+            onDismiss={(m) => {
+              localStorage.setItem(`milestone_dismissed_${m.code}`, Date.now().toString())
+              setMilestoneDismissTick((t) => t + 1)
+              setToast(`Você pode acessar os marcos no perfil do(a) ${baby.name}`)
+            }}
+            onOpenAll={() => navigate('/marcos')}
+          />
         </section>
       )}
 
