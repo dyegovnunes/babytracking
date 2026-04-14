@@ -6,9 +6,10 @@ interface Props {
   events: EventType[]
   logs: LogEntry[]
   onLog: (eventId: string) => void
+  highlightedEventIds?: string[]
 }
 
-export default function ActivityGrid({ events, logs, onLog }: Props) {
+export default function ActivityGrid({ events, logs, onLog, highlightedEventIds = [] }: Props) {
   const { lastLogByEvent, mostRecentEventId, breastLeftLog, breastRightLog } = useMemo(() => {
     const byEvent: Record<string, LogEntry> = {}
     let mostRecent: LogEntry | undefined
@@ -48,6 +49,7 @@ export default function ActivityGrid({ events, logs, onLog }: Props) {
             onPress={() => onLog(event.id)}
             isMostRecent={event.id === mostRecentEventId}
             bothBreastsLog={getBothBreastsLog(event.id)}
+            highlighted={highlightedEventIds.includes(event.id)}
           />
         ))}
       </div>

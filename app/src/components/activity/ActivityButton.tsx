@@ -9,6 +9,8 @@ interface Props {
   isMostRecent?: boolean
   /** For breast_left/breast_right: the last log of the opposite breast */
   bothBreastsLog?: LogEntry
+  /** Whether this button is highlighted for the current age band */
+  highlighted?: boolean
 }
 
 const colorMap: Record<string, string> = {
@@ -23,7 +25,7 @@ const badgeColorMap: Record<string, string> = {
   secondary: 'bg-secondary text-surface',
 }
 
-export default function ActivityButton({ event, lastLog, onPress, isMostRecent, bothBreastsLog }: Props) {
+export default function ActivityButton({ event, lastLog, onPress, isMostRecent, bothBreastsLog, highlighted }: Props) {
   const iconClasses = colorMap[event.color] ?? colorMap.primary
   const badgeClasses = badgeColorMap[event.color] ?? badgeColorMap.primary
 
@@ -52,7 +54,7 @@ export default function ActivityButton({ event, lastLog, onPress, isMostRecent, 
   return (
     <button
       onClick={onPress}
-      className={`flex flex-col items-center gap-1.5 p-3 rounded-lg bg-surface-container-high active:scale-95 active:bg-primary-dim/20 transition-all h-[108px] justify-center ${isMostRecent ? 'ring-2 ring-primary/40' : ''}`}
+      className={`flex flex-col items-center gap-1.5 p-3 rounded-lg active:scale-95 active:bg-primary-dim/20 transition-all h-[108px] justify-center ${isMostRecent ? 'ring-2 ring-primary/40' : ''} ${highlighted && !isMostRecent ? 'bg-primary/8 border border-primary/[0.38]' : 'bg-surface-container-high'}`}
     >
       <div className="relative">
         <div className={`w-12 h-12 rounded-full flex items-center justify-center ${iconClasses}`}>

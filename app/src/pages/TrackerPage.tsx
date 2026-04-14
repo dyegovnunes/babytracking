@@ -18,6 +18,7 @@ import { useDailyLimit } from '../hooks/useDailyLimit'
 import LeapCard from '../components/LeapCard'
 import { AdBanner } from '../components/ui/AdBanner'
 import { getActiveLeap, getUpcomingLeap } from '../lib/developmentLeaps'
+import { getAgeBand, getHighlightedEvents } from '../lib/ageUtils'
 
 import { TrackerSkeleton } from '../components/ui/Skeleton'
 import type { LogEntry } from '../types'
@@ -121,6 +122,10 @@ export default function TrackerPage() {
     return <TrackerSkeleton />
   }
 
+  // Age-based highlights
+  const band = baby?.birthDate ? getAgeBand(baby.birthDate) : 'beyond'
+  const highlightedEventIds = getHighlightedEvents(band)
+
   // Development leaps
   const activeLeap = baby?.birthDate ? getActiveLeap(baby.birthDate) : null;
   const upcomingLeapInfo = baby?.birthDate ? getUpcomingLeap(baby.birthDate) : null;
@@ -130,7 +135,7 @@ export default function TrackerPage() {
     <div className="pb-4 page-enter">
       <HeroIdentity streak={streak} />
 
-      <ActivityGrid events={DEFAULT_EVENTS} logs={logs} onLog={handleLog} />
+      <ActivityGrid events={DEFAULT_EVENTS} logs={logs} onLog={handleLog} highlightedEventIds={highlightedEventIds} />
 
       {/* Development Leap Card */}
       {(activeLeap || showUpcoming) && baby && (

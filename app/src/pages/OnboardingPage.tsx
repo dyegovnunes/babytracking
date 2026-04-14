@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
+import { getDefaultIntervals } from '../lib/ageUtils'
 
 interface Props {
   onComplete: () => void
@@ -56,14 +57,7 @@ export default function OnboardingPage({ onComplete }: Props) {
       return
     }
 
-    const defaultIntervals = [
-      { baby_id: baby.id, category: 'feed', minutes: 180, warn: 150, mode: 'interval', scheduled_hours: null },
-      { baby_id: baby.id, category: 'diaper', minutes: 120, warn: 90, mode: 'interval', scheduled_hours: null },
-      { baby_id: baby.id, category: 'bath', minutes: 0, warn: 15, mode: 'scheduled', scheduled_hours: '[18]' },
-      { baby_id: baby.id, category: 'sleep_nap', minutes: 90, warn: 75, mode: 'interval', scheduled_hours: null },
-      { baby_id: baby.id, category: 'sleep_awake', minutes: 120, warn: 100, mode: 'interval', scheduled_hours: null },
-    ]
-
+    const defaultIntervals = getDefaultIntervals(baby.id, birthDate)
     await supabase.from('interval_configs').insert(defaultIntervals)
 
     setLoading(false)

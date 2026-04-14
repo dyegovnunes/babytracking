@@ -1,9 +1,10 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
-import { AppProvider, useAppState } from './contexts/AppContext'
+import { AppProvider, useAppState, useAppDispatch } from './contexts/AppContext'
 import { PurchaseProvider } from './contexts/PurchaseContext'
 import { Capacitor } from '@capacitor/core'
+import { supabase } from './lib/supabase'
 
 const AdminApp = lazy(() => import('./admin/AdminApp'))
 import AppShell from './components/layout/AppShell'
@@ -13,6 +14,7 @@ import ProfilePage from './pages/ProfilePage'
 import LoginPage from './pages/LoginPage'
 import LandingPage from './pages/LandingPage'
 import OnboardingPage from './pages/OnboardingPage'
+import WelcomePage from './pages/WelcomePage'
 import SettingsPage from './pages/SettingsPage'
 import InsightsPage from './pages/InsightsPage'
 import PrivacyPage from './pages/PrivacyPage'
@@ -22,7 +24,8 @@ const isNative = Capacitor.isNativePlatform()
 
 function AuthenticatedRoutes() {
   const { user, loading: authLoading } = useAuth()
-  const { needsOnboarding, loading: dataLoading } = useAppState()
+  const { needsOnboarding, needsWelcome, loading: dataLoading, baby } = useAppState()
+  const dispatch = useAppDispatch()
 
   // Auth loading or data loading — show logo splash
   if (authLoading || (!user ? false : dataLoading)) {
@@ -45,6 +48,22 @@ function AuthenticatedRoutes() {
   // Needs onboarding (no baby created yet)
   if (needsOnboarding) {
     return <OnboardingPage onComplete={() => window.location.reload()} />
+  }
+
+  // Welcome screen for parents who haven't seen it yet
+  if (needsWelcome && baby) {
+    return (
+      <WelcomePage
+        baby={baby}
+        onComplete={async () => {
+          await supabase
+            .from('profiles')
+            .update({ welcome_shown_at: new Date().toISOString() })
+            .eq('id', user!.id)
+          dispatch({ type: 'SET_WELCOME_SHOWN' })
+        }}
+      />
+    )
   }
 
   // Main app

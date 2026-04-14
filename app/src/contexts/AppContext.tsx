@@ -15,13 +15,14 @@ interface AppState {
   members: Record<string, Member>
   loading: boolean
   needsOnboarding: boolean
+  needsWelcome: boolean
   pauseDuringSleep: boolean
   quietHours: { enabled: boolean; start: number; end: number }
   streak: StreakData | null
 }
 
 type Action =
-  | { type: 'SET_INITIAL'; logs: LogEntry[]; intervals: Record<string, IntervalConfig>; baby: Baby; babies: Baby[]; members: Record<string, Member> }
+  | { type: 'SET_INITIAL'; logs: LogEntry[]; intervals: Record<string, IntervalConfig>; baby: Baby; babies: Baby[]; members: Record<string, Member>; needsWelcome?: boolean }
   | { type: 'SET_NO_BABY' }
   | { type: 'SET_LOADING' }
   | { type: 'ADD_LOG'; log: LogEntry }
@@ -36,6 +37,7 @@ type Action =
   | { type: 'SET_PAUSE_DURING_SLEEP'; value: boolean }
   | { type: 'SET_QUIET_HOURS'; value: { enabled: boolean; start: number; end: number } }
   | { type: 'SET_STREAK'; streak: StreakData | null }
+  | { type: 'SET_WELCOME_SHOWN' }
 
 const initialState: AppState = {
   logs: [],
@@ -45,6 +47,7 @@ const initialState: AppState = {
   members: {},
   loading: true,
   needsOnboarding: false,
+  needsWelcome: false,
   pauseDuringSleep: true,
   quietHours: { enabled: false, start: 22, end: 7 },
   streak: null,
@@ -53,7 +56,7 @@ const initialState: AppState = {
 function reducer(state: AppState, action: Action): AppState {
   switch (action.type) {
     case 'SET_INITIAL':
-      return { ...state, logs: action.logs, intervals: action.intervals, baby: action.baby, babies: action.babies, members: action.members, loading: false, needsOnboarding: false }
+      return { ...state, logs: action.logs, intervals: action.intervals, baby: action.baby, babies: action.babies, members: action.members, loading: false, needsOnboarding: false, needsWelcome: action.needsWelcome ?? false }
     case 'SET_NO_BABY':
       return { ...state, loading: false, needsOnboarding: true }
     case 'SET_LOADING':
@@ -84,6 +87,8 @@ function reducer(state: AppState, action: Action): AppState {
       return { ...state, quietHours: action.value }
     case 'SET_STREAK':
       return { ...state, streak: action.streak }
+    case 'SET_WELCOME_SHOWN':
+      return { ...state, needsWelcome: false }
     default:
       return state
   }
@@ -185,7 +190,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
         }
       }
 
-      dispatch({ type: 'SET_INITIAL', logs, intervals, baby, babies: allBabies, members })
+      // Check if user needs welcome screen (parent who hasn't seen it)
+      const myRole = members[user!.id]?.role
+      let needsWelcome = false
+      if (myRole === 'parent') {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('welcome_shown_at')
+          .eq('id', user!.id)
+          .single()
+        needsWelcome = !profile?.welcome_shown_at
+      }
+
+      dispatch({ type: 'SET_INITIAL', logs, intervals, baby, babies: allBabies, members, needsWelcome })
 
       // Init push notifications if user has logs (not first-time user)
       if (logs.length > 0) {
