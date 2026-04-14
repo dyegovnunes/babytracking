@@ -6,20 +6,33 @@ import { PurchaseProvider } from './contexts/PurchaseContext'
 import { Capacitor } from '@capacitor/core'
 import { supabase } from './lib/supabase'
 
-const AdminApp = lazy(() => import('./admin/AdminApp'))
+// Critical routes — loaded eagerly so first paint is immediate
 import AppShell from './components/layout/AppShell'
 import TrackerPage from './pages/TrackerPage'
-import HistoryPage from './pages/HistoryPage'
-import ProfilePage from './pages/ProfilePage'
 import LoginPage from './pages/LoginPage'
-import LandingPage from './pages/LandingPage'
-import OnboardingPage from './pages/OnboardingPage'
-import WelcomePage from './pages/WelcomePage'
-import SettingsPage from './pages/SettingsPage'
-import InsightsPage from './pages/InsightsPage'
-import MilestonesPage from './pages/MilestonesPage'
-import PrivacyPage from './pages/PrivacyPage'
-import SharedReportPage from './pages/SharedReportPage'
+
+// Heavy/secondary routes — lazy-loaded to shrink the initial bundle
+const AdminApp = lazy(() => import('./admin/AdminApp'))
+const HistoryPage = lazy(() => import('./pages/HistoryPage'))
+const ProfilePage = lazy(() => import('./pages/ProfilePage'))
+const LandingPage = lazy(() => import('./pages/LandingPage'))
+const OnboardingPage = lazy(() => import('./pages/OnboardingPage'))
+const WelcomePage = lazy(() => import('./pages/WelcomePage'))
+const SettingsPage = lazy(() => import('./pages/SettingsPage'))
+const InsightsPage = lazy(() => import('./pages/InsightsPage'))
+const MilestonesPage = lazy(() => import('./pages/MilestonesPage'))
+const PrivacyPage = lazy(() => import('./pages/PrivacyPage'))
+const SharedReportPage = lazy(() => import('./pages/SharedReportPage'))
+
+function RouteFallback() {
+  return (
+    <div className="min-h-screen bg-surface flex items-center justify-center">
+      <span className="material-symbols-outlined text-primary text-4xl animate-spin">
+        progress_activity
+      </span>
+    </div>
+  )
+}
 
 const isNative = Capacitor.isNativePlatform()
 
@@ -48,39 +61,47 @@ function AuthenticatedRoutes() {
 
   // Needs onboarding (no baby created yet)
   if (needsOnboarding) {
-    return <OnboardingPage onComplete={() => window.location.reload()} />
+    return (
+      <Suspense fallback={<RouteFallback />}>
+        <OnboardingPage onComplete={() => window.location.reload()} />
+      </Suspense>
+    )
   }
 
   // Welcome screen for parents who haven't seen it yet
   if (needsWelcome && baby) {
     return (
-      <WelcomePage
-        baby={baby}
-        onComplete={async () => {
-          await supabase
-            .from('profiles')
-            .update({ welcome_shown_at: new Date().toISOString() })
-            .eq('id', user!.id)
-          dispatch({ type: 'SET_WELCOME_SHOWN' })
-        }}
-      />
+      <Suspense fallback={<RouteFallback />}>
+        <WelcomePage
+          baby={baby}
+          onComplete={async () => {
+            await supabase
+              .from('profiles')
+              .update({ welcome_shown_at: new Date().toISOString() })
+              .eq('id', user!.id)
+            dispatch({ type: 'SET_WELCOME_SHOWN' })
+          }}
+        />
+      </Suspense>
     )
   }
 
   // Main app
   return (
-    <Routes>
-      <Route element={<AppShell />}>
-        <Route index element={<TrackerPage />} />
-        <Route path="history" element={<HistoryPage />} />
-        <Route path="insights" element={<InsightsPage />} />
-        <Route path="marcos" element={<MilestonesPage />} />
-        <Route path="profile" element={<ProfilePage />} />
-        <Route path="settings" element={<SettingsPage />} />
-        {/* Catch-all: any unknown route falls back to the tracker instead of rendering blank */}
-        <Route path="*" element={<TrackerPage />} />
-      </Route>
-    </Routes>
+    <Suspense fallback={<RouteFallback />}>
+      <Routes>
+        <Route element={<AppShell />}>
+          <Route index element={<TrackerPage />} />
+          <Route path="history" element={<HistoryPage />} />
+          <Route path="insights" element={<InsightsPage />} />
+          <Route path="marcos" element={<MilestonesPage />} />
+          <Route path="profile" element={<ProfilePage />} />
+          <Route path="settings" element={<SettingsPage />} />
+          {/* Catch-all: any unknown route falls back to the tracker instead of rendering blank */}
+          <Route path="*" element={<TrackerPage />} />
+        </Route>
+      </Routes>
+    </Suspense>
   )
 }
 
@@ -89,11 +110,19 @@ function AppRoutes() {
 
   // Public routes (no auth required)
   if (location.pathname === '/privacy') {
-    return <PrivacyPage />
+    return (
+      <Suspense fallback={<RouteFallback />}>
+        <PrivacyPage />
+      </Suspense>
+    )
   }
 
   if (location.pathname.startsWith('/r/')) {
-    return <SharedReportPage />
+    return (
+      <Suspense fallback={<RouteFallback />}>
+        <SharedReportPage />
+      </Suspense>
+    )
   }
 
   // Admin panel — completely independent auth
@@ -137,7 +166,11 @@ function PublicOrAuth() {
   }
 
   // Not logged in on web → show landing page
-  return <LandingPage />
+  return (
+    <Suspense fallback={<RouteFallback />}>
+      <LandingPage />
+    </Suspense>
+  )
 }
 
 function PushNavigationHandler() {
