@@ -1,4 +1,4 @@
-import { supabase } from './supabase'
+import { supabase } from '../../lib/supabase'
 
 export async function hashPassword(password: string): Promise<string> {
   const encoder = new TextEncoder()

@@ -1,11 +1,11 @@
 import { useState, useRef } from 'react'
-import type { Baby } from '../../types'
-import { formatAge, formatBirthDate } from '../../lib/formatters'
-import { supabase } from '../../lib/supabase'
-import ImageCropModal from '../ui/ImageCropModal'
-import { usePremium } from '../../hooks/usePremium'
-import { showRewardedAd } from '../../lib/admob'
-import { useSheetBackClose } from '../../hooks/useSheetBackClose'
+import type { Baby } from '../../../types'
+import { formatAge, formatBirthDate } from '../../../lib/formatters'
+import { supabase } from '../../../lib/supabase'
+import ImageCropModal from '../../../components/ui/ImageCropModal'
+import { usePremium } from '../../../hooks/usePremium'
+import { showRewardedAd } from '../../../lib/admob'
+import { useSheetBackClose } from '../../../hooks/useSheetBackClose'
 
 interface Props {
   baby: Baby

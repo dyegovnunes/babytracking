@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useAppState } from '../../contexts/AppContext';
-import { useAuth } from '../../contexts/AuthContext';
-import { usePremium } from '../../hooks/usePremium';
-import { useSheetBackClose } from '../../hooks/useSheetBackClose';
-import { PaywallModal } from '../ui/PaywallModal';
+import { useAppState } from '../../../contexts/AppContext';
+import { useAuth } from '../../../contexts/AuthContext';
+import { usePremium } from '../../../hooks/usePremium';
+import { useSheetBackClose } from '../../../hooks/useSheetBackClose';
+import { PaywallModal } from '../../../components/ui/PaywallModal';
 import {
   createSharedReport,
   listSharedReports,
@@ -12,8 +12,8 @@ import {
   getReportUrl,
   getExpirationDate,
   type SharedReport,
-} from '../../lib/sharedReports';
-import { hapticLight, hapticMedium, hapticSuccess } from '../../lib/haptics';
+} from '../sharedReports';
+import { hapticLight, hapticMedium, hapticSuccess } from '../../../lib/haptics';
 
 export default function SharedReports() {
   const { baby } = useAppState();

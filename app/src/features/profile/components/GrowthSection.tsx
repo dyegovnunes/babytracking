@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '../../lib/supabase';
-import { hapticSuccess, hapticLight } from '../../lib/haptics';
-import { usePremium } from '../../hooks/usePremium';
-import { showRewardedAd } from '../../lib/admob';
+import { supabase } from '../../../lib/supabase';
+import { hapticSuccess, hapticLight } from '../../../lib/haptics';
+import { usePremium } from '../../../hooks/usePremium';
+import { showRewardedAd } from '../../../lib/admob';
 
 interface Measurement {
   id: string;
