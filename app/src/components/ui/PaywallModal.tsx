@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { usePurchase } from '../../contexts/PurchaseContext';
 import { getAvailablePackages, type PlanType } from '../../lib/purchases';
+import { useSheetBackClose } from '../../hooks/useSheetBackClose';
 import { Capacitor } from '@capacitor/core';
 
 interface PaywallModalProps {
@@ -75,6 +76,8 @@ export function PaywallModal({ isOpen, onClose, trigger = 'generic' }: PaywallMo
   const [error, setError] = useState<string | null>(null);
   const [selectedPlan, setSelectedPlan] = useState<PlanType>('annual');
   const [plans, setPlans] = useState<PlanOption[]>(FALLBACK_PLANS);
+
+  useSheetBackClose(isOpen, onClose);
 
   useEffect(() => {
     if (!isOpen || Capacitor.getPlatform() === 'web') return;

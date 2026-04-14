@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import type { DevelopmentLeap } from '../lib/developmentLeaps';
 import { DEVELOPMENT_LEAPS } from '../lib/developmentLeaps';
+import { useSheetBackClose } from '../hooks/useSheetBackClose';
 
 function weekToDate(birthDate: string, week: number): Date {
   const birth = new Date(birthDate);
@@ -168,6 +169,7 @@ function LeapTimeline({ currentLeapId, babyAgeWeeks, birthDate }: { currentLeapI
 }
 
 function LeapDetail({ leap, onClose, birthDate, babyAgeWeeks }: { leap: DevelopmentLeap; babyName?: string; birthDate: string; babyAgeWeeks: number; onClose: () => void }) {
+  useSheetBackClose(true, onClose);
   return (
     <div
       className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-sm"

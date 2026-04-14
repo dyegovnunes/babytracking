@@ -11,6 +11,7 @@ import SharedReports from '../components/profile/SharedReports'
 import { supabase } from '../lib/supabase'
 import { hapticLight } from '../lib/haptics'
 import { contractionDe } from '../lib/genderUtils'
+import { useSheetBackClose } from '../hooks/useSheetBackClose'
 
 interface Caregiver {
   userId: string
@@ -43,6 +44,7 @@ export default function ProfilePage() {
 
   // Member management
   const [confirmRemove, setConfirmRemove] = useState<string | null>(null)
+  useSheetBackClose(!!confirmRemove, () => setConfirmRemove(null))
 
   // Invite
   const [inviteCode, setInviteCode] = useState<string | null>(null)

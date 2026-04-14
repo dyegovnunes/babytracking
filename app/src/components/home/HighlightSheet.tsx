@@ -4,6 +4,7 @@ import type { Highlight } from '../../lib/highlights'
 import { dismissHighlight } from '../../lib/highlights'
 import { hapticLight, hapticMedium } from '../../lib/haptics'
 import { contractionDe } from '../../lib/genderUtils'
+import { useSheetBackClose } from '../../hooks/useSheetBackClose'
 
 interface Props {
   highlight: Highlight
@@ -36,6 +37,7 @@ export default function HighlightSheet({
   onNavigated,
 }: Props) {
   const navigate = useNavigate()
+  useSheetBackClose(true, onClose)
 
   // Travar scroll do body enquanto o sheet está aberto
   useEffect(() => {
@@ -121,7 +123,7 @@ export default function HighlightSheet({
             onClick={handleDismiss}
             className="flex-1 py-3 rounded-md bg-surface-variant/50 text-on-surface-variant font-label text-xs font-semibold active:bg-surface-variant"
           >
-            Dispensar por {highlight.dismissDays}d
+            Dispensar
           </button>
           {content.seeMoreLabel && (
             <button

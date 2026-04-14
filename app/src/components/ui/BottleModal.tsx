@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useSheetBackClose } from '../../hooks/useSheetBackClose'
 
 interface Props {
   onConfirm: (ml: number) => void
@@ -9,6 +10,7 @@ const quickAmounts = [30, 60, 90, 120]
 
 export default function BottleModal({ onConfirm, onClose }: Props) {
   const [amount, setAmount] = useState('60')
+  useSheetBackClose(true, onClose)
 
   return (
     <div

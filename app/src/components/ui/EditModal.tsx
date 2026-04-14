@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState } from 'react'
 import type { LogEntry } from '../../types'
 import { DEFAULT_EVENTS } from '../../lib/constants'
+import { useSheetBackClose } from '../../hooks/useSheetBackClose'
 
 interface Props {
   log: LogEntry
@@ -17,19 +18,7 @@ const BREAST_SIDES = [
 ]
 
 export default function EditModal({ log, onSave, onDelete, onClose, onAddBottle }: Props) {
-  // Android back button: close modal instead of navigating
-  const stableOnClose = useCallback(onClose, [])
-  useEffect(() => {
-    window.history.pushState({ modal: 'edit' }, '')
-    const handlePopState = () => { stableOnClose() }
-    window.addEventListener('popstate', handlePopState)
-    return () => {
-      window.removeEventListener('popstate', handlePopState)
-      if (window.history.state?.modal === 'edit') {
-        window.history.back()
-      }
-    }
-  }, [stableOnClose])
+  useSheetBackClose(true, onClose)
 
   const isBreast = log.eventId.startsWith('breast_')
   const [selectedSide, setSelectedSide] = useState(log.eventId)

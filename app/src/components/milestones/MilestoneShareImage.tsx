@@ -4,6 +4,7 @@ import { Filesystem, Directory } from '@capacitor/filesystem'
 import { Capacitor } from '@capacitor/core'
 import type { Milestone } from '../../lib/milestoneData'
 import { formatAgeAtDate } from '../../lib/milestoneData'
+import { useSheetBackClose } from '../../hooks/useSheetBackClose'
 
 interface Props {
   milestone: Milestone
@@ -217,6 +218,7 @@ export default function MilestoneShareImage({
   const [dataUrl, setDataUrl] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  useSheetBackClose(true, onClose)
 
   useEffect(() => {
     let cancelled = false

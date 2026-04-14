@@ -22,6 +22,7 @@ import { PaywallModal } from '../components/ui/PaywallModal'
 import Toast from '../components/ui/Toast'
 import { hapticLight } from '../lib/haptics'
 import { contractionDe } from '../lib/genderUtils'
+import { useSheetBackClose } from '../hooks/useSheetBackClose'
 
 type FilterMode = 'all' | 'achieved' | 'pending'
 
@@ -472,6 +473,7 @@ function MilestoneDetailModal({
   onShare: () => void
 }) {
   const [confirmDelete, setConfirmDelete] = useState(false)
+  useSheetBackClose(true, onClose)
   const leapInfo = getLeapAtDate(birthDate, entry.achievedAt)
   const dateLabel = new Date(entry.achievedAt + 'T12:00:00').toLocaleDateString(
     'pt-BR',

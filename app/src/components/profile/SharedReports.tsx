@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAppState } from '../../contexts/AppContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { usePremium } from '../../hooks/usePremium';
+import { useSheetBackClose } from '../../hooks/useSheetBackClose';
 import { PaywallModal } from '../ui/PaywallModal';
 import {
   createSharedReport,
@@ -25,6 +26,9 @@ export default function SharedReports() {
   const [showCreate, setShowCreate] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
+
+  useSheetBackClose(showCreate, () => setShowCreate(false));
+  useSheetBackClose(!!confirmDelete, () => setConfirmDelete(null));
 
   const genderContraction = baby?.gender === 'boy' ? 'do' : baby?.gender === 'girl' ? 'da' : 'de';
 

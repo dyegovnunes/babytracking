@@ -6,12 +6,14 @@ import { usePremium } from '../../hooks/usePremium';
 import { useAppState } from '../../contexts/AppContext';
 import { PaywallModal } from '../ui/PaywallModal';
 import { hapticSuccess, hapticLight, hapticMedium } from '../../lib/haptics';
+import { useSheetBackClose } from '../../hooks/useSheetBackClose';
 
 export default function PrepareConsultation() {
   const { isPremium } = usePremium();
   const { baby } = useAppState();
   const [showPaywall, setShowPaywall] = useState(false);
   const [showConfig, setShowConfig] = useState(false);
+  useSheetBackClose(showConfig, () => setShowConfig(false));
   const [periodDays, setPeriodDays] = useState(30);
   const [isGenerating, setIsGenerating] = useState(false);
   const [pdfReady, setPdfReady] = useState(false);

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { getCurrentBadge, STREAK_BADGES, type StreakData } from '../lib/streak';
 import { getLocalDateString } from '../lib/formatters';
+import { useSheetBackClose } from '../hooks/useSheetBackClose';
 
 interface StreakBadgeProps {
   streak: StreakData;
@@ -8,6 +9,7 @@ interface StreakBadgeProps {
 
 export default function StreakBadge({ streak }: StreakBadgeProps) {
   const [showDetail, setShowDetail] = useState(false);
+  useSheetBackClose(showDetail, () => setShowDetail(false));
 
   if (streak.currentStreak === 0) return null;
 

@@ -5,6 +5,7 @@ import { useState, useCallback, useEffect } from 'react'
 import Toast from '../components/ui/Toast'
 import { AdBanner } from '../components/ui/AdBanner'
 import { supabase } from '../lib/supabase'
+import { useSheetBackClose } from '../hooks/useSheetBackClose'
 
 // ========== PRESETS ==========
 
@@ -74,12 +75,16 @@ export default function SettingsPage() {
   const [expanded, setExpanded] = useState<string | null>(null)
   const [prefs, setPrefs] = useState<NotifPrefs>(DEFAULT_PREFS)
   const [customModal, setCustomModal] = useState<string | null>(null)
+  useSheetBackClose(!!customModal, () => setCustomModal(null))
   const [customH, setCustomH] = useState('')
   const [customM, setCustomM] = useState('')
   const [pickingQuietHour, setPickingQuietHour] = useState<'start' | 'end' | null>(null)
+  useSheetBackClose(!!pickingQuietHour, () => setPickingQuietHour(null))
   const [pickingBathHour, setPickingBathHour] = useState(false)
+  useSheetBackClose(pickingBathHour, () => setPickingBathHour(false))
   const [editingBathIdx, setEditingBathIdx] = useState<number | null>(null)
   const [infoModal, setInfoModal] = useState<'sleep' | 'notifications' | null>(null)
+  useSheetBackClose(!!infoModal, () => setInfoModal(null))
 
   // Load prefs
   useEffect(() => {

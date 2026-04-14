@@ -2,6 +2,7 @@ import { useAppState, useAppDispatch } from '../../contexts/AppContext'
 import { switchBaby } from '../../contexts/AppContext'
 import { formatAge } from '../../lib/formatters'
 import { hapticLight } from '../../lib/haptics'
+import { useSheetBackClose } from '../../hooks/useSheetBackClose'
 import type { Baby } from '../../types'
 
 interface Props {
@@ -11,6 +12,7 @@ interface Props {
 export default function BabySwitcher({ onClose }: Props) {
   const { babies, baby } = useAppState()
   const dispatch = useAppDispatch()
+  useSheetBackClose(true, onClose)
 
   function handleSelect(selected: Baby) {
     if (selected.id === baby?.id) {

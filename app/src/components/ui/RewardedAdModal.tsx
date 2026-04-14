@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { showRewardedAd } from '../../lib/admob';
+import { useSheetBackClose } from '../../hooks/useSheetBackClose';
 
 interface Props {
   isOpen: boolean;
@@ -12,6 +13,7 @@ interface Props {
 
 export function RewardedAdModal({ isOpen, onClose, onAdCompleted, onUpgrade, recordsToday, dailyLimit }: Props) {
   const [watching, setWatching] = useState(false);
+  useSheetBackClose(isOpen, onClose);
 
   if (!isOpen) return null;
 

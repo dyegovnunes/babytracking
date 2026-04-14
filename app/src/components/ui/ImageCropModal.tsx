@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
+import { useSheetBackClose } from '../../hooks/useSheetBackClose'
 
 interface Props {
   imageFile: File
@@ -15,6 +16,7 @@ export default function ImageCropModal({ imageFile, onConfirm, onClose }: Props)
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
   const [processing, setProcessing] = useState(false)
   const [loadError, setLoadError] = useState(false)
+  useSheetBackClose(true, onClose)
 
   // Pinch zoom state
   const lastPinchDist = useRef<number | null>(null)

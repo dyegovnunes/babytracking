@@ -5,6 +5,7 @@ import { supabase } from '../../lib/supabase'
 import ImageCropModal from '../ui/ImageCropModal'
 import { usePremium } from '../../hooks/usePremium'
 import { showRewardedAd } from '../../lib/admob'
+import { useSheetBackClose } from '../../hooks/useSheetBackClose'
 
 interface Props {
   baby: Baby
@@ -20,6 +21,8 @@ export default function BabyCard({ baby, onSave }: Props) {
   const [cropFile, setCropFile] = useState<File | null>(null)
   const [showPhotoMenu, setShowPhotoMenu] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
+  useSheetBackClose(showPhotoMenu, () => setShowPhotoMenu(false))
+  useSheetBackClose(editing, handleCancel)
 
   async function handlePhotoUpload(blob: Blob) {
     setUploading(true)

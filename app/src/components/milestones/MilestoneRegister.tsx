@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { hapticLight, hapticSuccess } from '../../lib/haptics'
 import type { Milestone } from '../../lib/milestoneData'
+import { useSheetBackClose } from '../../hooks/useSheetBackClose'
 
 interface Props {
   milestone: Milestone
@@ -60,6 +61,7 @@ export default function MilestoneRegister({
   const [note, setNote] = useState('')
   const [saving, setSaving] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  useSheetBackClose(true, onCancel)
 
   const handlePickPhoto = () => {
     hapticLight()
