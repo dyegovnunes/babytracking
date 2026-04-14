@@ -107,6 +107,20 @@ SharedReport. Nada disso é crítico — migrar só se/quando elas crescerem.
 Arquivo grande (>400 linhas) = sinal pra quebrar em sections/hooks.
 `SharedReportPage.tsx` é o próximo alvo de quebra interna.
 
+### Criando uma nova feature
+
+1. Crie `app/src/features/<nome>/` com subpasta `components/`.
+2. Coloque tudo dentro (página, hooks, dados, componentes privados).
+3. Crie `index.ts` exportando **só** o que outras features precisam ver.
+4. Em `App.tsx`, adicione `lazy(() => import('./features/<nome>/<Page>'))`
+   — note que `lazy` importa direto do arquivo da página, não do `index.ts`.
+5. Consumidores externos importam de `'../features/<nome>'` (barrel),
+   nunca de um arquivo interno.
+
+Regra mental: se um arquivo só é usado dentro de uma feature, ele mora
+**dentro** da feature. Só sobe pra `lib/`, `hooks/` ou `components/ui/`
+quando houver 2+ features consumindo.
+
 ---
 
 ## Convenções que você DEVE seguir
@@ -117,7 +131,9 @@ Arquivo grande (>400 linhas) = sinal pra quebrar em sections/hooks.
 do Android/navegador fecha a sheet em vez de sair da página.
 
 ```tsx
-import { useSheetBackClose } from '../hooks/useSheetBackClose'
+// Ajuste o path relativo de acordo com a localização do seu arquivo.
+// Dentro de features/<nome>/components/, use '../../../hooks/useSheetBackClose'.
+import { useSheetBackClose } from '../../../hooks/useSheetBackClose'
 
 export default function MyModal({ isOpen, onClose }: Props) {
   useSheetBackClose(isOpen, onClose)
@@ -139,7 +155,7 @@ em interações importantes (botões primários, confirmações, toggles).
   Use a função `SECURITY DEFINER` `is_admin()` — já criada em migrations.
 - Após um `UPDATE`/`DELETE`, faça `.select()` pra confirmar que pelo menos
   uma linha foi afetada (RLS pode silenciar o erro). Ver
-  `handleDeactivateCode` em `ProfilePage.tsx` como referência.
+  `handleDeactivateCode` em `features/profile/ProfilePage.tsx` como referência.
 
 ### Quiet hours e horário noturno
 `AppContext.quietHours` é a fonte de verdade para o conceito
@@ -169,8 +185,8 @@ passam por `usePremium()` mas hoje retornam sempre `true`.
 2. **Onboarding**: `needsOnboarding` → `OnboardingPage` → reload.
 3. **Welcome**: `needsWelcome` → `WelcomePage` (uma vez por pai).
 4. **Invite code**: `ProfilePage` — ao gerar novo, desativa os antigos.
-5. **Sleep pairs**: `lib/insightRules.ts` usa state machine linear — não
-   use `slice(i+1).find(wake)` (causa double-counting).
+5. **Sleep pairs**: `features/insights/insightRules.ts` usa state machine
+   linear — não use `slice(i+1).find(wake)` (causa double-counting).
 6. **Streak**: `lib/streak.ts` + `streak-checker` edge function — timezone
    sensitive, teste com timezone local.
 
