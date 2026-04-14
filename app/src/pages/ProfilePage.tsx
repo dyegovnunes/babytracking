@@ -8,10 +8,10 @@ import GrowthSection from '../components/profile/GrowthSection'
 import Toast from '../components/ui/Toast'
 import { AdBanner } from '../components/ui/AdBanner'
 import SharedReports from '../components/profile/SharedReports'
-import { supabase } from '../lib/supabase'
 import { hapticLight } from '../lib/haptics'
 import { contractionDe } from '../lib/genderUtils'
 import { useSheetBackClose } from '../hooks/useSheetBackClose'
+import { useInviteCodes } from '../hooks/useInviteCodes'
 
 interface Caregiver {
   userId: string
@@ -47,27 +47,7 @@ export default function ProfilePage() {
   useSheetBackClose(!!confirmRemove, () => setConfirmRemove(null))
 
   // Invite
-  const [inviteCode, setInviteCode] = useState<string | null>(null)
-  const [, setInviteId] = useState<string | null>(null)
-  const [generatingCode, setGeneratingCode] = useState(false)
-
-  // Load active invite code
-  useEffect(() => {
-    if (!baby) return
-    supabase
-      .from('invite_codes')
-      .select('id, code')
-      .eq('baby_id', baby.id)
-      .eq('active', true)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .then(({ data }) => {
-        if (data && data.length > 0) {
-          setInviteCode(data[0].code)
-          setInviteId(data[0].id)
-        }
-      })
-  }, [baby])
+  const { code: inviteCode, generating: generatingCode, generate: generateInvite, deactivate: deactivateInvite } = useInviteCodes()
 
   useEffect(() => {
     if (members) {
@@ -89,60 +69,15 @@ export default function ProfilePage() {
   )
 
   const handleGenerateInvite = useCallback(async () => {
-    if (!user || !baby) return
-    setGeneratingCode(true)
-
-    // Deactivate any existing active codes for this baby
-    await supabase
-      .from('invite_codes')
-      .update({ active: false })
-      .eq('baby_id', baby.id)
-      .eq('active', true)
-
-    const code = Math.random().toString(36).substring(2, 8).toUpperCase()
-    const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
-
-    const { data, error } = await supabase
-      .from('invite_codes')
-      .insert({
-        code,
-        baby_id: baby.id,
-        created_by: user.id,
-        expires_at: expiresAt,
-      })
-      .select('id')
-      .single()
-
-    if (!error && data) {
-      setInviteCode(code)
-      setInviteId(data.id)
-      setToast('Código gerado!')
-    }
-    setGeneratingCode(false)
-  }, [user, baby])
+    const ok = await generateInvite()
+    if (ok) setToast('Código gerado!')
+  }, [generateInvite])
 
   const handleDeactivateCode = useCallback(async () => {
-    if (!baby) return
-
-    // Deactivate ALL active codes for this baby (safer than relying on a stale inviteId).
-    // Use .select() to confirm at least one row was updated — so we can surface an error
-    // if RLS silently blocks the UPDATE.
-    const { data, error } = await supabase
-      .from('invite_codes')
-      .update({ active: false })
-      .eq('baby_id', baby.id)
-      .eq('active', true)
-      .select('id')
-
-    if (error || !data || data.length === 0) {
-      setToast('Não foi possível desativar o código. Tente novamente.')
-      return
-    }
-
-    setInviteCode(null)
-    setInviteId(null)
-    setToast('Código desativado!')
-  }, [baby])
+    const ok = await deactivateInvite()
+    if (ok) setToast('Código desativado!')
+    else setToast('Não foi possível desativar o código. Tente novamente.')
+  }, [deactivateInvite])
 
   const handleCopyCode = useCallback(() => {
     if (!inviteCode) return
