@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAppState } from '../contexts/AppContext'
 import { useInsightsEngine, type PeriodOption } from '../hooks/useInsightsEngine'
-import { markInsightsSeen } from '../lib/insightRules'
 import { usePremium } from '../hooks/usePremium'
 import DaySummaryCard from '../components/insights/DaySummaryCard'
 import PeriodDropdown from '../components/insights/PeriodDropdown'
@@ -10,12 +10,14 @@ import InsightPaywallBanner from '../components/insights/InsightPaywallBanner'
 import WeekChart from '../components/insights/WeekChart'
 import { PaywallModal } from '../components/ui/PaywallModal'
 import { AdBanner } from '../components/ui/AdBanner'
+import { hapticLight } from '../lib/haptics'
 
 const FREE_INSIGHT_LIMIT = 2
 
 export default function InsightsPage() {
   const { logs, baby, loading } = useAppState()
   const { isPremium } = usePremium()
+  const navigate = useNavigate()
   const [period, setPeriod] = useState<PeriodOption>('last_7')
   const [showPaywall, setShowPaywall] = useState(false)
 
@@ -25,14 +27,25 @@ export default function InsightsPage() {
     period
   )
 
-  // Se o período padrão não estiver disponível, cai para o maior disponível
+  // Se o período selecionado não estiver disponível, prefere last_7, depois
+  // yesterday, today, ou o maior disponível.
   useEffect(() => {
-    if (availablePeriods.length > 0 && !availablePeriods.includes(period)) {
-      setPeriod(availablePeriods[availablePeriods.length - 1])
-    }
+    if (availablePeriods.length === 0) return
+    if (availablePeriods.includes(period)) return
+    const preferenceOrder: PeriodOption[] = [
+      'last_7',
+      'yesterday',
+      'today',
+      'last_15',
+      'last_30',
+      'current_month',
+      'last_month',
+      'all',
+    ]
+    const fallback = preferenceOrder.find((p) => availablePeriods.includes(p))
+    if (fallback) setPeriod(fallback)
   }, [availablePeriods, period])
 
-  // Marca os insights visíveis como vistos (rotação de 48h)
   const visibleInsights = isPremium
     ? insights
     : insights.slice(0, FREE_INSIGHT_LIMIT)
@@ -40,15 +53,10 @@ export default function InsightsPage() {
     ? 0
     : Math.max(0, insights.length - FREE_INSIGHT_LIMIT)
 
-  useEffect(() => {
-    if (visibleInsights.length > 0) {
-      const ids = visibleInsights
-        .filter((i) => i.type !== 'alert')
-        .map((i) => i.id)
-      if (ids.length > 0) markInsightsSeen(ids)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [visibleInsights.map((i) => i.id).join(',')])
+  const handleOpenSharedReport = () => {
+    hapticLight()
+    navigate('/perfil#shared-reports')
+  }
 
   if (loading) {
     return (
@@ -155,6 +163,35 @@ export default function InsightsPage() {
             </button>
           </div>
         )}
+
+        {/* ===== SUPER RELATÓRIO CTA ===== */}
+        <button
+          type="button"
+          onClick={handleOpenSharedReport}
+          className="w-full rounded-md p-4 flex items-center gap-3 text-left active:scale-[0.98] transition-transform"
+          style={{
+            background:
+              'linear-gradient(135deg, rgba(124, 77, 255, 0.18), rgba(183, 159, 255, 0.08))',
+            border: '1px solid rgba(183, 159, 255, 0.25)',
+          }}
+        >
+          <div className="w-11 h-11 rounded-md bg-primary/20 flex items-center justify-center shrink-0">
+            <span className="material-symbols-outlined text-primary text-2xl">
+              medical_services
+            </span>
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="font-headline text-sm font-bold text-on-surface leading-tight">
+              Super Relatório
+            </h3>
+            <p className="font-label text-xs text-on-surface-variant mt-0.5">
+              Compartilhe um resumo seguro com o pediatra
+            </p>
+          </div>
+          <span className="material-symbols-outlined text-on-surface-variant text-lg">
+            chevron_right
+          </span>
+        </button>
       </div>
 
       <PaywallModal

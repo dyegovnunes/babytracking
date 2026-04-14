@@ -5,12 +5,12 @@ import { getAgeBand } from '../lib/ageUtils'
 import { getLocalDateString } from '../lib/formatters'
 import {
   generateInsights,
-  filterRecentlyUnseen,
   type InsightResult,
 } from '../lib/insightRules'
 
 export type PeriodOption =
   | 'today'
+  | 'yesterday'
   | 'last_7'
   | 'last_15'
   | 'last_30'
@@ -46,6 +46,7 @@ const SLEEP_EVENT_IDS = new Set(['sleep', 'wake', 'sleep_nap', 'sleep_awake'])
 
 export const PERIOD_LABELS: Record<PeriodOption, string> = {
   today: 'Hoje',
+  yesterday: 'Ontem',
   last_7: 'Últimos 7 dias',
   last_15: 'Últimos 15 dias',
   last_30: 'Últimos 30 dias',
@@ -56,6 +57,7 @@ export const PERIOD_LABELS: Record<PeriodOption, string> = {
 
 export const ALL_PERIODS: PeriodOption[] = [
   'today',
+  'yesterday',
   'last_7',
   'last_15',
   'last_30',
@@ -77,6 +79,8 @@ function getPeriodRange(period: PeriodOption): { start: number; end: number } {
   switch (period) {
     case 'today':
       return { start: today, end: now }
+    case 'yesterday':
+      return { start: today - 86400000, end: today - 1 }
     case 'last_7':
       return { start: today - 6 * 86400000, end: now }
     case 'last_15':
@@ -135,27 +139,47 @@ function computeSleepPairs(logs: LogEntry[]): { start: number; end: number }[] {
 }
 
 export function getAvailablePeriods(logs: LogEntry[]): PeriodOption[] {
+  if (logs.length === 0) return []
+
+  const now = Date.now()
+  const today = startOfDay(now)
+  const oldestTs = logs.reduce((min, l) => (l.timestamp < min ? l.timestamp : min), logs[0].timestamp)
+  // Number of calendar days covered (inclusive) from oldest log to today
+  const dataSpanDays = Math.floor((today - startOfDay(oldestTs)) / 86400000) + 1
+
+  const hasLogsIn = (start: number, end: number) =>
+    logs.some((l) => l.timestamp >= start && l.timestamp <= end)
+
   const available: PeriodOption[] = []
-  for (const period of ALL_PERIODS) {
-    const { start, end } = getPeriodRange(period)
-    const periodLogs = logs.filter((l) => l.timestamp >= start && l.timestamp <= end)
-    const uniqueDays = new Set(
-      periodLogs.map((l) => getLocalDateString(new Date(l.timestamp)))
-    )
 
-    // Regras de disponibilidade baseadas em dias mínimos com dados
-    const minDays: Record<PeriodOption, number> = {
-      today: 1,
-      last_7: 1,
-      last_15: 2,
-      last_30: 5,
-      current_month: 1,
-      last_month: 1,
-      all: 1,
-    }
+  // Today: só aparece se há log de hoje
+  if (hasLogsIn(today, now)) available.push('today')
 
-    if (uniqueDays.size >= minDays[period]) available.push(period)
-  }
+  // Ontem: só aparece se há log de ontem
+  if (hasLogsIn(today - 86400000, today - 1)) available.push('yesterday')
+
+  // Janelas deslizantes: só aparecem quando a janela inteira está coberta pelos dados
+  if (dataSpanDays >= 7) available.push('last_7')
+  if (dataSpanDays >= 15) available.push('last_15')
+  if (dataSpanDays >= 30) available.push('last_30')
+
+  // Mês atual: só aparece se há logs no mês atual
+  const curMonth = new Date()
+  curMonth.setDate(1)
+  curMonth.setHours(0, 0, 0, 0)
+  if (hasLogsIn(curMonth.getTime(), now)) available.push('current_month')
+
+  // Mês passado: só aparece se há logs no mês passado
+  const lmStart = new Date()
+  lmStart.setMonth(lmStart.getMonth() - 1)
+  lmStart.setDate(1)
+  lmStart.setHours(0, 0, 0, 0)
+  const lmEnd = new Date(lmStart.getFullYear(), lmStart.getMonth() + 1, 0, 23, 59, 59, 999)
+  if (hasLogsIn(lmStart.getTime(), lmEnd.getTime())) available.push('last_month')
+
+  // Tudo: sempre disponível se há qualquer log
+  available.push('all')
+
   return available
 }
 
@@ -168,13 +192,13 @@ export function useInsightsEngine(
     const band: AgeBand = birthDate ? getAgeBand(birthDate) : 'beyond'
     const { start, end } = getPeriodRange(period)
     const periodLogs = logs.filter((l) => l.timestamp >= start && l.timestamp <= end)
-    const isToday = period === 'today'
+    const isSingleDay = period === 'today' || period === 'yesterday'
 
     // Count unique days in period (timezone-safe)
     const uniqueDays = new Set(
       periodLogs.map((l) => getLocalDateString(new Date(l.timestamp)))
     ).size
-    const divisor = isToday ? 1 : Math.max(uniqueDays, 1)
+    const divisor = isSingleDay ? 1 : Math.max(uniqueDays, 1)
 
     const feeds = periodLogs.filter((l) => FEED_IDS.has(l.eventId))
     const diapers = periodLogs.filter((l) => DIAPER_IDS.has(l.eventId))
@@ -187,33 +211,33 @@ export function useInsightsEngine(
       .filter((l) => l.eventId === 'bottle')
       .reduce((s, l) => s + (l.ml ?? 0), 0)
 
-    const lastFeed = isToday
+    const lastFeed = isSingleDay
       ? feeds.sort((a, b) => b.timestamp - a.timestamp)[0]?.timestamp
       : undefined
-    const lastDiaper = isToday
+    const lastDiaper = isSingleDay
       ? diapers.sort((a, b) => b.timestamp - a.timestamp)[0]?.timestamp
       : undefined
-    const sleepWake = isToday
+    const sleepWake = isSingleDay
       ? periodLogs
           .filter((l) => SLEEP_EVENT_IDS.has(l.eventId))
           .sort((a, b) => b.timestamp - a.timestamp)[0]?.timestamp
       : undefined
 
     const periodSummary: PeriodSummary = {
-      feeds: isToday ? feeds.length : Math.round((feeds.length / divisor) * 10) / 10,
-      diapers: isToday
+      feeds: isSingleDay ? feeds.length : Math.round((feeds.length / divisor) * 10) / 10,
+      diapers: isSingleDay
         ? diapers.length
         : Math.round((diapers.length / divisor) * 10) / 10,
-      sleepCycles: isToday
+      sleepCycles: isSingleDay
         ? sleepPairs.length
         : Math.round((sleepPairs.length / divisor) * 10) / 10,
-      totalBottleMl: isToday
+      totalBottleMl: isSingleDay
         ? Math.round(totalBottleMl)
         : Math.round(totalBottleMl / divisor),
-      totalSleepMinutes: isToday
+      totalSleepMinutes: isSingleDay
         ? Math.round(totalSleepMin)
         : Math.round(totalSleepMin / divisor),
-      isAverage: !isToday,
+      isAverage: !isSingleDay,
       periodLabel: PERIOD_LABELS[period],
       lastFeedTime: lastFeed,
       lastSleepTime: sleepWake,
@@ -222,7 +246,7 @@ export function useInsightsEngine(
 
     // Insights (calculated over a window matching period, but always see full log history for pattern detection)
     const periodDaysNum =
-      period === 'today'
+      period === 'today' || period === 'yesterday'
         ? 1
         : period === 'last_7'
         ? 7
@@ -233,9 +257,9 @@ export function useInsightsEngine(
         : period === 'current_month' || period === 'last_month'
         ? 30
         : 90
-    const rawInsights: InsightResult[] = generateInsights(logs, band, periodDaysNum)
-    // Remove insights vistos nas últimas 48h (exceto alerts)
-    const insights = filterRecentlyUnseen(rawInsights)
+    // Na página de Insights não aplicamos a rotação de 48h: o usuário veio
+    // aqui justamente para ver os insights, então não devemos esconder nada.
+    const insights: InsightResult[] = generateInsights(logs, band, periodDaysNum)
 
     // Week trends — sempre últimos 7 dias
     const weekTrends: DayTrend[] = []

@@ -41,30 +41,33 @@ export default function WeekChart({ trends }: Props) {
         ))}
       </div>
 
-      <div className="flex items-end justify-between gap-1.5 h-28">
+      <div className="flex items-stretch justify-between gap-1.5 h-36">
         {trends.map((day, i) => {
           const value = day[metric]
           const pct = max > 0 ? (value / max) * 100 : 0
           const isToday = i === trends.length - 1
 
           return (
-            <div key={day.date} className="flex-1 flex flex-col items-center gap-1">
-              <span className="font-label text-[9px] text-on-surface-variant font-semibold">
+            <div
+              key={day.date}
+              className="flex-1 flex flex-col items-center gap-1 h-full"
+            >
+              <span className="font-label text-[9px] text-on-surface-variant font-semibold h-3">
                 {value > 0 ? value : ''}
               </span>
-              <div className="w-full flex-1 flex items-end">
+              <div className="w-full flex-1 flex items-end min-h-0">
                 <div
                   className={`w-full rounded-t-md transition-all ${
                     isToday ? 'bg-primary' : 'bg-primary/40'
                   }`}
-                  style={{ height: pct > 0 ? `${Math.max(pct, 8)}%` : '0%' }}
+                  style={{
+                    height: value > 0 ? `${Math.max(pct, 8)}%` : '0%',
+                  }}
                 />
               </div>
               <span
                 className={`font-label text-[9px] ${
-                  isToday
-                    ? 'text-primary font-bold'
-                    : 'text-on-surface-variant'
+                  isToday ? 'text-primary font-bold' : 'text-on-surface-variant'
                 }`}
               >
                 {day.label}

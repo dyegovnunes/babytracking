@@ -1,5 +1,5 @@
 import { useCallback, useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useAppState, useAppDispatch, updateBaby, updateMemberRole, removeMember } from '../contexts/AppContext'
 import { useAuth, signOut } from '../contexts/AuthContext'
 import type { Baby } from '../types'
@@ -23,7 +23,19 @@ export default function ProfilePage() {
   const { user } = useAuth()
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
+  const location = useLocation()
   const [toast, setToast] = useState<string | null>(null)
+
+  // Se navegamos aqui com hash #shared-reports, rola até a seção
+  useEffect(() => {
+    if (location.hash !== '#shared-reports') return
+    // Espera o primeiro paint para o elemento existir
+    const id = requestAnimationFrame(() => {
+      const el = document.getElementById('shared-reports')
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    })
+    return () => cancelAnimationFrame(id)
+  }, [location.hash])
 
   // Caregivers
   const [caregivers, setCaregivers] = useState<Caregiver[]>([])
@@ -310,7 +322,9 @@ export default function ProfilePage() {
         </div>
 
         {/* ===== SUPER RELATÓRIO ===== */}
-        <SharedReports />
+        <div id="shared-reports" className="scroll-mt-6">
+          <SharedReports />
+        </div>
 
         {/* ===== SAIR ===== */}
         <button onClick={signOut} className="w-full py-2.5 rounded-md bg-error/10 text-error font-label font-semibold text-sm">
