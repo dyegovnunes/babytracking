@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
-import { supabase } from '../lib/supabase'
+import { supabase } from '../../lib/supabase'
 import {
   MILESTONES,
   type BabyMilestone,
-} from '../lib/milestoneData'
-import { getAgeBand, type AgeBand } from '../lib/ageUtils'
+} from './milestoneData'
+import { getAgeBand, type AgeBand } from '../../lib/ageUtils'
 
 interface BabyMilestoneRow {
   id: string

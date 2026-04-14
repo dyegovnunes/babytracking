@@ -19,7 +19,7 @@ import HighlightsStrip from '../components/home/HighlightsStrip'
 import { collectHighlights } from '../lib/highlights'
 import { AdBanner } from '../components/ui/AdBanner'
 import { getAgeBand, getHighlightedEvents } from '../lib/ageUtils'
-import { useMilestones } from '../hooks/useMilestones'
+import { useMilestones } from '../features/milestones'
 
 import { TrackerSkeleton } from '../components/ui/Skeleton'
 import type { LogEntry } from '../types'

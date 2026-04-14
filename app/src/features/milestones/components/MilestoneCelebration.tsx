@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
-import type { Milestone } from '../../lib/milestoneData'
-import { formatAgeAtDate } from '../../lib/milestoneData'
-import { hapticSuccess } from '../../lib/haptics'
-import { useSheetBackClose } from '../../hooks/useSheetBackClose'
+import type { Milestone } from '../milestoneData'
+import { formatAgeAtDate } from '../milestoneData'
+import { hapticSuccess } from '../../../lib/haptics'
+import { useSheetBackClose } from '../../../hooks/useSheetBackClose'
 
 interface Props {
   milestone: Milestone

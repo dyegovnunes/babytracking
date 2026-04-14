@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
-import { hapticLight, hapticSuccess } from '../../lib/haptics'
-import type { Milestone } from '../../lib/milestoneData'
-import { useSheetBackClose } from '../../hooks/useSheetBackClose'
+import { hapticLight, hapticSuccess } from '../../../lib/haptics'
+import type { Milestone } from '../milestoneData'
+import { useSheetBackClose } from '../../../hooks/useSheetBackClose'
 
 interface Props {
   milestone: Milestone

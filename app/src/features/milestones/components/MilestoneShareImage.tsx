@@ -2,9 +2,9 @@ import { useEffect, useRef, useState } from 'react'
 import { Share } from '@capacitor/share'
 import { Filesystem, Directory } from '@capacitor/filesystem'
 import { Capacitor } from '@capacitor/core'
-import type { Milestone } from '../../lib/milestoneData'
-import { formatAgeAtDate } from '../../lib/milestoneData'
-import { useSheetBackClose } from '../../hooks/useSheetBackClose'
+import type { Milestone } from '../milestoneData'
+import { formatAgeAtDate } from '../milestoneData'
+import { useSheetBackClose } from '../../../hooks/useSheetBackClose'
 
 interface Props {
   milestone: Milestone

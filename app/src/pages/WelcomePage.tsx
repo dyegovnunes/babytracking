@@ -1,5 +1,5 @@
 import { getAgeBand, getWelcomeContent } from '../lib/ageUtils'
-import { getActiveLeap, getUpcomingLeap } from '../lib/developmentLeaps'
+import { getActiveLeap, getUpcomingLeap } from '../features/milestones'
 
 interface Props {
   onComplete: () => void

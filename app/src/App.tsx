@@ -20,7 +20,7 @@ const OnboardingPage = lazy(() => import('./pages/OnboardingPage'))
 const WelcomePage = lazy(() => import('./pages/WelcomePage'))
 const SettingsPage = lazy(() => import('./pages/SettingsPage'))
 const InsightsPage = lazy(() => import('./pages/InsightsPage'))
-const MilestonesPage = lazy(() => import('./pages/MilestonesPage'))
+const MilestonesPage = lazy(() => import('./features/milestones/MilestonesPage'))
 const PrivacyPage = lazy(() => import('./pages/PrivacyPage'))
 const SharedReportPage = lazy(() => import('./pages/SharedReportPage'))
 

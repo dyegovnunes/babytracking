@@ -1,7 +1,10 @@
-import type { DevelopmentLeap } from './developmentLeaps'
-import type { Milestone } from './milestoneData'
-import { getActiveLeap, getUpcomingLeap } from './developmentLeaps'
-import { MILESTONES, getNextMilestoneForHome } from './milestoneData'
+import type { DevelopmentLeap, Milestone } from '../features/milestones'
+import {
+  getActiveLeap,
+  getUpcomingLeap,
+  MILESTONES,
+  getNextMilestoneForHome,
+} from '../features/milestones'
 
 /**
  * Sistema de "Destaques da Home" (Highlights).

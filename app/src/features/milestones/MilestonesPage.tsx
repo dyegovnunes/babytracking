@@ -1,9 +1,9 @@
 import { useState, useMemo, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { useAppState } from '../contexts/AppContext'
-import { useAuth } from '../contexts/AuthContext'
-import { usePremium } from '../hooks/usePremium'
-import { useMilestones } from '../hooks/useMilestones'
+import { useAppState } from '../../contexts/AppContext'
+import { useAuth } from '../../contexts/AuthContext'
+import { usePremium } from '../../hooks/usePremium'
+import { useMilestones } from './useMilestones'
 import {
   MILESTONES,
   AGE_BAND_ORDER,
@@ -12,17 +12,17 @@ import {
   formatAgeAtDate,
   type Milestone,
   type BabyMilestone,
-} from '../lib/milestoneData'
-import type { AgeBand } from '../lib/ageUtils'
-import { DEVELOPMENT_LEAPS } from '../lib/developmentLeaps'
-import MilestoneRegister from '../components/milestones/MilestoneRegister'
-import MilestoneCelebration from '../components/milestones/MilestoneCelebration'
-import MilestoneShareImage from '../components/milestones/MilestoneShareImage'
-import { PaywallModal } from '../components/ui/PaywallModal'
-import Toast from '../components/ui/Toast'
-import { hapticLight } from '../lib/haptics'
-import { contractionDe } from '../lib/genderUtils'
-import { useSheetBackClose } from '../hooks/useSheetBackClose'
+} from './milestoneData'
+import type { AgeBand } from '../../lib/ageUtils'
+import { DEVELOPMENT_LEAPS } from './developmentLeaps'
+import MilestoneRegister from './components/MilestoneRegister'
+import MilestoneCelebration from './components/MilestoneCelebration'
+import MilestoneShareImage from './components/MilestoneShareImage'
+import { PaywallModal } from '../../components/ui/PaywallModal'
+import Toast from '../../components/ui/Toast'
+import { hapticLight } from '../../lib/haptics'
+import { contractionDe } from '../../lib/genderUtils'
+import { useSheetBackClose } from '../../hooks/useSheetBackClose'
 
 type FilterMode = 'all' | 'achieved' | 'pending'
 

@@ -1,4 +1,4 @@
-import type { AgeBand } from './ageUtils'
+import type { AgeBand } from '../../lib/ageUtils'
 
 export type MilestoneCategory =
   | 'motor'
