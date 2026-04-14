@@ -147,17 +147,6 @@ export default function TrackerPage() {
     <div className="pb-4 page-enter">
       <HeroIdentity streak={streak} />
 
-      {/* Destaques: saltos, marcos, (futuro) vacinas e remédios */}
-      {baby && (
-        <HighlightsStrip
-          highlights={highlights}
-          babyName={baby.name}
-          babyGender={baby.gender}
-          birthDate={baby.birthDate}
-          onChange={() => setHighlightsTick((t) => t + 1)}
-        />
-      )}
-
       <ActivityGrid events={DEFAULT_EVENTS} logs={logs} onLog={handleLog} highlightedEventIds={highlightedEventIds} />
 
       {projections.length > 0 && (
@@ -171,6 +160,17 @@ export default function TrackerPage() {
             ))}
           </div>
         </section>
+      )}
+
+      {/* Acompanhe a jornada: saltos, marcos, (futuro) vacinas e remédios */}
+      {baby && (
+        <HighlightsStrip
+          highlights={highlights}
+          babyName={baby.name}
+          babyGender={baby.gender}
+          birthDate={baby.birthDate}
+          onChange={() => setHighlightsTick((t) => t + 1)}
+        />
       )}
 
       <AdBanner />

@@ -110,7 +110,7 @@ export default function BabyCard({ baby, onSave }: Props) {
   if (editing) {
     return (
       <>
-      <div className="bg-surface-container rounded-xl p-5">
+      <div className="bg-surface-container rounded-lg p-5">
         <div className="flex items-center gap-4 mb-4">
           <div className="relative">
             {photoCircle}
@@ -203,7 +203,7 @@ export default function BabyCard({ baby, onSave }: Props) {
 
   return (
     <>
-    <div className="w-full bg-surface-container rounded-xl p-5 flex items-center gap-4">
+    <div className="w-full bg-surface-container rounded-lg p-5 flex items-center gap-4">
       <div className="relative">
         {photoCircle}
         {showPhotoMenu && baby.photoUrl && (

@@ -61,7 +61,7 @@ export default function IntervalSettings({ intervals, onSave }: Props) {
   }
 
   return (
-    <div className="bg-surface-container rounded-xl overflow-hidden">
+    <div className="bg-surface-container rounded-lg overflow-hidden">
       <div className="flex items-center gap-3 p-4 pb-2">
         <span className="material-symbols-outlined text-primary text-xl">timer</span>
         <h3 className="text-on-surface font-headline text-sm font-bold">

@@ -612,7 +612,7 @@ export default function SettingsPage() {
         {!confirmClear ? (
           <button
             onClick={() => setConfirmClear(true)}
-            className="w-full bg-surface-container rounded-xl p-4 flex items-center gap-3 active:bg-surface-container-high transition-colors"
+            className="w-full bg-surface-container rounded-lg p-4 flex items-center gap-3 active:bg-surface-container-high transition-colors"
           >
             <span className="material-symbols-outlined text-error text-xl">delete_sweep</span>
             <div className="flex-1 text-left">
@@ -622,7 +622,7 @@ export default function SettingsPage() {
             <span className="material-symbols-outlined text-on-surface-variant text-xl">chevron_right</span>
           </button>
         ) : (
-          <div className="bg-error/10 rounded-xl p-4">
+          <div className="bg-error/10 rounded-lg p-4">
             <p className="text-error font-body text-sm font-medium mb-3">
               Tem certeza? Isso apagará todos os registros.
             </p>

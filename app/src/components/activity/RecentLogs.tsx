@@ -54,7 +54,7 @@ export default function RecentLogs({ logs, members, onEdit }: Props) {
             <div
               key={log.id}
               onClick={() => onEdit?.(log)}
-              className={`flex items-center gap-3 py-2.5 px-3 rounded-xl bg-surface-container${onEdit ? ' cursor-pointer active:bg-surface-container-high transition-colors' : ''}`}
+              className={`flex items-center gap-3 py-2.5 px-3 rounded-lg bg-surface-container${onEdit ? ' cursor-pointer active:bg-surface-container-high transition-colors' : ''}`}
             >
               <div className={`w-2 h-2 rounded-full shrink-0 ${dotColor}`} />
               {event.emoji ? (

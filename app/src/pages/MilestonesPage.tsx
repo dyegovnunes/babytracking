@@ -190,7 +190,7 @@ export default function MilestonesPage() {
 
       {/* Progress */}
       <section className="px-5 mb-4">
-        <div className="bg-surface-container rounded-xl p-4">
+        <div className="bg-surface-container rounded-lg p-4">
           <div className="flex items-end justify-between mb-2">
             <span className="font-label text-xs text-on-surface-variant uppercase tracking-wider">
               Progresso até {AGE_BAND_LABEL[currentBand]}
@@ -255,7 +255,7 @@ export default function MilestonesPage() {
                 <button
                   type="button"
                   onClick={() => setShowPaywall(true)}
-                  className="w-full rounded-xl p-4 text-left border border-primary/20 bg-primary/[0.04] active:scale-[0.98] transition-transform"
+                  className="w-full rounded-lg p-4 text-left border border-primary/20 bg-primary/[0.04] active:scale-[0.98] transition-transform"
                 >
                   <div className="flex items-center gap-3">
                     <span className="material-symbols-outlined text-primary text-xl">

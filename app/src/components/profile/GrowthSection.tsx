@@ -214,7 +214,7 @@ export default function GrowthSection({ babyId }: GrowthSectionProps) {
   }
 
   return (
-    <div className="bg-surface-container rounded-xl p-4">
+    <div className="bg-surface-container rounded-lg p-4">
       {/* Collapsed header — always visible */}
       <button
         onClick={() => { hapticLight(); setExpanded(!expanded); }}

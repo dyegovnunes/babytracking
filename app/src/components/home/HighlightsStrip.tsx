@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useRef, useEffect } from 'react'
 import type { Highlight } from '../../lib/highlights'
 import { hapticLight } from '../../lib/haptics'
 import HighlightSheet from './HighlightSheet'
@@ -13,43 +13,100 @@ interface Props {
 }
 
 /**
- * Strip horizontal de destaques para a home.
+ * Seção "Acompanhe a jornada do {name}" — strip horizontal de destaques.
  *
- * - Se não há highlights ativos, não renderiza nada (libera espaço pro grid).
+ * - Se não há highlights ativos, não renderiza nada.
+ * - Marquee lento para a esquerda (CSS keyframes), pausa quando o usuário
+ *   interage (touch/hover) e retoma após soltar.
  * - Cada chip abre um bottom sheet com ações Fechar · Dispensar · Ver mais.
- * - Scroll horizontal sem scrollbar visível.
  */
 export default function HighlightsStrip({ highlights, babyName, babyGender, birthDate, onChange }: Props) {
   const [openHighlight, setOpenHighlight] = useState<Highlight | null>(null)
+  const [paused, setPaused] = useState(false)
+  const scrollerRef = useRef<HTMLDivElement>(null)
 
   const visible = useMemo(() => highlights, [highlights])
+
+  // Duplicamos o conteúdo para permitir loop seamless
+  const loop = useMemo(() => [...visible, ...visible], [visible])
+
+  // Pausa automática quando o usuário toca / hover
+  useEffect(() => {
+    const el = scrollerRef.current
+    if (!el) return
+    let resumeTimer: ReturnType<typeof setTimeout> | null = null
+    const handlePause = () => {
+      setPaused(true)
+      if (resumeTimer) clearTimeout(resumeTimer)
+    }
+    const handleResume = () => {
+      if (resumeTimer) clearTimeout(resumeTimer)
+      resumeTimer = setTimeout(() => setPaused(false), 2500)
+    }
+    el.addEventListener('touchstart', handlePause, { passive: true })
+    el.addEventListener('touchend', handleResume, { passive: true })
+    el.addEventListener('mouseenter', handlePause)
+    el.addEventListener('mouseleave', handleResume)
+    return () => {
+      el.removeEventListener('touchstart', handlePause)
+      el.removeEventListener('touchend', handleResume)
+      el.removeEventListener('mouseenter', handlePause)
+      el.removeEventListener('mouseleave', handleResume)
+      if (resumeTimer) clearTimeout(resumeTimer)
+    }
+  }, [])
 
   if (visible.length === 0) return null
 
   return (
     <>
-      <section className="mt-3">
+      <section className="mt-6">
+        <div className="px-5 mb-3 flex items-baseline justify-between">
+          <h2 className="font-headline text-base font-bold text-on-surface">
+            Acompanhe a jornada {babyGender === 'girl' ? 'da' : 'do'} {babyName}
+          </h2>
+          <span className="font-label text-[10px] uppercase tracking-wider text-on-surface-variant">
+            {visible.length} destaque{visible.length > 1 ? 's' : ''}
+          </span>
+        </div>
+
         <div
-          className="flex gap-2 px-5 overflow-x-auto scrollbar-none"
+          ref={scrollerRef}
+          className="overflow-hidden relative"
           style={{
-            scrollbarWidth: 'none',
-            msOverflowStyle: 'none',
-            WebkitOverflowScrolling: 'touch',
+            maskImage:
+              'linear-gradient(to right, transparent 0, black 20px, black calc(100% - 20px), transparent 100%)',
+            WebkitMaskImage:
+              'linear-gradient(to right, transparent 0, black 20px, black calc(100% - 20px), transparent 100%)',
           }}
         >
-          {visible.map((h) => (
-            <HighlightChip
-              key={`${h.type}_${h.id}`}
-              highlight={h}
-              onClick={() => {
-                hapticLight()
-                setOpenHighlight(h)
-              }}
-            />
-          ))}
+          <div
+            className="flex gap-2 w-max py-1"
+            style={{
+              animation: `highlight-marquee ${Math.max(visible.length, 1) * 14}s linear infinite`,
+              animationPlayState: paused ? 'paused' : 'running',
+              paddingLeft: '20px',
+              paddingRight: '20px',
+            }}
+          >
+            {loop.map((h, i) => (
+              <HighlightChip
+                key={`${h.type}_${h.id}_${i}`}
+                highlight={h}
+                onClick={() => {
+                  hapticLight()
+                  setOpenHighlight(h)
+                }}
+              />
+            ))}
+          </div>
         </div>
+
         <style>{`
-          .scrollbar-none::-webkit-scrollbar { display: none; }
+          @keyframes highlight-marquee {
+            0%   { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+          }
         `}</style>
       </section>
 
@@ -108,7 +165,7 @@ function HighlightChip({
     <button
       type="button"
       onClick={onClick}
-      className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl border ${ACCENT_BG[highlight.accent]} shrink-0 min-w-[168px] max-w-[220px] active:scale-[0.97] transition-transform text-left`}
+      className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg border ${ACCENT_BG[highlight.accent]} shrink-0 min-w-[168px] max-w-[220px] active:scale-[0.97] transition-transform text-left`}
     >
       <div className={`w-9 h-9 rounded-full ${ACCENT_DOT[highlight.accent]} flex items-center justify-center shrink-0`}>
         <span className="text-lg leading-none">{highlight.emoji}</span>
