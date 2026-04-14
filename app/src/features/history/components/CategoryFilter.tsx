@@ -1,4 +1,4 @@
-import type { EventCategory } from '../../types'
+import type { EventCategory } from '../../../types'
 
 interface Props {
   selected: EventCategory | 'all'

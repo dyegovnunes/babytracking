@@ -13,7 +13,7 @@ import LoginPage from './pages/LoginPage'
 
 // Heavy/secondary routes — lazy-loaded to shrink the initial bundle
 const AdminApp = lazy(() => import('./admin/AdminApp'))
-const HistoryPage = lazy(() => import('./pages/HistoryPage'))
+const HistoryPage = lazy(() => import('./features/history/HistoryPage'))
 const ProfilePage = lazy(() => import('./features/profile/ProfilePage'))
 const LandingPage = lazy(() => import('./pages/LandingPage'))
 const OnboardingPage = lazy(() => import('./pages/OnboardingPage'))
