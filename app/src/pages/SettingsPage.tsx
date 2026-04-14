@@ -192,7 +192,7 @@ export default function SettingsPage() {
     const isOpen = expanded === cat
 
     return (
-      <div className="bg-surface-container rounded-xl overflow-hidden">
+      <div className="bg-surface-container rounded-md overflow-hidden">
         <button onClick={() => setExpanded(isOpen ? null : cat)} className="w-full flex items-center gap-3 px-4 py-3.5 active:bg-surface-container-high transition-colors">
           <span className="material-symbols-outlined text-on-surface-variant text-lg">{icon}</span>
           <span className="flex-1 text-left font-body text-sm text-on-surface">{label}</span>
@@ -204,12 +204,12 @@ export default function SettingsPage() {
             <div className="flex flex-wrap gap-2 mb-2">
               {presets.map(p => (
                 <button key={p.minutes} onClick={() => handlePreset(cat, p)}
-                  className={`px-3.5 py-1.5 rounded-lg font-label text-sm font-medium transition-colors ${config.minutes === p.minutes ? 'bg-primary text-on-primary' : 'bg-surface-variant text-on-surface-variant'}`}>
+                  className={`px-3.5 py-1.5 rounded-md font-label text-sm font-medium transition-colors ${config.minutes === p.minutes ? 'bg-primary text-on-primary' : 'bg-surface-variant text-on-surface-variant'}`}>
                   {p.label}
                 </button>
               ))}
             </div>
-            <button onClick={() => openCustom(cat)} className="flex items-center gap-1.5 py-2.5 px-3.5 rounded-lg bg-primary/10 active:bg-primary/20 min-h-[44px]">
+            <button onClick={() => openCustom(cat)} className="flex items-center gap-1.5 py-2.5 px-3.5 rounded-md bg-primary/10 active:bg-primary/20 min-h-[44px]">
               <span className="material-symbols-outlined text-primary text-sm">edit</span>
               <span className="font-label text-xs text-primary font-medium">Personalizar</span>
             </button>
@@ -271,7 +271,7 @@ export default function SettingsPage() {
             <IntervalRow cat="sleep_awake" icon="wb_sunny" label="Janela de sono" presets={SLEEP_AWAKE_PRESETS} />
 
             {/* Pausar durante sono */}
-            <div className="bg-surface-container rounded-xl px-4 py-3.5 flex items-center gap-3">
+            <div className="bg-surface-container rounded-md px-4 py-3.5 flex items-center gap-3">
               <span className="material-symbols-outlined text-on-surface-variant text-lg">pause_circle</span>
               <div className="flex-1">
                 <p className="font-body text-sm text-on-surface">Pausar alertas durante sono</p>
@@ -281,7 +281,7 @@ export default function SettingsPage() {
             </div>
 
             {/* Horário de sono noturno (moved from Notifications) */}
-            <div className="bg-surface-container rounded-xl px-4 py-3.5">
+            <div className="bg-surface-container rounded-md px-4 py-3.5">
               <div className="flex items-center gap-3">
                 <span className="material-symbols-outlined text-on-surface-variant text-lg">dark_mode</span>
                 <div className="flex-1">
@@ -295,11 +295,11 @@ export default function SettingsPage() {
               </div>
               {prefs.quietHours.enabled && (
                 <div className="flex items-center gap-3 mt-3 ml-9">
-                  <button onClick={() => setPickingQuietHour('start')} className="px-4 py-2.5 rounded-lg bg-surface-container-low active:bg-surface-container-high min-h-[44px]">
+                  <button onClick={() => setPickingQuietHour('start')} className="px-4 py-2.5 rounded-md bg-surface-container-low active:bg-surface-container-high min-h-[44px]">
                     <span className="font-headline text-sm text-on-surface font-bold">{padH(prefs.quietHours.start)}</span>
                   </button>
                   <span className="font-label text-xs text-on-surface-variant">até</span>
-                  <button onClick={() => setPickingQuietHour('end')} className="px-4 py-2.5 rounded-lg bg-surface-container-low active:bg-surface-container-high min-h-[44px]">
+                  <button onClick={() => setPickingQuietHour('end')} className="px-4 py-2.5 rounded-md bg-surface-container-low active:bg-surface-container-high min-h-[44px]">
                     <span className="font-headline text-sm text-on-surface font-bold">{padH(prefs.quietHours.end)}</span>
                   </button>
                 </div>
@@ -312,7 +312,7 @@ export default function SettingsPage() {
         {/* SEÇÃO BANHO                                      */}
         {/* ================================================ */}
         <section>
-          <div className="bg-surface-container rounded-xl p-4">
+          <div className="bg-surface-container rounded-md p-4">
             <div className="flex items-center gap-3 mb-1">
               <span className="material-symbols-outlined text-primary text-lg">bathtub</span>
               <div className="flex-1">
@@ -323,7 +323,7 @@ export default function SettingsPage() {
 
             <div className="flex flex-wrap items-center gap-2 mt-3">
               {[...bathHours].sort((a, b) => a - b).map((h, idx) => (
-                <div key={h} className="flex items-center gap-1 bg-surface-container-low rounded-lg pl-1 pr-1 py-1">
+                <div key={h} className="flex items-center gap-1 bg-surface-container-low rounded-md pl-1 pr-1 py-1">
                   {editingBathIdx === idx ? (
                     <input
                       type="time"
@@ -364,7 +364,7 @@ export default function SettingsPage() {
                     if (bathHours.length >= 4) { setToast('Máximo de 4 horários'); return }
                     setPickingBathHour(true)
                   }}
-                  className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center active:bg-primary/20"
+                  className="w-9 h-9 rounded-md bg-primary/10 flex items-center justify-center active:bg-primary/20"
                 >
                   <span className="material-symbols-outlined text-primary text-lg">add</span>
                 </button>
@@ -387,7 +387,7 @@ export default function SettingsPage() {
 
           <div className="space-y-2">
             {/* Global */}
-            <div className={`rounded-xl px-4 py-4 flex items-center gap-3 transition-colors ${prefs.enabled ? 'bg-primary/15 border border-primary/30' : 'bg-tertiary/10 border border-tertiary/30'}`}>
+            <div className={`rounded-md px-4 py-4 flex items-center gap-3 transition-colors ${prefs.enabled ? 'bg-primary/15 border border-primary/30' : 'bg-tertiary/10 border border-tertiary/30'}`}>
               <span className={`material-symbols-outlined text-lg ${prefs.enabled ? 'text-primary' : 'text-tertiary'}`} style={prefs.enabled ? { fontVariationSettings: "'FILL' 1" } : undefined}>
                 {prefs.enabled ? 'notifications_active' : 'notifications_off'}
               </span>
@@ -401,7 +401,7 @@ export default function SettingsPage() {
 
             {/* Per category */}
             {prefs.enabled && (
-              <div className="bg-surface-container rounded-xl overflow-hidden">
+              <div className="bg-surface-container rounded-md overflow-hidden">
                 {[
                   { key: 'feed', label: 'Amamentação', icon: 'breastfeeding', desc: `A cada ${mToStr(intervals['feed']?.minutes ?? 180)}` },
                   { key: 'diaper', label: 'Fraldas', icon: 'water_drop', desc: `A cada ${mToStr(intervals['diaper']?.minutes ?? 120)}` },
@@ -429,12 +429,12 @@ export default function SettingsPage() {
         {/* ================================================ */}
         {/* CONTA                                            */}
         {/* ================================================ */}
-        <section className="bg-surface-container rounded-xl p-4">
+        <section className="bg-surface-container rounded-md p-4">
           <div className="flex items-center gap-3 mb-3">
             <span className="material-symbols-outlined text-on-surface-variant text-lg">account_circle</span>
             <p className="text-on-surface font-body text-sm truncate flex-1">{user?.email}</p>
           </div>
-          <button onClick={signOut} className="w-full py-2.5 rounded-xl bg-error/10 text-error font-label font-semibold text-sm">
+          <button onClick={signOut} className="w-full py-2.5 rounded-md bg-error/10 text-error font-label font-semibold text-sm">
             Sair da conta
           </button>
         </section>
@@ -449,24 +449,24 @@ export default function SettingsPage() {
       {/* Custom interval */}
       {customModal && (
         <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="bg-surface-container w-full max-w-sm rounded-t-2xl sm:rounded-2xl p-6 sm:mx-4">
+          <div className="bg-surface-container w-full max-w-sm rounded-t-md sm:rounded-md p-6 sm:mx-4">
             <h3 className="font-headline text-lg font-bold text-on-surface mb-4">Personalizar</h3>
             <div className="flex items-center gap-4 justify-center mb-6">
               <div className="text-center">
                 <label className="font-label text-xs text-on-surface-variant mb-1 block">Horas</label>
                 <input type="number" min="0" max="99" value={customH} onChange={e => setCustomH(e.target.value.replace(/\D/g, ''))} placeholder="0"
-                  className="w-20 bg-surface-container-low rounded-xl px-4 py-3 text-on-surface font-headline text-2xl text-center outline-none focus:ring-2 focus:ring-primary/40" />
+                  className="w-20 bg-surface-container-low rounded-md px-4 py-3 text-on-surface font-headline text-2xl text-center outline-none focus:ring-2 focus:ring-primary/40" />
               </div>
               <span className="font-headline text-2xl text-on-surface-variant mt-5">:</span>
               <div className="text-center">
                 <label className="font-label text-xs text-on-surface-variant mb-1 block">Min</label>
                 <input type="number" min="0" max="59" value={customM} onChange={e => setCustomM(e.target.value.replace(/\D/g, ''))} placeholder="00"
-                  className="w-20 bg-surface-container-low rounded-xl px-4 py-3 text-on-surface font-headline text-2xl text-center outline-none focus:ring-2 focus:ring-primary/40" />
+                  className="w-20 bg-surface-container-low rounded-md px-4 py-3 text-on-surface font-headline text-2xl text-center outline-none focus:ring-2 focus:ring-primary/40" />
               </div>
             </div>
             <div className="flex gap-3">
-              <button onClick={() => setCustomModal(null)} className="flex-1 py-3 rounded-xl bg-surface-variant text-on-surface-variant font-label font-semibold text-sm">Cancelar</button>
-              <button onClick={saveCustom} className="flex-1 py-3 rounded-xl bg-primary text-on-primary font-label font-semibold text-sm">Salvar</button>
+              <button onClick={() => setCustomModal(null)} className="flex-1 py-3 rounded-md bg-surface-variant text-on-surface-variant font-label font-semibold text-sm">Cancelar</button>
+              <button onClick={saveCustom} className="flex-1 py-3 rounded-md bg-primary text-on-primary font-label font-semibold text-sm">Salvar</button>
             </div>
           </div>
         </div>
@@ -475,7 +475,7 @@ export default function SettingsPage() {
       {/* Quiet hour picker */}
       {pickingQuietHour && (
         <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setPickingQuietHour(null)}>
-          <div className="bg-surface-container w-full max-w-sm rounded-t-2xl sm:rounded-2xl p-5 sm:mx-4" onClick={e => e.stopPropagation()}>
+          <div className="bg-surface-container w-full max-w-sm rounded-t-md sm:rounded-md p-5 sm:mx-4" onClick={e => e.stopPropagation()}>
             <h3 className="font-headline text-lg font-bold text-on-surface mb-4">
               {pickingQuietHour === 'start' ? 'Início do sono noturno' : 'Fim do sono noturno'}
             </h3>
@@ -489,10 +489,10 @@ export default function SettingsPage() {
                     savePrefs({ ...prefs, quietHours: { ...prefs.quietHours, [pickingQuietHour!]: h } })
                   }
                 }}
-                className="bg-surface-container-low rounded-xl px-6 py-4 text-on-surface font-headline text-3xl text-center outline-none focus:ring-2 focus:ring-primary/40"
+                className="bg-surface-container-low rounded-md px-6 py-4 text-on-surface font-headline text-3xl text-center outline-none focus:ring-2 focus:ring-primary/40"
               />
             </div>
-            <button onClick={() => setPickingQuietHour(null)} className="w-full py-2.5 rounded-xl bg-primary text-on-primary font-label font-semibold text-sm">OK</button>
+            <button onClick={() => setPickingQuietHour(null)} className="w-full py-2.5 rounded-md bg-primary text-on-primary font-label font-semibold text-sm">OK</button>
           </div>
         </div>
       )}
@@ -500,7 +500,7 @@ export default function SettingsPage() {
       {/* Bath hour picker */}
       {pickingBathHour && (
         <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setPickingBathHour(false)}>
-          <div className="bg-surface-container w-full max-w-sm rounded-t-2xl sm:rounded-2xl p-5 sm:mx-4" onClick={e => e.stopPropagation()}>
+          <div className="bg-surface-container w-full max-w-sm rounded-t-md sm:rounded-md p-5 sm:mx-4" onClick={e => e.stopPropagation()}>
             <h3 className="font-headline text-lg font-bold text-on-surface mb-4">Adicionar horário</h3>
             <div className="flex justify-center mb-5">
               <input
@@ -520,10 +520,10 @@ export default function SettingsPage() {
                     addBathHour(h)
                   }
                 }}
-                className="bg-surface-container-low rounded-xl px-6 py-4 text-on-surface font-headline text-3xl text-center outline-none focus:ring-2 focus:ring-primary/40"
+                className="bg-surface-container-low rounded-md px-6 py-4 text-on-surface font-headline text-3xl text-center outline-none focus:ring-2 focus:ring-primary/40"
               />
             </div>
-            <button onClick={() => setPickingBathHour(false)} className="w-full py-2.5 rounded-xl bg-surface-variant text-on-surface-variant font-label font-semibold text-sm">Cancelar</button>
+            <button onClick={() => setPickingBathHour(false)} className="w-full py-2.5 rounded-md bg-surface-variant text-on-surface-variant font-label font-semibold text-sm">Cancelar</button>
           </div>
         </div>
       )}
@@ -531,7 +531,7 @@ export default function SettingsPage() {
       {/* Info modal - Sleep */}
       {infoModal === 'sleep' && (
         <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setInfoModal(null)}>
-          <div className="bg-surface-container w-full max-w-sm rounded-t-2xl sm:rounded-2xl p-5 sm:mx-4" onClick={e => e.stopPropagation()}>
+          <div className="bg-surface-container w-full max-w-sm rounded-t-md sm:rounded-md p-5 sm:mx-4" onClick={e => e.stopPropagation()}>
             <div className="flex items-center gap-2 mb-4">
               <span className="material-symbols-outlined text-primary text-xl">bedtime</span>
               <h3 className="font-headline text-lg font-bold text-on-surface">Como funciona o sono</h3>
@@ -562,7 +562,7 @@ export default function SettingsPage() {
                 </p>
               </div>
             </div>
-            <button onClick={() => setInfoModal(null)} className="mt-5 w-full py-2.5 rounded-xl bg-primary text-on-primary font-label font-semibold text-sm">Entendi</button>
+            <button onClick={() => setInfoModal(null)} className="mt-5 w-full py-2.5 rounded-md bg-primary text-on-primary font-label font-semibold text-sm">Entendi</button>
           </div>
         </div>
       )}
@@ -570,7 +570,7 @@ export default function SettingsPage() {
       {/* Info modal - Notifications */}
       {infoModal === 'notifications' && (
         <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setInfoModal(null)}>
-          <div className="bg-surface-container w-full max-w-sm rounded-t-2xl sm:rounded-2xl p-5 sm:mx-4" onClick={e => e.stopPropagation()}>
+          <div className="bg-surface-container w-full max-w-sm rounded-t-md sm:rounded-md p-5 sm:mx-4" onClick={e => e.stopPropagation()}>
             <div className="flex items-center gap-2 mb-4">
               <span className="material-symbols-outlined text-primary text-xl">notifications</span>
               <h3 className="font-headline text-lg font-bold text-on-surface">Como funcionam</h3>
@@ -581,7 +581,7 @@ export default function SettingsPage() {
                 <p className="font-body text-sm text-on-surface-variant">
                   Você recebe um alerta quando o intervalo está acabando (80%) e outro quando já passou.
                 </p>
-                <div className="bg-surface-container-low rounded-lg p-2.5 mt-2 flex items-start gap-2">
+                <div className="bg-surface-container-low rounded-md p-2.5 mt-2 flex items-start gap-2">
                   <span className="material-symbols-outlined text-primary text-sm mt-0.5">breastfeeding</span>
                   <div>
                     <p className="font-body text-xs text-on-surface font-semibold">Hora da amamentação!</p>
@@ -602,7 +602,7 @@ export default function SettingsPage() {
                 </p>
               </div>
             </div>
-            <button onClick={() => setInfoModal(null)} className="mt-5 w-full py-2.5 rounded-xl bg-primary text-on-primary font-label font-semibold text-sm">Entendi</button>
+            <button onClick={() => setInfoModal(null)} className="mt-5 w-full py-2.5 rounded-md bg-primary text-on-primary font-label font-semibold text-sm">Entendi</button>
           </div>
         </div>
       )}
@@ -629,7 +629,7 @@ export default function SettingsPage() {
             <div className="flex gap-3">
               <button
                 onClick={() => setConfirmClear(false)}
-                className="flex-1 py-2.5 rounded-xl bg-surface-variant text-on-surface-variant font-label font-semibold text-sm"
+                className="flex-1 py-2.5 rounded-md bg-surface-variant text-on-surface-variant font-label font-semibold text-sm"
               >
                 Cancelar
               </button>
@@ -641,7 +641,7 @@ export default function SettingsPage() {
                   }
                   setConfirmClear(false)
                 }}
-                className="flex-1 py-2.5 rounded-xl bg-gradient-to-br from-error-dim to-error text-on-error font-label font-semibold text-sm"
+                className="flex-1 py-2.5 rounded-md bg-gradient-to-br from-error-dim to-error text-on-error font-label font-semibold text-sm"
               >
                 Confirmar
               </button>

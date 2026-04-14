@@ -106,7 +106,7 @@ export default function InsightsPage() {
 
         {/* Insight cards */}
         {visibleInsights.length === 0 && (
-          <div className="rounded-xl p-5 border border-white/5 bg-surface-container text-center">
+          <div className="rounded-md p-5 border border-white/5 bg-surface-container text-center">
             <span className="text-3xl mb-2 block">✨</span>
             <p className="font-label text-sm text-on-surface-variant">
               Ainda não há insights suficientes para esse período. Continue registrando!
@@ -132,7 +132,7 @@ export default function InsightsPage() {
         {/* Chart teaser para free (sem blur gigante) */}
         {!isPremium && (
           <div
-            className="rounded-xl p-4 text-center"
+            className="rounded-md p-4 text-center"
             style={{
               background:
                 'linear-gradient(135deg, rgba(183,159,255,0.08), rgba(125,255,186,0.06))',
@@ -149,7 +149,7 @@ export default function InsightsPage() {
             <button
               type="button"
               onClick={() => setShowPaywall(true)}
-              className="bg-primary/20 text-primary font-label text-xs font-bold px-4 py-2 rounded-xl active:scale-95 transition-transform"
+              className="bg-primary/20 text-primary font-label text-xs font-bold px-4 py-2 rounded-md active:scale-95 transition-transform"
             >
               Desbloquear com Yaya+
             </button>

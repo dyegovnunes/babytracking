@@ -19,7 +19,7 @@ export default function SleepInsights({ pattern }: Props) {
   const awakePct = 100 - sleepPct
 
   return (
-    <div className="bg-surface-container rounded-xl p-4">
+    <div className="bg-surface-container rounded-md p-4">
       <h3 className="font-headline text-sm font-bold text-on-surface mb-3">
         🌙 Sono
       </h3>

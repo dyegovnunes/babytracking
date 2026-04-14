@@ -272,7 +272,7 @@ export default function SharedReports() {
           onClick={() => { if (!createdReport) setShowCreate(false); }}
         >
           <div
-            className="w-full max-w-md rounded-t-2xl bg-[#0d0a27] border border-[#b79fff]/20 p-5 pb-[calc(1.5rem+env(safe-area-inset-bottom))] max-h-[85vh] overflow-y-auto animate-slide-up"
+            className="w-full max-w-md rounded-t-md bg-[#0d0a27] border border-[#b79fff]/20 p-5 pb-[calc(1.5rem+env(safe-area-inset-bottom))] max-h-[85vh] overflow-y-auto animate-slide-up"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-5">

@@ -52,9 +52,9 @@ export default function LeapCard({ leap, babyName, babyGender, birthDate, isUpco
 
   return (
     <>
-      <div className="rounded-xl bg-gradient-to-r from-[#7C4DFF]/10 to-[#b79fff]/10 border border-[#b79fff]/15 p-4">
+      <div className="rounded-md bg-gradient-to-r from-[#7C4DFF]/10 to-[#b79fff]/10 border border-[#b79fff]/15 p-4">
         <div className="flex items-start gap-3">
-          <div className="w-8 h-8 rounded-lg bg-[#7C4DFF]/20 flex items-center justify-center flex-shrink-0">
+          <div className="w-8 h-8 rounded-md bg-[#7C4DFF]/20 flex items-center justify-center flex-shrink-0">
             <span className="text-base">⚡</span>
           </div>
           <div className="flex-1 min-w-0">
@@ -174,7 +174,7 @@ function LeapDetail({ leap, onClose, birthDate, babyAgeWeeks }: { leap: Developm
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md rounded-t-2xl bg-[#0d0a27] border border-[#b79fff]/20 p-5 pb-[calc(1.5rem+env(safe-area-inset-bottom))] max-h-[85vh] overflow-y-auto animate-slide-up"
+        className="w-full max-w-md rounded-t-md bg-[#0d0a27] border border-[#b79fff]/20 p-5 pb-[calc(1.5rem+env(safe-area-inset-bottom))] max-h-[85vh] overflow-y-auto animate-slide-up"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-4">
@@ -224,7 +224,7 @@ function LeapDetail({ leap, onClose, birthDate, babyAgeWeeks }: { leap: Developm
           </ul>
         </div>
 
-        <div className="bg-white/[0.04] rounded-lg p-3 mb-4">
+        <div className="bg-white/[0.04] rounded-md p-3 mb-4">
           <h4 className="text-xs font-semibold text-[#b79fff] mb-1">
             Impacto nos registros
           </h4>
@@ -233,7 +233,7 @@ function LeapDetail({ leap, onClose, birthDate, babyAgeWeeks }: { leap: Developm
 
         <button
           onClick={onClose}
-          className="w-full py-3 rounded-xl bg-[#b79fff]/10 text-[#b79fff] font-semibold text-sm"
+          className="w-full py-3 rounded-md bg-[#b79fff]/10 text-[#b79fff] font-semibold text-sm"
         >
           Entendi
         </button>
@@ -245,7 +245,7 @@ function LeapDetail({ leap, onClose, birthDate, babyAgeWeeks }: { leap: Developm
 /** Full timeline of all 10 leaps for the detail modal */
 function FullLeapTimeline({ currentLeapId, babyAgeWeeks, birthDate }: { currentLeapId: number; babyAgeWeeks: number; birthDate: string }) {
   return (
-    <div className="bg-white/[0.03] rounded-xl p-3 mb-4">
+    <div className="bg-white/[0.03] rounded-md p-3 mb-4">
       <p className="text-[10px] text-[#e7e2ff]/40 uppercase tracking-wider mb-2">Linha do tempo dos saltos</p>
       <div className="space-y-1">
         {DEVELOPMENT_LEAPS.map((l) => {

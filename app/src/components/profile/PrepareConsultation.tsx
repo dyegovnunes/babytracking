@@ -185,7 +185,7 @@ export default function PrepareConsultation() {
         onClick={handleButtonClick}
         className="w-full bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 rounded-md p-4 flex items-center gap-3 active:bg-primary/15 transition-colors"
       >
-        <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center flex-shrink-0">
+        <div className="w-10 h-10 rounded-md bg-primary/20 flex items-center justify-center flex-shrink-0">
           <span className="material-symbols-outlined text-primary text-xl">clinical_notes</span>
         </div>
         <div className="flex-1 text-left">
@@ -204,7 +204,7 @@ export default function PrepareConsultation() {
           onClick={handleClose}
         >
           <div
-            className="w-full max-w-md rounded-t-2xl bg-[#0d0a27] border border-[#b79fff]/20 p-5 pb-[calc(1.5rem+env(safe-area-inset-bottom))] max-h-[85vh] overflow-y-auto animate-slide-up"
+            className="w-full max-w-md rounded-t-md bg-[#0d0a27] border border-[#b79fff]/20 p-5 pb-[calc(1.5rem+env(safe-area-inset-bottom))] max-h-[85vh] overflow-y-auto animate-slide-up"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-5">
@@ -227,7 +227,7 @@ export default function PrepareConsultation() {
                       <button
                         key={d}
                         onClick={() => { hapticLight(); setPeriodDays(d); }}
-                        className={`py-2.5 rounded-xl font-label text-sm font-semibold transition-colors ${
+                        className={`py-2.5 rounded-md font-label text-sm font-semibold transition-colors ${
                           periodDays === d
                             ? 'bg-[#b79fff] text-[#0d0a27]'
                             : 'bg-white/[0.06] text-[#e7e2ff]/70'
@@ -240,7 +240,7 @@ export default function PrepareConsultation() {
                 </div>
 
                 {/* Info about content */}
-                <div className="bg-white/[0.04] rounded-xl p-3 mb-5">
+                <div className="bg-white/[0.04] rounded-md p-3 mb-5">
                   <p className="font-label text-xs text-[#e7e2ff]/60 mb-2">O relatorio inclui:</p>
                   <div className="grid grid-cols-2 gap-1.5">
                     {[
@@ -261,7 +261,7 @@ export default function PrepareConsultation() {
 
                 {/* Data summary */}
                 {pdfData && (
-                  <div className="bg-white/[0.04] rounded-xl p-3 mb-5">
+                  <div className="bg-white/[0.04] rounded-md p-3 mb-5">
                     <p className="font-label text-xs text-[#e7e2ff]/60 mb-1.5">Dados no periodo</p>
                     <p className="font-headline text-2xl font-bold text-[#e7e2ff]">{pdfData.totalLogs}</p>
                     <p className="font-label text-xs text-[#e7e2ff]/40">registros encontrados</p>
@@ -276,7 +276,7 @@ export default function PrepareConsultation() {
                 <button
                   onClick={handleGenerate}
                   disabled={isGenerating || !pdfData}
-                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#7C4DFF] to-[#b79fff] text-white font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="w-full py-3.5 rounded-md bg-gradient-to-r from-[#7C4DFF] to-[#b79fff] text-white font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   {isGenerating ? (
                     <>
@@ -295,7 +295,7 @@ export default function PrepareConsultation() {
               <>
                 {/* PDF ready */}
                 <div className="text-center mb-6">
-                  <div className="w-16 h-16 mx-auto mb-3 rounded-2xl bg-green-500/20 flex items-center justify-center">
+                  <div className="w-16 h-16 mx-auto mb-3 rounded-md bg-green-500/20 flex items-center justify-center">
                     <span className="material-symbols-outlined text-green-400 text-3xl">check_circle</span>
                   </div>
                   <h4 className="font-headline text-lg font-bold text-[#e7e2ff] mb-1">Relatorio pronto!</h4>
@@ -308,7 +308,7 @@ export default function PrepareConsultation() {
                   {/* Share */}
                   <button
                     onClick={handleShare}
-                    className="w-full py-3 rounded-xl bg-[#25D366] text-white font-semibold text-sm flex items-center justify-center gap-2"
+                    className="w-full py-3 rounded-md bg-[#25D366] text-white font-semibold text-sm flex items-center justify-center gap-2"
                   >
                     <span className="material-symbols-outlined text-lg">share</span>
                     Compartilhar
@@ -317,7 +317,7 @@ export default function PrepareConsultation() {
                   {/* Download */}
                   <button
                     onClick={handleDownload}
-                    className="w-full py-3 rounded-xl bg-white/[0.06] text-[#e7e2ff] font-semibold text-sm flex items-center justify-center gap-2"
+                    className="w-full py-3 rounded-md bg-white/[0.06] text-[#e7e2ff] font-semibold text-sm flex items-center justify-center gap-2"
                   >
                     <span className="material-symbols-outlined text-lg">download</span>
                     Salvar no dispositivo
@@ -326,7 +326,7 @@ export default function PrepareConsultation() {
                   {/* Close */}
                   <button
                     onClick={handleClose}
-                    className="w-full py-3 rounded-xl text-[#e7e2ff]/40 font-semibold text-sm"
+                    className="w-full py-3 rounded-md text-[#e7e2ff]/40 font-semibold text-sm"
                   >
                     Fechar
                   </button>

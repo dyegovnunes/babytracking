@@ -149,7 +149,7 @@ export function PaywallModal({ isOpen, onClose, trigger = 'generic' }: PaywallMo
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-sm" style={{ zIndex: 60 }}>
-      <div className="w-full max-w-md rounded-t-3xl bg-[#0d0a27] border border-[#b79fff]/20 animate-slide-up max-h-[92vh] flex flex-col">
+      <div className="w-full max-w-md rounded-t-md bg-[#0d0a27] border border-[#b79fff]/20 animate-slide-up max-h-[92vh] flex flex-col">
         {/* Scrollable content */}
         <div className="flex-1 overflow-y-auto px-5 pt-5 pb-3">
           {/* Header */}
@@ -190,7 +190,7 @@ export function PaywallModal({ isOpen, onClose, trigger = 'generic' }: PaywallMo
               <button
                 key={plan.type}
                 onClick={() => setSelectedPlan(plan.type)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl border-2 transition-all ${
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-md border-2 transition-all ${
                   selectedPlan === plan.type
                     ? 'border-[#b79fff] bg-[#b79fff]/10'
                     : 'border-[#474464]/50 bg-[#181538]/50'
@@ -233,7 +233,7 @@ export function PaywallModal({ isOpen, onClose, trigger = 'generic' }: PaywallMo
           <button
             onClick={handlePurchase}
             disabled={loading}
-            className="w-full py-3.5 rounded-xl bg-[#b79fff] text-[#0d0a27] font-bold text-base mb-2 disabled:opacity-50 transition-opacity"
+            className="w-full py-3.5 rounded-md bg-[#b79fff] text-[#0d0a27] font-bold text-base mb-2 disabled:opacity-50 transition-opacity"
           >
             {loading ? 'Processando...' : ctaText}
           </button>

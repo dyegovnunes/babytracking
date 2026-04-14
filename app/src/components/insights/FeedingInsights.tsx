@@ -19,7 +19,7 @@ export default function FeedingInsights({ pattern }: Props) {
   const bottlePct = total > 0 ? (pattern.bottleCount / total) * 100 : 0
 
   return (
-    <div className="bg-surface-container rounded-xl p-4">
+    <div className="bg-surface-container rounded-md p-4">
       <h3 className="font-headline text-sm font-bold text-on-surface mb-3">
         🤱 Alimentação
       </h3>

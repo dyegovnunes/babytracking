@@ -64,7 +64,7 @@ export default function EditModal({ log, onSave, onDelete, onClose, onAddBottle 
       className="fixed inset-0 z-50 flex items-end justify-center bg-black/75 backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="w-full max-w-lg bg-surface-container-highest rounded-t-3xl p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] border-t-2 border-primary-fixed animate-slide-up">
+      <div className="w-full max-w-lg bg-surface-container-highest rounded-t-md p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] border-t-2 border-primary-fixed animate-slide-up">
         <div className="flex items-center gap-3 mb-5">
           {displayEvent && (
             displayEvent.emoji ? (
@@ -89,7 +89,7 @@ export default function EditModal({ log, onSave, onDelete, onClose, onAddBottle 
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full bg-surface-container-low rounded-lg px-3 py-3 text-on-surface font-body text-sm outline-none focus:ring-2 focus:ring-primary/40 min-h-[44px]"
+              className="w-full bg-surface-container-low rounded-md px-3 py-3 text-on-surface font-body text-sm outline-none focus:ring-2 focus:ring-primary/40 min-h-[44px]"
             />
           </div>
           <div>
@@ -100,7 +100,7 @@ export default function EditModal({ log, onSave, onDelete, onClose, onAddBottle 
               type="time"
               value={time}
               onChange={(e) => setTime(e.target.value)}
-              className="w-full bg-surface-container-low rounded-lg px-3 py-3 text-on-surface font-body text-sm outline-none focus:ring-2 focus:ring-primary/40 min-h-[44px]"
+              className="w-full bg-surface-container-low rounded-md px-3 py-3 text-on-surface font-body text-sm outline-none focus:ring-2 focus:ring-primary/40 min-h-[44px]"
             />
           </div>
         </div>
@@ -116,7 +116,7 @@ export default function EditModal({ log, onSave, onDelete, onClose, onAddBottle 
                   key={opt.id}
                   type="button"
                   onClick={() => setSelectedSide(opt.id)}
-                  className={`flex-1 py-2.5 rounded-lg font-label text-sm font-semibold transition-colors ${
+                  className={`flex-1 py-2.5 rounded-md font-label text-sm font-semibold transition-colors ${
                     selectedSide === opt.id
                       ? 'bg-tertiary text-on-tertiary'
                       : 'bg-surface-variant text-on-surface-variant'
@@ -133,7 +133,7 @@ export default function EditModal({ log, onSave, onDelete, onClose, onAddBottle 
           <button
             type="button"
             onClick={() => { onClose(); onAddBottle(); }}
-            className="w-full mb-4 py-2.5 rounded-xl bg-primary/15 text-primary font-label text-sm font-semibold flex items-center justify-center gap-2 active:bg-primary/25"
+            className="w-full mb-4 py-2.5 rounded-md bg-primary/15 text-primary font-label text-sm font-semibold flex items-center justify-center gap-2 active:bg-primary/25"
           >
             🍼 Complementar com mamadeira
           </button>
@@ -151,7 +151,7 @@ export default function EditModal({ log, onSave, onDelete, onClose, onAddBottle 
               value={ml}
               onChange={(e) => setMl(e.target.value.replace(/\D/g, ''))}
               placeholder="ex: 60"
-              className="w-full bg-surface-container-low rounded-lg px-3 py-3 text-on-surface font-body text-sm outline-none focus:ring-2 focus:ring-primary/40 min-h-[44px]"
+              className="w-full bg-surface-container-low rounded-md px-3 py-3 text-on-surface font-body text-sm outline-none focus:ring-2 focus:ring-primary/40 min-h-[44px]"
             />
           </div>
         )}
@@ -160,19 +160,19 @@ export default function EditModal({ log, onSave, onDelete, onClose, onAddBottle 
           <div className="flex gap-2 mt-2">
             <button
               onClick={() => setConfirmDel(true)}
-              className="flex-1 py-3 rounded-xl bg-error/15 text-error font-label font-semibold text-sm"
+              className="flex-1 py-3 rounded-md bg-error/15 text-error font-label font-semibold text-sm"
             >
               Excluir
             </button>
             <button
               onClick={onClose}
-              className="flex-1 py-3 rounded-xl bg-surface-variant text-on-surface-variant font-label font-semibold text-sm"
+              className="flex-1 py-3 rounded-md bg-surface-variant text-on-surface-variant font-label font-semibold text-sm"
             >
               Cancelar
             </button>
             <button
               onClick={handleSave}
-              className="flex-[2] py-3 rounded-xl bg-gradient-to-br from-primary to-primary-container text-on-primary font-label font-semibold text-sm"
+              className="flex-[2] py-3 rounded-md bg-gradient-to-br from-primary to-primary-container text-on-primary font-label font-semibold text-sm"
             >
               Salvar
             </button>
@@ -181,13 +181,13 @@ export default function EditModal({ log, onSave, onDelete, onClose, onAddBottle 
           <div className="flex gap-2 mt-2">
             <button
               onClick={() => setConfirmDel(false)}
-              className="flex-1 py-3 rounded-xl bg-surface-variant text-on-surface-variant font-label font-semibold text-sm"
+              className="flex-1 py-3 rounded-md bg-surface-variant text-on-surface-variant font-label font-semibold text-sm"
             >
               Cancelar
             </button>
             <button
               onClick={() => onDelete(log.id)}
-              className="flex-[2] py-3 rounded-xl bg-gradient-to-br from-error-dim to-error text-on-error font-label font-semibold text-sm"
+              className="flex-[2] py-3 rounded-md bg-gradient-to-br from-error-dim to-error text-on-error font-label font-semibold text-sm"
             >
               Confirmar exclusão
             </button>

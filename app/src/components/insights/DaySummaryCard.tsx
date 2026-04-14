@@ -36,7 +36,7 @@ export default function DaySummaryCard({ summary }: Props) {
           return (
             <div
               key={s.key}
-              className={`rounded-xl p-3 flex flex-col items-center gap-1 ${s.bg}`}
+              className={`rounded-md p-3 flex flex-col items-center gap-1 ${s.bg}`}
             >
               <span className="text-xl leading-none">{s.emoji}</span>
               <span className="font-headline text-2xl font-extrabold text-on-surface leading-none mt-1">

@@ -27,7 +27,7 @@ export default function BabySwitcher({ onClose }: Props) {
       className="fixed inset-0 z-50 flex items-end justify-center bg-black/75 backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="w-full max-w-lg bg-surface-container-highest rounded-t-3xl p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] border-t-2 border-primary-fixed animate-slide-up">
+      <div className="w-full max-w-lg bg-surface-container-highest rounded-t-md p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] border-t-2 border-primary-fixed animate-slide-up">
         <h2 className="font-headline text-lg font-bold text-on-surface mb-4">
           Trocar bebê
         </h2>
@@ -39,7 +39,7 @@ export default function BabySwitcher({ onClose }: Props) {
               <button
                 key={b.id}
                 onClick={() => handleSelect(b)}
-                className={`w-full flex items-center gap-3 p-3 rounded-xl transition-colors ${
+                className={`w-full flex items-center gap-3 p-3 rounded-md transition-colors ${
                   isActive
                     ? 'bg-primary/10 ring-2 ring-primary'
                     : 'bg-surface-container active:bg-surface-container-high'
@@ -78,7 +78,7 @@ export default function BabySwitcher({ onClose }: Props) {
 
         <button
           onClick={onClose}
-          className="w-full mt-4 py-3 rounded-xl bg-surface-variant text-on-surface-variant font-label font-semibold text-sm"
+          className="w-full mt-4 py-3 rounded-md bg-surface-variant text-on-surface-variant font-label font-semibold text-sm"
         >
           Cancelar
         </button>

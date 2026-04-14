@@ -6,7 +6,7 @@ interface Props {
 export default function InsightPaywallBanner({ remainingCount, onUpgrade }: Props) {
   return (
     <div
-      className="rounded-xl p-4 text-center"
+      className="rounded-md p-4 text-center"
       style={{
         background:
           'linear-gradient(90deg, rgba(183,159,255,0.10), rgba(255,150,185,0.10))',
@@ -21,7 +21,7 @@ export default function InsightPaywallBanner({ remainingCount, onUpgrade }: Prop
       <button
         type="button"
         onClick={onUpgrade}
-        className="bg-primary text-surface font-label text-sm font-bold px-5 py-2 rounded-xl active:scale-95 transition-transform"
+        className="bg-primary text-surface font-label text-sm font-bold px-5 py-2 rounded-md active:scale-95 transition-transform"
       >
         Conhecer Yaya+
       </button>

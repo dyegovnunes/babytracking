@@ -29,7 +29,7 @@ export default function PeriodDropdown({ selected, available, onChange }: Props)
           hapticLight()
           setOpen(!open)
         }}
-        className="flex items-center gap-1.5 bg-white/[0.06] rounded-xl px-3 py-2 font-label text-xs font-semibold text-on-surface-variant active:scale-95 transition-transform"
+        className="flex items-center gap-1.5 bg-white/[0.06] rounded-md px-3 py-2 font-label text-xs font-semibold text-on-surface-variant active:scale-95 transition-transform"
       >
         {PERIOD_LABELS[selected]}
         <span className="material-symbols-outlined text-sm">
@@ -38,7 +38,7 @@ export default function PeriodDropdown({ selected, available, onChange }: Props)
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-1 bg-[#0d0a27] rounded-xl border border-white/10 shadow-xl z-30 min-w-[180px] overflow-hidden">
+        <div className="absolute right-0 top-full mt-1 bg-[#0d0a27] rounded-md border border-white/10 shadow-xl z-30 min-w-[180px] overflow-hidden">
           {ALL_PERIODS.map((p) => {
             const isAvailable = available.includes(p)
             const isSelected = p === selected

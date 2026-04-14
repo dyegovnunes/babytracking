@@ -77,7 +77,7 @@ export default function HighlightSheet({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md rounded-t-2xl bg-surface-container-highest p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] max-h-[85vh] overflow-y-auto animate-slide-up"
+        className="w-full max-w-md rounded-t-md bg-surface-container-highest p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] max-h-[85vh] overflow-y-auto animate-slide-up"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Drag handle */}
@@ -85,7 +85,7 @@ export default function HighlightSheet({
 
         {/* Header */}
         <div className="flex items-start gap-3 mb-4">
-          <div className="w-14 h-14 rounded-xl bg-surface-container flex items-center justify-center shrink-0">
+          <div className="w-14 h-14 rounded-md bg-surface-container flex items-center justify-center shrink-0">
             <span className="text-3xl leading-none">{highlight.emoji}</span>
           </div>
           <div className="flex-1 min-w-0 pt-1">
@@ -119,7 +119,7 @@ export default function HighlightSheet({
           <button
             type="button"
             onClick={handleDismiss}
-            className="flex-1 py-3 rounded-xl bg-surface-variant/50 text-on-surface-variant font-label text-xs font-semibold active:bg-surface-variant"
+            className="flex-1 py-3 rounded-md bg-surface-variant/50 text-on-surface-variant font-label text-xs font-semibold active:bg-surface-variant"
           >
             Dispensar por {highlight.dismissDays}d
           </button>
@@ -127,7 +127,7 @@ export default function HighlightSheet({
             <button
               type="button"
               onClick={handleSeeMore}
-              className="flex-1 py-3 rounded-xl bg-primary text-on-primary font-label text-xs font-bold active:opacity-90"
+              className="flex-1 py-3 rounded-md bg-primary text-on-primary font-label text-xs font-bold active:opacity-90"
             >
               {content.seeMoreLabel}
             </button>
@@ -197,7 +197,7 @@ function renderContent({
             </ul>
           </Subsection>
 
-          <div className="mt-3 p-3 rounded-xl bg-primary/5 border border-primary/15">
+          <div className="mt-3 p-3 rounded-md bg-primary/5 border border-primary/15">
             <p className="font-label text-[10px] font-bold uppercase tracking-wider text-primary mb-1">
               Impacto no registro
             </p>
@@ -250,7 +250,7 @@ function renderContent({
           <p className="font-body text-sm text-on-surface-variant leading-relaxed mb-3">
             {m.description}
           </p>
-          <div className="p-3 rounded-xl bg-tertiary/5 border border-tertiary/15">
+          <div className="p-3 rounded-md bg-tertiary/5 border border-tertiary/15">
             <p className="font-label text-[10px] font-bold uppercase tracking-wider text-tertiary mb-1">
               Lembre-se
             </p>

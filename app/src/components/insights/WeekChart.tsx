@@ -20,7 +20,7 @@ export default function WeekChart({ trends }: Props) {
   const max = Math.max(...values, 1)
 
   return (
-    <div className="bg-surface-container rounded-xl p-4">
+    <div className="bg-surface-container rounded-md p-4">
       <h3 className="font-headline text-sm font-bold text-on-surface mb-3">
         Últimos 7 dias
       </h3>
@@ -30,7 +30,7 @@ export default function WeekChart({ trends }: Props) {
           <button
             key={m.key}
             onClick={() => setMetric(m.key)}
-            className={`flex-1 py-1.5 rounded-lg font-label text-[10px] font-semibold transition-colors ${
+            className={`flex-1 py-1.5 rounded-md font-label text-[10px] font-semibold transition-colors ${
               metric === m.key
                 ? 'bg-primary/20 text-primary'
                 : 'bg-surface-container-high text-on-surface-variant'

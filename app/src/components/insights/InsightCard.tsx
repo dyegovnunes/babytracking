@@ -16,7 +16,7 @@ export default function InsightCard({
 }: InsightResult) {
   return (
     <div
-      className={`rounded-xl p-4 border ${TYPE_STYLES[type] || TYPE_STYLES.reference}`}
+      className={`rounded-md p-4 border ${TYPE_STYLES[type] || TYPE_STYLES.reference}`}
     >
       <div className="flex items-start gap-3">
         <span className="text-2xl mt-0.5 leading-none">{emoji}</span>

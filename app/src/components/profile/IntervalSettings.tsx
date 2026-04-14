@@ -83,7 +83,7 @@ export default function IntervalSettings({ intervals, onSave }: Props) {
             <div key={key}>
               <button
                 onClick={() => setEditingCat(isEditing ? null : key)}
-                className="w-full flex items-center gap-3 py-3 px-2 rounded-lg active:bg-surface-container-high transition-colors"
+                className="w-full flex items-center gap-3 py-3 px-2 rounded-md active:bg-surface-container-high transition-colors"
               >
                 <span className="material-symbols-outlined text-on-surface-variant text-lg">
                   {icon}
