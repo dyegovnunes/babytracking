@@ -32,3 +32,13 @@ npm-debug.log*
 .claude/settings.local.json
 
 .vercel
+
+# Android build artifacts (shouldn't be committed)
+*.aab
+*.apk
+
+# Test-output PDFs in root (e.g. yaya-guto-2026-04-12.pdf)
+/*.pdf
+
+# Word/Office temp lock files
+~$*
