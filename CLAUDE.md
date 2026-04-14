@@ -46,18 +46,19 @@ app/src/
 ├── App.tsx                  # BrowserRouter + providers + roteamento
 ├── main.tsx
 ├── contexts/                # AppContext, AuthContext, PurchaseContext
-├── pages/                   # Uma por rota (Tracker, History, Insights, ...)
+├── features/                # Features encapsuladas — padrão novo (ver abaixo)
+│   └── milestones/          # Marcos de desenvolvimento + saltos
+├── pages/                   # Páginas ainda não migradas pro padrão features/
 ├── components/
 │   ├── ui/                  # Primitivos reutilizáveis (Modal, Toast, ...)
 │   ├── layout/              # AppShell (navegação, safe area)
-│   ├── home/                # Específicos do Tracker
-│   ├── insights/            # Específicos do Insights
-│   ├── milestones/          # Específicos do Marcos
-│   ├── profile/             # Específicos do Perfil
+│   ├── home/                # Específicos do Tracker (ainda não é feature)
+│   ├── insights/            # Específicos do Insights (ainda não é feature)
+│   ├── profile/             # Específicos do Perfil (ainda não é feature)
 │   ├── timeline/            # Linha do tempo (History)
 │   └── activity/            # Cards de atividade
-├── hooks/                   # Hooks reutilizáveis (useInsightsEngine, useSheetBackClose, ...)
-├── lib/                     # Lógica pura, sem React (insightRules, generatePDF, formatters, ...)
+├── hooks/                   # Hooks compartilhados entre features
+├── lib/                     # Lógica pura compartilhada (formatters, haptics, ...)
 ├── types/index.ts           # Tipos compartilhados
 ├── admin/                   # Painel admin (rota /paineladmin, lazy-loaded)
 └── styles/                  # Tailwind base
@@ -67,9 +68,37 @@ supabase/
 └── migrations/              # Schema em SQL
 ```
 
+### Padrão `features/<nome>/` (fase 3 em andamento)
+
+Features novas e grandes vão em `features/`, com tudo junto: página, hooks,
+lib, componentes. Cada feature expõe sua "API pública" por um `index.ts`:
+
+```
+features/milestones/
+├── index.ts              # Único ponto de entrada — define o que é público
+├── MilestonesPage.tsx    # Página da rota
+├── useMilestones.ts      # Hook principal
+├── milestoneData.ts      # Dados + tipos + helpers puros
+├── developmentLeaps.ts   # Mais dados + helpers
+└── components/           # Componentes privados da feature
+    ├── MilestoneRegister.tsx
+    ├── MilestoneCelebration.tsx
+    └── MilestoneShareImage.tsx
+```
+
+**Regra de ouro:** consumidores fora de `features/milestones/` importam
+**só** de `features/milestones` (via `index.ts`), nunca de arquivos internos.
+Isso protege o encapsulamento — se você renomear um componente interno, só
+mexe em 1 feature. O único ponto onde isso quebra é o `lazy(() => import(...))`
+no `App.tsx`, que precisa apontar pro arquivo da página diretamente porque
+`React.lazy` exige default export.
+
+**Features ainda na estrutura antiga** (vão migrar aos poucos): home,
+insights, profile, history, feed, sleep, diaper, bath. Use a feature de
+milestones como referência quando for migrar.
+
 Arquivo grande (>400 linhas) = sinal pra quebrar em sections/hooks.
-`SettingsPage.tsx`, `MilestonesPage.tsx`, `SharedReportPage.tsx` são alvos
-futuros dessa refatoração — ver FASE 1-2 abaixo.
+`SharedReportPage.tsx` é o próximo alvo de quebra interna.
 
 ---
 
