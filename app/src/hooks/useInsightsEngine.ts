@@ -112,31 +112,81 @@ function getPeriodRange(period: PeriodOption): { start: number; end: number } {
 function computeSleepPairs(logs: LogEntry[]): { start: number; end: number }[] {
   const pairs: { start: number; end: number }[] = []
 
-  // Logs com duration (nap registrado com tempo)
+  // Logs com duration explícita (sonecas pré-registradas com tempo)
   logs
-    .filter((l) => l.eventId.startsWith('sleep') && l.duration && l.duration > 0)
+    .filter(
+      (l) =>
+        (l.eventId === 'sleep' || l.eventId === 'sleep_nap') &&
+        typeof l.duration === 'number' &&
+        l.duration > 0,
+    )
     .forEach((l) => {
       pairs.push({ start: l.timestamp - l.duration! * 60000, end: l.timestamp })
     })
 
-  // Pares sleep → wake
+  // Pares sleep → wake — máquina de estado linear (evita dois sleeps
+  // consecutivos dividirem o mesmo wake e duplicarem minutos).
   const sorted = [...logs]
-    .filter((l) => SLEEP_EVENT_IDS.has(l.eventId))
+    .filter((l) => {
+      if (l.eventId === 'wake' || l.eventId === 'sleep_awake') return true
+      if (l.eventId === 'sleep' || l.eventId === 'sleep_nap') {
+        return !(typeof l.duration === 'number' && l.duration > 0)
+      }
+      return false
+    })
     .sort((a, b) => a.timestamp - b.timestamp)
-  for (let i = 0; i < sorted.length; i++) {
-    const cur = sorted[i]
-    if (cur.eventId === 'sleep' || cur.eventId === 'sleep_nap') {
-      if (cur.duration && cur.duration > 0) continue
-      const wake = sorted
-        .slice(i + 1)
-        .find((l) => l.eventId === 'wake' || l.eventId === 'sleep_awake')
-      pairs.push({
-        start: cur.timestamp,
-        end: wake ? wake.timestamp : Date.now(),
-      })
+
+  let currentSleep: number | null = null
+  for (const l of sorted) {
+    const isSleep = l.eventId === 'sleep' || l.eventId === 'sleep_nap'
+    if (isSleep) {
+      if (currentSleep === null) currentSleep = l.timestamp
+    } else {
+      if (currentSleep !== null) {
+        if (l.timestamp > currentSleep) {
+          pairs.push({ start: currentSleep, end: l.timestamp })
+        }
+        currentSleep = null
+      }
     }
   }
+  if (currentSleep !== null) {
+    pairs.push({ start: currentSleep, end: Date.now() })
+  }
   return pairs
+}
+
+/**
+ * Clipa um par contra uma janela. Retorna null se não houver sobreposição.
+ */
+function clipPair(
+  p: { start: number; end: number },
+  start: number,
+  end: number,
+): { start: number; end: number } | null {
+  const s = Math.max(p.start, start)
+  const e = Math.min(p.end, end)
+  if (e <= s) return null
+  return { start: s, end: e }
+}
+
+/**
+ * Pares de sono restritos à janela [start, end]. Usa o histórico completo
+ * para achar o wake correspondente (mesmo fora do período) e depois clipa,
+ * evitando que um sono que atravessa a meia-noite produza horas fantasmas.
+ */
+function computeSleepPairsInWindow(
+  logs: LogEntry[],
+  start: number,
+  end: number,
+): { start: number; end: number }[] {
+  const all = computeSleepPairs(logs)
+  const out: { start: number; end: number }[] = []
+  for (const p of all) {
+    const c = clipPair(p, start, end)
+    if (c) out.push(c)
+  }
+  return out
 }
 
 export function getAvailablePeriods(logs: LogEntry[]): PeriodOption[] {
@@ -187,8 +237,11 @@ export function getAvailablePeriods(logs: LogEntry[]): PeriodOption[] {
 export function useInsightsEngine(
   logs: LogEntry[],
   birthDate: string | undefined,
-  period: PeriodOption
+  period: PeriodOption,
+  quietHours?: { start: number; end: number },
 ) {
+  const nightStart = quietHours?.start ?? 22
+  const nightEnd = quietHours?.end ?? 7
   return useMemo(() => {
     const band: AgeBand = birthDate ? getAgeBand(birthDate) : 'beyond'
     const { start, end } = getPeriodRange(period)
@@ -203,7 +256,9 @@ export function useInsightsEngine(
 
     const feeds = periodLogs.filter((l) => FEED_IDS.has(l.eventId))
     const diapers = periodLogs.filter((l) => DIAPER_IDS.has(l.eventId))
-    const sleepPairs = computeSleepPairs(periodLogs)
+    // Pares clipados à janela — usa o histórico completo para achar wakes
+    // fora do período (um sono que cruza a meia-noite não deve dobrar).
+    const sleepPairs = computeSleepPairsInWindow(logs, start, end)
     const totalSleepMin = sleepPairs.reduce(
       (s, p) => s + (p.end - p.start) / 60000,
       0
@@ -278,13 +333,16 @@ export function useInsightsEngine(
       dayCount: periodDaysNum,
       isSingleDay,
       isPartialDay: period === 'today',
+      nightStart,
+      nightEnd,
     }
 
     // Na página de Insights não aplicamos a rotação de 48h: o usuário veio
     // aqui justamente para ver os insights, então não devemos esconder nada.
     const insights: InsightResult[] = generateInsights(logs, band, ctx)
 
-    // Week trends — sempre últimos 7 dias
+    // Week trends — sempre últimos 7 dias. Usa pares clipados por dia
+    // para atribuir corretamente sono que cruza a meia-noite.
     const weekTrends: DayTrend[] = []
     const now = Date.now()
     for (let i = 6; i >= 0; i--) {
@@ -293,7 +351,7 @@ export function useInsightsEngine(
       const dayLogs = logs.filter(
         (l) => l.timestamp >= dayStart && l.timestamp < dayEnd
       )
-      const daySleepPairs = computeSleepPairs(dayLogs)
+      const daySleepPairs = computeSleepPairsInWindow(logs, dayStart, dayEnd)
       weekTrends.push({
         date: getLocalDateString(new Date(dayStart)),
         label: new Date(dayStart)
@@ -313,5 +371,5 @@ export function useInsightsEngine(
     const availablePeriods = getAvailablePeriods(logs)
 
     return { periodSummary, insights, weekTrends, availablePeriods }
-  }, [logs, birthDate, period])
+  }, [logs, birthDate, period, nightStart, nightEnd])
 }

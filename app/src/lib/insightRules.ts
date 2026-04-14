@@ -42,6 +42,13 @@ export interface InsightContext {
   isSingleDay: boolean
   /** É o dia de hoje em andamento (dia parcial)? */
   isPartialDay: boolean
+  /**
+   * Janela "noturna" configurada pelos pais (quiet hours). `nightStart` e
+   * `nightEnd` são horas inteiras 0-23. Por padrão 22-7. Suporta wraparound
+   * (nightStart > nightEnd significa que a noite atravessa a meia-noite).
+   */
+  nightStart: number
+  nightEnd: number
 }
 
 // ---- Helper constants ----
@@ -54,40 +61,59 @@ function startOfDay(ts: number): number {
   return d.getTime()
 }
 
-/** Constrói pares de início/fim de sono a partir dos logs */
+/**
+ * Constrói pares de início/fim de sono a partir dos logs. Usa uma máquina
+ * de estado linear para parear sleep↔wake (evita que dois sleeps seguidos
+ * sem um wake entre eles acabem dividindo o mesmo wake e dupliquem
+ * minutos de sono).
+ */
 function computeSleepPairs(logs: LogEntry[]): { start: number; end: number }[] {
   const pairs: { start: number; end: number }[] = []
 
-  // 1. Logs com duration (ex: nap registrado com tempo)
+  // 1. Logs com duration explícita (sonecas registradas com tempo pronto)
   logs
-    .filter((l) => l.eventId.startsWith('sleep') && l.duration && l.duration > 0)
+    .filter(
+      (l) =>
+        (l.eventId === 'sleep' || l.eventId === 'sleep_nap') &&
+        typeof l.duration === 'number' &&
+        l.duration > 0,
+    )
     .forEach((l) => {
       pairs.push({ start: l.timestamp - l.duration! * 60000, end: l.timestamp })
     })
 
-  // 2. Pares sleep → wake (modo toggle)
+  // 2. Sleep→wake em modo toggle (sem duration). Máquina de estado linear.
   const sorted = [...logs]
-    .filter(
-      (l) =>
-        l.eventId === 'sleep' ||
-        l.eventId === 'wake' ||
-        l.eventId === 'sleep_nap' ||
-        l.eventId === 'sleep_awake',
-    )
+    .filter((l) => {
+      if (l.eventId === 'wake' || l.eventId === 'sleep_awake') return true
+      if (l.eventId === 'sleep' || l.eventId === 'sleep_nap') {
+        return !(typeof l.duration === 'number' && l.duration > 0)
+      }
+      return false
+    })
     .sort((a, b) => a.timestamp - b.timestamp)
 
-  for (let i = 0; i < sorted.length; i++) {
-    const cur = sorted[i]
-    if (cur.eventId === 'sleep' || cur.eventId === 'sleep_nap') {
-      if (cur.duration && cur.duration > 0) continue // já contabilizado acima
-      const wake = sorted
-        .slice(i + 1)
-        .find((l) => l.eventId === 'wake' || l.eventId === 'sleep_awake')
-      pairs.push({
-        start: cur.timestamp,
-        end: wake ? wake.timestamp : Date.now(),
-      })
+  let currentSleep: number | null = null
+  for (const l of sorted) {
+    const isSleep = l.eventId === 'sleep' || l.eventId === 'sleep_nap'
+    if (isSleep) {
+      // Dois sleeps consecutivos sem wake → mantém o primeiro início,
+      // ignora o segundo para não duplicar.
+      if (currentSleep === null) currentSleep = l.timestamp
+    } else {
+      // wake / sleep_awake
+      if (currentSleep !== null) {
+        if (l.timestamp > currentSleep) {
+          pairs.push({ start: currentSleep, end: l.timestamp })
+        }
+        currentSleep = null
+      }
+      // wake órfão (sem sleep correspondente) é descartado
     }
+  }
+  // Ainda dormindo: fecha o par com "agora"
+  if (currentSleep !== null) {
+    pairs.push({ start: currentSleep, end: Date.now() })
   }
 
   return pairs
@@ -104,16 +130,82 @@ function countDaysWithData(logs: LogEntry[], start: number, end: number): number
   return days.size
 }
 
-/** Divide pares de sono em "diurno" (07-22) e "noturno" (22-07) */
-function splitDayNight(pairs: { start: number; end: number }[]) {
+/**
+ * Retorna a interseção entre um par de sono e uma janela [start, end].
+ * Se não há sobreposição, retorna null.
+ */
+function clipPair(
+  p: { start: number; end: number },
+  start: number,
+  end: number,
+): { start: number; end: number } | null {
+  const s = Math.max(p.start, start)
+  const e = Math.min(p.end, end)
+  if (e <= s) return null
+  return { start: s, end: e }
+}
+
+/**
+ * Calcula pares de sono que caem dentro da janela [start, end]. Diferente
+ * de `computeSleepPairs(periodLogs)`, este método usa TODOS os logs para
+ * encontrar o wake correspondente a cada sleep (mesmo se ele caiu fora do
+ * período) e depois clipa cada par à janela escolhida. Isso evita que um
+ * sono noturno que atravessa a meia-noite dobre de tamanho quando o wake
+ * é filtrado por acidente.
+ */
+function computeSleepPairsInWindow(
+  logs: LogEntry[],
+  start: number,
+  end: number,
+): { start: number; end: number }[] {
+  const all = computeSleepPairs(logs)
+  const clipped: { start: number; end: number }[] = []
+  for (const p of all) {
+    const c = clipPair(p, start, end)
+    if (c) clipped.push(c)
+  }
+  return clipped
+}
+
+/**
+ * Determina se um instante cai no período noturno configurado pelos pais
+ * (quiet hours). Suporta wraparound (night atravessa a meia-noite).
+ */
+function isNightHour(ts: number, nightStart: number, nightEnd: number): boolean {
+  const h = new Date(ts).getHours()
+  if (nightStart === nightEnd) return false
+  if (nightStart > nightEnd) {
+    // Noite cruza a meia-noite (ex.: 22-7): noite = [22..24) ∪ [0..7)
+    return h >= nightStart || h < nightEnd
+  }
+  // Mesmo dia (raro): noite = [nightStart..nightEnd)
+  return h >= nightStart && h < nightEnd
+}
+
+/**
+ * Divide pares de sono em diurno e noturno respeitando o quietHours do
+ * usuário. Para pares que atravessam o limite dia→noite, faz o split minuto
+ * a minuto via sub-janelas para máxima precisão.
+ */
+function splitDayNight(
+  pairs: { start: number; end: number }[],
+  nightStart: number,
+  nightEnd: number,
+) {
   let dayMin = 0
   let nightMin = 0
-  pairs.forEach((p) => {
-    const h = new Date(p.start).getHours()
-    const dur = (p.end - p.start) / 60000
-    if (h >= 7 && h < 22) dayMin += dur
-    else nightMin += dur
-  })
+
+  for (const p of pairs) {
+    // Sub-amostra o par em passos de 5min e classifica cada slice. Simples,
+    // tolerante a pares que cruzam qualquer limite (início do dia, início
+    // da noite, múltiplos dias, etc).
+    const STEP = 5 * 60000
+    for (let t = p.start; t < p.end; t += STEP) {
+      const slice = Math.min(STEP, p.end - t) / 60000
+      if (isNightHour(t, nightStart, nightEnd)) nightMin += slice
+      else dayMin += slice
+    }
+  }
   return { dayMin, nightMin }
 }
 
@@ -140,7 +232,10 @@ export function generateInsights(
   // TIPO 1 — Sono: comparação com a referência
   // =====================================================================
 
-  const sleepPairs = computeSleepPairs(periodLogs)
+  // Usa o histórico completo para parear sleep↔wake (um sono que atravessa
+  // a meia-noite precisa encontrar seu wake mesmo que ele esteja fora da
+  // janela do período) e depois clipa cada par à janela.
+  const sleepPairs = computeSleepPairsInWindow(logs, ctx.start, ctx.end)
   const totalSleepMin = sleepPairs.reduce(
     (s, p) => s + (p.end - p.start) / 60000,
     0,
@@ -280,11 +375,8 @@ export function generateInsights(
     // Confusão dia/noite (0-3m): analisa os últimos 3 dias do período
     if (band === 'newborn' || band === 'early') {
       const windowStart = Math.max(ctx.start, ctx.end - 3 * 86400000)
-      const last3 = logs.filter(
-        (l) => l.timestamp >= windowStart && l.timestamp <= ctx.end,
-      )
-      const pairs3 = computeSleepPairs(last3)
-      const { dayMin, nightMin } = splitDayNight(pairs3)
+      const pairs3 = computeSleepPairsInWindow(logs, windowStart, ctx.end)
+      const { dayMin, nightMin } = splitDayNight(pairs3, ctx.nightStart, ctx.nightEnd)
       if (dayMin > nightMin && nightMin > 0) {
         insights.push({
           id: 'day_night_confusion',
@@ -331,12 +423,10 @@ export function generateInsights(
 
     // Maior bloco de sono noturno crescendo (compara 1a vs 2a metade)
     const getMaxNightSleep = (s: number, e: number) => {
-      const nightPairs = computeSleepPairs(
-        logs.filter((l) => l.timestamp >= s && l.timestamp < e),
-      ).filter((p) => {
-        const h = new Date(p.start).getHours()
-        return h >= 20 || h < 7
-      })
+      const windowPairs = computeSleepPairsInWindow(logs, s, e)
+      const nightPairs = windowPairs.filter((p) =>
+        isNightHour(p.start, ctx.nightStart, ctx.nightEnd),
+      )
       return nightPairs.length > 0
         ? Math.max(...nightPairs.map((p) => (p.end - p.start) / 60000))
         : 0
@@ -375,7 +465,7 @@ export function generateInsights(
 
   // Ritmo circadiano se formando (para bebês de 1m+)
   if ((band === 'early' || band === 'growing') && sleepPairs.length >= 2) {
-    const { dayMin, nightMin } = splitDayNight(sleepPairs)
+    const { dayMin, nightMin } = splitDayNight(sleepPairs, ctx.nightStart, ctx.nightEnd)
     const divisor = ctx.isSingleDay ? 1 : Math.max(daysWithData, 1)
     const dayAvg = dayMin / divisor
     const nightAvg = nightMin / divisor

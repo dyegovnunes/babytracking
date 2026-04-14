@@ -15,7 +15,7 @@ import { hapticLight } from '../lib/haptics'
 const FREE_INSIGHT_LIMIT = 2
 
 export default function InsightsPage() {
-  const { logs, baby, loading } = useAppState()
+  const { logs, baby, loading, quietHours } = useAppState()
   const { isPremium } = usePremium()
   const navigate = useNavigate()
   const [period, setPeriod] = useState<PeriodOption>('last_7')
@@ -24,7 +24,8 @@ export default function InsightsPage() {
   const { periodSummary, insights, weekTrends, availablePeriods } = useInsightsEngine(
     logs,
     baby?.birthDate,
-    period
+    period,
+    { start: quietHours.start, end: quietHours.end },
   )
 
   // Se o período selecionado não estiver disponível, prefere last_7, depois
