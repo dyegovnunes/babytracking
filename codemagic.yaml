@@ -40,7 +40,7 @@ workflows:
         script: |
           PLIST="app/ios/App/App/Info.plist"
           /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString 1.6.2" "$PLIST"
-          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion 30" "$PLIST"
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion 31" "$PLIST"
       - name: Build iOS
         script: |
           cd app/ios/App
