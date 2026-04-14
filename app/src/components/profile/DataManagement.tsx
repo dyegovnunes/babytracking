@@ -70,7 +70,7 @@ export default function DataManagement({ logs, babyName, onClearHistory }: Props
     <div className="space-y-3">
       <button
         onClick={handleExportPDF}
-        className="w-full bg-surface-container rounded-lg p-4 flex items-center gap-3 active:bg-surface-container-high transition-colors"
+        className="w-full bg-surface-container rounded-xl p-4 flex items-center gap-3 active:bg-surface-container-high transition-colors"
       >
         <span className="material-symbols-outlined text-primary text-xl">
           picture_as_pdf
@@ -89,7 +89,7 @@ export default function DataManagement({ logs, babyName, onClearHistory }: Props
       {!confirmClear ? (
         <button
           onClick={() => setConfirmClear(true)}
-          className="w-full bg-surface-container rounded-lg p-4 flex items-center gap-3 active:bg-surface-container-high transition-colors"
+          className="w-full bg-surface-container rounded-xl p-4 flex items-center gap-3 active:bg-surface-container-high transition-colors"
         >
           <span className="material-symbols-outlined text-error text-xl">
             delete_sweep

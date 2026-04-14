@@ -183,7 +183,7 @@ export default function PrepareConsultation() {
       {/* Button */}
       <button
         onClick={handleButtonClick}
-        className="w-full bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 rounded-lg p-4 flex items-center gap-3 active:bg-primary/15 transition-colors"
+        className="w-full bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 rounded-xl p-4 flex items-center gap-3 active:bg-primary/15 transition-colors"
       >
         <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center flex-shrink-0">
           <span className="material-symbols-outlined text-primary text-xl">clinical_notes</span>

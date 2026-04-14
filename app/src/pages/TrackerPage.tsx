@@ -1,5 +1,4 @@
 import { useState, useCallback, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useAppState, useAppDispatch, addLog, updateLog, deleteLog } from '../contexts/AppContext'
 import { useAuth } from '../contexts/AuthContext'
 import { DEFAULT_EVENTS } from '../lib/constants'
@@ -16,14 +15,11 @@ import Toast from '../components/ui/Toast'
 import { RewardedAdModal } from '../components/ui/RewardedAdModal'
 import { PaywallModal } from '../components/ui/PaywallModal'
 import { useDailyLimit } from '../hooks/useDailyLimit'
-import LeapCard from '../components/LeapCard'
-import MilestoneHomeCard from '../components/milestones/MilestoneHomeCard'
+import HighlightsStrip from '../components/home/HighlightsStrip'
+import { collectHighlights } from '../lib/highlights'
 import { AdBanner } from '../components/ui/AdBanner'
-import { getActiveLeap, getUpcomingLeap } from '../lib/developmentLeaps'
 import { getAgeBand, getHighlightedEvents } from '../lib/ageUtils'
-import { contractionDe } from '../lib/genderUtils'
 import { useMilestones } from '../hooks/useMilestones'
-import { getNextMilestoneForHome, MILESTONES } from '../lib/milestoneData'
 
 import { TrackerSkeleton } from '../components/ui/Skeleton'
 import type { LogEntry } from '../types'
@@ -35,26 +31,22 @@ export default function TrackerPage() {
   const dispatch = useAppDispatch()
   const { user } = useAuth()
   const now = useTimer()
-  const navigate = useNavigate()
 
   // Milestones (home card)
   const { achievedCodes, ageDays } = useMilestones(baby?.id, baby?.birthDate)
-  const [milestoneDismissTick, setMilestoneDismissTick] = useState(0)
-  const dismissedMilestoneCodes = useMemo(() => {
-    void milestoneDismissTick
-    const set = new Set<string>()
-    const FOURTEEN_DAYS = 14 * 86400000
-    MILESTONES.forEach((m) => {
-      const ts = localStorage.getItem(`milestone_dismissed_${m.code}`)
-      if (ts && Date.now() - parseInt(ts, 10) < FOURTEEN_DAYS) {
-        set.add(m.code)
-      }
-    })
-    return set
-  }, [milestoneDismissTick])
-  const nextMilestone = baby?.birthDate
-    ? getNextMilestoneForHome(achievedCodes, ageDays, dismissedMilestoneCodes)
-    : null
+
+  // Highlights strip (saltos + marcos + futuro: vacinas/remédios)
+  const [highlightsTick, setHighlightsTick] = useState(0)
+  const highlights = useMemo(
+    () =>
+      collectHighlights({
+        birthDate: baby?.birthDate,
+        achievedCodes,
+        ageDays,
+        reactivityTick: highlightsTick,
+      }),
+    [baby?.birthDate, achievedCodes, ageDays, highlightsTick],
+  )
 
   const [bottleModalOpen, setBottleModalOpen] = useState(false)
   const [editingLog, setEditingLog] = useState<LogEntry | null>(null)
@@ -151,55 +143,22 @@ export default function TrackerPage() {
   const band = baby?.birthDate ? getAgeBand(baby.birthDate) : 'beyond'
   const highlightedEventIds = getHighlightedEvents(band)
 
-  // Development leaps
-  const activeLeap = baby?.birthDate ? getActiveLeap(baby.birthDate) : null;
-  const upcomingLeapInfo = baby?.birthDate ? getUpcomingLeap(baby.birthDate) : null;
-  const showUpcoming = upcomingLeapInfo && upcomingLeapInfo.weeksUntil <= 2;
-
   return (
     <div className="pb-4 page-enter">
       <HeroIdentity streak={streak} />
 
+      {/* Destaques: saltos, marcos, (futuro) vacinas e remédios */}
+      {baby && (
+        <HighlightsStrip
+          highlights={highlights}
+          babyName={baby.name}
+          babyGender={baby.gender}
+          birthDate={baby.birthDate}
+          onChange={() => setHighlightsTick((t) => t + 1)}
+        />
+      )}
+
       <ActivityGrid events={DEFAULT_EVENTS} logs={logs} onLog={handleLog} highlightedEventIds={highlightedEventIds} />
-
-      {/* Development Leap Card */}
-      {(activeLeap || showUpcoming) && baby && (
-        <section className="px-5 mt-4">
-          {activeLeap && (
-            <LeapCard leap={activeLeap} babyName={baby.name} babyGender={baby.gender} birthDate={baby.birthDate} />
-          )}
-          {!activeLeap && showUpcoming && (
-            <LeapCard
-              leap={upcomingLeapInfo!.leap}
-              babyName={baby.name}
-              babyGender={baby.gender}
-              birthDate={baby.birthDate}
-              isUpcoming
-              weeksUntil={upcomingLeapInfo!.weeksUntil}
-            />
-          )}
-        </section>
-      )}
-
-      {/* Milestone Home Card */}
-      {nextMilestone && baby && (
-        <section className="px-5 mt-3">
-          <MilestoneHomeCard
-            milestone={nextMilestone}
-            babyName={baby.name}
-            babyGender={baby.gender}
-            onRegister={(m) => {
-              navigate(`/marcos?register=${m.code}`)
-            }}
-            onDismiss={(m) => {
-              localStorage.setItem(`milestone_dismissed_${m.code}`, Date.now().toString())
-              setMilestoneDismissTick((t) => t + 1)
-              setToast(`Você pode acessar os marcos no perfil ${contractionDe(baby.gender)} ${baby.name}`)
-            }}
-            onOpenAll={() => navigate('/marcos')}
-          />
-        </section>
-      )}
 
       {projections.length > 0 && (
         <section className="px-5 mt-6">

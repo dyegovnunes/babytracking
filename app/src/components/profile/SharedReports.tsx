@@ -130,7 +130,7 @@ export default function SharedReports() {
   return (
     <>
       {/* Main card */}
-      <div className="bg-surface-container rounded-lg p-4">
+      <div className="bg-surface-container rounded-xl p-4">
         <button
           onClick={() => { hapticLight(); setExpanded(!expanded); }}
           className="w-full flex items-start gap-3 text-left"
@@ -448,7 +448,7 @@ export default function SharedReports() {
           onClick={() => setConfirmDelete(null)}
         >
           <div
-            className="bg-surface-container-highest rounded-2xl p-6 mx-6 max-w-sm"
+            className="bg-surface-container-highest rounded-xl p-6 mx-6 max-w-sm"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center gap-3 mb-4">

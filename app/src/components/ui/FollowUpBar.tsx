@@ -18,7 +18,7 @@ export default function FollowUpBar({ logId, originalEventId, onChangeToBoth, on
 
   return (
     <div className="fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 z-40 w-[calc(100%-2.5rem)] max-w-lg animate-fade-in">
-      <div className="bg-surface-container-highest border border-outline-variant/20 rounded-2xl p-3 shadow-lg">
+      <div className="bg-surface-container-highest border border-outline-variant/20 rounded-xl p-3 shadow-lg">
         <p className="font-label text-xs text-on-surface-variant mb-2 text-center">
           Complementou?
         </p>
