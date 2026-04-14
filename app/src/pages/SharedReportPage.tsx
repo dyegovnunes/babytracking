@@ -243,10 +243,11 @@ function computeStats(data: ReportData, startTs: number, endTs: number): Stats {
 // ─── Formatters ────────────────────────────────
 function fmtHours(min: number): string { if (min <= 0) return '0h'; const h = Math.floor(min / 60); const m = Math.round(min % 60); return m > 0 ? `${h}h${m.toString().padStart(2, '0')}` : `${h}h`; }
 function fmtMin(min: number): string { if (min <= 0) return '0min'; const h = Math.floor(min / 60); const m = Math.round(min % 60); return h > 0 ? `${h}h${m}min` : `${m}min`; }
-function fmtDate(d: string | number): string { const dt = new Date(d); return `${dt.getDate().toString().padStart(2, '0')}/${(dt.getMonth() + 1).toString().padStart(2, '0')}/${dt.getFullYear()}`; }
-function fmtDateShort(d: string | number): string { const dt = new Date(d); return `${dt.getDate().toString().padStart(2, '0')}/${(dt.getMonth() + 1).toString().padStart(2, '0')}`; }
+function parseLocal(d: string | number): Date { if (typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d)) { const [y, m, day] = d.split('-').map(Number); return new Date(y, m - 1, day); } return new Date(d); }
+function fmtDate(d: string | number): string { const dt = parseLocal(d); return `${dt.getDate().toString().padStart(2, '0')}/${(dt.getMonth() + 1).toString().padStart(2, '0')}/${dt.getFullYear()}`; }
+function fmtDateShort(d: string | number): string { const dt = parseLocal(d); return `${dt.getDate().toString().padStart(2, '0')}/${(dt.getMonth() + 1).toString().padStart(2, '0')}`; }
 function fmtAge(birthDate: string): string {
-  const totalDays = Math.floor((Date.now() - new Date(birthDate).getTime()) / 86400000);
+  const totalDays = Math.floor((Date.now() - parseLocal(birthDate).getTime()) / 86400000);
   if (totalDays <= 0) return 'Recém-nascido';
   if (totalDays < 30) return `${totalDays} dias`;
   const months = Math.floor(totalDays / 30.44);

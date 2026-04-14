@@ -203,7 +203,7 @@ export default function AdminUserDetailPage() {
               <div>
                 <span style={{ fontSize: 14, color: '#e7e2ff' }}>{b.babies?.name}</span>
                 <span style={{ fontSize: 12, color: 'rgba(231,226,255,0.35)', marginLeft: 8 }}>
-                  {b.babies?.birth_date ? new Date(b.babies.birth_date).toLocaleDateString('pt-BR') : ''} · {b.role}
+                  {b.babies?.birth_date ? b.babies.birth_date.split('-').reverse().join('/') : ''} · {b.role}
                 </span>
               </div>
             </div>

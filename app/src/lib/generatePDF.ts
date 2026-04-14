@@ -1,7 +1,7 @@
 import { jsPDF } from 'jspdf';
 import type { PDFData } from '../hooks/usePDFData';
 import type { Baby } from '../types';
-import { formatAge } from './formatters';
+import { formatAge, parseLocalDate } from './formatters';
 import { getOMSWeight, type OMSDataPoint } from './omsData';
 
 // ─── PALETA PREMIUM (Stitch Design) ────────────
@@ -85,7 +85,7 @@ function drawPage1Header(doc: jsPDF, baby: Baby, data: PDFData): number {
   // 4 colunas de info
   const cols = [
     { label: 'PACIENTE', value: baby.name.toUpperCase() },
-    { label: 'NASCIMENTO', value: formatDateBR(new Date(baby.birthDate)) },
+    { label: 'NASCIMENTO', value: formatDateBR(parseLocalDate(baby.birthDate)) },
     { label: 'IDADE', value: formatAge(baby.birthDate) },
     { label: 'PERIODO', value: `${formatDateShort(data.periodStart)} - ${formatDateShort(data.periodEnd)}` },
   ];
@@ -524,7 +524,7 @@ function drawPage2Header(doc: jsPDF, baby: Baby): number {
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(6);
   doc.setTextColor(...GRAY);
-  doc.text(`DOB: ${formatDateBR(new Date(baby.birthDate))}`, PW - MR - 50, 12);
+  doc.text(`DOB: ${formatDateBR(parseLocalDate(baby.birthDate))}`, PW - MR - 50, 12);
   doc.text(`RELATORIO: ${formatDateShort(new Date())}`, PW - MR, 12, { align: 'right' });
 
   // Linha separadora
