@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom'
-import { lazy, Suspense, useEffect } from 'react'
+import { lazy, Suspense, useEffect, useRef } from 'react'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { AppProvider, useAppState, useAppDispatch } from './contexts/AppContext'
 import { PurchaseProvider } from './contexts/PurchaseContext'
@@ -142,8 +142,10 @@ function PublicOrAuth() {
 
 function PushNavigationHandler() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { user, loading: authLoading } = useAuth()
   const { loading: dataLoading } = useAppState()
+  const didColdStartNav = useRef(false)
 
   useEffect(() => {
     function onPushNavigate(e: Event) {
@@ -159,16 +161,33 @@ function PushNavigationHandler() {
     return () => window.removeEventListener('push-navigate', onPushNavigate)
   }, [navigate, authLoading, dataLoading, user])
 
-  // When app finishes loading, replay any pending push navigation
+  // Cold-start navigation: once the app has finished loading the user and
+  // data, force the initial route to home ("/") unless there is either:
+  // - a pending push notification route, or
+  // - a public route we should preserve (/privacy, /r/*, /paineladmin/*)
+  // This prevents Capacitor's WebView from reopening the app on the last
+  // visited page (e.g. /settings).
   useEffect(() => {
-    if (!authLoading && !dataLoading && user) {
-      const pending = (window as any).__pendingPushRoute
-      if (pending) {
-        ;(window as any).__pendingPushRoute = null
-        navigate(pending, { replace: true })
-      }
+    if (didColdStartNav.current) return
+    if (authLoading || dataLoading || !user) return
+    didColdStartNav.current = true
+
+    const pending = (window as any).__pendingPushRoute
+    if (pending) {
+      ;(window as any).__pendingPushRoute = null
+      navigate(pending, { replace: true })
+      return
     }
-  }, [authLoading, dataLoading, user, navigate])
+
+    const path = location.pathname
+    const isPublic =
+      path === '/privacy' ||
+      path.startsWith('/r/') ||
+      path.startsWith('/paineladmin')
+    if (!isPublic && path !== '/') {
+      navigate('/', { replace: true })
+    }
+  }, [authLoading, dataLoading, user, navigate, location.pathname])
 
   return null
 }

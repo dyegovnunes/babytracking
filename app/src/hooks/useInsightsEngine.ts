@@ -6,6 +6,7 @@ import { getLocalDateString } from '../lib/formatters'
 import {
   generateInsights,
   type InsightResult,
+  type InsightContext,
 } from '../lib/insightRules'
 
 export type PeriodOption =
@@ -257,9 +258,31 @@ export function useInsightsEngine(
         : period === 'current_month' || period === 'last_month'
         ? 30
         : 90
+
+    const PHRASE_MAP: Record<PeriodOption, string> = {
+      today: 'hoje',
+      yesterday: 'ontem',
+      last_7: 'nos últimos 7 dias',
+      last_15: 'nos últimos 15 dias',
+      last_30: 'nos últimos 30 dias',
+      current_month: 'neste mês',
+      last_month: 'no mês passado',
+      all: 'em todo o período',
+    }
+
+    const ctx: InsightContext = {
+      start,
+      end,
+      phrase: PHRASE_MAP[period],
+      periodLabel: PERIOD_LABELS[period],
+      dayCount: periodDaysNum,
+      isSingleDay,
+      isPartialDay: period === 'today',
+    }
+
     // Na página de Insights não aplicamos a rotação de 48h: o usuário veio
     // aqui justamente para ver os insights, então não devemos esconder nada.
-    const insights: InsightResult[] = generateInsights(logs, band, periodDaysNum)
+    const insights: InsightResult[] = generateInsights(logs, band, ctx)
 
     // Week trends — sempre últimos 7 dias
     const weekTrends: DayTrend[] = []

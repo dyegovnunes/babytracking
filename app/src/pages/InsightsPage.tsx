@@ -55,7 +55,7 @@ export default function InsightsPage() {
 
   const handleOpenSharedReport = () => {
     hapticLight()
-    navigate('/perfil#shared-reports')
+    navigate('/profile#shared-reports')
   }
 
   if (loading) {
@@ -168,29 +168,44 @@ export default function InsightsPage() {
         <button
           type="button"
           onClick={handleOpenSharedReport}
-          className="w-full rounded-md p-4 flex items-center gap-3 text-left active:scale-[0.98] transition-transform"
+          className="w-full rounded-md p-5 relative overflow-hidden active:scale-[0.98] transition-transform text-left"
           style={{
             background:
-              'linear-gradient(135deg, rgba(124, 77, 255, 0.18), rgba(183, 159, 255, 0.08))',
-            border: '1px solid rgba(183, 159, 255, 0.25)',
+              'linear-gradient(135deg, #7C4DFF 0%, #a78bfa 55%, #b79fff 100%)',
+            boxShadow: '0 14px 40px -14px rgba(124, 77, 255, 0.55)',
           }}
         >
-          <div className="w-11 h-11 rounded-md bg-primary/20 flex items-center justify-center shrink-0">
-            <span className="material-symbols-outlined text-primary text-2xl">
-              medical_services
+          {/* decorative blobs */}
+          <span
+            aria-hidden
+            className="absolute -top-8 -right-6 w-28 h-28 rounded-full bg-white/10 blur-2xl pointer-events-none"
+          />
+          <span
+            aria-hidden
+            className="absolute -bottom-10 -left-6 w-24 h-24 rounded-full bg-white/10 blur-2xl pointer-events-none"
+          />
+
+          <div className="relative flex items-center gap-4">
+            <div className="w-14 h-14 rounded-md bg-white/20 backdrop-blur-sm flex items-center justify-center shrink-0 border border-white/25">
+              <span className="material-symbols-outlined text-white text-3xl">
+                clinical_notes
+              </span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="font-label text-[10px] uppercase tracking-wider text-white/80 font-bold">
+                Novo
+              </p>
+              <h3 className="font-headline text-base font-bold text-white leading-tight">
+                Super Relatório
+              </h3>
+              <p className="font-label text-xs text-white/85 mt-1 leading-snug">
+                Gere e compartilhe um super relatório para pediatra ou profissionais de saúde
+              </p>
+            </div>
+            <span className="material-symbols-outlined text-white text-2xl shrink-0">
+              arrow_forward
             </span>
           </div>
-          <div className="flex-1 min-w-0">
-            <h3 className="font-headline text-sm font-bold text-on-surface leading-tight">
-              Super Relatório
-            </h3>
-            <p className="font-label text-xs text-on-surface-variant mt-0.5">
-              Compartilhe um resumo seguro com o pediatra
-            </p>
-          </div>
-          <span className="material-symbols-outlined text-on-surface-variant text-lg">
-            chevron_right
-          </span>
         </button>
       </div>
 
