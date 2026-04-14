@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import type { EventType, LogEntry } from '../../types'
+import type { EventType, LogEntry } from '../../../types'
 import ActivityButton from './ActivityButton'
 
 interface Props {

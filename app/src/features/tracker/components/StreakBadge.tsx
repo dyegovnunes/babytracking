@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { getCurrentBadge, STREAK_BADGES, type StreakData } from '../lib/streak';
-import { getLocalDateString } from '../lib/formatters';
-import { useSheetBackClose } from '../hooks/useSheetBackClose';
+import { getCurrentBadge, STREAK_BADGES, type StreakData } from '../../../lib/streak';
+import { getLocalDateString } from '../../../lib/formatters';
+import { useSheetBackClose } from '../../../hooks/useSheetBackClose';
 
 interface StreakBadgeProps {
   streak: StreakData;

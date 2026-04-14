@@ -1,6 +1,6 @@
 import { useMemo, useState, useRef, useEffect } from 'react'
-import type { Highlight } from '../../lib/highlights'
-import { hapticLight } from '../../lib/haptics'
+import type { Highlight } from '../highlights'
+import { hapticLight } from '../../../lib/haptics'
 import HighlightSheet from './HighlightSheet'
 
 interface Props {

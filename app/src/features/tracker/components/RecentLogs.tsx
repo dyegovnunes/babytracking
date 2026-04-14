@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
-import type { LogEntry, Member } from '../../types'
-import { DEFAULT_EVENTS } from '../../lib/constants'
-import { formatTime } from '../../lib/formatters'
+import type { LogEntry, Member } from '../../../types'
+import { DEFAULT_EVENTS } from '../../../lib/constants'
+import { formatTime } from '../../../lib/formatters'
 
 interface Props {
   logs: LogEntry[]

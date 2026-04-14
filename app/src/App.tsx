@@ -8,7 +8,7 @@ import { supabase } from './lib/supabase'
 
 // Critical routes — loaded eagerly so first paint is immediate
 import AppShell from './components/layout/AppShell'
-import TrackerPage from './pages/TrackerPage'
+import TrackerPage from './features/tracker/TrackerPage'
 import LoginPage from './pages/LoginPage'
 
 // Heavy/secondary routes — lazy-loaded to shrink the initial bundle

@@ -46,18 +46,21 @@ app/src/
 ├── App.tsx                  # BrowserRouter + providers + roteamento
 ├── main.tsx
 ├── contexts/                # AppContext, AuthContext, PurchaseContext
-├── features/                # Features encapsuladas — padrão novo (ver abaixo)
-│   └── milestones/          # Marcos de desenvolvimento + saltos
-├── pages/                   # Páginas ainda não migradas pro padrão features/
+├── features/                # Features encapsuladas (padrão atual)
+│   ├── tracker/             # Tela inicial: registros, projeções, highlights
+│   ├── history/             # Linha do tempo de registros
+│   ├── insights/            # Padrões, tendências, insights engine
+│   ├── milestones/          # Marcos de desenvolvimento + saltos
+│   └── profile/             # Perfil, bebê, crescimento, relatórios
+├── pages/                   # Páginas soltas que ainda não viraram feature
+│                            # (LandingPage, LoginPage, OnboardingPage,
+│                            #  SettingsPage, SharedReportPage, PrivacyPage,
+│                            #  WelcomePage)
 ├── components/
 │   ├── ui/                  # Primitivos reutilizáveis (Modal, Toast, ...)
-│   ├── layout/              # AppShell (navegação, safe area)
-│   ├── home/                # Específicos do Tracker (ainda não é feature)
-│   ├── insights/            # Específicos do Insights (ainda não é feature)
-│   ├── profile/             # Específicos do Perfil (ainda não é feature)
-│   ├── timeline/            # Linha do tempo (History)
-│   └── activity/            # Cards de atividade
+│   └── layout/              # AppShell (navegação, safe area)
 ├── hooks/                   # Hooks compartilhados entre features
+│                            # (useTimer, usePremium, useSheetBackClose, ...)
 ├── lib/                     # Lógica pura compartilhada (formatters, haptics, ...)
 ├── types/index.ts           # Tipos compartilhados
 ├── admin/                   # Painel admin (rota /paineladmin, lazy-loaded)
@@ -68,10 +71,11 @@ supabase/
 └── migrations/              # Schema em SQL
 ```
 
-### Padrão `features/<nome>/` (fase 3 em andamento)
+### Padrão `features/<nome>/` (atual)
 
-Features novas e grandes vão em `features/`, com tudo junto: página, hooks,
-lib, componentes. Cada feature expõe sua "API pública" por um `index.ts`:
+As principais features do app já estão encapsuladas em `features/`, com
+tudo junto: página, hooks, lib, componentes. Cada feature expõe sua
+"API pública" por um `index.ts`:
 
 ```
 features/milestones/
@@ -93,9 +97,12 @@ mexe em 1 feature. O único ponto onde isso quebra é o `lazy(() => import(...))
 no `App.tsx`, que precisa apontar pro arquivo da página diretamente porque
 `React.lazy` exige default export.
 
-**Features ainda na estrutura antiga** (vão migrar aos poucos): home,
-insights, profile, history, feed, sleep, diaper, bath. Use a feature de
-milestones como referência quando for migrar.
+**Features migradas:** tracker, history, insights, milestones, profile.
+Use qualquer uma delas como referência quando precisar criar uma nova
+(ex: vacinas, remédios, crescimento avançado).
+
+**Páginas soltas que ainda podem virar feature no futuro:** Settings,
+SharedReport. Nada disso é crítico — migrar só se/quando elas crescerem.
 
 Arquivo grande (>400 linhas) = sinal pra quebrar em sections/hooks.
 `SharedReportPage.tsx` é o próximo alvo de quebra interna.

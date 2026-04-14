@@ -1,6 +1,6 @@
 import { useRef, useState, type TouchEvent } from 'react'
-import type { Projection } from '../../types'
-import { formatTime, timeSinceIfRecent } from '../../lib/formatters'
+import type { Projection } from '../../../types'
+import { formatTime, timeSinceIfRecent } from '../../../lib/formatters'
 
 /** Formats a Date as "14h30" Brazilian style */
 function formatTimeBR(date: Date): string {

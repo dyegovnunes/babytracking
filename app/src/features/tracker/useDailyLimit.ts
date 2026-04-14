@@ -1,6 +1,6 @@
 import { useMemo, useState, useRef, useCallback } from 'react';
-import { useAppState } from '../contexts/AppContext';
-import { usePremium } from './usePremium';
+import { useAppState } from '../../contexts/AppContext';
+import { usePremium } from '../../hooks/usePremium';
 
 const DAILY_LIMIT = 5;
 const BONUS_PER_AD = 2;

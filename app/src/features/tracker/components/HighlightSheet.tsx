@@ -1,10 +1,10 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import type { Highlight } from '../../lib/highlights'
-import { dismissHighlight } from '../../lib/highlights'
-import { hapticLight, hapticMedium } from '../../lib/haptics'
-import { contractionDe } from '../../lib/genderUtils'
-import { useSheetBackClose } from '../../hooks/useSheetBackClose'
+import type { Highlight } from '../highlights'
+import { dismissHighlight } from '../highlights'
+import { hapticLight, hapticMedium } from '../../../lib/haptics'
+import { contractionDe } from '../../../lib/genderUtils'
+import { useSheetBackClose } from '../../../hooks/useSheetBackClose'
 
 interface Props {
   highlight: Highlight

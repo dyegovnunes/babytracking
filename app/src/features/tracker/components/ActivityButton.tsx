@@ -1,5 +1,5 @@
-import type { EventType, LogEntry } from '../../types'
-import { timeSinceIfRecent, formatTimeBR } from '../../lib/formatters'
+import type { EventType, LogEntry } from '../../../types'
+import { timeSinceIfRecent, formatTimeBR } from '../../../lib/formatters'
 
 interface Props {
   event: EventType

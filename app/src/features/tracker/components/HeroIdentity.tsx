@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useTimer } from '../../hooks/useTimer'
-import { useAppState } from '../../contexts/AppContext'
-import { formatTime, formatAge } from '../../lib/formatters'
-import BabySwitcher from '../ui/BabySwitcher'
-import StreakBadge from '../StreakBadge'
-import type { StreakData } from '../../lib/streak'
+import { useTimer } from '../../../hooks/useTimer'
+import { useAppState } from '../../../contexts/AppContext'
+import { formatTime, formatAge } from '../../../lib/formatters'
+import BabySwitcher from '../../../components/ui/BabySwitcher'
+import StreakBadge from './StreakBadge'
+import type { StreakData } from '../../../lib/streak'
 
 interface HeroIdentityProps {
   streak?: StreakData | null;

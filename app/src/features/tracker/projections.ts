@@ -1,4 +1,4 @@
-import type { LogEntry, EventType, IntervalConfig, Projection } from '../types'
+import type { LogEntry, EventType, IntervalConfig, Projection } from '../../types'
 
 export interface ProjectionOptions {
   pauseDuringSleep?: boolean
