@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
-import { hapticLight } from '../../lib/haptics'
-import { ALL_PERIODS, PERIOD_LABELS, type PeriodOption } from '../../hooks/useInsightsEngine'
+import { hapticLight } from '../../../lib/haptics'
+import { ALL_PERIODS, PERIOD_LABELS, type PeriodOption } from '../useInsightsEngine'
 
 interface Props {
   selected: PeriodOption

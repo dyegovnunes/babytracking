@@ -1,12 +1,12 @@
-import type { AgeBand } from './ageUtils'
-import type { LogEntry } from '../types'
-import { getLocalDateString } from './formatters'
+import type { AgeBand } from '../../lib/ageUtils'
+import type { LogEntry } from '../../types'
+import { getLocalDateString } from '../../lib/formatters'
 import {
   SLEEP_REFERENCE,
   FEEDS_REFERENCE,
   formatMinutes,
   formatMinutesRange,
-} from './referenceData'
+} from '../../lib/referenceData'
 
 export type InsightType = 'reference' | 'pattern' | 'celebration' | 'alert'
 

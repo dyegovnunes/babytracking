@@ -1,13 +1,13 @@
 import { useMemo } from 'react'
-import type { LogEntry } from '../types'
-import type { AgeBand } from '../lib/ageUtils'
-import { getAgeBand } from '../lib/ageUtils'
-import { getLocalDateString } from '../lib/formatters'
+import type { LogEntry } from '../../types'
+import type { AgeBand } from '../../lib/ageUtils'
+import { getAgeBand } from '../../lib/ageUtils'
+import { getLocalDateString } from '../../lib/formatters'
 import {
   generateInsights,
   type InsightResult,
   type InsightContext,
-} from '../lib/insightRules'
+} from './insightRules'
 
 export type PeriodOption =
   | 'today'

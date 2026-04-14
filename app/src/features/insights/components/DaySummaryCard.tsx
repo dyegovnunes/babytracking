@@ -1,5 +1,5 @@
-import type { PeriodSummary } from '../../hooks/useInsightsEngine'
-import { formatMinutes } from '../../lib/referenceData'
+import type { PeriodSummary } from '../useInsightsEngine'
+import { formatMinutes } from '../../../lib/referenceData'
 
 interface Props {
   summary: PeriodSummary

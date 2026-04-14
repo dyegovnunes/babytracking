@@ -1,4 +1,4 @@
-import type { InsightResult } from '../../lib/insightRules'
+import type { InsightResult } from '../insightRules'
 
 const TYPE_STYLES: Record<string, string> = {
   reference: 'border-white/5 bg-surface-container',

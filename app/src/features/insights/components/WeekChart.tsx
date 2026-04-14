@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { DayTrend } from '../../hooks/useInsights'
+import type { DayTrend } from '../useInsightsEngine'
 
 interface Props {
   trends: DayTrend[]
