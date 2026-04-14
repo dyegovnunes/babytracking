@@ -1,5 +1,5 @@
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
-import { lazy, Suspense } from 'react'
+import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom'
+import { lazy, Suspense, useEffect } from 'react'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { AppProvider, useAppState, useAppDispatch } from './contexts/AppContext'
 import { PurchaseProvider } from './contexts/PurchaseContext'
@@ -136,9 +136,25 @@ function PublicOrAuth() {
   return <LandingPage />
 }
 
+function PushNavigationHandler() {
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    function onPushNavigate(e: Event) {
+      const { route } = (e as CustomEvent).detail
+      navigate(route, { replace: true })
+    }
+    window.addEventListener('push-navigate', onPushNavigate)
+    return () => window.removeEventListener('push-navigate', onPushNavigate)
+  }, [navigate])
+
+  return null
+}
+
 export default function App() {
   return (
     <BrowserRouter>
+      <PushNavigationHandler />
       <AuthProvider>
         <AppProvider>
           <PurchaseProvider>

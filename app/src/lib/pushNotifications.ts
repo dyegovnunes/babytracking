@@ -105,21 +105,23 @@ export async function removePushToken(userId: string): Promise<void> {
  */
 function handlePushAction(action: ActionPerformed): void {
   const data = action.notification.data;
+  let route = '/';
 
   switch (data?.type) {
     case 'routine_alert':
-      window.location.href = '/tracker';
-      break;
     case 'streak_risk':
-      window.location.href = '/tracker';
+      route = '/';
       break;
     case 'development_leap':
-      window.dispatchEvent(new CustomEvent('show-leap-detail', { detail: data }));
+      route = '/insights';
       break;
     case 'daily_summary':
-      window.location.href = '/history';
+      route = '/history';
       break;
     default:
-      window.location.href = '/tracker';
+      route = '/';
   }
+
+  // Dispatch custom event for React Router navigation
+  window.dispatchEvent(new CustomEvent('push-navigate', { detail: { route, data } }));
 }

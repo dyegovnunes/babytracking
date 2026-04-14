@@ -26,8 +26,24 @@ export default function AdminUsersPage() {
 
   async function loadUsers() {
     setLoading(true);
-    const { data } = await supabase.rpc('admin_get_users');
-    setUsers((data as UserRow[]) ?? []);
+    const [usersRes, tokensRes] = await Promise.all([
+      supabase.rpc('admin_get_users'),
+      supabase.from('push_tokens').select('user_id, platform'),
+    ]);
+
+    const rawUsers = (usersRes.data as UserRow[]) ?? [];
+    const tokenPlatforms = new Map<string, string>();
+    (tokensRes.data ?? []).forEach((t: any) => {
+      tokenPlatforms.set(t.user_id, t.platform);
+    });
+
+    // Enrich users with platform from push_tokens if signup_platform is null
+    const enriched = rawUsers.map(u => ({
+      ...u,
+      signup_platform: u.signup_platform || tokenPlatforms.get(u.id) || null,
+    }));
+
+    setUsers(enriched);
     setLoading(false);
   }
 
@@ -76,7 +92,7 @@ export default function AdminUsersPage() {
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-        <h2 style={{ fontSize: 20, fontWeight: 700, color: '#e7e2ff' }}>Usuarios</h2>
+        <h2 style={{ fontSize: 20, fontWeight: 700, color: '#e7e2ff' }}>Usuários</h2>
         <span style={{ fontSize: 13, color: 'rgba(231,226,255,0.4)' }}>{filtered.length} de {users.length}</span>
       </div>
 

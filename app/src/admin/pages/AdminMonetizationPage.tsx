@@ -13,7 +13,7 @@ export default function AdminMonetizationPage() {
 
       const counts = { monthly: 0, annual: 0, lifetime: 0, free: 0, courtesy: 0 };
       (profiles ?? []).forEach((p: any) => {
-        if (p.courtesy_expires_at && new Date(p.courtesy_expires_at) > new Date()) {
+        if (p.subscription_plan === 'courtesy_lifetime' || (p.courtesy_expires_at && new Date(p.courtesy_expires_at) > new Date())) {
           counts.courtesy++;
           return;
         }
@@ -21,6 +21,7 @@ export default function AdminMonetizationPage() {
         if (p.subscription_plan === 'monthly') counts.monthly++;
         else if (p.subscription_plan === 'annual') counts.annual++;
         else if (p.subscription_plan === 'lifetime') counts.lifetime++;
+        else counts.courtesy++; // admin_granted or unknown premium = courtesy
       });
       setData(counts);
       setLoading(false);
@@ -48,7 +49,7 @@ export default function AdminMonetizationPage() {
 
   return (
     <div>
-      <h2 style={{ fontSize: 20, fontWeight: 700, color: '#e7e2ff', marginBottom: 20 }}>Monetizacao</h2>
+      <h2 style={{ fontSize: 20, fontWeight: 700, color: '#e7e2ff', marginBottom: 20 }}>Monetização</h2>
 
       {/* MRR highlight */}
       <div style={{
@@ -68,16 +69,16 @@ export default function AdminMonetizationPage() {
         <div style={cardStyle}>
           <div style={{ fontSize: 28, fontWeight: 700, color: '#e7e2ff' }}>{data.monthly}</div>
           <div style={{ fontSize: 12, color: 'rgba(231,226,255,0.45)', marginTop: 2 }}>Mensal (R$29,90)</div>
-          <div style={{ fontSize: 11, color: 'rgba(231,226,255,0.3)', marginTop: 4 }}>R$ {(data.monthly * 29.90).toFixed(2)}/mes</div>
+          <div style={{ fontSize: 11, color: 'rgba(231,226,255,0.3)', marginTop: 4 }}>R$ {(data.monthly * 29.90).toFixed(2)}/mês</div>
         </div>
         <div style={cardStyle}>
           <div style={{ fontSize: 28, fontWeight: 700, color: '#e7e2ff' }}>{data.annual}</div>
           <div style={{ fontSize: 12, color: 'rgba(231,226,255,0.45)', marginTop: 2 }}>Anual (R$202,80)</div>
-          <div style={{ fontSize: 11, color: 'rgba(231,226,255,0.3)', marginTop: 4 }}>R$ {(data.annual * 16.90).toFixed(2)}/mes</div>
+          <div style={{ fontSize: 11, color: 'rgba(231,226,255,0.3)', marginTop: 4 }}>R$ {(data.annual * 16.90).toFixed(2)}/mês</div>
         </div>
         <div style={cardStyle}>
           <div style={{ fontSize: 28, fontWeight: 700, color: '#e7e2ff' }}>{data.lifetime}</div>
-          <div style={{ fontSize: 12, color: 'rgba(231,226,255,0.45)', marginTop: 2 }}>Vitalicio (R$299,90)</div>
+          <div style={{ fontSize: 12, color: 'rgba(231,226,255,0.45)', marginTop: 2 }}>Vitalício (R$299,90)</div>
         </div>
         <div style={cardStyle}>
           <div style={{ fontSize: 28, fontWeight: 700, color: '#FFB300' }}>{data.courtesy}</div>
@@ -91,7 +92,7 @@ export default function AdminMonetizationPage() {
 
       {/* Conversion funnel */}
       <div style={cardStyle}>
-        <div style={{ fontSize: 11, color: 'rgba(231,226,255,0.4)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>Funil de conversao</div>
+        <div style={{ fontSize: 11, color: 'rgba(231,226,255,0.4)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>Funil de conversão</div>
         <div style={{ display: 'flex', gap: 4, height: 24, borderRadius: 12, overflow: 'hidden' }}>
           {data.monthly > 0 && <div style={{ flex: data.monthly, background: '#b79fff', minWidth: 2 }} title={`Mensal: ${data.monthly}`} />}
           {data.annual > 0 && <div style={{ flex: data.annual, background: '#9b7de6', minWidth: 2 }} title={`Anual: ${data.annual}`} />}

@@ -93,7 +93,7 @@ export default function AdminPushPage() {
         </div>
         <div style={cardStyle}>
           <div style={{ fontSize: 28, fontWeight: 700, color: '#e7e2ff' }}>{stats.week}</div>
-          <div style={{ fontSize: 11, color: 'rgba(231,226,255,0.45)' }}>Ultimos 7 dias</div>
+          <div style={{ fontSize: 11, color: 'rgba(231,226,255,0.45)' }}>Últimos 7 dias</div>
         </div>
         <div style={cardStyle}>
           <div style={{ fontSize: 28, fontWeight: 700, color: '#4CAF50' }}>{stats.delivered}</div>
@@ -106,7 +106,7 @@ export default function AdminPushPage() {
       </div>
 
       {/* Broadcast history */}
-      <div style={{ fontSize: 11, color: 'rgba(231,226,255,0.4)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 10 }}>Historico de broadcasts</div>
+      <div style={{ fontSize: 11, color: 'rgba(231,226,255,0.4)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 10 }}>Histórico de broadcasts</div>
       {broadcasts.length === 0 ? (
         <div style={{ ...cardStyle, textAlign: 'center', color: 'rgba(231,226,255,0.3)', fontSize: 14 }}>Nenhum broadcast enviado</div>
       ) : (
@@ -137,7 +137,7 @@ export default function AdminPushPage() {
           <div style={{ background: '#1a1540', borderRadius: 20, padding: 28, width: '100%', maxWidth: 440, border: '1px solid rgba(183,159,255,0.15)' }} onClick={e => e.stopPropagation()}>
             <h3 style={{ fontSize: 18, fontWeight: 700, color: '#e7e2ff', marginBottom: 20 }}>Novo Broadcast</h3>
 
-            <input value={title} onChange={e => setTitle(e.target.value)} placeholder="Titulo da notificacao" style={{ ...inputStyle, marginBottom: 12 }} />
+            <input value={title} onChange={e => setTitle(e.target.value)} placeholder="Título da notificação" style={{ ...inputStyle, marginBottom: 12 }} />
             <textarea value={body} onChange={e => setBody(e.target.value)} placeholder="Corpo da mensagem" rows={3} style={{ ...inputStyle, resize: 'none', marginBottom: 16 }} />
 
             <div style={{ marginBottom: 20 }}>

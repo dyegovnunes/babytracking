@@ -44,14 +44,14 @@ export default function AdminDashboardPage() {
 
   return (
     <div>
-      <h2 style={{ fontSize: 20, fontWeight: 700, color: '#e7e2ff', marginBottom: 20 }}>Visao Geral</h2>
+      <h2 style={{ fontSize: 20, fontWeight: 700, color: '#e7e2ff', marginBottom: 20 }}>Visão Geral</h2>
 
       {/* Top row — key metrics */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12, marginBottom: 20 }}>
-        <Card label="Usuarios" value={stats.total_users} sub={`+${stats.new_this_week} esta semana`} accent />
-        <Card label="Bebes" value={stats.total_babies} sub={`${stats.avg_users_per_baby} cuid./bebe`} />
-        <Card label="Premium (Yaya+)" value={stats.premium_users} sub={`${conversionRate}% conversao`} accent />
-        <Card label="Free" value={stats.free_users} sub={`${stats.total_users - stats.premium_users - stats.free_users} indefinidos`} />
+        <Card label="Usuários" value={stats.total_users} sub={`+${stats.new_this_week} esta semana`} accent />
+        <Card label="Bebês" value={stats.total_babies} sub={`${stats.avg_users_per_baby} cuid./bebê`} />
+        <Card label="Premium (Yaya+)" value={stats.premium_users} sub={`${conversionRate}% conversão`} accent />
+        <Card label="Free" value={stats.free_users} sub={`${stats.total_users - stats.premium_users - stats.free_users} sem plano`} />
       </div>
 
       {/* Activity */}
@@ -69,7 +69,7 @@ export default function AdminDashboardPage() {
       <h3 style={{ fontSize: 14, fontWeight: 600, color: 'rgba(231,226,255,0.55)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: 1 }}>Engajamento</h3>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12 }}>
         <MiniCard label="Streaks ativos" value={stats.active_streaks} />
-        <MiniCard label="Bebes 2+ cuidadores" value={stats.multi_caregiver_babies} />
+        <MiniCard label="Bebês 2+ cuidadores" value={stats.multi_caregiver_babies} />
         <MiniCard label="Novos hoje" value={stats.new_today} highlight />
       </div>
 

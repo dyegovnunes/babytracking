@@ -15,6 +15,10 @@ export default function AdminUserDetailPage() {
   const [courtesyReason, setCourtesyReason] = useState('');
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState('');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState('');
+  const [deleting, setDeleting] = useState(false);
+  const [userPlatform, setUserPlatform] = useState<string | null>(null);
 
   useEffect(() => { if (id) loadUser(id); }, [id]);
 
@@ -44,6 +48,16 @@ export default function AdminUserDetailPage() {
       setLogCount(logRes.count ?? 0);
       setStreak(streakRes.data);
     }
+
+    // Detect platform from push_tokens
+    const { data: tokenData } = await supabase
+      .from('push_tokens')
+      .select('platform')
+      .eq('user_id', userId)
+      .limit(1);
+    if (tokenData?.[0]?.platform) {
+      setUserPlatform(tokenData[0].platform);
+    }
   }
 
   async function togglePremium() {
@@ -55,7 +69,7 @@ export default function AdminUserDetailPage() {
       subscription_plan: newValue ? 'admin_granted' : null,
     }).eq('id', id);
     setUser({ ...user, is_premium: newValue });
-    setToast(newValue ? 'Usuario promovido para Yaya+' : 'Usuario rebaixado para Free');
+    setToast(newValue ? 'Usuário promovido para Yaya+' : 'Usuário rebaixado para Free');
     setSaving(false);
     setTimeout(() => setToast(''), 3000);
   }
@@ -89,6 +103,27 @@ export default function AdminUserDetailPage() {
     setToast(`Cortesia de ${days} dias concedida!`);
     loadUser(id);
     setTimeout(() => setToast(''), 3000);
+  }
+
+  async function handleDeleteUser() {
+    if (!id || deleteConfirmText.toLowerCase() !== 'confirmar') return;
+    setDeleting(true);
+
+    // Delete all user data
+    await Promise.all([
+      supabase.from('push_tokens').delete().eq('user_id', id),
+      supabase.from('streaks').delete().eq('user_id', id),
+      supabase.from('courtesy_log').delete().eq('user_id', id),
+    ]);
+
+    // Delete baby_members (must be before babies check)
+    await supabase.from('baby_members').delete().eq('user_id', id);
+
+    // Delete profile
+    await supabase.from('profiles').delete().eq('id', id);
+
+    setDeleting(false);
+    navigate('/paineladmin/users');
   }
 
   if (!user) return (
@@ -145,7 +180,7 @@ export default function AdminUserDetailPage() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
           <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: 10, padding: '10px 12px', textAlign: 'center' }}>
             <div style={{ fontSize: 22, fontWeight: 700, color: '#e7e2ff' }}>{babies.length}</div>
-            <div style={{ fontSize: 10, color: 'rgba(231,226,255,0.4)' }}>Bebes</div>
+            <div style={{ fontSize: 10, color: 'rgba(231,226,255,0.4)' }}>Bebês</div>
           </div>
           <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: 10, padding: '10px 12px', textAlign: 'center' }}>
             <div style={{ fontSize: 22, fontWeight: 700, color: '#e7e2ff' }}>{logCount}</div>
@@ -161,7 +196,7 @@ export default function AdminUserDetailPage() {
       {/* Babies */}
       {babies.length > 0 && (
         <div style={cardStyle}>
-          <div style={labelStyle}>Bebes</div>
+          <div style={labelStyle}>Bebês</div>
           {babies.map((b: any) => (
             <div key={b.baby_id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 0' }}>
               <span style={{ fontSize: 16 }}>{b.babies?.gender === 'boy' ? '\u{1F466}' : b.babies?.gender === 'girl' ? '\u{1F467}' : '\u{1F476}'}</span>
@@ -181,7 +216,7 @@ export default function AdminUserDetailPage() {
         <div style={cardStyle}>
           <div style={labelStyle}>Plataforma</div>
           <div style={{ fontSize: 14, color: '#e7e2ff' }}>
-            {user.signup_platform === 'android' ? 'Android' : user.signup_platform === 'ios' ? 'iOS' : 'Web'}
+            {user.signup_platform === 'android' ? 'Android' : user.signup_platform === 'ios' ? 'iOS' : userPlatform === 'android' ? 'Android' : userPlatform === 'ios' ? 'iOS' : 'Web'}
           </div>
         </div>
         <div style={cardStyle}>
@@ -196,7 +231,7 @@ export default function AdminUserDetailPage() {
         <div style={{ ...cardStyle, background: 'rgba(255,179,0,0.06)', border: '1px solid rgba(255,179,0,0.15)' }}>
           <div style={labelStyle}>Cortesia ativa</div>
           <div style={{ fontSize: 14, color: '#FFB300' }}>
-            Ate {new Date(user.courtesy_expires_at).toLocaleDateString('pt-BR')}
+            Até {new Date(user.courtesy_expires_at).toLocaleDateString('pt-BR')}
             {user.courtesy_reason && <span style={{ color: 'rgba(231,226,255,0.4)' }}> — {user.courtesy_reason}</span>}
           </div>
         </div>
@@ -236,6 +271,21 @@ export default function AdminUserDetailPage() {
           }}
         >
           Dar cortesia
+        </button>
+        <button
+          onClick={() => setShowDeleteConfirm(true)}
+          style={{
+            padding: '14px 16px',
+            borderRadius: 12,
+            border: 'none',
+            cursor: 'pointer',
+            fontSize: 14,
+            fontWeight: 600,
+            background: 'rgba(239,83,80,0.12)',
+            color: '#EF5350',
+          }}
+        >
+          Excluir
         </button>
       </div>
 
@@ -296,6 +346,42 @@ export default function AdminUserDetailPage() {
               </button>
               <button onClick={grantCourtesy} disabled={saving} style={{ flex: 2, padding: 14, borderRadius: 12, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 600, background: '#b79fff', color: '#0d0a27', opacity: saving ? 0.5 : 1 }}>
                 {saving ? 'Salvando...' : `Conceder ${courtesyDays} dias`}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showDeleteConfirm && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, padding: 20 }} onClick={() => setShowDeleteConfirm(false)}>
+          <div style={{ background: '#1a1540', borderRadius: 20, padding: 28, width: '100%', maxWidth: 400, border: '1px solid rgba(239,83,80,0.3)' }} onClick={e => e.stopPropagation()}>
+            <h3 style={{ fontSize: 18, fontWeight: 700, color: '#EF5350', marginBottom: 12 }}>Excluir usuário</h3>
+            <p style={{ fontSize: 14, color: 'rgba(231,226,255,0.6)', marginBottom: 8 }}>
+              Esta ação é irreversível. Todos os dados do usuário serão excluídos permanentemente.
+            </p>
+            <p style={{ fontSize: 13, color: 'rgba(231,226,255,0.5)', marginBottom: 16 }}>
+              Digite <strong style={{ color: '#EF5350' }}>confirmar</strong> para prosseguir:
+            </p>
+            <input
+              type="text"
+              value={deleteConfirmText}
+              onChange={e => setDeleteConfirmText(e.target.value)}
+              placeholder="Digite confirmar"
+              style={{
+                width: '100%', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(239,83,80,0.2)',
+                borderRadius: 12, padding: '12px 16px', color: '#e7e2ff', fontSize: 14, outline: 'none', marginBottom: 20,
+              }}
+            />
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button onClick={() => { setShowDeleteConfirm(false); setDeleteConfirmText(''); }} style={{ flex: 1, padding: 14, borderRadius: 12, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 600, background: 'rgba(255,255,255,0.06)', color: 'rgba(231,226,255,0.5)' }}>
+                Cancelar
+              </button>
+              <button
+                onClick={handleDeleteUser}
+                disabled={deleting || deleteConfirmText.toLowerCase() !== 'confirmar'}
+                style={{ flex: 2, padding: 14, borderRadius: 12, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 600, background: '#EF5350', color: 'white', opacity: (deleting || deleteConfirmText.toLowerCase() !== 'confirmar') ? 0.4 : 1 }}
+              >
+                {deleting ? 'Excluindo...' : 'Excluir permanentemente'}
               </button>
             </div>
           </div>

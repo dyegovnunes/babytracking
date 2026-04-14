@@ -5,6 +5,17 @@ export default function AdminConfigPage() {
   const [flags, setFlags] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const FLAG_DESCRIPTIONS: Record<string, string> = {
+    maintenance_mode: 'Ativa o modo manutenção. Quando ligado, o app exibe uma tela de "em manutenção" para todos os usuários, impedindo o uso normal.',
+    push_enabled: 'Habilita o envio de push notifications automáticas (alertas de rotina, resumo diário, saltos de desenvolvimento).',
+    premium_paywall: 'Ativa o paywall para recursos premium (Yaya+). Quando desligado, todos têm acesso a tudo gratuitamente.',
+    streak_enabled: 'Ativa o sistema de streaks (sequência de dias usando o app). Mostra o contador no perfil.',
+    insights_enabled: 'Ativa a aba de Insights com análises inteligentes sobre o bebê (padrões, saltos, dicas).',
+    shared_reports: 'Permite que pais gerem links públicos de relatório para compartilhar com pediatras.',
+    development_leaps: 'Ativa as notificações e cards sobre saltos de desenvolvimento do bebê.',
+    onboarding_v2: 'Usa o fluxo de onboarding v2 com personalização por idade do bebê.',
+  };
+
   useEffect(() => {
     supabase.from('feature_flags').select('*').order('id').then(({ data }) => {
       setFlags(data ?? []);
@@ -42,15 +53,20 @@ export default function AdminConfigPage() {
 
   return (
     <div>
-      <h2 style={{ fontSize: 20, fontWeight: 700, color: '#e7e2ff', marginBottom: 20 }}>Configuracoes</h2>
+      <h2 style={{ fontSize: 20, fontWeight: 700, color: '#e7e2ff', marginBottom: 20 }}>Configurações</h2>
 
       <div style={{ fontSize: 11, color: 'rgba(231,226,255,0.4)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 10 }}>Feature flags</div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 28 }}>
         {flags.map(flag => (
           <div key={flag.id} style={cardStyle}>
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 14, color: '#e7e2ff', fontWeight: 500 }}>{flag.description || flag.id}</div>
+              <div style={{ fontSize: 14, color: '#e7e2ff', fontWeight: 500 }}>{flag.description || FLAG_DESCRIPTIONS[flag.id] || flag.id}</div>
               <div style={{ fontSize: 11, color: 'rgba(231,226,255,0.3)', fontFamily: 'monospace', marginTop: 2 }}>{flag.id}</div>
+              {(FLAG_DESCRIPTIONS[flag.id] || flag.description) && (
+                <div style={{ fontSize: 12, color: 'rgba(231,226,255,0.35)', marginTop: 4, lineHeight: 1.4 }}>
+                  {FLAG_DESCRIPTIONS[flag.id] || flag.description}
+                </div>
+              )}
             </div>
             <button
               onClick={() => toggleFlag(flag.id, flag.enabled)}
@@ -71,7 +87,7 @@ export default function AdminConfigPage() {
         ))}
       </div>
 
-      <div style={{ fontSize: 11, color: 'rgba(231,226,255,0.4)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 10 }}>Links rapidos</div>
+      <div style={{ fontSize: 11, color: 'rgba(231,226,255,0.4)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 10 }}>Links rápidos</div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {[
           { label: 'Supabase Dashboard', url: 'https://supabase.com/dashboard/project/kgfjfdizxziacblgvplh' },
