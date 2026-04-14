@@ -23,7 +23,7 @@ export default function PrivacyPage() {
 
       <div className="px-5 space-y-4">
         {/* Intro */}
-        <div className="bg-surface-container rounded-lg p-4">
+        <div className="bg-surface-container rounded-md p-4">
           <p className="font-body text-sm text-on-surface leading-relaxed">
             Esta política descreve como o <strong>Yaya (Baby Tracker)</strong> coleta,
             usa e protege suas informações pessoais. Nós levamos sua privacidade
@@ -35,7 +35,7 @@ export default function PrivacyPage() {
         </div>
 
         {/* 1. Dados coletados */}
-        <div className="bg-surface-container rounded-lg p-4">
+        <div className="bg-surface-container rounded-md p-4">
           <div className="flex items-center gap-3 mb-3">
             <span className="material-symbols-outlined text-primary text-xl">
               database
@@ -91,7 +91,7 @@ export default function PrivacyPage() {
         </div>
 
         {/* 2. Como usamos */}
-        <div className="bg-surface-container rounded-lg p-4">
+        <div className="bg-surface-container rounded-md p-4">
           <div className="flex items-center gap-3 mb-3">
             <span className="material-symbols-outlined text-primary text-xl">
               info
@@ -123,7 +123,7 @@ export default function PrivacyPage() {
         </div>
 
         {/* 3. Armazenamento e segurança */}
-        <div className="bg-surface-container rounded-lg p-4">
+        <div className="bg-surface-container rounded-md p-4">
           <div className="flex items-center gap-3 mb-3">
             <span className="material-symbols-outlined text-primary text-xl">
               shield
@@ -156,7 +156,7 @@ export default function PrivacyPage() {
         </div>
 
         {/* 4. Compartilhamento de dados */}
-        <div className="bg-surface-container rounded-lg p-4">
+        <div className="bg-surface-container rounded-md p-4">
           <div className="flex items-center gap-3 mb-3">
             <span className="material-symbols-outlined text-primary text-xl">
               share
@@ -188,7 +188,7 @@ export default function PrivacyPage() {
         </div>
 
         {/* 5. Seus direitos */}
-        <div className="bg-surface-container rounded-lg p-4">
+        <div className="bg-surface-container rounded-md p-4">
           <div className="flex items-center gap-3 mb-3">
             <span className="material-symbols-outlined text-primary text-xl">
               gavel
@@ -228,7 +228,7 @@ export default function PrivacyPage() {
         </div>
 
         {/* 6. Privacidade de crianças */}
-        <div className="bg-surface-container rounded-lg p-4">
+        <div className="bg-surface-container rounded-md p-4">
           <div className="flex items-center gap-3 mb-3">
             <span className="material-symbols-outlined text-primary text-xl">
               child_care
@@ -246,7 +246,7 @@ export default function PrivacyPage() {
         </div>
 
         {/* 7. Alterações */}
-        <div className="bg-surface-container rounded-lg p-4">
+        <div className="bg-surface-container rounded-md p-4">
           <div className="flex items-center gap-3 mb-3">
             <span className="material-symbols-outlined text-primary text-xl">
               edit_document
@@ -263,7 +263,7 @@ export default function PrivacyPage() {
         </div>
 
         {/* 8. Contato */}
-        <div className="bg-surface-container rounded-lg p-4">
+        <div className="bg-surface-container rounded-md p-4">
           <div className="flex items-center gap-3 mb-3">
             <span className="material-symbols-outlined text-primary text-xl">
               mail

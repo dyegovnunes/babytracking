@@ -196,7 +196,7 @@ export default function ProfilePage() {
         {/* ===== MARCOS DO DESENVOLVIMENTO ===== */}
         <button
           onClick={() => navigate('/marcos')}
-          className="w-full bg-surface-container rounded-lg p-4 flex items-center gap-3 active:bg-surface-container-high transition-colors"
+          className="w-full bg-surface-container rounded-md p-4 flex items-center gap-3 active:bg-surface-container-high transition-colors"
         >
           <span className="material-symbols-outlined text-primary text-xl">flag</span>
           <div className="flex-1 text-left">
@@ -209,7 +209,7 @@ export default function ProfilePage() {
         </button>
 
         {/* ===== CUIDADORES ===== */}
-        <div className="bg-surface-container rounded-lg p-4">
+        <div className="bg-surface-container rounded-md p-4">
           <button
             onClick={() => { hapticLight(); setCaregiversExpanded(!caregiversExpanded) }}
             className="w-full flex items-start gap-3 text-left"
@@ -322,7 +322,7 @@ export default function ProfilePage() {
 
       {confirmRemove && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm" onClick={() => setConfirmRemove(null)}>
-          <div className="bg-surface-container-highest rounded-lg p-6 mx-6 max-w-sm" onClick={e => e.stopPropagation()}>
+          <div className="bg-surface-container-highest rounded-md p-6 mx-6 max-w-sm" onClick={e => e.stopPropagation()}>
             <div className="flex items-center gap-3 mb-4">
               <span className="material-symbols-outlined text-error text-2xl">person_remove</span>
               <h3 className="font-headline text-lg font-bold text-on-surface">Remover membro</h3>

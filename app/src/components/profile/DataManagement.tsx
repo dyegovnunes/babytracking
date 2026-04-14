@@ -70,7 +70,7 @@ export default function DataManagement({ logs, babyName, onClearHistory }: Props
     <div className="space-y-3">
       <button
         onClick={handleExportPDF}
-        className="w-full bg-surface-container rounded-lg p-4 flex items-center gap-3 active:bg-surface-container-high transition-colors"
+        className="w-full bg-surface-container rounded-md p-4 flex items-center gap-3 active:bg-surface-container-high transition-colors"
       >
         <span className="material-symbols-outlined text-primary text-xl">
           picture_as_pdf
@@ -89,7 +89,7 @@ export default function DataManagement({ logs, babyName, onClearHistory }: Props
       {!confirmClear ? (
         <button
           onClick={() => setConfirmClear(true)}
-          className="w-full bg-surface-container rounded-lg p-4 flex items-center gap-3 active:bg-surface-container-high transition-colors"
+          className="w-full bg-surface-container rounded-md p-4 flex items-center gap-3 active:bg-surface-container-high transition-colors"
         >
           <span className="material-symbols-outlined text-error text-xl">
             delete_sweep
@@ -103,7 +103,7 @@ export default function DataManagement({ logs, babyName, onClearHistory }: Props
           </span>
         </button>
       ) : (
-        <div className="bg-error/10 rounded-lg p-4">
+        <div className="bg-error/10 rounded-md p-4">
           <p className="text-error font-body text-sm font-medium mb-3">
             Tem certeza? Isso apagará todos os {logs.length} registros.
           </p>

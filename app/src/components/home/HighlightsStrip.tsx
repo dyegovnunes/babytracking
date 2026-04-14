@@ -12,49 +12,97 @@ interface Props {
   onChange: () => void
 }
 
+/** Quando há mais destaques que isto, o strip vira marquee (auto-scroll). */
+const MARQUEE_THRESHOLD = 2
+/** Pixels por segundo de auto-scroll. */
+const MARQUEE_SPEED_PX_PER_SEC = 18
+/** Tempo ocioso (ms) antes de retomar o auto-scroll após o usuário interagir. */
+const RESUME_IDLE_MS = 2500
+
 /**
  * Seção "Acompanhe a jornada do {name}" — strip horizontal de destaques.
  *
  * - Se não há highlights ativos, não renderiza nada.
- * - Marquee lento para a esquerda (CSS keyframes), pausa quando o usuário
- *   interage (touch/hover) e retoma após soltar.
+ * - ≤ 2 destaques: mostra estaticamente, sem animação.
+ * - > 2 destaques: duplica o conteúdo e faz auto-scroll lento para a esquerda
+ *   via requestAnimationFrame (mexendo em scrollLeft). Isso convive com o
+ *   scroll nativo, então o dedo pode arrastar normalmente a qualquer momento.
+ *   Durante a interação o auto-scroll pausa, e retoma após 2.5s ocioso.
  * - Cada chip abre um bottom sheet com ações Fechar · Dispensar · Ver mais.
  */
 export default function HighlightsStrip({ highlights, babyName, babyGender, birthDate, onChange }: Props) {
   const [openHighlight, setOpenHighlight] = useState<Highlight | null>(null)
-  const [paused, setPaused] = useState(false)
   const scrollerRef = useRef<HTMLDivElement>(null)
 
   const visible = useMemo(() => highlights, [highlights])
+  const shouldMarquee = visible.length > MARQUEE_THRESHOLD
 
-  // Duplicamos o conteúdo para permitir loop seamless
-  const loop = useMemo(() => [...visible, ...visible], [visible])
+  // Quando temos marquee, duplicamos os itens para permitir loop sem "pulo"
+  const items = useMemo(
+    () => (shouldMarquee ? [...visible, ...visible] : visible),
+    [visible, shouldMarquee],
+  )
 
-  // Pausa automática quando o usuário toca / hover
+  // Auto-scroll via requestAnimationFrame (convive com scroll nativo/touch)
   useEffect(() => {
+    if (!shouldMarquee) return
     const el = scrollerRef.current
     if (!el) return
+
+    let rafId = 0
+    let lastTs = performance.now()
+    let paused = false
     let resumeTimer: ReturnType<typeof setTimeout> | null = null
-    const handlePause = () => {
-      setPaused(true)
+
+    const step = (now: number) => {
+      const dt = (now - lastTs) / 1000
+      lastTs = now
+      if (!paused) {
+        el.scrollLeft += MARQUEE_SPEED_PX_PER_SEC * dt
+        // Loop seamless: quando passamos metade do conteúdo duplicado, volta
+        const half = el.scrollWidth / 2
+        if (el.scrollLeft >= half) {
+          el.scrollLeft -= half
+        }
+      }
+      rafId = requestAnimationFrame(step)
+    }
+
+    const pause = () => {
+      paused = true
       if (resumeTimer) clearTimeout(resumeTimer)
     }
-    const handleResume = () => {
+    const scheduleResume = () => {
       if (resumeTimer) clearTimeout(resumeTimer)
-      resumeTimer = setTimeout(() => setPaused(false), 2500)
+      resumeTimer = setTimeout(() => {
+        paused = false
+        lastTs = performance.now()
+      }, RESUME_IDLE_MS)
     }
-    el.addEventListener('touchstart', handlePause, { passive: true })
-    el.addEventListener('touchend', handleResume, { passive: true })
-    el.addEventListener('mouseenter', handlePause)
-    el.addEventListener('mouseleave', handleResume)
+
+    // Pausa em qualquer interação; retoma após idle
+    el.addEventListener('touchstart', pause, { passive: true })
+    el.addEventListener('touchend', scheduleResume, { passive: true })
+    el.addEventListener('touchcancel', scheduleResume, { passive: true })
+    el.addEventListener('mouseenter', pause)
+    el.addEventListener('mouseleave', scheduleResume)
+    el.addEventListener('wheel', () => {
+      pause()
+      scheduleResume()
+    }, { passive: true })
+
+    rafId = requestAnimationFrame(step)
+
     return () => {
-      el.removeEventListener('touchstart', handlePause)
-      el.removeEventListener('touchend', handleResume)
-      el.removeEventListener('mouseenter', handlePause)
-      el.removeEventListener('mouseleave', handleResume)
+      cancelAnimationFrame(rafId)
       if (resumeTimer) clearTimeout(resumeTimer)
+      el.removeEventListener('touchstart', pause)
+      el.removeEventListener('touchend', scheduleResume)
+      el.removeEventListener('touchcancel', scheduleResume)
+      el.removeEventListener('mouseenter', pause)
+      el.removeEventListener('mouseleave', scheduleResume)
     }
-  }, [])
+  }, [shouldMarquee, visible.length])
 
   if (visible.length === 0) return null
 
@@ -72,24 +120,15 @@ export default function HighlightsStrip({ highlights, babyName, babyGender, birt
 
         <div
           ref={scrollerRef}
-          className="overflow-hidden relative"
+          className="overflow-x-auto overflow-y-hidden scrollbar-none"
           style={{
-            maskImage:
-              'linear-gradient(to right, transparent 0, black 20px, black calc(100% - 20px), transparent 100%)',
-            WebkitMaskImage:
-              'linear-gradient(to right, transparent 0, black 20px, black calc(100% - 20px), transparent 100%)',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+            WebkitOverflowScrolling: 'touch',
           }}
         >
-          <div
-            className="flex gap-2 w-max py-1"
-            style={{
-              animation: `highlight-marquee ${Math.max(visible.length, 1) * 14}s linear infinite`,
-              animationPlayState: paused ? 'paused' : 'running',
-              paddingLeft: '20px',
-              paddingRight: '20px',
-            }}
-          >
-            {loop.map((h, i) => (
+          <div className="flex gap-2 px-5 w-max py-1">
+            {items.map((h, i) => (
               <HighlightChip
                 key={`${h.type}_${h.id}_${i}`}
                 highlight={h}
@@ -103,10 +142,7 @@ export default function HighlightsStrip({ highlights, babyName, babyGender, birt
         </div>
 
         <style>{`
-          @keyframes highlight-marquee {
-            0%   { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-          }
+          .scrollbar-none::-webkit-scrollbar { display: none; }
         `}</style>
       </section>
 
@@ -165,7 +201,7 @@ function HighlightChip({
     <button
       type="button"
       onClick={onClick}
-      className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg border ${ACCENT_BG[highlight.accent]} shrink-0 min-w-[168px] max-w-[220px] active:scale-[0.97] transition-transform text-left`}
+      className={`flex items-center gap-2.5 px-3 py-2.5 rounded-md border ${ACCENT_BG[highlight.accent]} shrink-0 min-w-[168px] max-w-[220px] active:scale-[0.97] transition-transform text-left`}
     >
       <div className={`w-9 h-9 rounded-full ${ACCENT_DOT[highlight.accent]} flex items-center justify-center shrink-0`}>
         <span className="text-lg leading-none">{highlight.emoji}</span>
