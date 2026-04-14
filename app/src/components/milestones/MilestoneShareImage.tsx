@@ -330,7 +330,7 @@ export default function MilestoneShareImage({
             ref={previewRef}
             src={dataUrl}
             alt="Prévia do marco"
-            className="max-w-full max-h-[70vh] rounded-2xl shadow-2xl"
+            className="max-w-full max-h-[70vh] rounded-md shadow-2xl"
           />
         )}
       </div>
@@ -340,7 +340,7 @@ export default function MilestoneShareImage({
           type="button"
           disabled={!dataUrl || busy}
           onClick={handleShare}
-          className="w-full py-3.5 rounded-xl bg-gradient-to-br from-primary to-primary-container text-on-primary font-label font-bold text-sm disabled:opacity-50 flex items-center justify-center gap-2"
+          className="w-full py-3.5 rounded-md bg-gradient-to-br from-primary to-primary-container text-on-primary font-label font-bold text-sm disabled:opacity-50 flex items-center justify-center gap-2"
         >
           <span className="material-symbols-outlined text-base">share</span>
           {busy ? 'Compartilhando...' : 'Compartilhar imagem'}

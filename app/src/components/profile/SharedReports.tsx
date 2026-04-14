@@ -169,7 +169,7 @@ export default function SharedReports() {
               return (
                 <div
                   key={r.id}
-                  className={`rounded-xl p-3 border transition-colors ${
+                  className={`rounded-md p-3 border transition-colors ${
                     active
                       ? 'bg-primary/5 border-primary/20'
                       : 'bg-surface-variant/30 border-surface-variant/50'
@@ -215,21 +215,21 @@ export default function SharedReports() {
                     <div className="flex gap-1.5 mt-2">
                       <button
                         onClick={() => handleCopyLink(r.token)}
-                        className="flex-1 py-2 rounded-lg bg-white/[0.06] text-on-surface-variant font-label text-[11px] font-semibold flex items-center justify-center gap-1 active:bg-white/10"
+                        className="flex-1 py-2 rounded-md bg-white/[0.06] text-on-surface-variant font-label text-[11px] font-semibold flex items-center justify-center gap-1 active:bg-white/10"
                       >
                         <span className="material-symbols-outlined text-sm">content_copy</span>
                         Copiar
                       </button>
                       <button
                         onClick={() => handleShareWhatsApp(r)}
-                        className="flex-1 py-2 rounded-lg bg-[#25D366]/10 text-[#25D366] font-label text-[11px] font-semibold flex items-center justify-center gap-1 active:bg-[#25D366]/20"
+                        className="flex-1 py-2 rounded-md bg-[#25D366]/10 text-[#25D366] font-label text-[11px] font-semibold flex items-center justify-center gap-1 active:bg-[#25D366]/20"
                       >
                         <span className="material-symbols-outlined text-sm">share</span>
                         WhatsApp
                       </button>
                       <button
                         onClick={() => setConfirmDelete(r.id)}
-                        className="py-2 px-3 rounded-lg bg-error/10 text-error font-label text-[11px] font-semibold flex items-center justify-center active:bg-error/20"
+                        className="py-2 px-3 rounded-md bg-error/10 text-error font-label text-[11px] font-semibold flex items-center justify-center active:bg-error/20"
                       >
                         <span className="material-symbols-outlined text-sm">delete</span>
                       </button>
@@ -240,7 +240,7 @@ export default function SharedReports() {
                     <div className="flex gap-1.5 mt-2">
                       <button
                         onClick={() => setConfirmDelete(r.id)}
-                        className="flex-1 py-2 rounded-lg bg-error/10 text-error font-label text-[11px] font-semibold flex items-center justify-center gap-1 active:bg-error/20"
+                        className="flex-1 py-2 rounded-md bg-error/10 text-error font-label text-[11px] font-semibold flex items-center justify-center gap-1 active:bg-error/20"
                       >
                         <span className="material-symbols-outlined text-sm">delete</span>
                         Excluir
@@ -256,7 +256,7 @@ export default function SharedReports() {
         {/* Create button */}
         <button
           onClick={handleOpenCreate}
-          className="w-full py-3 rounded-xl bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 text-primary font-label font-semibold text-sm flex items-center justify-center gap-2 active:from-primary/20 active:to-primary/10 transition-colors"
+          className="w-full py-3 rounded-md bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 text-primary font-label font-semibold text-sm flex items-center justify-center gap-2 active:from-primary/20 active:to-primary/10 transition-colors"
         >
           <span className="material-symbols-outlined text-lg">add_link</span>
           Novo link de acesso
@@ -299,7 +299,7 @@ export default function SharedReports() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Ex: Dr. Silva, Consultora Ana, Baba Maria"
-                    className="w-full bg-white/[0.06] rounded-xl px-4 py-3 text-[#e7e2ff] font-body text-sm outline-none focus:ring-2 focus:ring-[#b79fff]/40 placeholder:text-[#e7e2ff]/30"
+                    className="w-full bg-white/[0.06] rounded-md px-4 py-3 text-[#e7e2ff] font-body text-sm outline-none focus:ring-2 focus:ring-[#b79fff]/40 placeholder:text-[#e7e2ff]/30"
                   />
                 </div>
 
@@ -313,7 +313,7 @@ export default function SharedReports() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Crie uma senha simples para o acesso"
-                    className="w-full bg-white/[0.06] rounded-xl px-4 py-3 text-[#e7e2ff] font-body text-sm outline-none focus:ring-2 focus:ring-[#b79fff]/40 placeholder:text-[#e7e2ff]/30"
+                    className="w-full bg-white/[0.06] rounded-md px-4 py-3 text-[#e7e2ff] font-body text-sm outline-none focus:ring-2 focus:ring-[#b79fff]/40 placeholder:text-[#e7e2ff]/30"
                   />
                 </div>
 
@@ -332,7 +332,7 @@ export default function SharedReports() {
                       <button
                         key={opt.key}
                         onClick={() => { hapticLight(); setExpirationPreset(opt.key); }}
-                        className={`py-2.5 rounded-xl font-label text-sm font-semibold transition-colors ${
+                        className={`py-2.5 rounded-md font-label text-sm font-semibold transition-colors ${
                           expirationPreset === opt.key
                             ? 'bg-[#b79fff] text-[#0d0a27]'
                             : 'bg-white/[0.06] text-[#e7e2ff]/70'
@@ -344,7 +344,7 @@ export default function SharedReports() {
                   </div>
                   <button
                     onClick={() => { hapticLight(); setExpirationPreset('custom'); }}
-                    className={`w-full py-2.5 rounded-xl font-label text-sm font-semibold transition-colors ${
+                    className={`w-full py-2.5 rounded-md font-label text-sm font-semibold transition-colors ${
                       expirationPreset === 'custom'
                         ? 'bg-[#b79fff] text-[#0d0a27]'
                         : 'bg-white/[0.06] text-[#e7e2ff]/70'
@@ -358,7 +358,7 @@ export default function SharedReports() {
                       value={customDate}
                       onChange={(e) => setCustomDate(e.target.value)}
                       min={new Date().toISOString().split('T')[0]}
-                      className="w-full mt-2 bg-white/[0.06] rounded-xl px-4 py-3 text-[#e7e2ff] font-body text-sm outline-none focus:ring-2 focus:ring-[#b79fff]/40"
+                      className="w-full mt-2 bg-white/[0.06] rounded-md px-4 py-3 text-[#e7e2ff] font-body text-sm outline-none focus:ring-2 focus:ring-[#b79fff]/40"
                     />
                   )}
                 </div>
@@ -367,7 +367,7 @@ export default function SharedReports() {
                 <button
                   onClick={handleCreate}
                   disabled={creating || !name.trim() || !password.trim() || (expirationPreset === 'custom' && !customDate)}
-                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#7C4DFF] to-[#b79fff] text-white font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="w-full py-3.5 rounded-md bg-gradient-to-r from-[#7C4DFF] to-[#b79fff] text-white font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   {creating ? (
                     <>
@@ -386,7 +386,7 @@ export default function SharedReports() {
               <>
                 {/* Success state */}
                 <div className="text-center mb-5">
-                  <div className="w-16 h-16 mx-auto mb-3 rounded-2xl bg-green-500/20 flex items-center justify-center">
+                  <div className="w-16 h-16 mx-auto mb-3 rounded-md bg-green-500/20 flex items-center justify-center">
                     <span className="material-symbols-outlined text-green-400 text-3xl">check_circle</span>
                   </div>
                   <p className="font-body text-xs text-[#e7e2ff]/60 mb-4">
@@ -394,12 +394,12 @@ export default function SharedReports() {
                   </p>
                 </div>
 
-                <div className="bg-white/[0.04] rounded-xl p-4 mb-3">
+                <div className="bg-white/[0.04] rounded-md p-4 mb-3">
                   <p className="font-label text-[11px] text-[#e7e2ff]/50 uppercase tracking-wider mb-1">Link</p>
                   <p className="font-body text-xs text-[#b79fff] break-all">{createdReport.url}</p>
                 </div>
 
-                <div className="bg-white/[0.04] rounded-xl p-4 mb-5">
+                <div className="bg-white/[0.04] rounded-md p-4 mb-5">
                   <p className="font-label text-[11px] text-[#e7e2ff]/50 uppercase tracking-wider mb-1">Senha</p>
                   <p className="font-headline text-lg font-bold text-[#e7e2ff] tracking-wider">{createdReport.password}</p>
                 </div>
@@ -411,7 +411,7 @@ export default function SharedReports() {
                       const text = `Oi! Compartilhei o acompanhamento ${genderContraction} ${baby?.name} com você.\n\nAcesse: ${createdReport!.url}\nSenha: ${createdReport!.password}`;
                       window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
                     }}
-                    className="w-full py-3 rounded-xl bg-[#25D366] text-white font-semibold text-sm flex items-center justify-center gap-2"
+                    className="w-full py-3 rounded-md bg-[#25D366] text-white font-semibold text-sm flex items-center justify-center gap-2"
                   >
                     <span className="material-symbols-outlined text-lg">share</span>
                     Enviar via WhatsApp
@@ -422,7 +422,7 @@ export default function SharedReports() {
                       hapticLight();
                       navigator.clipboard.writeText(`Link: ${createdReport!.url}\nSenha: ${createdReport!.password}`);
                     }}
-                    className="w-full py-3 rounded-xl bg-white/[0.06] text-[#e7e2ff] font-semibold text-sm flex items-center justify-center gap-2"
+                    className="w-full py-3 rounded-md bg-white/[0.06] text-[#e7e2ff] font-semibold text-sm flex items-center justify-center gap-2"
                   >
                     <span className="material-symbols-outlined text-lg">content_copy</span>
                     Copiar link e senha
@@ -430,7 +430,7 @@ export default function SharedReports() {
 
                   <button
                     onClick={() => setShowCreate(false)}
-                    className="w-full py-3 rounded-xl text-[#e7e2ff]/40 font-semibold text-sm"
+                    className="w-full py-3 rounded-md text-[#e7e2ff]/40 font-semibold text-sm"
                   >
                     Fechar
                   </button>
@@ -461,13 +461,13 @@ export default function SharedReports() {
             <div className="flex gap-2">
               <button
                 onClick={() => setConfirmDelete(null)}
-                className="flex-1 py-2.5 rounded-xl bg-surface-variant text-on-surface-variant font-label text-sm font-semibold"
+                className="flex-1 py-2.5 rounded-md bg-surface-variant text-on-surface-variant font-label text-sm font-semibold"
               >
                 Cancelar
               </button>
               <button
                 onClick={() => handleDelete(confirmDelete)}
-                className="flex-1 py-2.5 rounded-xl bg-error text-on-error font-label text-sm font-semibold"
+                className="flex-1 py-2.5 rounded-md bg-error text-on-error font-label text-sm font-semibold"
               >
                 Excluir
               </button>

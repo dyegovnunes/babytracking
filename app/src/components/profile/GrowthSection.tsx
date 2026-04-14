@@ -250,7 +250,7 @@ export default function GrowthSection({ babyId }: GrowthSectionProps) {
       <div className="mt-3">
       <div className="grid grid-cols-2 gap-3 mb-3">
         {/* Peso */}
-        <div className="bg-surface-container-low rounded-lg p-3">
+        <div className="bg-surface-container-low rounded-md p-3">
           <p className="font-label text-[11px] text-on-surface-variant uppercase tracking-wider mb-1">Peso</p>
           {latestWeight ? (
             <p className="font-headline text-lg font-bold text-on-surface">
@@ -288,7 +288,7 @@ export default function GrowthSection({ babyId }: GrowthSectionProps) {
         </div>
 
         {/* Altura */}
-        <div className="bg-surface-container-low rounded-lg p-3">
+        <div className="bg-surface-container-low rounded-md p-3">
           <p className="font-label text-[11px] text-on-surface-variant uppercase tracking-wider mb-1">Altura</p>
           {latestHeight ? (
             <p className="font-headline text-lg font-bold text-on-surface">
@@ -334,13 +334,13 @@ export default function GrowthSection({ babyId }: GrowthSectionProps) {
           {!showAddRetro ? (
             <button
               onClick={() => { hapticLight(); setShowAddRetro(true); }}
-              className="w-full py-2 rounded-lg border border-dashed border-primary/30 text-primary font-label text-xs font-semibold flex items-center justify-center gap-1"
+              className="w-full py-2 rounded-md border border-dashed border-primary/30 text-primary font-label text-xs font-semibold flex items-center justify-center gap-1"
             >
               <span className="material-symbols-outlined text-sm">add</span>
               Adicionar medição anterior
             </button>
           ) : (
-            <div className="p-3 bg-surface-container-low rounded-lg border border-primary/20 space-y-2">
+            <div className="p-3 bg-surface-container-low rounded-md border border-primary/20 space-y-2">
               <p className="font-label text-[11px] text-primary uppercase tracking-wider">Nova medição retroativa</p>
               <input
                 type="date"
@@ -364,9 +364,9 @@ export default function GrowthSection({ babyId }: GrowthSectionProps) {
               </div>
               <div className="flex gap-1.5">
                 <button onClick={handleAddRetro} disabled={saving || !retroDate || (!retroWeight && !retroHeight)}
-                  className="flex-1 py-2 rounded-lg bg-primary/10 text-primary font-label text-xs font-semibold disabled:opacity-30">Salvar</button>
+                  className="flex-1 py-2 rounded-md bg-primary/10 text-primary font-label text-xs font-semibold disabled:opacity-30">Salvar</button>
                 <button onClick={() => { setShowAddRetro(false); setRetroDate(''); setRetroWeight(''); setRetroHeight(''); }}
-                  className="flex-1 py-2 rounded-lg bg-white/5 text-on-surface-variant font-label text-xs">Cancelar</button>
+                  className="flex-1 py-2 rounded-md bg-white/5 text-on-surface-variant font-label text-xs">Cancelar</button>
               </div>
             </div>
           )}
@@ -483,13 +483,13 @@ export default function GrowthSection({ babyId }: GrowthSectionProps) {
               {!showAddRetro ? (
                 <button
                   onClick={() => { hapticLight(); setShowAddRetro(true); }}
-                  className="w-full py-2 rounded-lg border border-dashed border-primary/30 text-primary font-label text-xs font-semibold flex items-center justify-center gap-1"
+                  className="w-full py-2 rounded-md border border-dashed border-primary/30 text-primary font-label text-xs font-semibold flex items-center justify-center gap-1"
                 >
                   <span className="material-symbols-outlined text-sm">add</span>
                   Adicionar medição anterior
                 </button>
               ) : (
-                <div className="p-3 bg-surface-container-low rounded-lg border border-primary/20 space-y-2">
+                <div className="p-3 bg-surface-container-low rounded-md border border-primary/20 space-y-2">
                   <p className="font-label text-[11px] text-primary uppercase tracking-wider">Nova medição retroativa</p>
                   <input
                     type="date"
@@ -525,13 +525,13 @@ export default function GrowthSection({ babyId }: GrowthSectionProps) {
                     <button
                       onClick={handleAddRetro}
                       disabled={saving || !retroDate || (!retroWeight && !retroHeight)}
-                      className="flex-1 py-2 rounded-lg bg-primary/10 text-primary font-label text-xs font-semibold disabled:opacity-30"
+                      className="flex-1 py-2 rounded-md bg-primary/10 text-primary font-label text-xs font-semibold disabled:opacity-30"
                     >
                       Salvar
                     </button>
                     <button
                       onClick={() => { setShowAddRetro(false); setRetroDate(''); setRetroWeight(''); setRetroHeight(''); }}
-                      className="flex-1 py-2 rounded-lg bg-white/5 text-on-surface-variant font-label text-xs"
+                      className="flex-1 py-2 rounded-md bg-white/5 text-on-surface-variant font-label text-xs"
                     >
                       Cancelar
                     </button>

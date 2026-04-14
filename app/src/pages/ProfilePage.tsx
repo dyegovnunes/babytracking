@@ -255,7 +255,7 @@ export default function ProfilePage() {
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => handleToggleRole(c.userId, c.role)}
-                      className="w-9 h-9 rounded-lg bg-surface-variant/50 flex items-center justify-center active:bg-surface-variant"
+                      className="w-9 h-9 rounded-md bg-surface-variant/50 flex items-center justify-center active:bg-surface-variant"
                       title={c.role === 'parent' ? 'Rebaixar para Cuidador' : 'Promover a Responsável'}
                     >
                       <span className="material-symbols-outlined text-on-surface-variant text-base">
@@ -264,7 +264,7 @@ export default function ProfilePage() {
                     </button>
                     <button
                       onClick={() => setConfirmRemove(c.userId)}
-                      className="w-9 h-9 rounded-lg bg-error/10 flex items-center justify-center active:bg-error/20"
+                      className="w-9 h-9 rounded-md bg-error/10 flex items-center justify-center active:bg-error/20"
                       title="Remover membro"
                     >
                       <span className="material-symbols-outlined text-error text-base">person_remove</span>
@@ -277,20 +277,20 @@ export default function ProfilePage() {
 
           {/* Invite section */}
           {inviteCode ? (
-            <div className="bg-primary/5 border border-primary/20 rounded-xl p-4">
+            <div className="bg-primary/5 border border-primary/20 rounded-md p-4">
               <p className="font-label text-xs text-on-surface-variant mb-2">Código de convite ativo</p>
               <p className="font-headline text-2xl font-bold text-primary tracking-widest text-center mb-3">{inviteCode}</p>
               <div className="flex gap-2 mb-2">
-                <button onClick={handleCopyCode} className="flex-1 py-2.5 rounded-lg bg-surface-variant text-on-surface-variant font-label text-xs font-semibold flex items-center justify-center gap-1">
+                <button onClick={handleCopyCode} className="flex-1 py-2.5 rounded-md bg-surface-variant text-on-surface-variant font-label text-xs font-semibold flex items-center justify-center gap-1">
                   <span className="material-symbols-outlined text-sm">content_copy</span> Copiar
                 </button>
-                <button onClick={handleShareWhatsApp} className="flex-1 py-2.5 rounded-lg bg-[#25D366] text-white font-label text-xs font-semibold flex items-center justify-center gap-1">
+                <button onClick={handleShareWhatsApp} className="flex-1 py-2.5 rounded-md bg-[#25D366] text-white font-label text-xs font-semibold flex items-center justify-center gap-1">
                   <span className="material-symbols-outlined text-sm">share</span> WhatsApp
                 </button>
               </div>
               <button
                 onClick={handleDeactivateCode}
-                className="w-full py-2 rounded-lg bg-error/10 text-error font-label text-xs font-semibold flex items-center justify-center gap-1 active:bg-error/20"
+                className="w-full py-2 rounded-md bg-error/10 text-error font-label text-xs font-semibold flex items-center justify-center gap-1 active:bg-error/20"
               >
                 <span className="material-symbols-outlined text-sm">block</span> Desativar código
               </button>
@@ -299,7 +299,7 @@ export default function ProfilePage() {
             <button
               onClick={handleGenerateInvite}
               disabled={generatingCode}
-              className="w-full py-3 rounded-xl bg-primary/10 text-primary font-label font-semibold text-sm flex items-center justify-center gap-2 active:bg-primary/20 transition-colors disabled:opacity-50"
+              className="w-full py-3 rounded-md bg-primary/10 text-primary font-label font-semibold text-sm flex items-center justify-center gap-2 active:bg-primary/20 transition-colors disabled:opacity-50"
             >
               <span className="material-symbols-outlined text-lg">person_add</span>
               {generatingCode ? 'Gerando...' : 'Gerar código de convite'}
@@ -313,7 +313,7 @@ export default function ProfilePage() {
         <SharedReports />
 
         {/* ===== SAIR ===== */}
-        <button onClick={signOut} className="w-full py-2.5 rounded-xl bg-error/10 text-error font-label font-semibold text-sm">
+        <button onClick={signOut} className="w-full py-2.5 rounded-md bg-error/10 text-error font-label font-semibold text-sm">
           Sair da conta
         </button>
       </div>
@@ -331,10 +331,10 @@ export default function ProfilePage() {
               Tem certeza que deseja remover <strong className="text-on-surface">{members[confirmRemove]?.displayName}</strong> do grupo? Essa pessoa perderá acesso aos dados do bebê.
             </p>
             <div className="flex gap-2">
-              <button onClick={() => setConfirmRemove(null)} className="flex-1 py-2.5 rounded-xl bg-surface-variant text-on-surface-variant font-label text-sm font-semibold">
+              <button onClick={() => setConfirmRemove(null)} className="flex-1 py-2.5 rounded-md bg-surface-variant text-on-surface-variant font-label text-sm font-semibold">
                 Cancelar
               </button>
-              <button onClick={() => handleRemoveMember(confirmRemove)} className="flex-1 py-2.5 rounded-xl bg-error text-on-error font-label text-sm font-semibold">
+              <button onClick={() => handleRemoveMember(confirmRemove)} className="flex-1 py-2.5 rounded-md bg-error text-on-error font-label text-sm font-semibold">
                 Remover
               </button>
             </div>

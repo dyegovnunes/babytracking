@@ -117,7 +117,7 @@ export default function BabyCard({ baby, onSave }: Props) {
             {showPhotoMenu && baby.photoUrl && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setShowPhotoMenu(false)} />
-                <div className="absolute top-full left-0 mt-1 z-50 bg-surface-container-high rounded-lg shadow-lg overflow-hidden min-w-[160px]">
+                <div className="absolute top-full left-0 mt-1 z-50 bg-surface-container-high rounded-md shadow-lg overflow-hidden min-w-[160px]">
                   <button onClick={openFilePicker} className="w-full px-4 py-2.5 text-left text-on-surface font-label text-sm hover:bg-surface-variant/50 flex items-center gap-2">
                     <span className="material-symbols-outlined text-base">photo_camera</span>
                     Trocar foto
@@ -143,7 +143,7 @@ export default function BabyCard({ baby, onSave }: Props) {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full bg-surface-container-low rounded-lg px-4 py-3 text-on-surface font-body text-base outline-none focus:ring-2 focus:ring-primary/40"
+              className="w-full bg-surface-container-low rounded-md px-4 py-3 text-on-surface font-body text-base outline-none focus:ring-2 focus:ring-primary/40"
             />
           </div>
           <div>
@@ -154,19 +154,19 @@ export default function BabyCard({ baby, onSave }: Props) {
               type="date"
               value={birthDate}
               onChange={(e) => setBirthDate(e.target.value)}
-              className="w-full bg-surface-container-low rounded-lg px-4 py-3 text-on-surface font-body text-base outline-none focus:ring-2 focus:ring-primary/40"
+              className="w-full bg-surface-container-low rounded-md px-4 py-3 text-on-surface font-body text-base outline-none focus:ring-2 focus:ring-primary/40"
             />
           </div>
           <div className="flex gap-3 pt-1">
             <button
               onClick={handleCancel}
-              className="flex-1 py-2.5 rounded-xl bg-surface-variant text-on-surface-variant font-label font-semibold text-sm"
+              className="flex-1 py-2.5 rounded-md bg-surface-variant text-on-surface-variant font-label font-semibold text-sm"
             >
               Cancelar
             </button>
             <button
               onClick={handleSave}
-              className="flex-1 py-2.5 rounded-xl bg-gradient-to-br from-primary to-primary-container text-on-primary font-label font-semibold text-sm"
+              className="flex-1 py-2.5 rounded-md bg-gradient-to-br from-primary to-primary-container text-on-primary font-label font-semibold text-sm"
             >
               Salvar
             </button>
@@ -209,7 +209,7 @@ export default function BabyCard({ baby, onSave }: Props) {
         {showPhotoMenu && baby.photoUrl && (
           <>
             <div className="fixed inset-0 z-40" onClick={() => setShowPhotoMenu(false)} />
-            <div className="absolute top-full left-0 mt-1 z-50 bg-surface-container-high rounded-lg shadow-lg overflow-hidden min-w-[160px]">
+            <div className="absolute top-full left-0 mt-1 z-50 bg-surface-container-high rounded-md shadow-lg overflow-hidden min-w-[160px]">
               <button onClick={openFilePicker} className="w-full px-4 py-2.5 text-left text-on-surface font-label text-sm hover:bg-surface-variant/50 flex items-center gap-2">
                 <span className="material-symbols-outlined text-base">photo_camera</span>
                 Trocar foto

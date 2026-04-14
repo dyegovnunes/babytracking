@@ -54,7 +54,7 @@ export default function ActivityButton({ event, lastLog, onPress, isMostRecent, 
   return (
     <button
       onClick={onPress}
-      className={`flex flex-col items-center gap-1.5 p-3 rounded-md active:scale-95 active:bg-primary-dim/20 transition-all aspect-square justify-center ${isMostRecent ? 'ring-2 ring-primary/40' : ''} ${highlighted && !isMostRecent ? 'bg-primary/8 border border-primary/[0.38]' : 'bg-surface-container-high'}`}
+      className={`flex flex-col items-center gap-1.5 p-3 rounded-lg active:scale-95 active:bg-primary-dim/20 transition-all aspect-square justify-center ${isMostRecent ? 'ring-2 ring-primary/40' : ''} ${highlighted && !isMostRecent ? 'bg-primary/8 border border-primary/[0.38]' : 'bg-surface-container-high'}`}
     >
       <div className="relative">
         <div className={`w-12 h-12 rounded-full flex items-center justify-center ${iconClasses}`}>

@@ -398,7 +398,7 @@ function MilestoneRow({
     <button
       type="button"
       onClick={onClick}
-      className={`w-full flex items-start gap-3 p-3 rounded-xl text-left active:scale-[0.99] transition-transform ${
+      className={`w-full flex items-start gap-3 p-3 rounded-md text-left active:scale-[0.99] transition-transform ${
         isAchieved
           ? 'bg-tertiary/[0.05] border border-tertiary/15'
           : isFuture
@@ -442,7 +442,7 @@ function MilestoneRow({
         <img
           src={entry.photoUrl}
           alt=""
-          className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
+          className="w-10 h-10 rounded-md object-cover flex-shrink-0"
         />
       )}
       {!isAchieved && !isFuture && (
@@ -509,7 +509,7 @@ function MilestoneDetailModal({
           <img
             src={entry.photoUrl}
             alt={milestone.name}
-            className="w-full aspect-square object-cover rounded-2xl mb-4"
+            className="w-full aspect-square object-cover rounded-md mb-4"
           />
         )}
 
@@ -518,7 +518,7 @@ function MilestoneDetailModal({
         </p>
 
         {entry.note && (
-          <div className="bg-white/[0.03] rounded-xl p-3 mb-3">
+          <div className="bg-white/[0.03] rounded-md p-3 mb-3">
             <p className="font-label text-[10px] text-on-surface-variant/60 uppercase tracking-wider mb-1">
               Nota
             </p>
@@ -529,7 +529,7 @@ function MilestoneDetailModal({
         )}
 
         {leapInfo && (
-          <div className="bg-primary/[0.06] border border-primary/15 rounded-xl p-3 mb-4 flex items-start gap-2">
+          <div className="bg-primary/[0.06] border border-primary/15 rounded-md p-3 mb-4 flex items-start gap-2">
             <span className="text-base leading-none mt-0.5">⚡</span>
             <p className="font-label text-xs text-on-surface-variant leading-relaxed">
               {leapInfo}
@@ -541,7 +541,7 @@ function MilestoneDetailModal({
           <button
             type="button"
             onClick={onShare}
-            className="flex-1 py-3 rounded-xl bg-primary text-on-primary font-label font-bold text-sm flex items-center justify-center gap-2"
+            className="flex-1 py-3 rounded-md bg-primary text-on-primary font-label font-bold text-sm flex items-center justify-center gap-2"
           >
             <span className="material-symbols-outlined text-base">share</span>
             Compartilhar
@@ -549,7 +549,7 @@ function MilestoneDetailModal({
           <button
             type="button"
             onClick={() => setConfirmDelete(true)}
-            className="w-12 h-12 rounded-xl bg-error/10 text-error flex items-center justify-center"
+            className="w-12 h-12 rounded-md bg-error/10 text-error flex items-center justify-center"
             aria-label="Excluir"
           >
             <span className="material-symbols-outlined">delete</span>
@@ -557,7 +557,7 @@ function MilestoneDetailModal({
         </div>
 
         {confirmDelete && (
-          <div className="mt-4 bg-error/5 border border-error/20 rounded-xl p-4">
+          <div className="mt-4 bg-error/5 border border-error/20 rounded-md p-4">
             <p className="font-label text-sm text-on-surface mb-3">
               Excluir esse registro de marco? Essa ação não pode ser desfeita.
             </p>
@@ -565,14 +565,14 @@ function MilestoneDetailModal({
               <button
                 type="button"
                 onClick={() => setConfirmDelete(false)}
-                className="flex-1 py-2 rounded-lg bg-surface-variant text-on-surface-variant font-label text-xs font-semibold"
+                className="flex-1 py-2 rounded-md bg-surface-variant text-on-surface-variant font-label text-xs font-semibold"
               >
                 Cancelar
               </button>
               <button
                 type="button"
                 onClick={onDelete}
-                className="flex-1 py-2 rounded-lg bg-error text-on-error font-label text-xs font-semibold"
+                className="flex-1 py-2 rounded-md bg-error text-on-error font-label text-xs font-semibold"
               >
                 Excluir
               </button>

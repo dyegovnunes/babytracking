@@ -138,7 +138,7 @@ export default function MilestoneRegister({
             min={birthDate}
             max={today}
             onChange={(e) => setAchievedAt(e.target.value)}
-            className="w-full bg-surface-container rounded-xl px-4 py-3 text-on-surface font-body text-base outline-none focus:ring-2 focus:ring-primary/40"
+            className="w-full bg-surface-container rounded-md px-4 py-3 text-on-surface font-body text-base outline-none focus:ring-2 focus:ring-primary/40"
           />
         </label>
 
@@ -160,7 +160,7 @@ export default function MilestoneRegister({
               <img
                 src={photoDataUrl}
                 alt="Foto do marco"
-                className="w-full aspect-square object-cover rounded-2xl"
+                className="w-full aspect-square object-cover rounded-md"
               />
               <button
                 type="button"
@@ -175,7 +175,7 @@ export default function MilestoneRegister({
             <button
               type="button"
               onClick={handlePickPhoto}
-              className="w-full aspect-[4/3] rounded-2xl border-2 border-dashed border-white/15 bg-surface-container/50 flex flex-col items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+              className="w-full aspect-[4/3] rounded-md border-2 border-dashed border-white/15 bg-surface-container/50 flex flex-col items-center justify-center gap-2 active:scale-[0.98] transition-transform"
             >
               <span className="material-symbols-outlined text-4xl text-on-surface-variant/70">
                 add_a_photo
@@ -199,7 +199,7 @@ export default function MilestoneRegister({
             }
             rows={3}
             placeholder="Como foi esse momento?"
-            className="w-full bg-surface-container rounded-xl px-4 py-3 text-on-surface font-body text-sm outline-none focus:ring-2 focus:ring-primary/40 resize-none"
+            className="w-full bg-surface-container rounded-md px-4 py-3 text-on-surface font-body text-sm outline-none focus:ring-2 focus:ring-primary/40 resize-none"
           />
           <span className="font-label text-[10px] text-on-surface-variant/60 block text-right mt-1">
             {note.length}/140
@@ -211,7 +211,7 @@ export default function MilestoneRegister({
           <button
             type="button"
             onClick={onCancel}
-            className="flex-1 py-3 rounded-xl bg-surface-variant text-on-surface-variant font-label font-semibold text-sm"
+            className="flex-1 py-3 rounded-md bg-surface-variant text-on-surface-variant font-label font-semibold text-sm"
           >
             Cancelar
           </button>
@@ -219,7 +219,7 @@ export default function MilestoneRegister({
             type="button"
             disabled={!canSave || saving}
             onClick={handleSave}
-            className="flex-1 py-3 rounded-xl bg-gradient-to-br from-tertiary to-tertiary/80 text-surface font-label font-bold text-sm disabled:opacity-50"
+            className="flex-1 py-3 rounded-md bg-gradient-to-br from-tertiary to-tertiary/80 text-surface font-label font-bold text-sm disabled:opacity-50"
           >
             {saving ? 'Salvando...' : 'Salvar marco'}
           </button>
