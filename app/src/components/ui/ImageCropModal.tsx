@@ -24,14 +24,51 @@ export default function ImageCropModal({ imageFile, onConfirm, onClose }: Props)
 
   const CANVAS_SIZE = 280
   const CIRCLE_RADIUS = 120
+  // Limite máximo de pixels por lado antes de entrarmos em downsampling.
+  // iOS/iPad com PhotoKit facilmente entregam fotos de 4000×3000+; Canvas
+  // alocando ~48MB por image + 512×512 output numa WebView leve estoura a
+  // memória. Cortando em 2048 dá ~16MB por imagem e não perde detalhe visível
+  // na foto circular de 120px de raio.
+  const MAX_IMAGE_SIDE = 2048
 
-  // Load image
+  // Load image + downsample se necessário pra evitar OOM no iPad
   useEffect(() => {
     setLoadError(false)
     const reader = new FileReader()
     reader.onload = () => {
       const image = new Image()
       image.onload = () => {
+        const maxSide = Math.max(image.width, image.height)
+        if (maxSide > MAX_IMAGE_SIDE) {
+          try {
+            const ratio = MAX_IMAGE_SIDE / maxSide
+            const dw = Math.floor(image.width * ratio)
+            const dh = Math.floor(image.height * ratio)
+            const tmp = document.createElement('canvas')
+            tmp.width = dw
+            tmp.height = dh
+            const tctx = tmp.getContext('2d')
+            if (!tctx) {
+              setLoadError(true)
+              return
+            }
+            tctx.drawImage(image, 0, 0, dw, dh)
+            const smaller = new Image()
+            smaller.onload = () => {
+              setImg(smaller)
+              const minDim = Math.min(smaller.width, smaller.height)
+              const initialScale = (CIRCLE_RADIUS * 2) / minDim
+              setScale(initialScale)
+              setOffset({ x: 0, y: 0 })
+            }
+            smaller.onerror = () => setLoadError(true)
+            smaller.src = tmp.toDataURL('image/jpeg', 0.92)
+            return
+          } catch {
+            setLoadError(true)
+            return
+          }
+        }
         setImg(image)
         const minDim = Math.min(image.width, image.height)
         const initialScale = (CIRCLE_RADIUS * 2) / minDim
@@ -184,38 +221,51 @@ export default function ImageCropModal({ imageFile, onConfirm, onClose }: Props)
     if (!img) return
     setProcessing(true)
 
-    const outputSize = 512
-    const outputCanvas = document.createElement('canvas')
-    outputCanvas.width = outputSize
-    outputCanvas.height = outputSize
-    const ctx = outputCanvas.getContext('2d')
-    if (!ctx) return
-
-    const cx = CANVAS_SIZE / 2
-    const cy = CANVAS_SIZE / 2
-    const w = img.width * scale
-    const h = img.height * scale
-    const imgX = cx - w / 2 + offset.x
-    const imgY = cy - h / 2 + offset.y
-
-    const scaleOut = outputSize / (CIRCLE_RADIUS * 2)
-    const srcX = (imgX - (cx - CIRCLE_RADIUS)) * scaleOut
-    const srcY = (imgY - (cy - CIRCLE_RADIUS)) * scaleOut
-
-    ctx.beginPath()
-    ctx.arc(outputSize / 2, outputSize / 2, outputSize / 2, 0, Math.PI * 2)
-    ctx.clip()
-
-    ctx.drawImage(img, srcX, srcY, w * scaleOut, h * scaleOut)
-
-    outputCanvas.toBlob(
-      (blob) => {
-        if (blob) onConfirm(blob)
+    try {
+      const outputSize = 512
+      const outputCanvas = document.createElement('canvas')
+      outputCanvas.width = outputSize
+      outputCanvas.height = outputSize
+      const ctx = outputCanvas.getContext('2d')
+      if (!ctx) {
         setProcessing(false)
-      },
-      'image/jpeg',
-      0.85,
-    )
+        setLoadError(true)
+        return
+      }
+
+      const cx = CANVAS_SIZE / 2
+      const cy = CANVAS_SIZE / 2
+      const w = img.width * scale
+      const h = img.height * scale
+      const imgX = cx - w / 2 + offset.x
+      const imgY = cy - h / 2 + offset.y
+
+      const scaleOut = outputSize / (CIRCLE_RADIUS * 2)
+      const srcX = (imgX - (cx - CIRCLE_RADIUS)) * scaleOut
+      const srcY = (imgY - (cy - CIRCLE_RADIUS)) * scaleOut
+
+      ctx.beginPath()
+      ctx.arc(outputSize / 2, outputSize / 2, outputSize / 2, 0, Math.PI * 2)
+      ctx.clip()
+
+      ctx.drawImage(img, srcX, srcY, w * scaleOut, h * scaleOut)
+
+      outputCanvas.toBlob(
+        (blob) => {
+          if (blob) {
+            onConfirm(blob)
+          } else {
+            setLoadError(true)
+          }
+          setProcessing(false)
+        },
+        'image/jpeg',
+        0.85,
+      )
+    } catch {
+      setProcessing(false)
+      setLoadError(true)
+    }
   }
 
   return (

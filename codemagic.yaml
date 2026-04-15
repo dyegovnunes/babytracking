@@ -34,13 +34,52 @@ workflows:
       - name: Configure iOS plist
         script: |
           cd app/ios/App/App
+          # Encryption (App Store export compliance)
           /usr/libexec/PlistBuddy -c "Add :ITSAppUsesNonExemptEncryption bool false" Info.plist || /usr/libexec/PlistBuddy -c "Set :ITSAppUsesNonExemptEncryption false" Info.plist
+          # AdMob
           /usr/libexec/PlistBuddy -c "Add :GADApplicationIdentifier string ca-app-pub-5445931232409285~9773184902" Info.plist || /usr/libexec/PlistBuddy -c "Set :GADApplicationIdentifier ca-app-pub-5445931232409285~9773184902" Info.plist
+          # Photo library + camera usage descriptions (iOS 26 exige pra qualquer framework que toque PhotoKit)
+          /usr/libexec/PlistBuddy -c "Add :NSPhotoLibraryUsageDescription string 'O Yaya precisa acessar suas fotos para você escolher a imagem do perfil do bebê.'" Info.plist || /usr/libexec/PlistBuddy -c "Set :NSPhotoLibraryUsageDescription 'O Yaya precisa acessar suas fotos para você escolher a imagem do perfil do bebê.'" Info.plist
+          /usr/libexec/PlistBuddy -c "Add :NSCameraUsageDescription string 'O Yaya precisa acessar a câmera para você tirar uma foto do bebê para o perfil.'" Info.plist || /usr/libexec/PlistBuddy -c "Set :NSCameraUsageDescription 'O Yaya precisa acessar a câmera para você tirar uma foto do bebê para o perfil.'" Info.plist
+          # URL scheme pra deep link OAuth (Google Android continua usando; no iOS mantemos pra compat)
+          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes array" Info.plist 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0 dict" Info.plist 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLName string app.yayababy" Info.plist 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLSchemes array" Info.plist 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLSchemes:0 string app.yayababy" Info.plist 2>/dev/null || true
+      - name: Configure Apple Sign-in entitlement
+        script: |
+          # Cria App.entitlements com a capability Sign in with Apple
+          cat > app/ios/App/App/App.entitlements <<'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>com.apple.developer.applesignin</key>
+            <array>
+              <string>Default</string>
+            </array>
+          </dict>
+          </plist>
+          EOF
+          # Linka o entitlement no project.pbxproj via ruby + xcodeproj gem (já vem nos runners do Codemagic)
+          ruby -e '
+            require "xcodeproj"
+            project = Xcodeproj::Project.open("app/ios/App/App.xcodeproj")
+            project.targets.each do |target|
+              next unless target.name == "App"
+              target.build_configurations.each do |config|
+                config.build_settings["CODE_SIGN_ENTITLEMENTS"] = "App/App.entitlements"
+              end
+            end
+            project.save
+            puts "Entitlements linked in project.pbxproj"
+          '
       - name: Set version and build number
         script: |
           PLIST="app/ios/App/App/Info.plist"
-          /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString 1.6.3" "$PLIST"
-          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion 33" "$PLIST"
+          /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString 1.7.0" "$PLIST"
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion 34" "$PLIST"
       - name: Build iOS
         script: |
           cd app/ios/App

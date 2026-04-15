@@ -99,10 +99,15 @@ export default function SettingsPage() {
           onOpenInfo={() => setInfoModal('notifications')}
         />
 
-        <AccountSection />
+        {/* Limpar histórico sobe pra ficar acima da seção de conta (evita
+            que "sair da conta" + "excluir conta" fiquem isolados no final
+            e dá um agrupamento mental mais limpo: conta é sempre a última). */}
+        <ClearHistorySection onToast={setToast} />
+
+        <AccountSection onToast={setToast} />
 
         <p className="text-center font-label text-[10px] text-on-surface-variant/50 pt-1">
-          Yaya v1.0.0
+          Yaya v{__APP_VERSION__}
         </p>
       </div>
 
@@ -124,11 +129,6 @@ export default function SettingsPage() {
         onClose={() => setPickingBathHour(false)}
       />
       <InfoModals kind={infoModal} onClose={() => setInfoModal(null)} />
-
-      {/* ===== LIMPAR HISTÓRICO ===== */}
-      <div className="px-5 mt-6">
-        <ClearHistorySection onToast={setToast} />
-      </div>
 
       <AdBanner />
 

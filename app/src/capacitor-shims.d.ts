@@ -1,3 +1,7 @@
+// Injected pelo Vite via `define` em vite.config.ts — lê a versão do package.json
+// em tempo de build pra SettingsPage mostrar a versão atualizada sem hardcode.
+declare const __APP_VERSION__: string
+
 // Type stubs for Capacitor native plugins that may not be installed on web-only builds (Vercel)
 declare module '@capacitor/browser' {
   export const Browser: {

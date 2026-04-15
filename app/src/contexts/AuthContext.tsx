@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 import { Capacitor } from '@capacitor/core'
 import { Browser } from '@capacitor/browser'
 import { App as CapApp } from '@capacitor/app'
+import { SignInWithApple } from '@capacitor-community/apple-sign-in'
 
 interface AuthState {
   user: User | null
@@ -157,6 +158,47 @@ export async function signInWithGoogle(): Promise<{ error: string | null }> {
 }
 
 export async function signInWithApple(): Promise<{ error: string | null }> {
+  // No iOS, o OAuth web (Safari embedded) quebra em iPadOS 26 — Apple
+  // exige Sign in with Apple nativo pra qualquer app que use outros
+  // provedores sociais (guideline 4.8). Por isso, no iOS usamos o plugin
+  // nativo que dispara o sheet nativo e retorna um identity token JWT,
+  // que por sua vez é trocado pela sessão Supabase via signInWithIdToken.
+  //
+  // Web/Android continuam no fluxo OAuth tradicional — o Google Android já
+  // usa o mesmo `signInWithOAuthProvider` e no web o redirect padrão funciona.
+  if (Capacitor.getPlatform() === 'ios') {
+    try {
+      const result = await SignInWithApple.authorize({
+        // No iOS nativo, o clientId é o BUNDLE ID do app, não o Services ID.
+        // O Services ID só é usado no fluxo web OAuth. O `aud` do identity
+        // token emitido será `app.yayababy`, então precisamos garantir que
+        // esse valor está em "Authorized Client IDs" no Supabase Auth.
+        clientId: 'app.yayababy',
+        // redirectURI é ignorado pelo plugin no fluxo nativo (o sheet do
+        // sistema não redireciona), mas o plugin exige o campo. Apontamos
+        // pro callback Supabase por consistência com o fluxo web.
+        redirectURI: 'https://kgfjfdizxziacblgvplh.supabase.co/auth/v1/callback',
+        scopes: 'email name',
+      })
+      const idToken = result.response?.identityToken
+      if (!idToken) {
+        return { error: 'Token Apple não retornado' }
+      }
+      const { error } = await supabase.auth.signInWithIdToken({
+        provider: 'apple',
+        token: idToken,
+      })
+      return { error: error?.message ?? null }
+    } catch (e: unknown) {
+      // Código 1001 = usuário cancelou o sheet nativo. Tratamos como "sem
+      // erro" pra não mostrar toast vermelho quando o dedo escorrega.
+      const err = e as { code?: string; message?: string }
+      if (err?.code === '1001') return { error: null }
+      return { error: err?.message ?? 'Erro no login com Apple' }
+    }
+  }
+
+  // Web + Android: OAuth redirect via Supabase (fluxo atual, preservado)
   return signInWithOAuthProvider('apple')
 }
 
