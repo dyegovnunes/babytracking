@@ -71,10 +71,13 @@ interface PlanOption {
   badge?: string;
 }
 
+// Fallback usado quando o RevenueCat não responde (web, offline, erro).
+// Estes valores precisam bater com os produtos criados no App Store Connect
+// e no Google Play Console — se mudar aqui, mude lá também (e vice-versa).
 const FALLBACK_PLANS: PlanOption[] = [
-  { type: 'annual', label: 'Anual', price: 'R$16,90/mês', detail: 'R$202,80 cobrado anualmente', badge: 'Mais escolhido' },
-  { type: 'monthly', label: 'Mensal', price: 'R$29,90/mês', detail: 'Cobrado mensalmente' },
-  { type: 'lifetime', label: 'Vitalício', price: 'R$299,90', detail: 'Uma vez, para sempre' },
+  { type: 'annual', label: 'Anual', price: 'R$21,90/mês', detail: 'R$262,80 cobrado anualmente', badge: 'Mais escolhido' },
+  { type: 'monthly', label: 'Mensal', price: 'R$34,90/mês', detail: 'Cobrado mensalmente' },
+  { type: 'lifetime', label: 'Vitalício', price: 'R$449,90', detail: 'Uma vez, para sempre' },
 ];
 
 export function PaywallModal({ isOpen, onClose, trigger = 'generic' }: PaywallModalProps) {
@@ -94,19 +97,28 @@ export function PaywallModal({ isOpen, onClose, trigger = 'generic' }: PaywallMo
       const dynamicPlans: PlanOption[] = [];
 
       if (pkgs.annual) {
+        // RevenueCat retorna `priceString` = valor TOTAL do ano (ex "R$262,80").
+        // Mostramos o equivalente mensal (total/12) em destaque e o total no
+        // detalhe — é o padrão de UX pra anuais. Fallback pro label hardcoded
+        // se o parse numérico falhar (moedas exóticas, etc).
+        const totalPrice = pkgs.annual.product.priceString || 'R$262,80';
+        const monthly = pkgs.annual.product.price
+          ? `R$${(pkgs.annual.product.price / 12).toFixed(2).replace('.', ',')}/mês`
+          : 'R$21,90/mês';
         dynamicPlans.push({
           type: 'annual',
           label: 'Anual',
-          price: pkgs.annual.product.priceString + '/mês' || 'R$16,90/mês',
-          detail: (pkgs.annual.product.priceString || 'R$202,80') + ' cobrado anualmente',
+          price: monthly,
+          detail: `${totalPrice} cobrado anualmente`,
           badge: 'Mais escolhido',
         });
       }
       if (pkgs.monthly) {
+        const priceString = pkgs.monthly.product.priceString;
         dynamicPlans.push({
           type: 'monthly',
           label: 'Mensal',
-          price: pkgs.monthly.product.priceString + '/mês' || 'R$29,90/mês',
+          price: priceString ? `${priceString}/mês` : 'R$34,90/mês',
           detail: 'Cobrado mensalmente',
         });
       }
@@ -114,7 +126,7 @@ export function PaywallModal({ isOpen, onClose, trigger = 'generic' }: PaywallMo
         dynamicPlans.push({
           type: 'lifetime',
           label: 'Vitalício',
-          price: pkgs.lifetime.product.priceString || 'R$299,90',
+          price: pkgs.lifetime.product.priceString || 'R$449,90',
           detail: 'Uma vez, para sempre',
         });
       }
