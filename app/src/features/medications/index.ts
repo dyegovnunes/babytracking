@@ -39,6 +39,3 @@ export type {
   CreateMedicationInput,
   FrequencyPreset,
 } from './medicationData'
-
-// Único componente público — consumido pela TrackerPage
-export { default as MedicationAlertCard } from './components/MedicationAlertCard'

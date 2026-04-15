@@ -17,7 +17,7 @@ interface Props {
   onDeleteLog: (logId: string) => Promise<boolean>
   /** Editar este medicamento (abre o form em modo edit) */
   onEdit: () => void
-  /** Desativar medicamento (encerrar cadastro) */
+  /** Excluir medicamento (soft delete via is_active=false — o histórico fica preservado e pode ser reativado). */
   onDeactivate: () => Promise<boolean>
 }
 
@@ -27,7 +27,7 @@ interface Props {
  * - Botão grande "Dar agora" (fluxo principal, 1 toque).
  * - Link "Registrar outro horário" abre um time picker.
  * - Histórico do dia com nome de quem administrou.
- * - Botão "Encerrar medicamento" no fim (ação secundária).
+ * - Botão "Excluir medicamento" no fim (ação secundária, soft delete).
  */
 export default function MedicationAdminSheet({
   status,
@@ -317,8 +317,8 @@ export default function MedicationAdminSheet({
             }`}
           >
             {confirmDeactivate
-              ? 'Confirmar: encerrar medicamento'
-              : 'Encerrar medicamento'}
+              ? 'Confirmar: excluir medicamento'
+              : 'Excluir medicamento'}
           </button>
         </div>
       </div>

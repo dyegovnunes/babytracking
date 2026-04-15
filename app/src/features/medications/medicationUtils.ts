@@ -119,33 +119,63 @@ export function getMedicationDayStatus(
         new Date(b.administeredAt).getTime(),
     )
 
-  // Para cada horário, casa com o log mais próximo em janela de ±(frequencyHours/2).
-  // Usamos greedy: o log mais próximo que ainda não foi usado "consome" o slot.
+  // Matching log<->slot acontece em 2 passes:
+  //
+  //   PASS 1: binding explícito por slot_time. Quick-apply (e no futuro o admin
+  //           sheet) grava `slot_time = "HH:mm"` junto com o log, então sabemos
+  //           exatamente qual slot aquela dose cumpriu — sem janela de tempo.
+  //
+  //   PASS 2: fallback por proximidade de tempo, só para logs legados
+  //           (`slotTime === null`). Janela de ±(frequencyHours/2) com piso de
+  //           30min. Isso cobre doses registradas antes da migration 20260414d
+  //           e doses "extras" criadas manualmente que caem perto de um slot.
+  //
+  // Logs sobrando (slot_time válido mas sem match, ou proximidade fora da
+  // janela) viram `unmatched` e contam no `givenCount` como doses extras.
+  const usedLogIds = new Set<string>()
+
+  // ---- PASS 1: binding explícito ----
+  const boundByTime = new Map<string, MedicationLog>()
+  for (const log of todayLogs) {
+    if (!log.slotTime) continue
+    if (boundByTime.has(log.slotTime)) continue // primeiro log que bater ganha
+    boundByTime.set(log.slotTime, log)
+    usedLogIds.add(log.id)
+  }
+
+  // ---- PASS 2: fallback proximidade (só logs sem slotTime) ----
   const halfWindowMin =
     Math.max(medication.frequencyHours / 2, 0.5) * 60 // mínimo 30min
-  const usedLogIds = new Set<string>()
   const doses: MedicationDoseStatus[] = schedule.map((time) => {
-    const [h, m] = time.split(':').map((v) => parseInt(v, 10))
-    const targetMin = h * 60 + m
+    const bound = boundByTime.get(time) ?? null
 
-    let best: { log: MedicationLog; diff: number } | null = null
-    for (const log of todayLogs) {
-      if (usedLogIds.has(log.id)) continue
-      const ld = new Date(log.administeredAt)
-      const lMin = ld.getHours() * 60 + ld.getMinutes()
-      const diff = Math.abs(lMin - targetMin)
-      if (diff > halfWindowMin) continue
-      if (!best || diff < best.diff) best = { log, diff }
+    let picked: MedicationLog | null = bound
+    if (!picked) {
+      const [h, m] = time.split(':').map((v) => parseInt(v, 10))
+      const targetMin = h * 60 + m
+      let best: { log: MedicationLog; diff: number } | null = null
+      for (const log of todayLogs) {
+        if (usedLogIds.has(log.id)) continue
+        if (log.slotTime) continue // só logs sem binding entram no fallback
+        const ld = new Date(log.administeredAt)
+        const lMin = ld.getHours() * 60 + ld.getMinutes()
+        const diff = Math.abs(lMin - targetMin)
+        if (diff > halfWindowMin) continue
+        if (!best || diff < best.diff) best = { log, diff }
+      }
+      if (best) {
+        picked = best.log
+        usedLogIds.add(best.log.id)
+      }
     }
-    if (best) usedLogIds.add(best.log.id)
 
-    const name = best?.log.administeredBy
-      ? membersById[best.log.administeredBy] ?? null
+    const name = picked?.administeredBy
+      ? membersById[picked.administeredBy] ?? null
       : null
 
     return {
       time,
-      log: best?.log ?? null,
+      log: picked,
       administeredByName: name,
     }
   })
@@ -283,7 +313,7 @@ function parseLocalDate(s: string): Date | null {
 // -------------------------------------------------------------------------
 
 /**
- * Entrada resumida usada pelo MedicationAlertCard na TrackerPage.
+ * Entrada resumida usada pelos highlights da TrackerPage (chip no strip).
  * Descreve um medicamento em estado de alerta e qual é o alert.
  */
 export interface MedicationHomeAlert {

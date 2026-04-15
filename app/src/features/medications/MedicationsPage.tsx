@@ -12,7 +12,8 @@ import Toast from '../../components/ui/Toast'
 import MedicationCard from './components/MedicationCard'
 import MedicationForm from './components/MedicationForm'
 import MedicationAdminSheet from './components/MedicationAdminSheet'
-import type { Medication } from './medicationData'
+import MedicationSlotPickerSheet from './components/MedicationSlotPickerSheet'
+import type { Medication, MedicationDayStatus } from './medicationData'
 
 const DISCLAIMER =
   'O Yaya ajuda a organizar a rotina de medicamentos. Sempre siga as orientações do pediatra — dosagens, horários e duração devem ser prescritos por um profissional.'
@@ -58,6 +59,10 @@ export default function MedicationsPage() {
   const [formOpen, setFormOpen] = useState(false)
   const [editingMed, setEditingMed] = useState<Medication | null>(null)
   const [adminFor, setAdminFor] = useState<Medication | null>(null)
+  const [slotPickerFor, setSlotPickerFor] = useState<{
+    medication: Medication
+    pendingTimes: string[]
+  } | null>(null)
   const [showPaywall, setShowPaywall] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
   const [showArchived, setShowArchived] = useState(false)
@@ -163,10 +168,51 @@ export default function MedicationsPage() {
     return false
   }
 
-  const handleQuickApply = async (medicationId: string, medicationName: string) => {
-    const result = await administerDose(medicationId, null, user?.id)
+  const handleQuickApply = async (status: MedicationDayStatus) => {
+    const pending = status.doses
+      .filter((d) => d.log === null)
+      .map((d) => d.time)
+    if (pending.length === 0) return // não deveria acontecer, check nem aparece
+
+    // Uma dose pendente → marca direto, sem picker.
+    if (pending.length === 1) {
+      const result = await administerDose(
+        status.medication.id,
+        null,
+        user?.id,
+        pending[0],
+      )
+      if (result.ok) {
+        setToast(`Dose de ${status.medication.name} registrada`)
+      }
+      return
+    }
+
+    // 2+ doses pendentes → deixa o usuário escolher no picker.
+    setSlotPickerFor({ medication: status.medication, pendingTimes: pending })
+  }
+
+  const handlePickSlot = async (slotTime: string) => {
+    if (!slotPickerFor) return
+    const { medication } = slotPickerFor
+    const result = await administerDose(
+      medication.id,
+      null,
+      user?.id,
+      slotTime,
+    )
+    setSlotPickerFor(null)
     if (result.ok) {
-      setToast(`Dose de ${medicationName} registrada`)
+      setToast(`Dose de ${medication.name} registrada`)
+    }
+  }
+
+  const handleDeleteFromCard = async (medication: Medication) => {
+    // A confirmação 2-tap já aconteceu no próprio MedicationCard — aqui só
+    // dispara o soft-delete. O toast replica o mesmo texto do admin sheet.
+    const result = await deactivateMedication(medication.id)
+    if (result.ok) {
+      setToast(`${medication.name} encerrado`)
     }
   }
 
@@ -230,9 +276,9 @@ export default function MedicationsPage() {
                 key={status.medication.id}
                 status={status}
                 onTap={() => setAdminFor(status.medication)}
-                onQuickApply={() =>
-                  handleQuickApply(status.medication.id, status.medication.name)
-                }
+                onQuickApply={() => handleQuickApply(status)}
+                onEdit={() => setEditingMed(status.medication)}
+                onDelete={() => handleDeleteFromCard(status.medication)}
               />
             ))}
           </div>
@@ -342,6 +388,16 @@ export default function MedicationsPage() {
             setTimeout(() => setEditingMed(m), 0)
           }}
           onDeactivate={handleDeactivate}
+        />
+      )}
+
+      {/* Slot picker — aparece só quando há múltiplas doses pendentes */}
+      {slotPickerFor && (
+        <MedicationSlotPickerSheet
+          medicationName={slotPickerFor.medication.name}
+          pendingTimes={slotPickerFor.pendingTimes}
+          onPick={handlePickSlot}
+          onClose={() => setSlotPickerFor(null)}
         />
       )}
 

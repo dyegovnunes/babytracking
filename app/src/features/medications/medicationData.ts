@@ -36,6 +36,13 @@ export interface MedicationLog {
   administeredBy: string | null
   notes: string | null
   createdAt: string
+  /**
+   * HH:mm do slot da schedule_times que este log cumpriu (binding explícito).
+   * `null` quando a dose é extra/floating (fora da schedule) ou quando o log
+   * é legado (pré-migration 20260414d). No fallback, o matching por proximidade
+   * ainda cobre logs null.
+   */
+  slotTime: string | null
 }
 
 /** Preset selecionável no form (frequência + label). */

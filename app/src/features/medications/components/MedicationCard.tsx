@@ -1,12 +1,21 @@
+import { useEffect, useState } from 'react'
 import type { MedicationDayStatus } from '../medicationData'
 import { formatDueSoon, formatOverdue } from '../medicationUtils'
+import { hapticLight, hapticMedium } from '../../../lib/haptics'
 
 interface Props {
   status: MedicationDayStatus
   /** Tap no card → abre o AdminSheet */
   onTap: () => void
-  /** Quick-apply: registra a dose pendente mais próxima com `now` sem abrir sheet */
+  /**
+   * Quick-apply: a decisão de "uma dose pendente vs picker" é feita no parent
+   * (MedicationsPage), que tem o status completo. Aqui só notificamos o clique.
+   */
   onQuickApply: () => void
+  /** Tap no pencil: abre o form em modo edição. */
+  onEdit: () => void
+  /** Tap no trash (depois de confirmar 2-tap): encerra o medicamento. */
+  onDelete: () => void
 }
 
 /**
@@ -21,8 +30,24 @@ interface Props {
  *
  * O corpo é clicável (abre AdminSheet). O botão ✓ é um `stopPropagation`.
  */
-export default function MedicationCard({ status, onTap, onQuickApply }: Props) {
+export default function MedicationCard({
+  status,
+  onTap,
+  onQuickApply,
+  onEdit,
+  onDelete,
+}: Props) {
   const { medication: m, doses, givenCount, totalCount, nextPendingTime, alert, treatmentProgress } = status
+
+  // 2-tap pattern pro delete: primeiro clique arma o estado vermelho, segundo
+  // clique confirma. Timer de 4s desarma automaticamente caso o usuário não
+  // confirme — mesma filosofia do "Encerrar medicamento" do admin sheet.
+  const [confirmDelete, setConfirmDelete] = useState(false)
+  useEffect(() => {
+    if (!confirmDelete) return
+    const t = setTimeout(() => setConfirmDelete(false), 4000)
+    return () => clearTimeout(t)
+  }, [confirmDelete])
 
   const alertBorder =
     alert?.kind === 'overdue'
@@ -64,7 +89,7 @@ export default function MedicationCard({ status, onTap, onQuickApply }: Props) {
       }}
       className={`w-full rounded-md bg-surface-container border ${alertBorder} p-4 text-left active:bg-surface-container-high transition-colors cursor-pointer`}
     >
-      {/* Header: nome + dosagem + quick-apply */}
+      {/* Header: nome + dosagem + ações (edit, delete, check) */}
       <div className="flex items-start gap-3 mb-3">
         <div className="w-10 h-10 rounded-full bg-primary/15 flex items-center justify-center shrink-0">
           <span className="text-xl">💊</span>
@@ -78,24 +103,73 @@ export default function MedicationCard({ status, onTap, onQuickApply }: Props) {
           </p>
           {alertBadge && <div className="mt-1.5">{alertBadge}</div>}
         </div>
-        {showQuickApply && (
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation()
-              onQuickApply()
-            }}
-            aria-label={`Registrar dose de ${m.name} agora`}
-            className="w-10 h-10 rounded-full bg-primary/15 text-primary flex items-center justify-center shrink-0 active:bg-primary/25 transition-colors"
-          >
-            <span
-              className="material-symbols-outlined text-xl"
-              style={{ fontVariationSettings: "'FILL' 1" }}
+
+        {/* Cluster de ações: edit + delete em cima, check em baixo. Todos
+            param de propagar o clique pra não abrir o admin sheet por acidente. */}
+        <div
+          className="flex flex-col items-end gap-1 shrink-0"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="flex gap-1">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation()
+                hapticLight()
+                onEdit()
+              }}
+              aria-label={`Editar ${m.name}`}
+              className="w-8 h-8 rounded-full bg-surface-container-highest text-on-surface-variant flex items-center justify-center active:bg-surface-variant"
             >
-              check
-            </span>
-          </button>
-        )}
+              <span className="material-symbols-outlined text-base">edit</span>
+            </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation()
+                if (!confirmDelete) {
+                  hapticMedium()
+                  setConfirmDelete(true)
+                  return
+                }
+                hapticMedium()
+                onDelete()
+              }}
+              aria-label={
+                confirmDelete
+                  ? `Confirmar exclusão de ${m.name}`
+                  : `Excluir ${m.name}`
+              }
+              className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
+                confirmDelete
+                  ? 'bg-red-500/20 text-red-400 active:bg-red-500/30'
+                  : 'bg-surface-container-highest text-on-surface-variant active:bg-surface-variant'
+              }`}
+            >
+              <span className="material-symbols-outlined text-base">
+                {confirmDelete ? 'delete_forever' : 'delete'}
+              </span>
+            </button>
+          </div>
+          {showQuickApply && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation()
+                onQuickApply()
+              }}
+              aria-label={`Registrar dose de ${m.name} agora`}
+              className="w-10 h-10 rounded-full bg-primary/15 text-primary flex items-center justify-center active:bg-primary/25 transition-colors"
+            >
+              <span
+                className="material-symbols-outlined text-xl"
+                style={{ fontVariationSettings: "'FILL' 1" }}
+              >
+                check
+              </span>
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Doses do dia */}

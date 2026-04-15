@@ -43,6 +43,7 @@ interface MedicationLogRow {
   administered_by: string | null
   notes: string | null
   created_at: string
+  slot_time: string | null
 }
 
 function mapMedication(row: MedicationRow): Medication {
@@ -74,6 +75,9 @@ function mapLog(row: MedicationLogRow): MedicationLog {
     administeredBy: row.administered_by,
     notes: row.notes,
     createdAt: row.created_at,
+    // Postgres TIME volta como "HH:mm:ss" ou "HH:mm" dependendo do tipo;
+    // aqui é só TEXT, então passamos direto (e normalizamos se vier nulo).
+    slotTime: row.slot_time,
   }
 }
 
@@ -218,7 +222,7 @@ export function useMedications(
       const { data: logRows, error: logError } = await supabase
         .from('medication_logs')
         .select(
-          'id, medication_id, baby_id, administered_at, administered_by, notes, created_at',
+          'id, medication_id, baby_id, administered_at, administered_by, notes, created_at, slot_time',
         )
         .eq('baby_id', babyId)
         .gte('administered_at', startOfDay.toISOString())
@@ -357,6 +361,7 @@ export function useMedications(
       medicationId: string,
       administeredAt: Date | null,
       userId?: string,
+      slotTime?: string | null,
     ): Promise<AdministerResult> => {
       if (!babyId) return { ok: false, error: 'no_baby' }
       const when = administeredAt ?? new Date()
@@ -367,9 +372,10 @@ export function useMedications(
           baby_id: babyId,
           administered_at: when.toISOString(),
           administered_by: userId ?? null,
+          slot_time: slotTime ?? null,
         })
         .select(
-          'id, medication_id, baby_id, administered_at, administered_by, notes, created_at',
+          'id, medication_id, baby_id, administered_at, administered_by, notes, created_at, slot_time',
         )
         .single()
 

@@ -21,7 +21,7 @@ import { AdBanner } from '../../components/ui/AdBanner'
 import { getAgeBand, getHighlightedEvents } from '../../lib/ageUtils'
 import { useMilestones } from '../milestones'
 import { useVaccines, VACCINES } from '../vaccines'
-import { useMedications, MedicationAlertCard } from '../medications'
+import { useMedications } from '../medications'
 
 import { TrackerSkeleton } from '../../components/ui/Skeleton'
 import type { LogEntry } from '../../types'
@@ -43,7 +43,7 @@ export default function TrackerPage() {
     baby?.birthDate,
   )
 
-  // Medicamentos — alimenta o MedicationAlertCard (card discreto na home)
+  // Medicamentos — alimenta o chip no HighlightsStrip (sem card dedicado na home)
   const medicationMembersById = useMemo(() => {
     const map: Record<string, string> = {}
     if (members) {
@@ -182,11 +182,6 @@ export default function TrackerPage() {
       <HeroIdentity streak={streak} />
 
       <ActivityGrid events={DEFAULT_EVENTS} logs={logs} onLog={handleLog} highlightedEventIds={highlightedEventIds} />
-
-      {/* Alerta de medicamentos — aparece só se há overdue ou due_soon */}
-      {medicationAlerts.length > 0 && baby && (
-        <MedicationAlertCard alerts={medicationAlerts} babyName={baby.name} />
-      )}
 
       {projections.length > 0 && (
         <section className="px-5 mt-6">
