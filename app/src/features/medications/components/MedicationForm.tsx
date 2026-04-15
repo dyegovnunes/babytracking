@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import {
   FREQUENCY_PRESETS,
   type CreateMedicationInput,
+  type Medication,
   type MedicationDurationType,
 } from '../medicationData'
 import { computeScheduleTimes } from '../medicationUtils'
@@ -13,20 +14,25 @@ interface Props {
   /** Controle de abertura. Se false, o componente não renderiza nada. */
   isOpen: boolean
   onClose: () => void
-  /** Callback que faz a inserção no Supabase e retorna sucesso. */
+  /** Callback que persiste e retorna sucesso. */
   onSave: (input: CreateMedicationInput) => Promise<boolean>
+  /** Se passado, o form entra em modo edição e pré-preenche os campos. */
+  initialData?: Medication | null
 }
 
 /**
- * Bottom sheet de cadastro de medicamento.
+ * Bottom sheet de cadastro OU edição de medicamento.
  *
  * Fluxo:
  *   nome → dosagem → frequência (preset) → primeiro horário → duração → salvar
  *
- * Calcula os `scheduleTimes` automaticamente via `computeScheduleTimes`,
- * mostrando o preview antes de salvar. Todos os campos obrigatórios.
+ * Em modo edição (`initialData` passado), os campos vêm pré-preenchidos e
+ * o título do sheet muda para "Editar medicamento". O parent decide se
+ * `onSave` é insert ou update — o form só entrega o input normalizado.
  */
-export default function MedicationForm({ isOpen, onClose, onSave }: Props) {
+export default function MedicationForm({ isOpen, onClose, onSave, initialData }: Props) {
+  const isEdit = !!initialData
+
   const [name, setName] = useState('')
   const [dosage, setDosage] = useState('')
   const [presetKey, setPresetKey] = useState<string>(FREQUENCY_PRESETS[0].key)
@@ -50,8 +56,40 @@ export default function MedicationForm({ isOpen, onClose, onSave }: Props) {
     }
   }, [isOpen])
 
-  // Resetar ao abrir/fechar
+  // Pré-preenche quando abrir em modo edit; reseta quando fechar
   useEffect(() => {
+    if (isOpen && initialData) {
+      const firstSchedule = initialData.scheduleTimes[0] ?? '08:00'
+      // Tenta casar o preset exato pela frequência; se não achar, usa 1x
+      const matched =
+        FREQUENCY_PRESETS.find(
+          (p) => p.hours === initialData.frequencyHours,
+        ) ?? FREQUENCY_PRESETS[0]
+      setName(initialData.name)
+      setDosage(initialData.dosage)
+      setPresetKey(matched.key)
+      setFirstTime(firstSchedule)
+      setDurationType(initialData.durationType)
+      if (
+        initialData.durationType === 'fixed' &&
+        initialData.endDate &&
+        initialData.startDate
+      ) {
+        const start = parseLocalDate(initialData.startDate)
+        const end = parseLocalDate(initialData.endDate)
+        if (start && end) {
+          const days =
+            Math.round((end.getTime() - start.getTime()) / 86400000) + 1
+          setDurationDays(Math.max(1, days))
+        }
+      } else {
+        setDurationDays(5)
+      }
+      setNotes(initialData.notes ?? '')
+      setError(null)
+      setSaving(false)
+      return
+    }
     if (!isOpen) {
       setName('')
       setDosage('')
@@ -63,7 +101,7 @@ export default function MedicationForm({ isOpen, onClose, onSave }: Props) {
       setError(null)
       setSaving(false)
     }
-  }, [isOpen])
+  }, [isOpen, initialData])
 
   const preset = useMemo(
     () => FREQUENCY_PRESETS.find((p) => p.key === presetKey) ?? FREQUENCY_PRESETS[0],
@@ -79,11 +117,12 @@ export default function MedicationForm({ isOpen, onClose, onSave }: Props) {
 
   const endDate = useMemo(() => {
     if (durationType !== 'fixed') return null
-    const start = new Date(today + 'T00:00:00')
+    const baseDate = initialData?.startDate ?? today
+    const start = parseLocalDate(baseDate) ?? new Date()
     const end = new Date(start)
     end.setDate(start.getDate() + Math.max(1, durationDays) - 1)
     return getLocalDateString(end)
-  }, [durationType, durationDays, today])
+  }, [durationType, durationDays, today, initialData?.startDate])
 
   const canSave =
     name.trim().length > 0 &&
@@ -102,7 +141,7 @@ export default function MedicationForm({ isOpen, onClose, onSave }: Props) {
       frequencyHours: preset.hours,
       scheduleTimes: schedule,
       durationType,
-      startDate: today,
+      startDate: effectiveStartDate,
       endDate,
       notes: notes.trim() || null,
     })
@@ -116,6 +155,10 @@ export default function MedicationForm({ isOpen, onClose, onSave }: Props) {
   }
 
   if (!isOpen) return null
+
+  // Mantém a data de início do cadastro original quando editando, pra não
+  // resetar o tratamento fixo pro dia de hoje.
+  const effectiveStartDate = initialData?.startDate ?? today
 
   return (
     <div
@@ -133,10 +176,10 @@ export default function MedicationForm({ isOpen, onClose, onSave }: Props) {
         <div className="flex items-start justify-between mb-5">
           <div>
             <p className="font-label text-[10px] font-bold uppercase tracking-wider text-primary">
-              NOVO MEDICAMENTO
+              {isEdit ? 'EDITAR' : 'NOVO MEDICAMENTO'}
             </p>
             <h3 className="font-headline text-lg font-bold text-on-surface leading-tight mt-0.5">
-              Cadastrar medicamento
+              {isEdit ? 'Editar medicamento' : 'Cadastrar medicamento'}
             </h3>
           </div>
           <button
@@ -328,10 +371,16 @@ export default function MedicationForm({ isOpen, onClose, onSave }: Props) {
             disabled={!canSave}
             className="flex-1 py-3 rounded-md bg-primary text-on-primary font-label text-xs font-bold active:opacity-90 disabled:opacity-50"
           >
-            {saving ? 'Salvando...' : 'Salvar'}
+            {saving ? 'Salvando...' : isEdit ? 'Salvar alterações' : 'Salvar'}
           </button>
         </div>
       </div>
     </div>
   )
+}
+
+function parseLocalDate(s: string): Date | null {
+  const [y, m, d] = s.split('-').map((v) => parseInt(v, 10))
+  if (isNaN(y) || isNaN(m) || isNaN(d)) return null
+  return new Date(y, m - 1, d, 0, 0, 0, 0)
 }

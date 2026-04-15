@@ -6,6 +6,7 @@ import {
   getNextMilestoneForHome,
 } from '../milestones'
 import type { Vaccine, VaccineStatus } from '../vaccines'
+import type { MedicationHomeAlert } from '../medications'
 
 /**
  * Sistema de "Destaques da Home" (Highlights).
@@ -26,6 +27,8 @@ export type HighlightType =
   | 'milestone'
   | 'vaccine_overdue'
   | 'vaccine_upcoming'
+  | 'medication_overdue'
+  | 'medication_due_soon'
 
 export interface Highlight {
   /** ID único estável, usado como chave do chip e do dismissal no localStorage */
@@ -65,6 +68,21 @@ export interface Highlight {
         othersCount: number
         otherNames: string[]
       }
+    | {
+        type: 'medication_overdue'
+        /** Primeiro medicamento atrasado (o mais urgente). */
+        primary: MedicationHomeAlert
+        /** Quantos outros medicamentos também estão atrasados. */
+        othersCount: number
+        /** Nomes dos outros atrasados. */
+        otherNames: string[]
+      }
+    | {
+        type: 'medication_due_soon'
+        primary: MedicationHomeAlert
+        othersCount: number
+        otherNames: string[]
+      }
 }
 
 // ---------- Dismissal (localStorage) ----------
@@ -81,6 +99,12 @@ function dismissKey(h: Pick<Highlight, 'type' | 'id'>): string {
   }
   if (h.type === 'vaccine_overdue' || h.type === 'vaccine_upcoming') {
     return `vaccine_highlight_dismissed_${h.id}`
+  }
+  if (
+    h.type === 'medication_overdue' ||
+    h.type === 'medication_due_soon'
+  ) {
+    return `medication_highlight_dismissed_${h.id}`
   }
   return `highlight_dismissed_${h.type}_${h.id}`
 }
@@ -119,6 +143,12 @@ interface CollectOpts {
   vaccines?: readonly Vaccine[]
   vaccineStatus?: Map<string, VaccineStatus>
   /**
+   * Alertas de medicamentos do dia (opcional — se não passado ou vazio,
+   * ignora esse tipo de destaque). Vem de `useMedications().homeAlerts`,
+   * já ordenado por prioridade (overdue primeiro).
+   */
+  medicationAlerts?: readonly MedicationHomeAlert[]
+  /**
    * Tick numérico para forçar o coletor a reavaliar (ex: depois de dispensar).
    * O valor em si não importa, só precisa mudar.
    */
@@ -135,6 +165,7 @@ export function collectHighlights({
   ageDays,
   vaccines,
   vaccineStatus,
+  medicationAlerts,
   reactivityTick,
 }: CollectOpts): Highlight[] {
   void reactivityTick // só pra invalidar memos quando o tick mudar
@@ -158,7 +189,12 @@ export function collectHighlights({
     if (!isDismissed(h, h.dismissDays)) out.push(h)
   }
 
-  // 2. Vacinas — no máximo 1 destaque por ciclo. Prioridade:
+  // 2. Medicamento atrasado (urgente) — vai antes da vacina porque é ação
+  //    imediata do dia. Apenas overdue aqui; due_soon fica depois dos marcos.
+  const medOverdueHighlight = pickMedicationOverdueHighlight(medicationAlerts)
+  if (medOverdueHighlight) out.push(medOverdueHighlight)
+
+  // 3. Vacinas — no máximo 1 destaque por ciclo. Prioridade:
   //    atrasada (mandatória) > próxima (mandatória, dentro de 14 dias)
   //    Só considera mandatórias para não poluir a home com SBP opcional.
   const vaccineHighlight = pickVaccineHighlight({
@@ -168,7 +204,7 @@ export function collectHighlights({
   })
   if (vaccineHighlight) out.push(vaccineHighlight)
 
-  // 3. Próximo marco (só se existir e estiver "dentro da janela")
+  // 4. Próximo marco (só se existir e estiver "dentro da janela")
   const nextMilestone = getNextMilestoneForHome(
     achievedCodes,
     ageDays,
@@ -189,7 +225,12 @@ export function collectHighlights({
     })
   }
 
-  // 4. Salto próximo (só se não tiver ativo e estiver a ≤2 semanas)
+  // 5. Medicamento com dose chegando (due_soon) — ação suave, vem depois
+  //    dos marcos para não competir com chips mais informativos.
+  const medDueSoonHighlight = pickMedicationDueSoonHighlight(medicationAlerts)
+  if (medDueSoonHighlight) out.push(medDueSoonHighlight)
+
+  // 6. Salto próximo (só se não tiver ativo e estiver a ≤2 semanas)
   if (!activeLeap) {
     const upcoming = getUpcomingLeap(birthDate)
     if (upcoming && upcoming.weeksUntil <= 2) {
@@ -328,4 +369,108 @@ function pickVaccineHighlight(opts: {
   }
 
   return null
+}
+
+// ---------- Medication pickers ----------
+
+/**
+ * Escolhe (no máximo) 1 destaque de "medicamento atrasado".
+ *
+ * - `medicationAlerts` já vem ordenado por prioridade (overdue primeiro,
+ *   dentro de overdue os mais atrasados primeiro).
+ * - Pegamos o primeiro overdue como "main"; o resto dos overdue vira +X.
+ * - ID do highlight é baseado no conjunto de medicamentos atrasados para
+ *   que, quando o set mudar, o dismissal antigo não silencie o novo.
+ * - Respeita localStorage de dismissal.
+ */
+function pickMedicationOverdueHighlight(
+  medicationAlerts?: readonly MedicationHomeAlert[],
+): Highlight | null {
+  if (!medicationAlerts || medicationAlerts.length === 0) return null
+  const overdue = medicationAlerts.filter((a) => a.alert.kind === 'overdue')
+  if (overdue.length === 0) return null
+
+  const main = overdue[0]
+  const others = overdue.slice(1)
+  const title =
+    others.length > 0
+      ? `${main.medicationName} +${others.length}`
+      : main.medicationName
+
+  // ID estável por conjunto: ordena os IDs e concatena. Assim, se um novo
+  // remédio entrar em atraso, o dismissal antigo não apaga o novo destaque.
+  const setId = overdue
+    .map((a) => a.medicationId)
+    .slice()
+    .sort()
+    .join('_')
+
+  const h: Highlight = {
+    id: `overdue_${setId}`,
+    type: 'medication_overdue',
+    emoji: '💊',
+    kicker:
+      overdue.length === 1
+        ? 'REMÉDIO ATRASADO'
+        : `${overdue.length} ATRASADOS`,
+    title,
+    accent: 'warning',
+    dismissDays: 1, // um dia só, porque muda de estado rápido
+    data: {
+      type: 'medication_overdue',
+      primary: main,
+      othersCount: others.length,
+      otherNames: others.map((o) => o.medicationName),
+    },
+  }
+  if (isDismissed(h, h.dismissDays)) return null
+  return h
+}
+
+/**
+ * Escolhe (no máximo) 1 destaque de "dose chegando" (due_soon).
+ *
+ * Só dispara quando não há overdue — o overdue já toma o chip de alerta.
+ * Chip mais suave, cor primary, dismissável por 1 dia.
+ */
+function pickMedicationDueSoonHighlight(
+  medicationAlerts?: readonly MedicationHomeAlert[],
+): Highlight | null {
+  if (!medicationAlerts || medicationAlerts.length === 0) return null
+  const dueSoon = medicationAlerts.filter((a) => a.alert.kind === 'due_soon')
+  if (dueSoon.length === 0) return null
+
+  const main = dueSoon[0]
+  const others = dueSoon.slice(1)
+  const title =
+    others.length > 0
+      ? `${main.medicationName} +${others.length}`
+      : main.medicationName
+
+  const setId = dueSoon
+    .map((a) => a.medicationId)
+    .slice()
+    .sort()
+    .join('_')
+
+  const h: Highlight = {
+    id: `due_soon_${setId}`,
+    type: 'medication_due_soon',
+    emoji: '💊',
+    kicker:
+      dueSoon.length === 1
+        ? 'DOSE CHEGANDO'
+        : `${dueSoon.length} DOSES CHEGANDO`,
+    title,
+    accent: 'primary',
+    dismissDays: 1,
+    data: {
+      type: 'medication_due_soon',
+      primary: main,
+      othersCount: others.length,
+      otherNames: others.map((o) => o.medicationName),
+    },
+  }
+  if (isDismissed(h, h.dismissDays)) return null
+  return h
 }

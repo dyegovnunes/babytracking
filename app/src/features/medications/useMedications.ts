@@ -306,6 +306,52 @@ export function useMedications(
     [babyId, isPremium, activeMedications.length],
   )
 
+  const updateMedication = useCallback(
+    async (
+      medicationId: string,
+      input: CreateMedicationInput,
+    ): Promise<AddMedicationResult> => {
+      if (!babyId) return { ok: false, error: 'no_baby' }
+      if (!input.name.trim() || !input.dosage.trim()) {
+        return { ok: false, error: 'invalid' }
+      }
+      if (input.scheduleTimes.length === 0) {
+        return { ok: false, error: 'invalid' }
+      }
+
+      const { data, error } = await supabase
+        .from('medications')
+        .update({
+          name: input.name.trim(),
+          dosage: input.dosage.trim(),
+          frequency_hours: input.frequencyHours,
+          schedule_times: input.scheduleTimes,
+          duration_type: input.durationType,
+          start_date: input.startDate,
+          end_date:
+            input.durationType === 'fixed' ? input.endDate ?? null : null,
+          notes: input.notes?.trim() || null,
+        })
+        .eq('id', medicationId)
+        .select(
+          'id, baby_id, name, dosage, frequency_hours, schedule_times, duration_type, start_date, end_date, notes, is_active, created_by, created_at, updated_at',
+        )
+        .single()
+
+      if (error || !data) return { ok: false, error: 'db_error' }
+
+      const med = mapMedication(data as MedicationRow)
+      setActiveMedications((prev) =>
+        prev.map((m) => (m.id === medicationId ? med : m)),
+      )
+      setArchivedMedications((prev) =>
+        prev.map((m) => (m.id === medicationId ? med : m)),
+      )
+      return { ok: true, medication: med }
+    },
+    [babyId],
+  )
+
   const administerDose = useCallback(
     async (
       medicationId: string,
@@ -410,6 +456,7 @@ export function useMedications(
     homeAlerts,
     loading,
     addMedication,
+    updateMedication,
     administerDose,
     deleteLog,
     deactivateMedication,

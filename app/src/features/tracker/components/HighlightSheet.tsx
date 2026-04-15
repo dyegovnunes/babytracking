@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { Highlight } from '../highlights'
 import { dismissHighlight } from '../highlights'
+import { formatDueSoon, formatOverdue } from '../../medications'
 import { hapticLight, hapticMedium } from '../../../lib/haptics'
 import { contractionDe } from '../../../lib/genderUtils'
 import { useSheetBackClose } from '../../../hooks/useSheetBackClose'
@@ -66,6 +67,14 @@ export default function HighlightSheet({
       highlight.data.type === 'vaccine_upcoming'
     ) {
       navigate('/vacinas')
+      onNavigated()
+      return
+    }
+    if (
+      highlight.data.type === 'medication_overdue' ||
+      highlight.data.type === 'medication_due_soon'
+    ) {
+      navigate('/medicamentos')
       onNavigated()
       return
     }
@@ -399,6 +408,117 @@ function renderContent({
                 : 'Disponível em clínicas particulares. Consulte seu pediatra.'}
             </p>
           </div>
+        </>
+      ),
+    }
+  }
+
+  // ---------- MEDICATION OVERDUE ----------
+  if (data.type === 'medication_overdue') {
+    const main = data.primary
+    const total = 1 + data.othersCount
+    const de = contractionDe(babyGender)
+    // `main.alert` é union — como estamos no branch overdue, fazemos narrowing
+    // defensivo via fallback pra 0 quando a kind não bater (não deveria acontecer).
+    const minutesLate =
+      main.alert.kind === 'overdue' ? main.alert.minutesLate : 0
+    const overdueLabel = formatOverdue(minutesLate)
+    return {
+      heading:
+        total > 1
+          ? `${total} remédios atrasados`
+          : main.medicationName,
+      subheading:
+        total > 1
+          ? `${main.medicationName} e mais ${data.othersCount}`
+          : `Horário das ${main.alert.time} · ${overdueLabel}`,
+      seeMoreLabel: 'Ver medicamentos',
+      body: (
+        <>
+          <p className="font-body text-sm text-on-surface-variant leading-relaxed mb-3">
+            {total > 1
+              ? `${babyName} tem ${total} medicamentos atrasados. Toque em "Ver medicamentos" para registrar as doses.`
+              : `A dose das ${main.alert.time} de ${main.medicationName} ainda não foi registrada hoje.`}
+          </p>
+
+          {data.othersCount > 0 && (
+            <Subsection label="Todos os atrasados">
+              <ul className="space-y-1">
+                <li className="flex gap-2 items-start">
+                  <span className="text-yellow-400 text-sm leading-tight">•</span>
+                  <span className="font-body text-xs text-on-surface leading-relaxed">
+                    <strong>{main.medicationName}</strong> · {overdueLabel}
+                  </span>
+                </li>
+                {data.otherNames.map((name, i) => (
+                  <li key={i} className="flex gap-2 items-start">
+                    <span className="text-yellow-400 text-sm leading-tight">•</span>
+                    <span className="font-body text-xs text-on-surface leading-relaxed">
+                      {name}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </Subsection>
+          )}
+
+          <div className="mt-3 p-3 rounded-md bg-yellow-500/5 border border-yellow-500/20">
+            <p className="font-label text-[10px] font-bold uppercase tracking-wider text-yellow-400 mb-1">
+              Lembrete
+            </p>
+            <p className="font-body text-xs text-on-surface-variant leading-relaxed">
+              Se já tiver dado, registre pra manter a rotina {de} {babyName}{' '}
+              em dia. Em dúvida sobre dose, consulte o pediatra.
+            </p>
+          </div>
+        </>
+      ),
+    }
+  }
+
+  // ---------- MEDICATION DUE SOON ----------
+  if (data.type === 'medication_due_soon') {
+    const main = data.primary
+    const total = 1 + data.othersCount
+    const minutesUntil =
+      main.alert.kind === 'due_soon' ? main.alert.minutesUntil : 0
+    const dueLabel = formatDueSoon(minutesUntil)
+    return {
+      heading:
+        total > 1 ? `${total} doses chegando` : main.medicationName,
+      subheading:
+        total > 1
+          ? `${main.medicationName} e mais ${data.othersCount}`
+          : `${main.alert.time} · ${dueLabel}`,
+      seeMoreLabel: 'Ver medicamentos',
+      body: (
+        <>
+          <p className="font-body text-sm text-on-surface-variant leading-relaxed mb-3">
+            {total > 1
+              ? `${babyName} tem ${total} doses chegando nos próximos minutos.`
+              : `Próxima dose de ${main.medicationName} chega ${dueLabel} (horário ${main.alert.time}).`}
+          </p>
+
+          {data.othersCount > 0 && (
+            <Subsection label="Todas as doses chegando">
+              <ul className="space-y-1">
+                <li className="flex gap-2 items-start">
+                  <span className="text-primary text-sm leading-tight">•</span>
+                  <span className="font-body text-xs text-on-surface leading-relaxed">
+                    <strong>{main.medicationName}</strong> · {dueLabel}
+                  </span>
+                </li>
+                {data.otherNames.map((name, i) => (
+                  <li key={i} className="flex gap-2 items-start">
+                    <span className="text-primary text-sm leading-tight">•</span>
+                    <span className="font-body text-xs text-on-surface leading-relaxed">
+                      {name}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </Subsection>
+          )}
         </>
       ),
     }

@@ -49,12 +49,14 @@ export default function MedicationsPage() {
     dayStatuses,
     loading,
     addMedication,
+    updateMedication,
     administerDose,
     deleteLog,
     deactivateMedication,
   } = useMedications(baby?.id, membersById, now)
 
   const [formOpen, setFormOpen] = useState(false)
+  const [editingMed, setEditingMed] = useState<Medication | null>(null)
   const [adminFor, setAdminFor] = useState<Medication | null>(null)
   const [showPaywall, setShowPaywall] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
@@ -102,6 +104,14 @@ export default function MedicationsPage() {
   const handleSaveMedication = async (
     input: Parameters<typeof addMedication>[0],
   ) => {
+    if (editingMed) {
+      const result = await updateMedication(editingMed.id, input)
+      if (result.ok) {
+        setToast(`${input.name} atualizado`)
+        return true
+      }
+      return false
+    }
     const result = await addMedication(input, user?.id)
     if (result.ok) {
       setToast(`${input.name} cadastrado`)
@@ -304,11 +314,15 @@ export default function MedicationsPage() {
         </section>
       )}
 
-      {/* Form */}
+      {/* Form (create ou edit) */}
       <MedicationForm
-        isOpen={formOpen}
-        onClose={() => setFormOpen(false)}
+        isOpen={formOpen || editingMed !== null}
+        onClose={() => {
+          setFormOpen(false)
+          setEditingMed(null)
+        }}
         onSave={handleSaveMedication}
+        initialData={editingMed}
       />
 
       {/* Admin sheet */}
@@ -321,6 +335,12 @@ export default function MedicationsPage() {
           onGiveNow={handleGiveNow}
           onGiveAt={handleGiveAt}
           onDeleteLog={handleDeleteLog}
+          onEdit={() => {
+            const m = adminFor
+            setAdminFor(null)
+            // setTimeout pra evitar colisão do useSheetBackClose entre sheets
+            setTimeout(() => setEditingMed(m), 0)
+          }}
           onDeactivate={handleDeactivate}
         />
       )}

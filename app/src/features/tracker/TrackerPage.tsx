@@ -59,7 +59,7 @@ export default function TrackerPage() {
     now,
   )
 
-  // Highlights strip (saltos + marcos + vacinas)
+  // Highlights strip (saltos + marcos + vacinas + medicamentos)
   const [highlightsTick, setHighlightsTick] = useState(0)
   const highlights = useMemo(
     () =>
@@ -69,6 +69,7 @@ export default function TrackerPage() {
         ageDays,
         vaccines: VACCINES,
         vaccineStatus: vaccineStatusByCode,
+        medicationAlerts,
         reactivityTick: highlightsTick,
       }),
     [
@@ -76,6 +77,7 @@ export default function TrackerPage() {
       achievedCodes,
       ageDays,
       vaccineStatusByCode,
+      medicationAlerts,
       highlightsTick,
     ],
   )

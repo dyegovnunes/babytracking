@@ -15,6 +15,8 @@ interface Props {
   onGiveAt: (when: Date) => Promise<boolean>
   /** Apagar um log (corrigir engano) */
   onDeleteLog: (logId: string) => Promise<boolean>
+  /** Editar este medicamento (abre o form em modo edit) */
+  onEdit: () => void
   /** Desativar medicamento (encerrar cadastro) */
   onDeactivate: () => Promise<boolean>
 }
@@ -35,6 +37,7 @@ export default function MedicationAdminSheet({
   onGiveNow,
   onGiveAt,
   onDeleteLog,
+  onEdit,
   onDeactivate,
 }: Props) {
   const m = status.medication
@@ -291,8 +294,19 @@ export default function MedicationAdminSheet({
           </div>
         </div>
 
-        {/* Encerrar */}
-        <div className="pt-4 border-t border-white/5">
+        {/* Ações secundárias */}
+        <div className="pt-4 border-t border-white/5 space-y-1">
+          <button
+            type="button"
+            onClick={() => {
+              hapticLight()
+              onEdit()
+            }}
+            className="w-full py-2.5 rounded-md bg-surface-container text-on-surface font-label text-xs font-semibold active:bg-surface-container-high flex items-center justify-center gap-2"
+          >
+            <span className="material-symbols-outlined text-base">edit</span>
+            Editar medicamento
+          </button>
           <button
             type="button"
             onClick={handleDeactivate}
