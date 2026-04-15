@@ -60,6 +60,16 @@ export default function MedicationsPage() {
   const [toast, setToast] = useState<string | null>(null)
   const [showArchived, setShowArchived] = useState(false)
 
+  // Status do medicamento aberto (AdminSheet) — DEVE ficar antes dos early
+  // returns pra preservar a ordem dos hooks entre renders.
+  const adminStatus = useMemo(
+    () =>
+      adminFor
+        ? dayStatuses.find((s) => s.medication.id === adminFor.id) ?? null
+        : null,
+    [adminFor, dayStatuses],
+  )
+
   if (!baby) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
@@ -149,12 +159,6 @@ export default function MedicationsPage() {
       setToast(`Dose de ${medicationName} registrada`)
     }
   }
-
-  // Status do medicamento aberto (AdminSheet)
-  const adminStatus = useMemo(
-    () => (adminFor ? dayStatuses.find((s) => s.medication.id === adminFor.id) ?? null : null),
-    [adminFor, dayStatuses],
-  )
 
   return (
     <div className="pb-28 page-enter">

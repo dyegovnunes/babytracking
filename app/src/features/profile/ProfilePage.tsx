@@ -1,4 +1,4 @@
-import { useCallback, useState, useEffect } from 'react'
+import { useCallback, useState, useEffect, useMemo } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAppState, useAppDispatch, updateBaby, updateMemberRole, removeMember } from '../../contexts/AppContext'
 import { useAuth, signOut } from '../../contexts/AuthContext'
@@ -54,8 +54,10 @@ export default function ProfilePage() {
   // Vaccines — só para o subtítulo do botão
   const { counts: vaccineCounts } = useVaccines(baby?.id, baby?.birthDate)
 
-  // Medications — só para o subtítulo do botão (não precisa de members aqui)
-  const { activeMedications } = useMedications(baby?.id, {})
+  // Medications — só para o subtítulo do botão (não precisa de members aqui).
+  // Referência estável pro objeto vazio, pra não invalidar memos do hook.
+  const emptyMembers = useMemo(() => ({}), [])
+  const { activeMedications } = useMedications(baby?.id, emptyMembers)
 
   useEffect(() => {
     if (members) {
