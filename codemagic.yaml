@@ -6,6 +6,8 @@ workflows:
     integrations:
       app_store_connect: codemagic
     environment:
+      groups:
+        - yaya_ios
       node: 22
       xcode: latest
       ios_signing:
