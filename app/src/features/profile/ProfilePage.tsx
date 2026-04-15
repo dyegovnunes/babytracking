@@ -12,6 +12,7 @@ import { hapticLight } from '../../lib/haptics'
 import { contractionDe } from '../../lib/genderUtils'
 import { useSheetBackClose } from '../../hooks/useSheetBackClose'
 import { useInviteCodes } from './useInviteCodes'
+import { useVaccines } from '../vaccines'
 
 interface Caregiver {
   userId: string
@@ -48,6 +49,9 @@ export default function ProfilePage() {
 
   // Invite
   const { code: inviteCode, generating: generatingCode, generate: generateInvite, deactivate: deactivateInvite } = useInviteCodes()
+
+  // Vaccines — só para o subtítulo do botão
+  const { counts: vaccineCounts } = useVaccines(baby?.id, baby?.birthDate)
 
   useEffect(() => {
     if (members) {
@@ -152,6 +156,26 @@ export default function ProfilePage() {
             <h3 className="text-on-surface font-headline text-sm font-bold">Marcos do Desenvolvimento</h3>
             <p className="text-on-surface-variant font-label text-xs">
               Registre e acompanhe a evolução {contractionDe(baby.gender)} {baby.name}
+            </p>
+          </div>
+          <span className="material-symbols-outlined text-on-surface-variant text-lg">chevron_right</span>
+        </button>
+
+        {/* ===== CADERNETA DE VACINAS ===== */}
+        <button
+          onClick={() => navigate('/vacinas')}
+          className="w-full bg-surface-container rounded-md p-4 flex items-center gap-3 active:bg-surface-container-high transition-colors"
+        >
+          <span
+            className="material-symbols-outlined text-primary text-xl"
+            style={{ fontVariationSettings: "'FILL' 1" }}
+          >
+            vaccines
+          </span>
+          <div className="flex-1 text-left">
+            <h3 className="text-on-surface font-headline text-sm font-bold">Caderneta de Vacinas</h3>
+            <p className="text-on-surface-variant font-label text-xs">
+              {formatVaccineSubtitle(vaccineCounts)}
             </p>
           </div>
           <span className="material-symbols-outlined text-on-surface-variant text-lg">chevron_right</span>
@@ -296,4 +320,26 @@ export default function ProfilePage() {
       {toast && <Toast message={toast} onDismiss={() => setToast(null)} />}
     </div>
   )
+}
+
+// ---------------------------------------------------------------------------
+// Helpers locais
+// ---------------------------------------------------------------------------
+
+function formatVaccineSubtitle(counts: {
+  overdue: number
+  canTake: number
+  applied: number
+  total: number
+}): string {
+  if (counts.overdue > 0 && counts.canTake > 0) {
+    return `${counts.overdue} ${counts.overdue === 1 ? 'atrasada' : 'atrasadas'} · ${counts.canTake} ${counts.canTake === 1 ? 'próxima' : 'próximas'}`
+  }
+  if (counts.overdue > 0) {
+    return `${counts.overdue} ${counts.overdue === 1 ? 'vacina atrasada' : 'vacinas atrasadas'}`
+  }
+  if (counts.canTake > 0) {
+    return `${counts.canTake} ${counts.canTake === 1 ? 'pode ser tomada agora' : 'podem ser tomadas agora'}`
+  }
+  return `${counts.applied}/${counts.total} vacinas registradas`
 }

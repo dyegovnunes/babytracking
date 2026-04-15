@@ -7,7 +7,7 @@ import { Capacitor } from '@capacitor/core';
 interface PaywallModalProps {
   isOpen: boolean;
   onClose: () => void;
-  trigger?: 'history' | 'insights' | 'pdf' | 'multi_caregiver' | 'multi_profile' | 'daily_limit' | 'generic' | 'shared_report' | 'milestones';
+  trigger?: 'history' | 'insights' | 'pdf' | 'multi_caregiver' | 'multi_profile' | 'daily_limit' | 'generic' | 'shared_report' | 'milestones' | 'vaccines';
 }
 
 const TRIGGER_MESSAGES: Record<string, { title: string; description: string }> = {
@@ -42,6 +42,10 @@ const TRIGGER_MESSAGES: Record<string, { title: string; description: string }> =
   milestones: {
     title: 'Todos os marcos',
     description: 'Veja e registre marcos de desenvolvimento até os 24 meses com o Yaya+.',
+  },
+  vaccines: {
+    title: 'Controle de vacinas',
+    description: 'Marque vacinas como aplicadas e receba lembretes da caderneta com o Yaya+.',
   },
 };
 
