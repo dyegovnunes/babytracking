@@ -39,8 +39,8 @@ export default function AdminMonetizationPage() {
 
   // MRR estimado: assume preço de tabela atual do BR. Se mudar preço, mudar
   // aqui também — senão o cálculo de receita mensal no painel fica errado.
-  // Anual é dividido por 12 pra ficar comparável com mensal.
-  const mrr = data.monthly * 34.90 + data.annual * 21.90;
+  // Anual é dividido por 12 pra ficar comparável com mensal (249,90/12 ≈ 20,83).
+  const mrr = data.monthly * 34.90 + data.annual * 20.825;
   const total = data.monthly + data.annual + data.lifetime + data.free + data.courtesy;
 
   const cardStyle: React.CSSProperties = {
@@ -76,8 +76,8 @@ export default function AdminMonetizationPage() {
         </div>
         <div style={cardStyle}>
           <div style={{ fontSize: 28, fontWeight: 700, color: '#e7e2ff' }}>{data.annual}</div>
-          <div style={{ fontSize: 12, color: 'rgba(231,226,255,0.45)', marginTop: 2 }}>Anual (R$262,80)</div>
-          <div style={{ fontSize: 11, color: 'rgba(231,226,255,0.3)', marginTop: 4 }}>R$ {(data.annual * 21.90).toFixed(2)}/mês</div>
+          <div style={{ fontSize: 12, color: 'rgba(231,226,255,0.45)', marginTop: 2 }}>Anual (R$249,90)</div>
+          <div style={{ fontSize: 11, color: 'rgba(231,226,255,0.3)', marginTop: 4 }}>R$ {(data.annual * 20.825).toFixed(2)}/mês</div>
         </div>
         <div style={cardStyle}>
           <div style={{ fontSize: 28, fontWeight: 700, color: '#e7e2ff' }}>{data.lifetime}</div>
