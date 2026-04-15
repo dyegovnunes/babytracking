@@ -252,30 +252,63 @@ function renderContent({
     const v = data.vaccine
     const de = contractionDe(babyGender)
     const dias = data.overdueBy
+    const total = 1 + data.othersCount
     return {
-      heading: v.name,
+      heading:
+        total > 1 ? `${total} vacinas atrasadas` : v.name,
       subheading:
-        dias > 0
-          ? `Atrasada há ${dias} ${dias === 1 ? 'dia' : 'dias'}`
-          : 'Atrasada',
+        total > 1
+          ? `${v.name} e mais ${data.othersCount}`
+          : dias > 0
+            ? `Atrasada há ${dias} ${dias === 1 ? 'dia' : 'dias'}`
+            : 'Atrasada',
       seeMoreLabel: 'Ver caderneta',
       body: (
         <>
           <p className="font-body text-sm text-on-surface-variant leading-relaxed mb-3">
-            Esta vacina já passou da data recomendada para {babyName}. Converse
-            com o pediatra {de} {babyName} para colocar em dia.
+            {total > 1
+              ? `${babyName} tem ${total} vacinas em atraso. Converse com o pediatra ${de} ${babyName} para colocar o calendário em dia.`
+              : `Esta vacina já passou da data recomendada para ${babyName}. Converse com o pediatra ${de} ${babyName} para colocar em dia.`}
           </p>
-          <Subsection label="Protege contra">
-            <p className="font-body text-xs text-on-surface leading-relaxed">
-              {v.protectsAgainst}
-            </p>
-          </Subsection>
-          <Subsection label="Esquema">
-            <p className="font-body text-xs text-on-surface leading-relaxed">
-              {v.doseLabel}
-              {v.totalDoses > 1 ? ` · ${v.totalDoses} doses no total` : ''}
-            </p>
-          </Subsection>
+
+          {data.othersCount > 0 && (
+            <Subsection label="Todas as atrasadas">
+              <ul className="space-y-1">
+                <li className="flex gap-2 items-start">
+                  <span className="text-yellow-400 text-sm leading-tight">•</span>
+                  <span className="font-body text-xs text-on-surface leading-relaxed">
+                    <strong>{v.name}</strong>
+                    {dias > 0 ? ` · há ${dias}d` : ''}
+                  </span>
+                </li>
+                {data.otherNames.map((name, i) => (
+                  <li key={i} className="flex gap-2 items-start">
+                    <span className="text-yellow-400 text-sm leading-tight">•</span>
+                    <span className="font-body text-xs text-on-surface leading-relaxed">
+                      {name}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </Subsection>
+          )}
+
+          {data.othersCount === 0 && (
+            <>
+              <Subsection label="Protege contra">
+                <p className="font-body text-xs text-on-surface leading-relaxed">
+                  {v.protectsAgainst}
+                </p>
+              </Subsection>
+              <Subsection label="Esquema">
+                <p className="font-body text-xs text-on-surface leading-relaxed">
+                  {v.doseLabel}
+                  {v.totalDoses > 1 ? ` · ${v.totalDoses} doses no total` : ''}
+                </p>
+              </Subsection>
+            </>
+          )}
+
           <div className="mt-3 p-3 rounded-md bg-yellow-500/5 border border-yellow-500/20">
             <p className="font-label text-[10px] font-bold uppercase tracking-wider text-yellow-400 mb-1">
               Importante
@@ -294,34 +327,66 @@ function renderContent({
   if (data.type === 'vaccine_upcoming') {
     const v = data.vaccine
     const dias = data.daysUntil
-    const subheading =
+    const total = 1 + data.othersCount
+    const singleSub =
       dias <= 0
         ? 'Já pode tomar'
         : dias === 1
           ? 'Em 1 dia'
           : `Em ${dias} dias`
     return {
-      heading: v.name,
-      subheading,
+      heading:
+        total > 1 ? `${total} vacinas chegando` : v.name,
+      subheading:
+        total > 1 ? `${v.name} e mais ${data.othersCount}` : singleSub,
       seeMoreLabel: 'Ver caderneta',
       body: (
         <>
           <p className="font-body text-sm text-on-surface-variant leading-relaxed mb-3">
-            {dias <= 0
-              ? `${babyName} já pode tomar esta vacina. Agende com o pediatra quando puder.`
-              : `${babyName} poderá tomar esta vacina em breve. Fique de olho na agenda do pediatra.`}
+            {total > 1
+              ? `${babyName} tem ${total} vacinas chegando nos próximos dias. Veja a caderneta para planejar com o pediatra.`
+              : dias <= 0
+                ? `${babyName} já pode tomar esta vacina. Agende com o pediatra quando puder.`
+                : `${babyName} poderá tomar esta vacina em breve. Fique de olho na agenda do pediatra.`}
           </p>
-          <Subsection label="Protege contra">
-            <p className="font-body text-xs text-on-surface leading-relaxed">
-              {v.protectsAgainst}
-            </p>
-          </Subsection>
-          <Subsection label="Esquema">
-            <p className="font-body text-xs text-on-surface leading-relaxed">
-              {v.doseLabel}
-              {v.totalDoses > 1 ? ` · ${v.totalDoses} doses no total` : ''}
-            </p>
-          </Subsection>
+
+          {data.othersCount > 0 && (
+            <Subsection label="Todas as próximas">
+              <ul className="space-y-1">
+                <li className="flex gap-2 items-start">
+                  <span className="text-primary text-sm leading-tight">•</span>
+                  <span className="font-body text-xs text-on-surface leading-relaxed">
+                    <strong>{v.name}</strong> · {singleSub}
+                  </span>
+                </li>
+                {data.otherNames.map((name, i) => (
+                  <li key={i} className="flex gap-2 items-start">
+                    <span className="text-primary text-sm leading-tight">•</span>
+                    <span className="font-body text-xs text-on-surface leading-relaxed">
+                      {name}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </Subsection>
+          )}
+
+          {data.othersCount === 0 && (
+            <>
+              <Subsection label="Protege contra">
+                <p className="font-body text-xs text-on-surface leading-relaxed">
+                  {v.protectsAgainst}
+                </p>
+              </Subsection>
+              <Subsection label="Esquema">
+                <p className="font-body text-xs text-on-surface leading-relaxed">
+                  {v.doseLabel}
+                  {v.totalDoses > 1 ? ` · ${v.totalDoses} doses no total` : ''}
+                </p>
+              </Subsection>
+            </>
+          )}
+
           <div className="mt-3 p-3 rounded-md bg-primary/5 border border-primary/15">
             <p className="font-label text-[10px] font-bold uppercase tracking-wider text-primary mb-1">
               {v.source === 'PNI' ? 'SUS' : 'Particular'}

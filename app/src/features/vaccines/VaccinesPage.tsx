@@ -11,7 +11,8 @@ import {
   type VaccineStatus,
 } from './vaccineData'
 import { contractionDe } from '../../lib/genderUtils'
-import { hapticLight } from '../../lib/haptics'
+import { hapticLight, hapticSuccess } from '../../lib/haptics'
+import { getLocalDateString } from '../../lib/formatters'
 import { PaywallModal } from '../../components/ui/PaywallModal'
 import Toast from '../../components/ui/Toast'
 import VaccineRow from './components/VaccineRow'
@@ -98,8 +99,31 @@ export default function VaccinesPage() {
       setShowPaywall(true)
       return
     }
-    setApplySheetFor(selected)
+    // Fecha o detail sheet primeiro, depois abre o apply sheet em um novo
+    // tick. Isso evita o conflito do `useSheetBackClose` — quando dois
+    // sheets se trocam no mesmo ciclo de render, o `history.back()` do
+    // cleanup do detail sheet dispara um popstate que o listener do apply
+    // sheet (recém montado) captura e fecha tudo.
+    const v = selected
     setSelected(null)
+    setTimeout(() => setApplySheetFor(v), 0)
+  }
+
+  /**
+   * Quick apply: aplica a vacina direto com a data de hoje, sem abrir
+   * qualquer sheet. Chamado pelo botão ✓ na linha (can_take / overdue).
+   */
+  const handleQuickApply = async (vaccine: Vaccine) => {
+    if (!isPremium) {
+      setShowPaywall(true)
+      return
+    }
+    const today = getLocalDateString(new Date())
+    const result = await applyVaccine(vaccine.code, { date: today }, user?.id)
+    if (result.ok) {
+      hapticSuccess()
+      setToast(`${vaccine.name} marcada como aplicada hoje`)
+    }
   }
 
   const handleSkip = async () => {
@@ -242,6 +266,7 @@ export default function VaccinesPage() {
                     status={status}
                     appliedAt={record?.appliedAt}
                     onTap={() => handleRowTap(v)}
+                    onQuickApply={() => handleQuickApply(v)}
                   />
                 )
               })}

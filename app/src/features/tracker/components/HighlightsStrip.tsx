@@ -13,9 +13,9 @@ interface Props {
 }
 
 /** Quando há mais destaques que isto, o strip vira marquee (auto-scroll). */
-const MARQUEE_THRESHOLD = 2
+const MARQUEE_THRESHOLD = 1
 /** Pixels por segundo de auto-scroll. */
-const MARQUEE_SPEED_PX_PER_SEC = 18
+const MARQUEE_SPEED_PX_PER_SEC = 28
 /** Tempo ocioso (ms) antes de retomar o auto-scroll após o usuário interagir. */
 const RESUME_IDLE_MS = 2500
 
@@ -53,16 +53,28 @@ export default function HighlightsStrip({ highlights, babyName, babyGender, birt
     let lastTs = performance.now()
     let paused = false
     let resumeTimer: ReturnType<typeof setTimeout> | null = null
+    /**
+     * Acumulador fracionário. Em alguns browsers/WebViews, `scrollLeft` só
+     * aceita valores inteiros — atribuir 0.3 vira 0 e o marquee fica eternamente
+     * parado no 0. Acumulamos os px por fora e só atribuímos quando cruzamos
+     * um inteiro.
+     */
+    let scrollAccum = 0
 
     const step = (now: number) => {
       const dt = (now - lastTs) / 1000
       lastTs = now
       if (!paused) {
-        el.scrollLeft += MARQUEE_SPEED_PX_PER_SEC * dt
-        // Loop seamless: quando passamos metade do conteúdo duplicado, volta
-        const half = el.scrollWidth / 2
-        if (el.scrollLeft >= half) {
-          el.scrollLeft -= half
+        scrollAccum += MARQUEE_SPEED_PX_PER_SEC * dt
+        if (scrollAccum >= 1) {
+          const delta = Math.floor(scrollAccum)
+          scrollAccum -= delta
+          el.scrollLeft += delta
+          // Loop seamless: quando passamos metade do conteúdo duplicado, volta
+          const half = el.scrollWidth / 2
+          if (half > 0 && el.scrollLeft >= half) {
+            el.scrollLeft -= half
+          }
         }
       }
       rafId = requestAnimationFrame(step)

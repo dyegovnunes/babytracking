@@ -49,8 +49,22 @@ export interface Highlight {
     | { type: 'leap_active'; leap: DevelopmentLeap; birthDate: string }
     | { type: 'leap_upcoming'; leap: DevelopmentLeap; weeksUntil: number; birthDate: string }
     | { type: 'milestone'; milestone: Milestone }
-    | { type: 'vaccine_overdue'; vaccine: Vaccine; overdueBy: number }
-    | { type: 'vaccine_upcoming'; vaccine: Vaccine; daysUntil: number }
+    | {
+        type: 'vaccine_overdue'
+        vaccine: Vaccine
+        overdueBy: number
+        /** Total de OUTRAS vacinas atrasadas além dessa (ex: +2) */
+        othersCount: number
+        /** Nomes das outras (para o sheet listar) */
+        otherNames: string[]
+      }
+    | {
+        type: 'vaccine_upcoming'
+        vaccine: Vaccine
+        daysUntil: number
+        othersCount: number
+        otherNames: string[]
+      }
 }
 
 // ---------- Dismissal (localStorage) ----------
@@ -221,62 +235,93 @@ function pickVaccineHighlight(opts: {
   const { vaccines, vaccineStatus, ageDays } = opts
   if (!vaccines || !vaccineStatus) return null
 
-  // ---------- Overdue: pega a mais vencida (overdueBy maior) ----------
-  let overdueBest: { vaccine: Vaccine; overdueBy: number } | null = null
+  // ---------- Overdue ----------
+  // Coleta TODAS as atrasadas (qualquer source, qualquer mandatory).
+  // Escolhe a "principal" (preferencialmente mandatória, depois a mais vencida).
+  // O resto vira +X no título.
+  const allOverdue: Array<{ vaccine: Vaccine; overdueBy: number }> = []
   for (const v of vaccines) {
-    if (!v.isMandatory) continue
     if (vaccineStatus.get(v.code) !== 'overdue') continue
-    const overdueBy = ageDays - v.recommendedAgeDays
-    if (!overdueBest || overdueBy > overdueBest.overdueBy) {
-      overdueBest = { vaccine: v, overdueBy }
-    }
+    allOverdue.push({ vaccine: v, overdueBy: ageDays - v.recommendedAgeDays })
   }
-  if (overdueBest) {
+  if (allOverdue.length > 0) {
+    // Prioridade: mandatória primeiro; dentro disso, mais vencida primeiro
+    allOverdue.sort((a, b) => {
+      if (a.vaccine.isMandatory !== b.vaccine.isMandatory) {
+        return a.vaccine.isMandatory ? -1 : 1
+      }
+      return b.overdueBy - a.overdueBy
+    })
+    const main = allOverdue[0]
+    const others = allOverdue.slice(1)
+    const title =
+      others.length > 0
+        ? `${main.vaccine.name} +${others.length}`
+        : main.vaccine.name
     const h: Highlight = {
-      id: `overdue_${overdueBest.vaccine.code}`,
+      id: `overdue_${main.vaccine.code}`,
       type: 'vaccine_overdue',
       emoji: '💉',
-      kicker: 'VACINA ATRASADA',
-      title: overdueBest.vaccine.name,
+      kicker:
+        allOverdue.length === 1
+          ? 'VACINA ATRASADA'
+          : `${allOverdue.length} ATRASADAS`,
+      title,
       accent: 'warning',
       dismissDays: 3,
       data: {
         type: 'vaccine_overdue',
-        vaccine: overdueBest.vaccine,
-        overdueBy: overdueBest.overdueBy,
+        vaccine: main.vaccine,
+        overdueBy: main.overdueBy,
+        othersCount: others.length,
+        otherNames: others.map((o) => o.vaccine.name),
       },
     }
     if (!isDismissed(h, h.dismissDays)) return h
   }
 
-  // ---------- Upcoming: pega a mais próxima (menor daysUntil ≥ 0) ----------
-  let upcomingBest: { vaccine: Vaccine; daysUntil: number } | null = null
+  // ---------- Upcoming ----------
+  // Qualquer vacina com status 'can_take' OU 'future' dentro da janela.
+  const allUpcoming: Array<{ vaccine: Vaccine; daysUntil: number }> = []
   for (const v of vaccines) {
-    if (!v.isMandatory) continue
     const status = vaccineStatus.get(v.code)
-    // "can_take" significa que já passou do dia mas ainda não está overdue — também mostra
-    // "future" só se estiver dentro da janela
     if (status !== 'future' && status !== 'can_take') continue
     const daysUntil = v.recommendedAgeDays - ageDays
     if (daysUntil > VACCINE_UPCOMING_WINDOW) continue
     if (daysUntil < -VACCINE_UPCOMING_WINDOW) continue // sanity
-    if (!upcomingBest || Math.abs(daysUntil) < Math.abs(upcomingBest.daysUntil)) {
-      upcomingBest = { vaccine: v, daysUntil }
-    }
+    allUpcoming.push({ vaccine: v, daysUntil })
   }
-  if (upcomingBest) {
+  if (allUpcoming.length > 0) {
+    // Prioridade: mandatória primeiro; dentro disso, mais próxima (menor |daysUntil|)
+    allUpcoming.sort((a, b) => {
+      if (a.vaccine.isMandatory !== b.vaccine.isMandatory) {
+        return a.vaccine.isMandatory ? -1 : 1
+      }
+      return Math.abs(a.daysUntil) - Math.abs(b.daysUntil)
+    })
+    const main = allUpcoming[0]
+    const others = allUpcoming.slice(1)
+    const title =
+      others.length > 0
+        ? `${main.vaccine.name} +${others.length}`
+        : main.vaccine.name
     const h: Highlight = {
-      id: `upcoming_${upcomingBest.vaccine.code}`,
+      id: `upcoming_${main.vaccine.code}`,
       type: 'vaccine_upcoming',
       emoji: '💉',
-      kicker: 'PRÓXIMA VACINA',
-      title: upcomingBest.vaccine.name,
+      kicker:
+        allUpcoming.length === 1
+          ? 'PRÓXIMA VACINA'
+          : `${allUpcoming.length} PRÓXIMAS`,
+      title,
       accent: 'primary',
       dismissDays: 7,
       data: {
         type: 'vaccine_upcoming',
-        vaccine: upcomingBest.vaccine,
-        daysUntil: upcomingBest.daysUntil,
+        vaccine: main.vaccine,
+        daysUntil: main.daysUntil,
+        othersCount: others.length,
+        otherNames: others.map((o) => o.vaccine.name),
       },
     }
     if (!isDismissed(h, h.dismissDays)) return h

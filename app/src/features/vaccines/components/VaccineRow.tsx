@@ -1,11 +1,13 @@
 import type { Vaccine, VaccineStatus } from '../vaccineData'
-import { hapticLight } from '../../../lib/haptics'
+import { hapticLight, hapticSuccess } from '../../../lib/haptics'
 
 interface Props {
   vaccine: Vaccine
   status: VaccineStatus
   appliedAt?: string | null
   onTap: () => void
+  /** Ação rápida: aplica a vacina com a data de hoje, sem abrir nenhuma sheet. */
+  onQuickApply: () => void
 }
 
 /**
@@ -13,22 +15,46 @@ interface Props {
  * Ícone de status + nome + subtítulo (dose/proteção) + 2 badges:
  *   - SUS / Particular (source)
  *   - Obrigatória / Opcional (isMandatory)
+ *
+ * Tap na linha → abre o detail sheet.
+ * Tap no botão ✓ (lateral direita) → aplica direto com a data de hoje,
+ * sem sheets intermediárias. Só aparece em can_take / overdue.
  */
-export default function VaccineRow({ vaccine, status, appliedAt, onTap }: Props) {
+export default function VaccineRow({
+  vaccine,
+  status,
+  appliedAt,
+  onTap,
+  onQuickApply,
+}: Props) {
   const statusInfo = getStatusInfo(status)
   const isSkipped = status === 'skipped'
   const isDim = status === 'future' || isSkipped
+  const canQuickApply = status === 'can_take' || status === 'overdue'
 
-  const handleClick = () => {
+  const handleRowClick = () => {
     hapticLight()
     onTap()
   }
 
+  const handleQuick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    hapticSuccess()
+    onQuickApply()
+  }
+
   return (
-    <button
-      type="button"
-      onClick={handleClick}
-      className={`w-full flex items-center gap-3 p-3 rounded-md bg-surface-container active:bg-surface-container-high transition-colors text-left ${
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={handleRowClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          handleRowClick()
+        }
+      }}
+      className={`w-full flex items-center gap-3 p-3 rounded-md bg-surface-container active:bg-surface-container-high transition-colors text-left cursor-pointer ${
         isSkipped ? 'opacity-60' : ''
       }`}
     >
@@ -82,7 +108,24 @@ export default function VaccineRow({ vaccine, status, appliedAt, onTap }: Props)
           {vaccine.isMandatory ? 'Obrigatória' : 'Opcional'}
         </span>
       </div>
-    </button>
+
+      {/* Quick apply button — só em can_take / overdue */}
+      {canQuickApply && (
+        <button
+          type="button"
+          onClick={handleQuick}
+          aria-label={`Marcar ${vaccine.name} como aplicada hoje`}
+          className="w-10 h-10 rounded-full bg-primary/15 text-primary flex items-center justify-center shrink-0 active:bg-primary/25 transition-colors"
+        >
+          <span
+            className="material-symbols-outlined text-xl"
+            style={{ fontVariationSettings: "'FILL' 1" }}
+          >
+            check
+          </span>
+        </button>
+      )}
+    </div>
   )
 }
 
