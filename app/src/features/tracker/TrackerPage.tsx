@@ -20,6 +20,7 @@ import { collectHighlights } from './highlights'
 import { AdBanner } from '../../components/ui/AdBanner'
 import { getAgeBand, getHighlightedEvents } from '../../lib/ageUtils'
 import { useMilestones } from '../milestones'
+import { useVaccines, VACCINES } from '../vaccines'
 
 import { TrackerSkeleton } from '../../components/ui/Skeleton'
 import type { LogEntry } from '../../types'
@@ -35,7 +36,13 @@ export default function TrackerPage() {
   // Milestones (home card)
   const { achievedCodes, ageDays } = useMilestones(baby?.id, baby?.birthDate)
 
-  // Highlights strip (saltos + marcos + futuro: vacinas/remédios)
+  // Vacinas — só para alimentar os highlights
+  const { statusByCode: vaccineStatusByCode } = useVaccines(
+    baby?.id,
+    baby?.birthDate,
+  )
+
+  // Highlights strip (saltos + marcos + vacinas)
   const [highlightsTick, setHighlightsTick] = useState(0)
   const highlights = useMemo(
     () =>
@@ -43,9 +50,17 @@ export default function TrackerPage() {
         birthDate: baby?.birthDate,
         achievedCodes,
         ageDays,
+        vaccines: VACCINES,
+        vaccineStatus: vaccineStatusByCode,
         reactivityTick: highlightsTick,
       }),
-    [baby?.birthDate, achievedCodes, ageDays, highlightsTick],
+    [
+      baby?.birthDate,
+      achievedCodes,
+      ageDays,
+      vaccineStatusByCode,
+      highlightsTick,
+    ],
   )
 
   const [bottleModalOpen, setBottleModalOpen] = useState(false)

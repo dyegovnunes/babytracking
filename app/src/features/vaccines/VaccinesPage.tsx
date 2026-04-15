@@ -36,10 +36,12 @@ export default function VaccinesPage() {
   const { user } = useAuth()
   const { isPremium } = usePremium()
   const {
-    applied,
+    records,
     statusByCode,
     counts,
     applyVaccine,
+    skipVaccine,
+    clearRecord,
     loading,
   } = useVaccines(baby?.id, baby?.birthDate)
 
@@ -49,7 +51,8 @@ export default function VaccinesPage() {
   const [showPaywall, setShowPaywall] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
 
-  // Filtra vacinas segundo o chip ativo
+  // Filtra vacinas segundo o chip ativo.
+  // Vacinas "skipped" só aparecem na aba "Todas" (e ainda assim no final).
   const filtered = useMemo(() => {
     if (filter === 'all') return VACCINES
     return VACCINES.filter((v) => statusByCode.get(v.code) === filter)
@@ -57,12 +60,12 @@ export default function VaccinesPage() {
 
   const grouped = useMemo(() => groupVaccinesByAge(filtered), [filtered])
 
-  // Mapa rápido para achar registro aplicado (para mostrar data na row e no detail)
-  const appliedByCode = useMemo(() => {
-    const map = new Map<string, (typeof applied)[number]>()
-    for (const a of applied) map.set(a.vaccineCode, a)
+  // Mapa rápido para achar registro (applied ou skipped) pela row/detail
+  const recordByCode = useMemo(() => {
+    const map = new Map<string, (typeof records)[number]>()
+    for (const r of records) map.set(r.vaccineCode, r)
     return map
-  }, [applied])
+  }, [records])
 
   if (!baby) {
     return (
@@ -97,6 +100,31 @@ export default function VaccinesPage() {
     }
     setApplySheetFor(selected)
     setSelected(null)
+  }
+
+  const handleSkip = async () => {
+    if (!selected) return
+    if (!isPremium) {
+      setSelected(null)
+      setShowPaywall(true)
+      return
+    }
+    const name = selected.name
+    const result = await skipVaccine(selected.code, user?.id)
+    setSelected(null)
+    if (result.ok) {
+      setToast(`${name} marcada como "não será aplicada"`)
+    }
+  }
+
+  const handleReconsider = async () => {
+    if (!selected) return
+    const name = selected.name
+    const ok = await clearRecord(selected.code)
+    setSelected(null)
+    if (ok) {
+      setToast(`Registro de ${name} removido`)
+    }
   }
 
   return (
@@ -154,13 +182,15 @@ export default function VaccinesPage() {
               }}
             />
           </div>
-          {(counts.overdue > 0 || counts.canTake > 0) && (
+          {(counts.overdue > 0 || counts.canTake > 0 || counts.skipped > 0) && (
             <p className="font-label text-[11px] text-on-surface-variant mt-2">
               {counts.overdue > 0 &&
                 `${counts.overdue} ${counts.overdue === 1 ? 'atrasada' : 'atrasadas'}`}
               {counts.overdue > 0 && counts.canTake > 0 && ' · '}
               {counts.canTake > 0 &&
                 `${counts.canTake} ${counts.canTake === 1 ? 'pode tomar' : 'podem tomar'}`}
+              {(counts.overdue > 0 || counts.canTake > 0) && counts.skipped > 0 && ' · '}
+              {counts.skipped > 0 && `${counts.skipped} dispensadas`}
             </p>
           )}
         </div>
@@ -204,13 +234,13 @@ export default function VaccinesPage() {
             <div className="space-y-2">
               {group.vaccines.map((v) => {
                 const status: VaccineStatus = statusByCode.get(v.code) ?? 'future'
-                const appliedRecord = appliedByCode.get(v.code)
+                const record = recordByCode.get(v.code)
                 return (
                   <VaccineRow
                     key={v.code}
                     vaccine={v}
                     status={status}
-                    appliedAt={appliedRecord?.appliedAt}
+                    appliedAt={record?.appliedAt}
                     onTap={() => handleRowTap(v)}
                   />
                 )
@@ -252,10 +282,12 @@ export default function VaccinesPage() {
         <VaccineDetailSheet
           vaccine={selected}
           status={statusByCode.get(selected.code) ?? 'future'}
-          applied={appliedByCode.get(selected.code)}
+          record={recordByCode.get(selected.code)}
           isPremium={isPremium}
           onClose={() => setSelected(null)}
           onMarkApplied={handleMarkApplied}
+          onSkip={handleSkip}
+          onReconsider={handleReconsider}
         />
       )}
 

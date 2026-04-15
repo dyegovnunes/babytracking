@@ -61,6 +61,14 @@ export default function HighlightSheet({
       onNavigated()
       return
     }
+    if (
+      highlight.data.type === 'vaccine_overdue' ||
+      highlight.data.type === 'vaccine_upcoming'
+    ) {
+      navigate('/vacinas')
+      onNavigated()
+      return
+    }
     if (highlight.data.type === 'leap_active' || highlight.data.type === 'leap_upcoming') {
       // Até existir uma página dedicada de saltos, abrimos a página de perfil
       // onde a seção de saltos deve viver. Por enquanto, fallback para a própria
@@ -234,6 +242,98 @@ function renderContent({
               ))}
             </ul>
           </Subsection>
+        </>
+      ),
+    }
+  }
+
+  // ---------- VACCINE OVERDUE ----------
+  if (data.type === 'vaccine_overdue') {
+    const v = data.vaccine
+    const de = contractionDe(babyGender)
+    const dias = data.overdueBy
+    return {
+      heading: v.name,
+      subheading:
+        dias > 0
+          ? `Atrasada há ${dias} ${dias === 1 ? 'dia' : 'dias'}`
+          : 'Atrasada',
+      seeMoreLabel: 'Ver caderneta',
+      body: (
+        <>
+          <p className="font-body text-sm text-on-surface-variant leading-relaxed mb-3">
+            Esta vacina já passou da data recomendada para {babyName}. Converse
+            com o pediatra {de} {babyName} para colocar em dia.
+          </p>
+          <Subsection label="Protege contra">
+            <p className="font-body text-xs text-on-surface leading-relaxed">
+              {v.protectsAgainst}
+            </p>
+          </Subsection>
+          <Subsection label="Esquema">
+            <p className="font-body text-xs text-on-surface leading-relaxed">
+              {v.doseLabel}
+              {v.totalDoses > 1 ? ` · ${v.totalDoses} doses no total` : ''}
+            </p>
+          </Subsection>
+          <div className="mt-3 p-3 rounded-md bg-yellow-500/5 border border-yellow-500/20">
+            <p className="font-label text-[10px] font-bold uppercase tracking-wider text-yellow-400 mb-1">
+              Importante
+            </p>
+            <p className="font-body text-xs text-on-surface-variant leading-relaxed">
+              Atraso na vacinação não significa recomeçar o esquema — o
+              pediatra vai te orientar sobre como seguir.
+            </p>
+          </div>
+        </>
+      ),
+    }
+  }
+
+  // ---------- VACCINE UPCOMING ----------
+  if (data.type === 'vaccine_upcoming') {
+    const v = data.vaccine
+    const dias = data.daysUntil
+    const subheading =
+      dias <= 0
+        ? 'Já pode tomar'
+        : dias === 1
+          ? 'Em 1 dia'
+          : `Em ${dias} dias`
+    return {
+      heading: v.name,
+      subheading,
+      seeMoreLabel: 'Ver caderneta',
+      body: (
+        <>
+          <p className="font-body text-sm text-on-surface-variant leading-relaxed mb-3">
+            {dias <= 0
+              ? `${babyName} já pode tomar esta vacina. Agende com o pediatra quando puder.`
+              : `${babyName} poderá tomar esta vacina em breve. Fique de olho na agenda do pediatra.`}
+          </p>
+          <Subsection label="Protege contra">
+            <p className="font-body text-xs text-on-surface leading-relaxed">
+              {v.protectsAgainst}
+            </p>
+          </Subsection>
+          <Subsection label="Esquema">
+            <p className="font-body text-xs text-on-surface leading-relaxed">
+              {v.doseLabel}
+              {v.totalDoses > 1 ? ` · ${v.totalDoses} doses no total` : ''}
+            </p>
+          </Subsection>
+          <div className="mt-3 p-3 rounded-md bg-primary/5 border border-primary/15">
+            <p className="font-label text-[10px] font-bold uppercase tracking-wider text-primary mb-1">
+              {v.source === 'PNI' ? 'SUS' : 'Particular'}
+              {' · '}
+              {v.isMandatory ? 'Obrigatória' : 'Opcional'}
+            </p>
+            <p className="font-body text-xs text-on-surface-variant leading-relaxed">
+              {v.source === 'PNI'
+                ? 'Disponível gratuitamente nas UBS do SUS.'
+                : 'Disponível em clínicas particulares. Consulte seu pediatra.'}
+            </p>
+          </div>
         </>
       ),
     }

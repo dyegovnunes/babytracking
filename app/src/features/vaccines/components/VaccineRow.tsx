@@ -4,18 +4,20 @@ import { hapticLight } from '../../../lib/haptics'
 interface Props {
   vaccine: Vaccine
   status: VaccineStatus
-  appliedAt?: string
+  appliedAt?: string | null
   onTap: () => void
 }
 
 /**
  * Linha individual de uma vacina.
- * Mostra ícone de status + nome + subtítulo (dose/proteção) + tag SUS/Particular.
- * Cores seguem o spec: applied=success, can_take=primary, overdue=warning (laranja),
- * future=on-surface-variant/50, SBP=tertiary (badge lateral).
+ * Ícone de status + nome + subtítulo (dose/proteção) + 2 badges:
+ *   - SUS / Particular (source)
+ *   - Obrigatória / Opcional (isMandatory)
  */
 export default function VaccineRow({ vaccine, status, appliedAt, onTap }: Props) {
   const statusInfo = getStatusInfo(status)
+  const isSkipped = status === 'skipped'
+  const isDim = status === 'future' || isSkipped
 
   const handleClick = () => {
     hapticLight()
@@ -26,7 +28,9 @@ export default function VaccineRow({ vaccine, status, appliedAt, onTap }: Props)
     <button
       type="button"
       onClick={handleClick}
-      className="w-full flex items-center gap-3 p-3 rounded-md bg-surface-container active:bg-surface-container-high transition-colors text-left"
+      className={`w-full flex items-center gap-3 p-3 rounded-md bg-surface-container active:bg-surface-container-high transition-colors text-left ${
+        isSkipped ? 'opacity-60' : ''
+      }`}
     >
       {/* Ícone de status */}
       <div
@@ -42,15 +46,13 @@ export default function VaccineRow({ vaccine, status, appliedAt, onTap }: Props)
 
       {/* Info */}
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-0.5">
-          <h3
-            className={`font-headline text-sm font-bold leading-tight truncate ${
-              status === 'future' ? 'text-on-surface-variant' : 'text-on-surface'
-            }`}
-          >
-            {vaccine.name}
-          </h3>
-        </div>
+        <h3
+          className={`font-headline text-sm font-bold leading-tight truncate mb-0.5 ${
+            isDim ? 'text-on-surface-variant' : 'text-on-surface'
+          } ${isSkipped ? 'line-through decoration-on-surface-variant/60' : ''}`}
+        >
+          {vaccine.name}
+        </h3>
         <p className="font-label text-[11px] text-on-surface-variant truncate">
           {vaccine.doseLabel}
           {status === 'applied' && appliedAt
@@ -59,16 +61,27 @@ export default function VaccineRow({ vaccine, status, appliedAt, onTap }: Props)
         </p>
       </div>
 
-      {/* Tag SUS / Particular */}
-      <span
-        className={`font-label text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full shrink-0 ${
-          vaccine.source === 'PNI'
-            ? 'bg-primary/10 text-primary'
-            : 'bg-tertiary/10 text-tertiary'
-        }`}
-      >
-        {vaccine.source === 'PNI' ? 'SUS' : 'Particular'}
-      </span>
+      {/* Badges */}
+      <div className="flex flex-col gap-1 items-end shrink-0">
+        <span
+          className={`font-label text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+            vaccine.source === 'PNI'
+              ? 'bg-primary/10 text-primary'
+              : 'bg-tertiary/10 text-tertiary'
+          }`}
+        >
+          {vaccine.source === 'PNI' ? 'SUS' : 'Particular'}
+        </span>
+        <span
+          className={`font-label text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+            vaccine.isMandatory
+              ? 'bg-on-surface/10 text-on-surface'
+              : 'bg-on-surface-variant/10 text-on-surface-variant'
+          }`}
+        >
+          {vaccine.isMandatory ? 'Obrigatória' : 'Opcional'}
+        </span>
+      </div>
     </button>
   )
 }
@@ -90,6 +103,13 @@ function getStatusInfo(status: VaccineStatus): StatusVisual {
         iconBg: 'bg-green-500/10',
         iconColor: 'text-green-400',
         label: 'Aplicada',
+      }
+    case 'skipped':
+      return {
+        icon: 'do_not_disturb_on',
+        iconBg: 'bg-surface-container-high',
+        iconColor: 'text-on-surface-variant/60',
+        label: 'Não será aplicada',
       }
     case 'can_take':
       return {
@@ -117,7 +137,6 @@ function getStatusInfo(status: VaccineStatus): StatusVisual {
 }
 
 function formatAppliedDate(iso: string): string {
-  // iso = 'YYYY-MM-DD' → 'DD/MM/YYYY' (sem timezone surprise)
   const [y, m, d] = iso.split('-')
   if (!y || !m || !d) return iso
   return `${d}/${m}/${y}`

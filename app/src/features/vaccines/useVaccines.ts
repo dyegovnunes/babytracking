@@ -5,6 +5,7 @@ import {
   VACCINES,
   getVaccineStatus,
   type BabyVaccine,
+  type BabyVaccineStatus,
   type Vaccine,
   type VaccineStatus,
 } from './vaccineData'
@@ -13,7 +14,8 @@ interface BabyVaccineRow {
   id: string
   baby_id: string
   vaccine_id: string
-  applied_at: string
+  applied_at: string | null
+  status: BabyVaccineStatus
   location: string | null
   batch_number: string | null
   recorded_by: string | null
@@ -30,6 +32,7 @@ function mapRow(row: BabyVaccineRow): BabyVaccine {
     vaccineId: row.vaccine_id,
     vaccineCode: code,
     appliedAt: row.applied_at,
+    status: row.status,
     location: row.location,
     batchNumber: row.batch_number,
     recordedBy: row.recorded_by,
@@ -45,7 +48,6 @@ export interface ApplyVaccineInput {
 
 export interface ApplyVaccineResult {
   ok: boolean
-  /** Erro amigável para exibir no UI quando `ok=false`. */
   error?: 'not_premium' | 'no_baby' | 'not_found' | 'db_error'
 }
 
@@ -53,7 +55,7 @@ export function useVaccines(
   babyId: string | undefined,
   birthDate: string | undefined,
 ) {
-  const [applied, setApplied] = useState<BabyVaccine[]>([])
+  const [records, setRecords] = useState<BabyVaccine[]>([])
   const [loading, setLoading] = useState(true)
   const { isPremium } = usePremium()
 
@@ -64,7 +66,7 @@ export function useVaccines(
 
   useEffect(() => {
     if (!babyId) {
-      setApplied([])
+      setRecords([])
       setLoading(false)
       return
     }
@@ -73,14 +75,14 @@ export function useVaccines(
     supabase
       .from('baby_vaccines')
       .select(
-        'id, baby_id, vaccine_id, applied_at, location, batch_number, recorded_by, created_at, vaccines(code)',
+        'id, baby_id, vaccine_id, applied_at, status, location, batch_number, recorded_by, created_at, vaccines(code)',
       )
       .eq('baby_id', babyId)
-      .order('applied_at', { ascending: true })
+      .order('created_at', { ascending: true })
       .then(({ data, error }) => {
         if (cancelled) return
         if (!error && data) {
-          setApplied((data as unknown as BabyVaccineRow[]).map(mapRow))
+          setRecords((data as unknown as BabyVaccineRow[]).map(mapRow))
         }
         setLoading(false)
       })
@@ -90,43 +92,71 @@ export function useVaccines(
   }, [babyId])
 
   const appliedCodes = useMemo(
-    () => new Set(applied.map((a) => a.vaccineCode)),
-    [applied],
+    () =>
+      new Set(
+        records.filter((r) => r.status === 'applied').map((r) => r.vaccineCode),
+      ),
+    [records],
   )
 
-  /**
-   * Tabela de status por código, calculada uma vez por ciclo.
-   * Usado para contar atrasadas, filtrar, e colorir a lista sem refazer
-   * a conta em cada VaccineRow.
-   */
+  const skippedCodes = useMemo(
+    () =>
+      new Set(
+        records.filter((r) => r.status === 'skipped').map((r) => r.vaccineCode),
+      ),
+    [records],
+  )
+
+  /** Tabela de status por código, calculada uma vez por ciclo. */
   const statusByCode = useMemo(() => {
     const map = new Map<string, VaccineStatus>()
     for (const v of VACCINES) {
       map.set(
         v.code,
-        getVaccineStatus(ageDays, v.recommendedAgeDays, appliedCodes.has(v.code)),
+        getVaccineStatus(ageDays, v.recommendedAgeDays, {
+          applied: appliedCodes.has(v.code),
+          skipped: skippedCodes.has(v.code),
+        }),
       )
     }
     return map
-  }, [ageDays, appliedCodes])
+  }, [ageDays, appliedCodes, skippedCodes])
 
-  /**
-   * Contagens úteis para o subtítulo do botão na ProfilePage.
-   */
   const counts = useMemo(() => {
     let overdue = 0
     let canTake = 0
     let appliedN = 0
+    let skippedN = 0
     let future = 0
     for (const status of statusByCode.values()) {
       if (status === 'overdue') overdue++
       else if (status === 'can_take') canTake++
       else if (status === 'applied') appliedN++
+      else if (status === 'skipped') skippedN++
       else future++
     }
-    return { overdue, canTake, applied: appliedN, future, total: VACCINES.length }
+    return {
+      overdue,
+      canTake,
+      applied: appliedN,
+      skipped: skippedN,
+      future,
+      total: VACCINES.length,
+    }
   }, [statusByCode])
 
+  /** Resolve vaccine UUID via tabela de referência (uma query por código). */
+  const resolveVaccineId = useCallback(async (code: string) => {
+    const { data, error } = await supabase
+      .from('vaccines')
+      .select('id')
+      .eq('code', code)
+      .single()
+    if (error || !data) return null
+    return data.id as string
+  }, [])
+
+  /** Upsert aplicado: insere novo ou atualiza se existir registro `skipped`. */
   const applyVaccine = useCallback(
     async (
       code: string,
@@ -136,27 +166,25 @@ export function useVaccines(
       if (!isPremium) return { ok: false, error: 'not_premium' }
       if (!babyId) return { ok: false, error: 'no_baby' }
 
-      // Resolve vaccine id pelo code (tabela de referência)
-      const { data: vData, error: vErr } = await supabase
-        .from('vaccines')
-        .select('id')
-        .eq('code', code)
-        .single()
-
-      if (vErr || !vData) return { ok: false, error: 'not_found' }
+      const vaccineId = await resolveVaccineId(code)
+      if (!vaccineId) return { ok: false, error: 'not_found' }
 
       const { data, error } = await supabase
         .from('baby_vaccines')
-        .insert({
-          baby_id: babyId,
-          vaccine_id: vData.id,
-          applied_at: input.date,
-          location: input.location?.trim() || null,
-          batch_number: input.batchNumber?.trim() || null,
-          recorded_by: userId || null,
-        })
+        .upsert(
+          {
+            baby_id: babyId,
+            vaccine_id: vaccineId,
+            applied_at: input.date,
+            status: 'applied',
+            location: input.location?.trim() || null,
+            batch_number: input.batchNumber?.trim() || null,
+            recorded_by: userId || null,
+          },
+          { onConflict: 'baby_id,vaccine_id' },
+        )
         .select(
-          'id, baby_id, vaccine_id, applied_at, location, batch_number, recorded_by, created_at',
+          'id, baby_id, vaccine_id, applied_at, status, location, batch_number, recorded_by, created_at',
         )
         .single()
 
@@ -168,28 +196,90 @@ export function useVaccines(
         vaccineId: data.vaccine_id,
         vaccineCode: code,
         appliedAt: data.applied_at,
+        status: 'applied',
         location: data.location,
         batchNumber: data.batch_number,
         recordedBy: data.recorded_by,
         createdAt: data.created_at,
       }
 
-      setApplied((prev) =>
-        [...prev, newEntry].sort((a, b) => a.appliedAt.localeCompare(b.appliedAt)),
-      )
+      setRecords((prev) => {
+        const filtered = prev.filter((r) => r.vaccineCode !== code)
+        return [...filtered, newEntry]
+      })
       return { ok: true }
     },
-    [babyId, isPremium],
+    [babyId, isPremium, resolveVaccineId],
   )
 
-  const deleteApplied = useCallback(async (id: string) => {
-    const { error } = await supabase.from('baby_vaccines').delete().eq('id', id)
-    if (!error) {
-      setApplied((prev) => prev.filter((a) => a.id !== id))
+  /** Marca uma vacina como "não vou aplicar" (ex: SBP opcional). */
+  const skipVaccine = useCallback(
+    async (code: string, userId?: string): Promise<ApplyVaccineResult> => {
+      if (!isPremium) return { ok: false, error: 'not_premium' }
+      if (!babyId) return { ok: false, error: 'no_baby' }
+
+      const vaccineId = await resolveVaccineId(code)
+      if (!vaccineId) return { ok: false, error: 'not_found' }
+
+      const { data, error } = await supabase
+        .from('baby_vaccines')
+        .upsert(
+          {
+            baby_id: babyId,
+            vaccine_id: vaccineId,
+            applied_at: null,
+            status: 'skipped',
+            location: null,
+            batch_number: null,
+            recorded_by: userId || null,
+          },
+          { onConflict: 'baby_id,vaccine_id' },
+        )
+        .select(
+          'id, baby_id, vaccine_id, applied_at, status, location, batch_number, recorded_by, created_at',
+        )
+        .single()
+
+      if (error || !data) return { ok: false, error: 'db_error' }
+
+      const newEntry: BabyVaccine = {
+        id: data.id,
+        babyId: data.baby_id,
+        vaccineId: data.vaccine_id,
+        vaccineCode: code,
+        appliedAt: data.applied_at,
+        status: 'skipped',
+        location: null,
+        batchNumber: null,
+        recordedBy: data.recorded_by,
+        createdAt: data.created_at,
+      }
+
+      setRecords((prev) => {
+        const filtered = prev.filter((r) => r.vaccineCode !== code)
+        return [...filtered, newEntry]
+      })
+      return { ok: true }
+    },
+    [babyId, isPremium, resolveVaccineId],
+  )
+
+  /** Remove qualquer marcação (applied ou skipped) — usuário mudou de ideia. */
+  const clearRecord = useCallback(
+    async (code: string): Promise<boolean> => {
+      if (!babyId) return false
+      const existing = records.find((r) => r.vaccineCode === code)
+      if (!existing) return true // já não tinha
+      const { error } = await supabase
+        .from('baby_vaccines')
+        .delete()
+        .eq('id', existing.id)
+      if (error) return false
+      setRecords((prev) => prev.filter((r) => r.vaccineCode !== code))
       return true
-    }
-    return false
-  }, [])
+    },
+    [babyId, records],
+  )
 
   const getStatusFor = useCallback(
     (vaccine: Vaccine): VaccineStatus =>
@@ -199,14 +289,16 @@ export function useVaccines(
 
   return {
     allVaccines: VACCINES,
-    applied,
+    records,
     appliedCodes,
+    skippedCodes,
     statusByCode,
     counts,
     ageDays,
     loading,
     applyVaccine,
-    deleteApplied,
+    skipVaccine,
+    clearRecord,
     getStatusFor,
   }
 }

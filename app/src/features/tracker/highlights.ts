@@ -5,6 +5,7 @@ import {
   MILESTONES,
   getNextMilestoneForHome,
 } from '../milestones'
+import type { Vaccine, VaccineStatus } from '../vaccines'
 
 /**
  * Sistema de "Destaques da Home" (Highlights).
@@ -19,7 +20,12 @@ import {
  * um novo tipo e adicioná-lo em `collectHighlights`.
  */
 
-export type HighlightType = 'leap_active' | 'leap_upcoming' | 'milestone'
+export type HighlightType =
+  | 'leap_active'
+  | 'leap_upcoming'
+  | 'milestone'
+  | 'vaccine_overdue'
+  | 'vaccine_upcoming'
 
 export interface Highlight {
   /** ID único estável, usado como chave do chip e do dismissal no localStorage */
@@ -43,6 +49,8 @@ export interface Highlight {
     | { type: 'leap_active'; leap: DevelopmentLeap; birthDate: string }
     | { type: 'leap_upcoming'; leap: DevelopmentLeap; weeksUntil: number; birthDate: string }
     | { type: 'milestone'; milestone: Milestone }
+    | { type: 'vaccine_overdue'; vaccine: Vaccine; overdueBy: number }
+    | { type: 'vaccine_upcoming'; vaccine: Vaccine; daysUntil: number }
 }
 
 // ---------- Dismissal (localStorage) ----------
@@ -56,6 +64,9 @@ function dismissKey(h: Pick<Highlight, 'type' | 'id'>): string {
   }
   if (h.type === 'milestone') {
     return `milestone_dismissed_${h.id}`
+  }
+  if (h.type === 'vaccine_overdue' || h.type === 'vaccine_upcoming') {
+    return `vaccine_highlight_dismissed_${h.id}`
   }
   return `highlight_dismissed_${h.type}_${h.id}`
 }
@@ -87,6 +98,13 @@ interface CollectOpts {
   achievedCodes: Set<string>
   ageDays: number
   /**
+   * Vacinas (opcional — se não passado, ignora esse tipo de destaque).
+   * `vaccines` é a lista completa (VACCINES) e `vaccineStatus` é o Map
+   * código → status calculado em `useVaccines`.
+   */
+  vaccines?: readonly Vaccine[]
+  vaccineStatus?: Map<string, VaccineStatus>
+  /**
    * Tick numérico para forçar o coletor a reavaliar (ex: depois de dispensar).
    * O valor em si não importa, só precisa mudar.
    */
@@ -95,9 +113,16 @@ interface CollectOpts {
 
 /**
  * Retorna a lista de destaques ativos e não-dispensados, ordenados por prioridade.
- * Ordem atual: salto ativo > próximo marco > próximo salto.
+ * Ordem atual: salto ativo > vacina atrasada > próximo marco > vacina próxima > próximo salto.
  */
-export function collectHighlights({ birthDate, achievedCodes, ageDays, reactivityTick }: CollectOpts): Highlight[] {
+export function collectHighlights({
+  birthDate,
+  achievedCodes,
+  ageDays,
+  vaccines,
+  vaccineStatus,
+  reactivityTick,
+}: CollectOpts): Highlight[] {
   void reactivityTick // só pra invalidar memos quando o tick mudar
   if (!birthDate) return []
 
@@ -119,7 +144,17 @@ export function collectHighlights({ birthDate, achievedCodes, ageDays, reactivit
     if (!isDismissed(h, h.dismissDays)) out.push(h)
   }
 
-  // 2. Próximo marco (só se existir e estiver "dentro da janela")
+  // 2. Vacinas — no máximo 1 destaque por ciclo. Prioridade:
+  //    atrasada (mandatória) > próxima (mandatória, dentro de 14 dias)
+  //    Só considera mandatórias para não poluir a home com SBP opcional.
+  const vaccineHighlight = pickVaccineHighlight({
+    vaccines,
+    vaccineStatus,
+    ageDays,
+  })
+  if (vaccineHighlight) out.push(vaccineHighlight)
+
+  // 3. Próximo marco (só se existir e estiver "dentro da janela")
   const nextMilestone = getNextMilestoneForHome(
     achievedCodes,
     ageDays,
@@ -140,7 +175,7 @@ export function collectHighlights({ birthDate, achievedCodes, ageDays, reactivit
     })
   }
 
-  // 3. Salto próximo (só se não tiver ativo e estiver a ≤2 semanas)
+  // 4. Salto próximo (só se não tiver ativo e estiver a ≤2 semanas)
   if (!activeLeap) {
     const upcoming = getUpcomingLeap(birthDate)
     if (upcoming && upcoming.weeksUntil <= 2) {
@@ -164,4 +199,88 @@ export function collectHighlights({ birthDate, achievedCodes, ageDays, reactivit
   }
 
   return out
+}
+
+// ---------- Vaccine picker ----------
+
+/** Janela em dias para considerar uma vacina "upcoming" (próxima). */
+const VACCINE_UPCOMING_WINDOW = 14
+
+/**
+ * Escolhe no máximo 1 destaque de vacina:
+ *   - Prioridade 1: vacina atrasada (mandatória) — a mais antiga/vencida há mais tempo.
+ *   - Prioridade 2: vacina upcoming (mandatória) — a mais próxima dentro de 14 dias.
+ * Só considera mandatórias (PNI), para não encher a home com SBP opcional.
+ * Respeita localStorage de dismissal.
+ */
+function pickVaccineHighlight(opts: {
+  vaccines?: readonly Vaccine[]
+  vaccineStatus?: Map<string, VaccineStatus>
+  ageDays: number
+}): Highlight | null {
+  const { vaccines, vaccineStatus, ageDays } = opts
+  if (!vaccines || !vaccineStatus) return null
+
+  // ---------- Overdue: pega a mais vencida (overdueBy maior) ----------
+  let overdueBest: { vaccine: Vaccine; overdueBy: number } | null = null
+  for (const v of vaccines) {
+    if (!v.isMandatory) continue
+    if (vaccineStatus.get(v.code) !== 'overdue') continue
+    const overdueBy = ageDays - v.recommendedAgeDays
+    if (!overdueBest || overdueBy > overdueBest.overdueBy) {
+      overdueBest = { vaccine: v, overdueBy }
+    }
+  }
+  if (overdueBest) {
+    const h: Highlight = {
+      id: `overdue_${overdueBest.vaccine.code}`,
+      type: 'vaccine_overdue',
+      emoji: '💉',
+      kicker: 'VACINA ATRASADA',
+      title: overdueBest.vaccine.name,
+      accent: 'warning',
+      dismissDays: 3,
+      data: {
+        type: 'vaccine_overdue',
+        vaccine: overdueBest.vaccine,
+        overdueBy: overdueBest.overdueBy,
+      },
+    }
+    if (!isDismissed(h, h.dismissDays)) return h
+  }
+
+  // ---------- Upcoming: pega a mais próxima (menor daysUntil ≥ 0) ----------
+  let upcomingBest: { vaccine: Vaccine; daysUntil: number } | null = null
+  for (const v of vaccines) {
+    if (!v.isMandatory) continue
+    const status = vaccineStatus.get(v.code)
+    // "can_take" significa que já passou do dia mas ainda não está overdue — também mostra
+    // "future" só se estiver dentro da janela
+    if (status !== 'future' && status !== 'can_take') continue
+    const daysUntil = v.recommendedAgeDays - ageDays
+    if (daysUntil > VACCINE_UPCOMING_WINDOW) continue
+    if (daysUntil < -VACCINE_UPCOMING_WINDOW) continue // sanity
+    if (!upcomingBest || Math.abs(daysUntil) < Math.abs(upcomingBest.daysUntil)) {
+      upcomingBest = { vaccine: v, daysUntil }
+    }
+  }
+  if (upcomingBest) {
+    const h: Highlight = {
+      id: `upcoming_${upcomingBest.vaccine.code}`,
+      type: 'vaccine_upcoming',
+      emoji: '💉',
+      kicker: 'PRÓXIMA VACINA',
+      title: upcomingBest.vaccine.name,
+      accent: 'primary',
+      dismissDays: 7,
+      data: {
+        type: 'vaccine_upcoming',
+        vaccine: upcomingBest.vaccine,
+        daysUntil: upcomingBest.daysUntil,
+      },
+    }
+    if (!isDismissed(h, h.dismissDays)) return h
+  }
+
+  return null
 }
