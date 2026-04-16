@@ -246,6 +246,36 @@ export function AppProvider({ children }: { children: ReactNode }) {
     })
   }, [user])
 
+  // Realtime: escuta quando o usuário é REMOVIDO de um baby_members
+  // (outro parent removeu, ou o usuário auto-saiu) e recarrega o estado.
+  // Isso evita que o app continue mostrando um bebê ao qual o user não tem mais acesso.
+  useEffect(() => {
+    if (!user) return
+    const channel = supabase
+      .channel(`baby-members-del-${user.id}`)
+      .on(
+        'postgres_changes' as never,
+        {
+          event: 'DELETE',
+          schema: 'public',
+          table: 'baby_members',
+          filter: `user_id=eq.${user.id}`,
+        },
+        () => {
+          // Limpar localStorage caso o bebê ativo tenha sido removido
+          const activeId = localStorage.getItem('yaya_active_baby')
+          if (activeId) localStorage.removeItem('yaya_active_baby')
+          // Reload do app: simples e garantido
+          window.location.href = '/'
+        },
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [user])
+
   // Background sync: refresh logs when app resumes from background
   const lastResumeRef = useRef(Date.now())
 

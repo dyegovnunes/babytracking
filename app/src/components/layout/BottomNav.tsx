@@ -99,7 +99,7 @@ export default function BottomNav() {
           {tabs
             .filter((tab) => tab.to !== '/insights' || can.viewInsights(myRole))
             .map((tab) => {
-              // Profile tab: custom gesture handler
+              // Profile tab: custom gesture handler (PointerEvents unify touch + mouse)
               if (tab.to === '/profile') {
                 return (
                   <div
@@ -107,12 +107,10 @@ export default function BottomNav() {
                     className={`flex flex-col items-center gap-0.5 min-w-[64px] py-1 transition-colors cursor-pointer select-none ${
                       isProfileActive ? 'text-primary' : 'text-on-surface-variant'
                     }`}
-                    onTouchStart={handleProfileTouchStart}
-                    onTouchEnd={handleProfileTouchEnd}
-                    onTouchCancel={handleProfileTouchCancel}
-                    onMouseDown={handleProfileTouchStart}
-                    onMouseUp={handleProfileTouchEnd}
-                    onMouseLeave={handleProfileTouchCancel}
+                    onPointerDown={handleProfileTouchStart}
+                    onPointerUp={handleProfileTouchEnd}
+                    onPointerCancel={handleProfileTouchCancel}
+                    onPointerLeave={handleProfileTouchCancel}
                   >
                     {usePhoto ? (
                       <img

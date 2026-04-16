@@ -119,7 +119,7 @@ export default function JoinWithCodeSheet({ onClose }: Props) {
               onChange={(e) => setCode(e.target.value.toUpperCase())}
               placeholder="XXXXXX"
               maxLength={6}
-              className="w-full px-3 py-3 rounded-md bg-surface-container border border-outline-variant text-on-surface font-mono text-lg tracking-widest text-center uppercase focus:outline-none focus:border-primary"
+              className="w-full px-3 py-3 rounded-md bg-surface-container border border-outline-variant text-on-surface font-headline font-bold text-2xl tracking-widest text-center uppercase focus:outline-none focus:border-primary"
               required
               autoFocus
             />
