@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppState } from '../../contexts/AppContext'
-import { usePremium } from '../../hooks/usePremium'
+import { useBabyPremium } from '../../hooks/useBabyPremium'
 import { useLeapNotes } from './useLeapNotes'
 import { DEVELOPMENT_LEAPS, type DevelopmentLeap } from './developmentLeaps'
 import { contractionDe } from '../../lib/genderUtils'
@@ -29,7 +29,7 @@ function getLeapEstimatedDate(birthDate: string, weekStart: number): Date {
 export default function LeapsPage() {
   const navigate = useNavigate()
   const { baby, logs } = useAppState()
-  const { isPremium } = usePremium()
+  const isPremium = useBabyPremium()
   const { notes, saveNote } = useLeapNotes(baby?.id)
 
   const [expandedId, setExpandedId] = useState<number | null>(null)

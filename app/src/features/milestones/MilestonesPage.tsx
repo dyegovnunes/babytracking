@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAppState } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
-import { usePremium } from '../../hooks/usePremium'
+import { useBabyPremium } from '../../hooks/useBabyPremium'
 import { useMilestones } from './useMilestones'
 import {
   MILESTONES,
@@ -46,7 +46,7 @@ export default function MilestonesPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const { baby } = useAppState()
   const { user } = useAuth()
-  const { isPremium } = usePremium()
+  const isPremium = useBabyPremium()
   const {
     achieved,
     achievedCodes,

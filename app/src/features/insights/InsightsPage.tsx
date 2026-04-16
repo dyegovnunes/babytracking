@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppState } from '../../contexts/AppContext'
 import { useInsightsEngine, type PeriodOption } from './useInsightsEngine'
-import { usePremium } from '../../hooks/usePremium'
+import { useBabyPremium } from '../../hooks/useBabyPremium'
+import { useMyRole } from '../../hooks/useMyRole'
+import { can } from '../../lib/roles'
 import DaySummaryCard from './components/DaySummaryCard'
 import PeriodDropdown from './components/PeriodDropdown'
 import InsightCard from './components/InsightCard'
@@ -16,7 +18,9 @@ const FREE_INSIGHT_LIMIT = 2
 
 export default function InsightsPage() {
   const { logs, baby, loading, quietHours } = useAppState()
-  const { isPremium } = usePremium()
+  const isPremium = useBabyPremium()
+  const myRole = useMyRole()
+  const canViewInsights = can.viewInsights(myRole)
   const navigate = useNavigate()
   const [period, setPeriod] = useState<PeriodOption>('last_7')
   const [showPaywall, setShowPaywall] = useState(false)
@@ -113,56 +117,60 @@ export default function InsightsPage() {
         {/* Period summary (free + premium) */}
         <DaySummaryCard summary={periodSummary} />
 
-        {/* Insight cards */}
-        {visibleInsights.length === 0 && (
-          <div className="rounded-md p-5 border border-white/5 bg-surface-container text-center">
-            <span className="text-3xl mb-2 block">✨</span>
-            <p className="font-label text-sm text-on-surface-variant">
-              Ainda não há insights suficientes para esse período. Continue registrando!
-            </p>
-          </div>
-        )}
+        {/* Insight cards (only for roles with viewInsights permission) */}
+        {canViewInsights && (
+          <>
+            {visibleInsights.length === 0 && (
+              <div className="rounded-md p-5 border border-white/5 bg-surface-container text-center">
+                <span className="text-3xl mb-2 block">✨</span>
+                <p className="font-label text-sm text-on-surface-variant">
+                  Ainda não há insights suficientes para esse período. Continue registrando!
+                </p>
+              </div>
+            )}
 
-        {visibleInsights.map((insight) => (
-          <InsightCard key={insight.id} {...insight} />
-        ))}
+            {visibleInsights.map((insight) => (
+              <InsightCard key={insight.id} {...insight} />
+            ))}
 
-        {/* Paywall banner (free users com insights escondidos) */}
-        {!isPremium && hiddenCount > 0 && (
-          <InsightPaywallBanner
-            remainingCount={hiddenCount}
-            onUpgrade={() => setShowPaywall(true)}
-          />
-        )}
+            {/* Paywall banner (free users com insights escondidos) */}
+            {!isPremium && hiddenCount > 0 && (
+              <InsightPaywallBanner
+                remainingCount={hiddenCount}
+                onUpgrade={() => setShowPaywall(true)}
+              />
+            )}
 
-        {/* Week chart (Yaya+ only) */}
-        {isPremium && weekTrends.length > 0 && <WeekChart trends={weekTrends} />}
+            {/* Week chart (Yaya+ only) */}
+            {isPremium && weekTrends.length > 0 && <WeekChart trends={weekTrends} />}
 
-        {/* Chart teaser para free (sem blur gigante) */}
-        {!isPremium && (
-          <div
-            className="rounded-md p-4 text-center"
-            style={{
-              background:
-                'linear-gradient(135deg, rgba(183,159,255,0.08), rgba(125,255,186,0.06))',
-              border: '1px solid rgba(183,159,255,0.15)',
-            }}
-          >
-            <span className="text-2xl block mb-1">📈</span>
-            <p className="font-label text-sm text-on-surface mb-1">
-              Gráfico semanal dos padrões
-            </p>
-            <p className="font-label text-xs text-on-surface-variant/70 mb-3">
-              Veja a evolução de sono, fraldas e mamadas dia a dia
-            </p>
-            <button
-              type="button"
-              onClick={() => setShowPaywall(true)}
-              className="bg-primary/20 text-primary font-label text-xs font-bold px-4 py-2 rounded-md active:scale-95 transition-transform"
-            >
-              Desbloquear com Yaya+
-            </button>
-          </div>
+            {/* Chart teaser para free (sem blur gigante) */}
+            {!isPremium && (
+              <div
+                className="rounded-md p-4 text-center"
+                style={{
+                  background:
+                    'linear-gradient(135deg, rgba(183,159,255,0.08), rgba(125,255,186,0.06))',
+                  border: '1px solid rgba(183,159,255,0.15)',
+                }}
+              >
+                <span className="text-2xl block mb-1">📈</span>
+                <p className="font-label text-sm text-on-surface mb-1">
+                  Gráfico semanal dos padrões
+                </p>
+                <p className="font-label text-xs text-on-surface-variant/70 mb-3">
+                  Veja a evolução de sono, fraldas e mamadas dia a dia
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setShowPaywall(true)}
+                  className="bg-primary/20 text-primary font-label text-xs font-bold px-4 py-2 rounded-md active:scale-95 transition-transform"
+                >
+                  Desbloquear com Yaya+
+                </button>
+              </div>
+            )}
+          </>
         )}
 
         {/* ===== SUPER RELATÓRIO CTA ===== */}

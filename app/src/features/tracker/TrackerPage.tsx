@@ -22,6 +22,8 @@ import { getAgeBand, getHighlightedEvents } from '../../lib/ageUtils'
 import { useMilestones } from '../milestones'
 import { useVaccines, VACCINES } from '../vaccines'
 import { useMedications } from '../medications'
+import { useMyRole } from '../../hooks/useMyRole'
+import { can } from '../../lib/roles'
 
 import { TrackerSkeleton } from '../../components/ui/Skeleton'
 import type { LogEntry } from '../../types'
@@ -32,6 +34,7 @@ export default function TrackerPage() {
   const { logs, intervals, baby, members, loading, pauseDuringSleep, quietHours, streak } = useAppState()
   const dispatch = useAppDispatch()
   const { user } = useAuth()
+  const myRole = useMyRole()
   const now = useTimer()
 
   // Milestones (home card)
@@ -179,7 +182,7 @@ export default function TrackerPage() {
 
   return (
     <div className="pb-4 page-enter">
-      <HeroIdentity streak={streak} />
+      <HeroIdentity streak={myRole !== 'caregiver' ? streak : undefined} />
 
       <ActivityGrid events={DEFAULT_EVENTS} logs={logs} onLog={handleLog} highlightedEventIds={highlightedEventIds} />
 
@@ -197,7 +200,7 @@ export default function TrackerPage() {
       )}
 
       {/* Acompanhe a jornada: saltos, marcos, (futuro) vacinas e remédios */}
-      {baby && (
+      {baby && (can.viewLeaps(myRole) || can.viewMilestones(myRole)) && (
         <HighlightsStrip
           highlights={highlights}
           babyName={baby.name}

@@ -15,6 +15,8 @@ import { useInviteCodes } from './useInviteCodes'
 import { useVaccines } from '../vaccines'
 import { useMedications } from '../medications'
 import { getActiveLeap, getUpcomingLeap, DEVELOPMENT_LEAPS } from '../milestones'
+import { useMyRole } from '../../hooks/useMyRole'
+import { can } from '../../lib/roles'
 
 interface Caregiver {
   userId: string
@@ -28,6 +30,7 @@ export default function ProfilePage() {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const location = useLocation()
+  const myRole = useMyRole()
   const [toast, setToast] = useState<string | null>(null)
 
   // Se navegamos aqui com hash #shared-reports, rola até a seção
@@ -103,7 +106,7 @@ export default function ProfilePage() {
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank')
   }, [inviteCode, baby])
 
-  const isParent = user ? members[user.id]?.role === 'parent' : false
+  const isParent = can.manageMembers(myRole)
   const parentCount = Object.values(members).filter(m => m.role === 'parent').length
 
   const handleToggleRole = useCallback(async (userId: string, currentRole: string) => {
@@ -148,28 +151,30 @@ export default function ProfilePage() {
 
       <div className="px-5 space-y-4">
         {/* ===== PERFIL DO BEBÊ ===== */}
-        <BabyCard baby={baby} onSave={handleSaveBaby} />
+        <BabyCard baby={baby} onSave={handleSaveBaby} canEdit={can.editBaby(myRole)} />
 
         {/* ===== CRESCIMENTO ===== */}
         <GrowthSection babyId={baby.id} />
 
         {/* ===== MARCOS DO DESENVOLVIMENTO ===== */}
-        <button
-          onClick={() => navigate('/marcos')}
-          className="w-full bg-surface-container rounded-md p-4 flex items-center gap-3 active:bg-surface-container-high transition-colors"
-        >
-          <span className="material-symbols-outlined text-primary text-xl">flag</span>
-          <div className="flex-1 text-left">
-            <h3 className="text-on-surface font-headline text-sm font-bold">Marcos do Desenvolvimento</h3>
-            <p className="text-on-surface-variant font-label text-xs">
-              Registre e acompanhe a evolução {contractionDe(baby.gender)} {baby.name}
-            </p>
-          </div>
-          <span className="material-symbols-outlined text-on-surface-variant text-lg">chevron_right</span>
-        </button>
+        {can.viewMilestones(myRole) && (
+          <button
+            onClick={() => navigate('/marcos')}
+            className="w-full bg-surface-container rounded-md p-4 flex items-center gap-3 active:bg-surface-container-high transition-colors"
+          >
+            <span className="material-symbols-outlined text-primary text-xl">flag</span>
+            <div className="flex-1 text-left">
+              <h3 className="text-on-surface font-headline text-sm font-bold">Marcos do Desenvolvimento</h3>
+              <p className="text-on-surface-variant font-label text-xs">
+                Registre e acompanhe a evolução {contractionDe(baby.gender)} {baby.name}
+              </p>
+            </div>
+            <span className="material-symbols-outlined text-on-surface-variant text-lg">chevron_right</span>
+          </button>
+        )}
 
         {/* ===== SALTOS DO DESENVOLVIMENTO ===== */}
-        <button
+        {can.viewLeaps(myRole) && <button
           onClick={() => navigate('/saltos')}
           className="w-full bg-surface-container rounded-md p-4 flex items-center gap-3 active:bg-surface-container-high transition-colors"
         >
@@ -196,10 +201,10 @@ export default function ProfilePage() {
             </p>
           </div>
           <span className="material-symbols-outlined text-on-surface-variant text-lg">chevron_right</span>
-        </button>
+        </button>}
 
         {/* ===== CADERNETA DE VACINAS ===== */}
-        <button
+        {can.viewVaccines(myRole) && <button
           onClick={() => navigate('/vacinas')}
           className="w-full bg-surface-container rounded-md p-4 flex items-center gap-3 active:bg-surface-container-high transition-colors"
         >
@@ -216,7 +221,7 @@ export default function ProfilePage() {
             </p>
           </div>
           <span className="material-symbols-outlined text-on-surface-variant text-lg">chevron_right</span>
-        </button>
+        </button>}
 
         {/* ===== MEDICAMENTOS ===== */}
         <button
@@ -241,7 +246,7 @@ export default function ProfilePage() {
         </button>
 
         {/* ===== CUIDADORES ===== */}
-        <div className="bg-surface-container rounded-md p-4">
+        {can.manageMembers(myRole) && <div className="bg-surface-container rounded-md p-4">
           <button
             onClick={() => { hapticLight(); setCaregiversExpanded(!caregiversExpanded) }}
             className="w-full flex items-start gap-3 text-left"
@@ -339,12 +344,12 @@ export default function ProfilePage() {
           )}
           </div>
           )}
-        </div>
+        </div>}
 
         {/* ===== SUPER RELATÓRIO ===== */}
-        <div id="shared-reports" className="scroll-mt-6">
+        {can.generatePDF(myRole) && <div id="shared-reports" className="scroll-mt-6">
           <SharedReports />
-        </div>
+        </div>}
 
         {/* ===== SAIR ===== */}
         <button onClick={signOut} className="w-full py-2.5 rounded-md bg-error/10 text-error font-label font-semibold text-sm">

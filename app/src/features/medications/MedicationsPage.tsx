@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppState } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
-import { usePremium } from '../../hooks/usePremium'
+import { useBabyPremium } from '../../hooks/useBabyPremium'
 import { useTimer } from '../../hooks/useTimer'
 import { useMedications } from './useMedications'
 import { contractionDe } from '../../lib/genderUtils'
@@ -22,7 +22,7 @@ export default function MedicationsPage() {
   const navigate = useNavigate()
   const { baby, members } = useAppState()
   const { user } = useAuth()
-  const { isPremium } = usePremium()
+  const isPremium = useBabyPremium()
   const now = useTimer()
 
   // Mapeia userId → displayName

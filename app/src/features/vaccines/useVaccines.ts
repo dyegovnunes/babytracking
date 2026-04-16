@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { supabase } from '../../lib/supabase'
-import { usePremium } from '../../hooks/usePremium'
+import { useBabyPremium } from '../../hooks/useBabyPremium'
 import {
   VACCINES,
   getVaccineStatus,
@@ -57,7 +57,7 @@ export function useVaccines(
 ) {
   const [records, setRecords] = useState<BabyVaccine[]>([])
   const [loading, setLoading] = useState(true)
-  const { isPremium } = usePremium()
+  const isPremium = useBabyPremium()
 
   const ageDays = useMemo(() => {
     if (!birthDate) return 0

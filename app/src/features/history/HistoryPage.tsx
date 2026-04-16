@@ -8,7 +8,7 @@ import EditModal from '../../components/ui/EditModal'
 import Toast from '../../components/ui/Toast'
 import { HistorySkeleton } from '../../components/ui/Skeleton'
 import { hapticMedium } from '../../lib/haptics'
-import { usePremium } from '../../hooks/usePremium'
+import { useBabyPremium } from '../../hooks/useBabyPremium'
 import { PaywallModal } from '../../components/ui/PaywallModal'
 import { AdBanner } from '../../components/ui/AdBanner'
 
@@ -93,7 +93,7 @@ function groupByDay(logs: LogEntry[]): { dayKey: string; label: string; logs: Lo
 export default function HistoryPage() {
   const { logs, members, loading } = useAppState()
   const dispatch = useAppDispatch()
-  const { isPremium } = usePremium()
+  const isPremium = useBabyPremium()
 
   const [filter, setFilter] = useState<EventCategory | 'all'>('all')
   const [editingLog, setEditingLog] = useState<LogEntry | null>(null)

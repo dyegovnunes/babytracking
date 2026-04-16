@@ -3,17 +3,18 @@ import type { Baby } from '../../../types'
 import { formatAge, formatBirthDate } from '../../../lib/formatters'
 import { supabase } from '../../../lib/supabase'
 import ImageCropModal from '../../../components/ui/ImageCropModal'
-import { usePremium } from '../../../hooks/usePremium'
+import { useBabyPremium } from '../../../hooks/useBabyPremium'
 import { showRewardedAd } from '../../../lib/admob'
 import { useSheetBackClose } from '../../../hooks/useSheetBackClose'
 
 interface Props {
   baby: Baby
   onSave: (baby: Baby) => void
+  canEdit?: boolean
 }
 
-export default function BabyCard({ baby, onSave }: Props) {
-  const { isPremium } = usePremium()
+export default function BabyCard({ baby, onSave, canEdit = true }: Props) {
+  const isPremium = useBabyPremium()
   const [editing, setEditing] = useState(false)
   const [name, setName] = useState(baby.name)
   const [birthDate, setBirthDate] = useState(baby.birthDate)
@@ -225,24 +226,38 @@ export default function BabyCard({ baby, onSave }: Props) {
           </>
         )}
       </div>
-      <button
-        onClick={() => setEditing(true)}
-        className="flex-1 min-w-0 text-left"
-      >
-        <p className="text-on-surface font-headline font-bold text-lg">{baby.name}</p>
-        <p className="text-on-surface-variant font-label text-sm">
-          {formatAge(baby.birthDate)} de vida
-        </p>
-        <p className="text-on-surface-variant font-label text-xs mt-0.5">
-          Nasceu em {formatBirthDate(baby.birthDate)}
-        </p>
-      </button>
-      <button
-        onClick={() => setEditing(true)}
-        className="text-on-surface-variant hover:text-on-surface transition-colors"
-      >
-        <span className="material-symbols-outlined text-xl">edit</span>
-      </button>
+      {canEdit ? (
+        <button
+          onClick={() => setEditing(true)}
+          className="flex-1 min-w-0 text-left"
+        >
+          <p className="text-on-surface font-headline font-bold text-lg">{baby.name}</p>
+          <p className="text-on-surface-variant font-label text-sm">
+            {formatAge(baby.birthDate)} de vida
+          </p>
+          <p className="text-on-surface-variant font-label text-xs mt-0.5">
+            Nasceu em {formatBirthDate(baby.birthDate)}
+          </p>
+        </button>
+      ) : (
+        <div className="flex-1 min-w-0">
+          <p className="text-on-surface font-headline font-bold text-lg">{baby.name}</p>
+          <p className="text-on-surface-variant font-label text-sm">
+            {formatAge(baby.birthDate)} de vida
+          </p>
+          <p className="text-on-surface-variant font-label text-xs mt-0.5">
+            Nasceu em {formatBirthDate(baby.birthDate)}
+          </p>
+        </div>
+      )}
+      {canEdit && (
+        <button
+          onClick={() => setEditing(true)}
+          className="text-on-surface-variant hover:text-on-surface transition-colors"
+        >
+          <span className="material-symbols-outlined text-xl">edit</span>
+        </button>
+      )}
     </div>
 
     {/* Hidden file input — outside of photo div to avoid event issues */}

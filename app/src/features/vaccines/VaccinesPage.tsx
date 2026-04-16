@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppState } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
-import { usePremium } from '../../hooks/usePremium'
+import { useBabyPremium } from '../../hooks/useBabyPremium'
 import { useVaccines } from './useVaccines'
 import {
   VACCINES,
@@ -35,7 +35,7 @@ export default function VaccinesPage() {
   const navigate = useNavigate()
   const { baby } = useAppState()
   const { user } = useAuth()
-  const { isPremium } = usePremium()
+  const isPremium = useBabyPremium()
   const {
     records,
     statusByCode,

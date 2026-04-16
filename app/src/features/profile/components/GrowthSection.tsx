@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../../../lib/supabase';
 import { hapticSuccess, hapticLight } from '../../../lib/haptics';
-import { usePremium } from '../../../hooks/usePremium';
+import { useBabyPremium } from '../../../hooks/useBabyPremium';
 import { showRewardedAd } from '../../../lib/admob';
 
 interface Measurement {
@@ -45,7 +45,7 @@ function parseValue(input: string): number {
 }
 
 export default function GrowthSection({ babyId }: GrowthSectionProps) {
-  const { isPremium } = usePremium();
+  const isPremium = useBabyPremium();
   const [measurements, setMeasurements] = useState<Measurement[]>([]);
   const [weightInput, setWeightInput] = useState('');
   const [heightInput, setHeightInput] = useState('');

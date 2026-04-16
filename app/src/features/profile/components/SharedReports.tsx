@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAppState } from '../../../contexts/AppContext';
 import { useAuth } from '../../../contexts/AuthContext';
-import { usePremium } from '../../../hooks/usePremium';
+import { useBabyPremium } from '../../../hooks/useBabyPremium';
 import { useSheetBackClose } from '../../../hooks/useSheetBackClose';
 import { PaywallModal } from '../../../components/ui/PaywallModal';
 import {
@@ -18,7 +18,7 @@ import { hapticLight, hapticMedium, hapticSuccess } from '../../../lib/haptics';
 export default function SharedReports() {
   const { baby } = useAppState();
   const { user } = useAuth();
-  const { isPremium } = usePremium();
+  const isPremium = useBabyPremium();
 
   const [showPaywall, setShowPaywall] = useState(false);
   const [reports, setReports] = useState<SharedReport[]>([]);

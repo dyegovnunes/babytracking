@@ -1,5 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import { useAppState } from '../../contexts/AppContext'
+import { useMyRole } from '../../hooks/useMyRole'
+import { can } from '../../lib/roles'
 
 const tabs = [
   { to: '/', icon: 'track_changes', label: 'Início' },
@@ -10,6 +12,7 @@ const tabs = [
 
 export default function BottomNav() {
   const { baby } = useAppState()
+  const myRole = useMyRole()
   const babyPhoto = baby?.photoUrl
   const babyName = baby?.name
   const usePhoto = !!babyPhoto
@@ -18,7 +21,7 @@ export default function BottomNav() {
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 bg-surface-container/60 backdrop-blur-xl border-t border-outline-variant/15 pb-safe">
       <div className="flex items-center justify-around h-16 max-w-lg mx-auto">
-        {tabs.map((tab) => (
+        {tabs.filter((tab) => tab.to !== '/insights' || can.viewInsights(myRole)).map((tab) => (
           <NavLink
             key={tab.to}
             to={tab.to}

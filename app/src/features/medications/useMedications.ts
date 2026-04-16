@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { supabase } from '../../lib/supabase'
-import { usePremium } from '../../hooks/usePremium'
+import { useBabyPremium } from '../../hooks/useBabyPremium'
 import { getLocalDateString } from '../../lib/formatters'
 import {
   getMedicationDayStatus,
@@ -126,7 +126,7 @@ export function useMedications(
   )
   const [todayLogs, setTodayLogs] = useState<MedicationLog[]>([])
   const [loading, setLoading] = useState(true)
-  const { isPremium } = usePremium()
+  const isPremium = useBabyPremium()
 
   // Reload trigger para forçar refetch após mutations
   const [reloadTick, setReloadTick] = useState(0)
