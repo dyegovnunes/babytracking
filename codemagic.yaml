@@ -53,10 +53,11 @@ workflows:
         script: |
           keychain initialize
 
-          # Fetch existing profiles only (sem --create para nao auto-gerar profile sem SIWA)
+          # Fetch ou cria certificado + profile usando CERTIFICATE_PRIVATE_KEY do env
           app-store-connect fetch-signing-files "app.yayababy" \
             --type IOS_APP_STORE \
-            --strict-match-identifier
+            --strict-match-identifier \
+            --create
 
           keychain add-certificates
           xcode-project use-profiles
