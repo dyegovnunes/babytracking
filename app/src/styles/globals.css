@@ -91,6 +91,59 @@
   --animate-page-enter: page-enter 0.25s ease-out;
 }
 
+/*
+ * Light mode.
+ * Ativado quando <html> recebe a classe .theme-light (ThemeContext).
+ * Redefinimos apenas os tokens de cor — fontes, animações, raios seguem do @theme.
+ * Evite adicionar !important aqui; o seletor mais específico já basta.
+ */
+html.theme-light {
+  /* Surfaces — tons claros neutros */
+  --color-surface: #ffffff;
+  --color-surface-dim: #f5f5f7;
+  --color-surface-container-lowest: #fafafa;
+  --color-surface-container-low: #f5f5f7;
+  --color-surface-container: #f0f0f4;
+  --color-surface-container-high: #e8e7ee;
+  --color-surface-container-highest: #dedce6;
+  --color-surface-bright: #ffffff;
+  --color-surface-variant: #e8e7ee;
+
+  /* Primary — escurecido para manter contraste WCAG AA em background claro */
+  --color-primary: #7056e0;
+  --color-primary-dim: #5a45c4;
+  --color-primary-container: #e8e1ff;
+  --color-primary-fixed: #ab8ffe;      /* mantém — usado em detalhes brand */
+  --color-primary-fixed-dim: #9d81f0;  /* mantém */
+
+  /* Secondary */
+  --color-secondary: #7d6fa8;
+  --color-secondary-dim: #6a5d93;
+  --color-secondary-container: #e8e1ff;
+
+  /* Tertiary */
+  --color-tertiary: #c5487a;
+  --color-tertiary-dim: #a73562;
+  --color-tertiary-container: #ffd9e5;
+
+  /* Error */
+  --color-error: #b3001f;
+  --color-error-dim: #7c0016;
+  --color-error-container: #ffd9dd;
+
+  /* On-colors */
+  --color-on-surface: #1c1b2b;
+  --color-on-surface-variant: #5a5870;
+  --color-on-background: #1c1b2b;
+  --color-on-primary: #ffffff;
+  --color-on-secondary: #ffffff;
+  --color-on-error: #ffffff;
+
+  /* Utility */
+  --color-outline: #9e9cb0;
+  --color-outline-variant: #d5d3de;
+}
+
 @keyframes fade-in {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }

@@ -1,6 +1,7 @@
 import { useCallback } from 'react'
 import { useAppState, useAppDispatch } from '../../../contexts/AppContext'
 import { useAuth } from '../../../contexts/AuthContext'
+import { useTheme } from '../../../contexts/ThemeContext'
 import { supabase } from '../../../lib/supabase'
 import IntervalRow from '../components/IntervalRow'
 import Toggle from '../components/Toggle'
@@ -37,6 +38,7 @@ export default function IntervalsSection({
   onOpenInfo,
 }: Props) {
   const { baby, pauseDuringSleep } = useAppState()
+  const { adaptiveTheme, setAdaptiveTheme } = useTheme()
   const { user } = useAuth()
   const dispatch = useAppDispatch()
 
@@ -193,6 +195,24 @@ export default function IntervalsSection({
             </div>
           )}
         </div>
+
+        {/* Iluminação adaptada — só aparece se o horário noturno está configurado */}
+        {prefs.quietHours.enabled && (
+          <div className="bg-surface-container rounded-md px-4 py-3.5">
+            <div className="flex items-center gap-3">
+              <span className="material-symbols-outlined text-on-surface-variant text-lg">
+                wb_twilight
+              </span>
+              <div className="flex-1">
+                <p className="font-body text-sm text-on-surface">Iluminação adaptada</p>
+                <p className="font-label text-[11px] text-on-surface-variant leading-snug">
+                  Muda para dark automaticamente no horário de sono e volta ao seu tema ao amanhecer.
+                </p>
+              </div>
+              <Toggle value={adaptiveTheme} onChange={() => setAdaptiveTheme(!adaptiveTheme)} />
+            </div>
+          </div>
+        )}
       </div>
     </section>
   )

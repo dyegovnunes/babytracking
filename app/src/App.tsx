@@ -3,6 +3,7 @@ import { lazy, Suspense, useEffect, useRef } from 'react'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { AppProvider, useAppState, useAppDispatch } from './contexts/AppContext'
 import { PurchaseProvider } from './contexts/PurchaseContext'
+import { ThemeProvider } from './contexts/ThemeContext'
 import { Capacitor } from '@capacitor/core'
 import { supabase } from './lib/supabase'
 
@@ -236,10 +237,12 @@ export default function App() {
     <BrowserRouter>
       <AuthProvider>
         <AppProvider>
-          <PurchaseProvider>
-            <PushNavigationHandler />
-            <AppRoutes />
-          </PurchaseProvider>
+          <ThemeProvider>
+            <PurchaseProvider>
+              <PushNavigationHandler />
+              <AppRoutes />
+            </PurchaseProvider>
+          </ThemeProvider>
         </AppProvider>
       </AuthProvider>
     </BrowserRouter>
