@@ -111,79 +111,54 @@ workflows:
 
           plutil -lint app/ios/App/App.xcodeproj/project.pbxproj
 
-          # 3. Write API key using Python (handles all newline/encoding formats)
+          # 3. Resolve API key — Codemagic stores it as @file:path reference
           python3 <<'PYEOF'
-          import os, sys
+          import os, sys, shutil
 
           key_id = os.environ.get('APP_STORE_CONNECT_KEY_IDENTIFIER', '')
-          issuer = os.environ.get('APP_STORE_CONNECT_ISSUER_ID', '')
           raw_key = os.environ.get('APP_STORE_CONNECT_PRIVATE_KEY', '')
 
           print(f'Key ID: {key_id}')
-          print(f'Issuer ID: {issuer[:8]}...' if issuer else 'Issuer: MISSING')
-          print(f'Raw key length: {len(raw_key)} chars')
+          print(f'Raw value (first 40 chars): {raw_key[:40]}')
 
-          if not raw_key or not key_id:
-              print('ERROR: Missing API key env vars')
-              sys.exit(1)
-
-          # Try multiple formats:
-          # Format 1: literal \n in the string
-          key = raw_key.replace('\\n', '\n')
-          # Format 2: remove any \r
-          key = key.replace('\r', '')
-          # Ensure it ends with a newline
-          if not key.endswith('\n'):
-              key += '\n'
-
-          # Write to the standard location xcodebuild searches
-          key_dir = os.path.expanduser('~/.appstoreconnect/private_keys')
-          os.makedirs(key_dir, exist_ok=True)
-          key_path = os.path.join(key_dir, f'AuthKey_{key_id}.p8')
-
-          with open(key_path, 'w') as f:
-              f.write(key)
-
-          # Also write to ~/private_keys (another standard location)
-          key_dir2 = os.path.expanduser('~/private_keys')
-          os.makedirs(key_dir2, exist_ok=True)
-          key_path2 = os.path.join(key_dir2, f'AuthKey_{key_id}.p8')
-          with open(key_path2, 'w') as f:
-              f.write(key)
-
-          # Validate
-          lines = key.strip().split('\n')
-          print(f'Written to: {key_path}')
-          print(f'Also to: {key_path2}')
-          print(f'Lines: {len(lines)}')
-          print(f'First line: {lines[0]}')
-          print(f'Last line:  {lines[-1]}')
-
-          if '-----BEGIN PRIVATE KEY-----' not in key:
-              print('WARNING: Missing PEM header! Key might be base64 encoded.')
-              # Try base64 decode
-              import base64
-              try:
-                  decoded = base64.b64decode(raw_key).decode('utf-8')
-                  if '-----BEGIN' in decoded:
-                      with open(key_path, 'w') as f:
-                          f.write(decoded)
-                      with open(key_path2, 'w') as f:
-                          f.write(decoded)
-                      print('Decoded from base64 successfully')
-                  else:
-                      print('Base64 decode did not produce PEM')
-              except Exception as e:
-                  print(f'Base64 decode failed: {e}')
+          # Codemagic stores the key as "@file:/path/to/key.p8"
+          # The REAL key is already on disk — DON'T overwrite it!
+          if raw_key.startswith('@file:'):
+              src_path = raw_key[6:]  # strip @file: prefix
+              print(f'Codemagic file reference detected: {src_path}')
+              if os.path.exists(src_path):
+                  with open(src_path, 'r') as f:
+                      content = f.read()
+                  lines = content.strip().split('\n')
+                  print(f'File exists: {len(content)} bytes, {len(lines)} lines')
+                  print(f'First: {lines[0]}')
+                  print(f'Last:  {lines[-1]}')
+                  # Copy to standard xcodebuild search locations (if not already there)
+                  for d in ['~/.appstoreconnect/private_keys', '~/private_keys']:
+                      dest_dir = os.path.expanduser(d)
+                      os.makedirs(dest_dir, exist_ok=True)
+                      dest = os.path.join(dest_dir, f'AuthKey_{key_id}.p8')
+                      if os.path.abspath(dest) != os.path.abspath(src_path):
+                          shutil.copy2(src_path, dest)
+                          print(f'Copied to: {dest}')
+                  print('API key ready')
+              else:
+                  print(f'ERROR: Referenced file does not exist: {src_path}')
+                  sys.exit(1)
           else:
-              print('PEM header found - key looks valid')
-
-          # Also search for any existing .p8 files Codemagic might have installed
-          print('\n=== Existing .p8 files on system ===')
-          import subprocess
-          result = subprocess.run(['find', '/Users/builder', '-name', '*.p8', '-type', 'f'],
-                                capture_output=True, text=True, timeout=5)
-          print(result.stdout if result.stdout else '(none found)')
+              # Raw PEM content — write it
+              key = raw_key.replace('\\n', '\n').replace('\r', '')
+              if not key.endswith('\n'):
+                  key += '\n'
+              for d in ['~/.appstoreconnect/private_keys', '~/private_keys']:
+                  dest_dir = os.path.expanduser(d)
+                  os.makedirs(dest_dir, exist_ok=True)
+                  dest = os.path.join(dest_dir, f'AuthKey_{key_id}.p8')
+                  with open(dest, 'w') as f:
+                      f.write(key)
+                  print(f'Written to: {dest}')
+              lines = key.strip().split('\n')
+              print(f'Lines: {len(lines)}, First: {lines[0]}')
           PYEOF
 
           echo ""
