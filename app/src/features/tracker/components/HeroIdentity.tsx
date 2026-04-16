@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useTimer } from '../../../hooks/useTimer'
 import { useAppState } from '../../../contexts/AppContext'
 import { formatTime, formatAge } from '../../../lib/formatters'
 import BabySwitcher from '../../../components/ui/BabySwitcher'
 import StreakBadge from './StreakBadge'
+import { hapticLight } from '../../../lib/haptics'
 import type { StreakData } from '../../../lib/streak'
 
 interface HeroIdentityProps {
@@ -13,7 +13,6 @@ interface HeroIdentityProps {
 
 export default function HeroIdentity({ streak }: HeroIdentityProps) {
   const now = useTimer()
-  const navigate = useNavigate()
   const { baby, babies } = useAppState()
   const [switcherOpen, setSwitcherOpen] = useState(false)
 
@@ -35,13 +34,18 @@ export default function HeroIdentity({ streak }: HeroIdentityProps) {
     </div>
   )
 
+  function handleOpenSwitcher() {
+    hapticLight()
+    setSwitcherOpen(true)
+  }
+
   return (
     <>
       <section className="px-5 pt-4 pb-2">
         <div className="flex items-center gap-3">
           <button
             type="button"
-            onClick={() => navigate('/profile')}
+            onClick={handleOpenSwitcher}
             className="flex items-center gap-3 min-w-0 flex-1 cursor-pointer active:opacity-80 transition-opacity bg-transparent border-0 p-0 text-left"
           >
             {avatar}
@@ -53,10 +57,7 @@ export default function HeroIdentity({ streak }: HeroIdentityProps) {
                 · {formatAge(baby.birthDate)}
               </span>
               {hasMultiple && (
-                <span
-                  className="material-symbols-outlined text-on-surface-variant text-base shrink-0"
-                  onClick={(e) => { e.stopPropagation(); e.preventDefault(); setSwitcherOpen(true) }}
-                >
+                <span className="material-symbols-outlined text-on-surface-variant text-base shrink-0">
                   expand_more
                 </span>
               )}
