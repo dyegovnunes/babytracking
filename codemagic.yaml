@@ -98,9 +98,14 @@ workflows:
           plutil -lint app/ios/App/App.xcodeproj/project.pbxproj
 
           # 4. Prepara API key pro xcodebuild usar automatic provisioning
+          #    A env var pode ter \n literais — printf %b converte em newlines reais
           mkdir -p ~/.appstoreconnect/private_keys
-          echo "${APP_STORE_CONNECT_PRIVATE_KEY}" > ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_IDENTIFIER}.p8
+          KEY_PATH=~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_IDENTIFIER}.p8
+          printf '%b' "${APP_STORE_CONNECT_PRIVATE_KEY}" > "$KEY_PATH"
           echo "API Key written: AuthKey_${APP_STORE_CONNECT_KEY_IDENTIFIER}.p8"
+          echo "Key file size: $(wc -c < "$KEY_PATH") bytes, $(wc -l < "$KEY_PATH") lines"
+          head -1 "$KEY_PATH"
+          tail -1 "$KEY_PATH"
 
           echo ""
           echo "=== signing config summary ==="
