@@ -27,13 +27,13 @@ workflows:
       - name: Configure entitlements
         script: |
           # Cria entitlements file com Sign In with Apple
-          # Usando printf para evitar problemas de indentacao do YAML
           printf '<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<plist version="1.0">\n<dict>\n\t<key>com.apple.developer.applesignin</key>\n\t<array>\n\t\t<string>Default</string>\n\t</array>\n</dict>\n</plist>\n' > app/ios/App/App/App.entitlements
-          echo "--- Entitlements file ---"
+
+          echo "=== Validating App.entitlements ==="
           cat app/ios/App/App/App.entitlements
           plutil -lint app/ios/App/App/App.entitlements
 
-          # Injeta CODE_SIGN_ENTITLEMENTS no pbxproj (se ainda nao tiver)
+          # Injeta CODE_SIGN_ENTITLEMENTS no pbxproj
           python3 << 'PYEOF'
           with open('app/ios/App/App.xcodeproj/project.pbxproj', 'r') as f:
               content = f.read()
@@ -44,22 +44,57 @@ workflows:
               )
               with open('app/ios/App/App.xcodeproj/project.pbxproj', 'w') as f:
                   f.write(content)
-              print('Added CODE_SIGN_ENTITLEMENTS to pbxproj')
+              print('Injected CODE_SIGN_ENTITLEMENTS into pbxproj')
           else:
               print('CODE_SIGN_ENTITLEMENTS already present')
           PYEOF
           plutil -lint app/ios/App/App.xcodeproj/project.pbxproj
       - name: Set up code signing
         script: |
-          # Manual signing setup: download existing profiles (not create new ones)
-          # This picks up the manually-created "Yaya App Store" profile with SIWA
           keychain initialize
+
+          # Fetch existing profiles only (sem --create para nao auto-gerar profile sem SIWA)
           app-store-connect fetch-signing-files "app.yayababy" \
             --type IOS_APP_STORE \
-            --strict-match-identifier \
-            --create=false
+            --strict-match-identifier
+
           keychain add-certificates
           xcode-project use-profiles
+
+          # CRITICAL: use-profiles pode apagar CODE_SIGN_ENTITLEMENTS do pbxproj
+          # Re-injetamos apos use-profiles para garantir que persiste
+          python3 << 'PYEOF'
+          with open('app/ios/App/App.xcodeproj/project.pbxproj', 'r') as f:
+              content = f.read()
+
+          import re
+          # Conta quantas vezes CODE_SIGN_ENTITLEMENTS aparece
+          count = content.count('CODE_SIGN_ENTITLEMENTS')
+          print(f'CODE_SIGN_ENTITLEMENTS found {count} times after use-profiles')
+
+          if count == 0:
+              # use-profiles apagou - re-injetar em TODAS as build configurations do target
+              # use-profiles muda CODE_SIGN_STYLE para Manual, entao buscamos por Manual agora
+              content = content.replace(
+                  'CODE_SIGN_STYLE = Manual;',
+                  'CODE_SIGN_STYLE = Manual;\n\t\t\t\tCODE_SIGN_ENTITLEMENTS = App/App.entitlements;'
+              )
+              # Tambem cobre caso Automatic (se use-profiles nao mudou)
+              if 'CODE_SIGN_ENTITLEMENTS' not in content:
+                  content = content.replace(
+                      'CODE_SIGN_STYLE = Automatic;',
+                      'CODE_SIGN_STYLE = Automatic;\n\t\t\t\tCODE_SIGN_ENTITLEMENTS = App/App.entitlements;'
+                  )
+              with open('app/ios/App/App.xcodeproj/project.pbxproj', 'w') as f:
+                  f.write(content)
+              new_count = content.count('CODE_SIGN_ENTITLEMENTS')
+              print(f'Re-injected CODE_SIGN_ENTITLEMENTS ({new_count} occurrences)')
+          else:
+              print('CODE_SIGN_ENTITLEMENTS survived use-profiles, no action needed')
+          PYEOF
+
+          echo "=== Final pbxproj signing settings ==="
+          grep -n "CODE_SIGN_STYLE\|CODE_SIGN_ENTITLEMENTS\|PROVISIONING_PROFILE\|DEVELOPMENT_TEAM\|CODE_SIGN_IDENTITY" app/ios/App/App.xcodeproj/project.pbxproj || true
       - name: Set app icon
         script: |
           cp app/assets/app-icon-1024.png app/ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png
@@ -90,7 +125,7 @@ workflows:
           xcode-project build-ipa \
             --project "App.xcodeproj" \
             --scheme "App" \
-            --archive-flags="-destination 'generic/platform=iOS'"
+            --archive-flags="-destination 'generic/platform=iOS' CODE_SIGN_ENTITLEMENTS=App/App.entitlements"
     artifacts:
       - app/ios/App/build/ios/ipa/*.ipa
     publishing:
