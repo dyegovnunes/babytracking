@@ -1,12 +1,14 @@
 import { useCallback, useState, useEffect, useMemo } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAppState, useAppDispatch, updateBaby, updateMemberRole, removeMember } from '../../contexts/AppContext'
-import { useAuth, signOut } from '../../contexts/AuthContext'
+import { useAuth } from '../../contexts/AuthContext'
+import { supabase } from '../../lib/supabase'
 import type { Baby } from '../../types'
 import BabyCard from './components/BabyCard'
 import GrowthSection from './components/GrowthSection'
 import Toast from '../../components/ui/Toast'
 import { AdBanner } from '../../components/ui/AdBanner'
+import BabySwitcher from '../../components/ui/BabySwitcher'
 import SharedReports from './components/SharedReports'
 import { hapticLight } from '../../lib/haptics'
 import { contractionDe } from '../../lib/genderUtils'
@@ -52,9 +54,14 @@ export default function ProfilePage() {
   const [confirmRemove, setConfirmRemove] = useState<string | null>(null)
   const [confirmPromoteParent, setConfirmPromoteParent] = useState<{ userId: string; currentRole: string } | null>(null)
   const [rolesInfoOpen, setRolesInfoOpen] = useState(false)
+  const [babySwitcherOpen, setBabySwitcherOpen] = useState(false)
+  const [confirmDeleteBaby, setConfirmDeleteBaby] = useState(false)
+  const [deleteConfirmText, setDeleteConfirmText] = useState('')
+  const [deletingBaby, setDeletingBaby] = useState(false)
   useSheetBackClose(!!confirmRemove, () => setConfirmRemove(null))
   useSheetBackClose(!!confirmPromoteParent, () => setConfirmPromoteParent(null))
   useSheetBackClose(rolesInfoOpen, () => setRolesInfoOpen(false))
+  useSheetBackClose(confirmDeleteBaby, () => { setConfirmDeleteBaby(false); setDeleteConfirmText('') })
 
   // Invite
   const { code: inviteCode, generating: generatingCode, generate: generateInvite, deactivate: deactivateInvite } = useInviteCodes()
@@ -152,6 +159,29 @@ export default function ProfilePage() {
     setConfirmRemove(null)
     if (ok) setToast('Membro removido!')
   }, [baby, dispatch])
+
+  const handleDeleteBaby = useCallback(async () => {
+    if (!baby) return
+    if (deleteConfirmText.trim().toLowerCase() !== baby.name.trim().toLowerCase()) {
+      setToast('Digite o nome do bebê exatamente para confirmar')
+      return
+    }
+    setDeletingBaby(true)
+    // ON DELETE CASCADE em babies remove logs, milestones, vaccines, members etc.
+    const { data, error } = await supabase
+      .from('babies')
+      .delete()
+      .eq('id', baby.id)
+      .select('id')
+    if (error || !data || data.length === 0) {
+      setDeletingBaby(false)
+      setToast('Não foi possível excluir. Verifique se você é Pai/Mãe.')
+      return
+    }
+    // Limpa localStorage do bebê ativo e reload
+    localStorage.removeItem('yaya_active_baby')
+    window.location.href = '/'
+  }, [baby, deleteConfirmText])
 
 
   if (loading || !baby) {
@@ -396,10 +426,24 @@ export default function ProfilePage() {
           <SharedReports />
         </div>}
 
-        {/* ===== SAIR ===== */}
-        <button onClick={signOut} className="w-full py-2.5 rounded-md bg-error/10 text-error font-label font-semibold text-sm">
-          Sair da conta
-        </button>
+        {/* ===== AÇÕES DO BEBÊ ===== */}
+        <div className="space-y-3 pt-4">
+          <button
+            onClick={() => { hapticLight(); setBabySwitcherOpen(true) }}
+            className="w-full py-2.5 rounded-md bg-surface-container text-on-surface font-label font-semibold text-sm flex items-center justify-center gap-2 active:bg-surface-container-high"
+          >
+            <span className="material-symbols-outlined text-base">swap_horiz</span>
+            Trocar bebê
+          </button>
+          {can.editBaby(myRole) && (
+            <button
+              onClick={() => { hapticLight(); setConfirmDeleteBaby(true) }}
+              className="w-full py-1.5 text-on-surface-variant/60 font-label text-xs active:text-on-surface-variant"
+            >
+              Excluir perfil {contractionDe(baby.gender)} {baby.name}
+            </button>
+          )}
+        </div>
       </div>
 
       <AdBanner />
@@ -507,6 +551,69 @@ export default function ProfilePage() {
             <p className="font-label text-[11px] text-on-surface-variant/70 mt-4 text-center">
               Todo mundo entra como <strong>Cuidador(a)</strong>. Promova depois se precisar.
             </p>
+          </div>
+        </div>
+      )}
+
+      {/* Baby switcher */}
+      {babySwitcherOpen && (
+        <BabySwitcher onClose={() => setBabySwitcherOpen(false)} />
+      )}
+
+      {/* Confirmação de exclusão de bebê — precisa digitar o nome */}
+      {confirmDeleteBaby && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-6"
+          onClick={(e) => e.target === e.currentTarget && setConfirmDeleteBaby(false)}
+        >
+          <div className="w-full max-w-md bg-surface-container-highest rounded-md p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <span className="w-10 h-10 rounded-full bg-error/15 flex items-center justify-center">
+                <span className="material-symbols-outlined text-error">warning</span>
+              </span>
+              <h3 className="font-headline text-lg font-bold text-on-surface">
+                Excluir perfil {contractionDe(baby.gender)} {baby.name}?
+              </h3>
+            </div>
+
+            <p className="font-body text-sm text-on-surface-variant mb-2">
+              Essa ação é <strong>permanente</strong> e remove tudo:
+            </p>
+            <ul className="font-body text-xs text-on-surface-variant space-y-0.5 mb-4 pl-1">
+              <li>· Todos os registros (sono, mamadas, fraldas, etc.)</li>
+              <li>· Marcos, saltos, vacinas e medicamentos</li>
+              <li>· Fotos e notas</li>
+              <li>· Acesso de todos os cuidadores</li>
+            </ul>
+
+            <label className="block font-label text-xs text-on-surface-variant mb-1">
+              Para confirmar, digite <strong className="text-on-surface">{baby.name}</strong>:
+            </label>
+            <input
+              type="text"
+              value={deleteConfirmText}
+              onChange={(e) => setDeleteConfirmText(e.target.value)}
+              placeholder={baby.name}
+              className="w-full px-3 py-2.5 rounded-md bg-surface-container border border-outline-variant text-on-surface font-body text-sm focus:outline-none focus:border-error mb-5"
+              autoFocus
+            />
+
+            <div className="flex gap-2">
+              <button
+                onClick={() => { setConfirmDeleteBaby(false); setDeleteConfirmText('') }}
+                disabled={deletingBaby}
+                className="flex-1 py-2.5 rounded-md bg-surface-variant text-on-surface-variant font-label text-sm font-semibold disabled:opacity-40"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleDeleteBaby}
+                disabled={deletingBaby || deleteConfirmText.trim().toLowerCase() !== baby.name.trim().toLowerCase()}
+                className="flex-1 py-2.5 rounded-md bg-error text-on-error font-label text-sm font-semibold disabled:opacity-40"
+              >
+                {deletingBaby ? 'Excluindo...' : 'Excluir tudo'}
+              </button>
+            </div>
           </div>
         </div>
       )}
