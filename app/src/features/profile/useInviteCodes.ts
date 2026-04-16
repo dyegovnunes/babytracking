@@ -1,24 +1,36 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useAppState } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
+import { useBabyPremium } from '../../hooks/useBabyPremium'
 
 const INVITE_EXPIRY_DAYS = 30
+const FREE_GROUP_SIZE_LIMIT = 2 // parent + 1 cuidador = 2 membros no grupo
 
 /**
  * Manages the active invite code for the current baby.
  *
  * Contract:
  * - `code`: current active invite code (null when none).
+ * - `canInviteMore`: false quando o grupo já atingiu o limite do plano.
+ *   Caller deve mostrar paywall quando for false.
  * - `generate()`: deactivates existing active codes and creates a new one.
+ *   Retorna false se o grupo já está cheio (plano free).
  * - `deactivate()`: deactivates all active codes for this baby. Returns
  *   false if RLS silently blocks the UPDATE — caller should show an error.
  */
 export function useInviteCodes() {
-  const { baby } = useAppState()
+  const { baby, members } = useAppState()
   const { user } = useAuth()
+  const isPremium = useBabyPremium()
   const [code, setCode] = useState<string | null>(null)
   const [generating, setGenerating] = useState(false)
+
+  // Plano free: só 1 cuidador além do parent (2 membros totais no grupo)
+  const canInviteMore = useMemo(() => {
+    if (isPremium) return true
+    return Object.keys(members).length < FREE_GROUP_SIZE_LIMIT
+  }, [isPremium, members])
 
   // Load the most recent active code on mount / baby change
   useEffect(() => {
@@ -44,6 +56,10 @@ export function useInviteCodes() {
 
   const generate = useCallback(async (): Promise<boolean> => {
     if (!user || !baby) return false
+    // Free: bloqueia se grupo já tem parent + 1 cuidador
+    if (!isPremium && Object.keys(members).length >= FREE_GROUP_SIZE_LIMIT) {
+      return false
+    }
     setGenerating(true)
 
     // Deactivate any existing active codes for this baby
@@ -73,7 +89,7 @@ export function useInviteCodes() {
     if (error) return false
     setCode(newCode)
     return true
-  }, [user, baby])
+  }, [user, baby, isPremium, members])
 
   /**
    * Deactivate all active codes for this baby. Uses `.select()` to confirm
@@ -94,5 +110,5 @@ export function useInviteCodes() {
     return true
   }, [baby])
 
-  return { code, generating, generate, deactivate }
+  return { code, generating, canInviteMore, generate, deactivate }
 }

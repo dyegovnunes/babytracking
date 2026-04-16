@@ -9,6 +9,7 @@ import GrowthSection from './components/GrowthSection'
 import Toast from '../../components/ui/Toast'
 import { AdBanner } from '../../components/ui/AdBanner'
 import BabySwitcher from '../../components/ui/BabySwitcher'
+import { PaywallModal } from '../../components/ui/PaywallModal'
 import SharedReports from './components/SharedReports'
 import { hapticLight } from '../../lib/haptics'
 import { contractionDe } from '../../lib/genderUtils'
@@ -18,6 +19,7 @@ import { useVaccines } from '../vaccines'
 import { useMedications } from '../medications'
 import { getActiveLeap, getUpcomingLeap, DEVELOPMENT_LEAPS } from '../milestones'
 import { useMyRole } from '../../hooks/useMyRole'
+import { useBabyPremium } from '../../hooks/useBabyPremium'
 import { can, roleLabel, nextRoleUp, nextRoleDown, type BabyRole } from '../../lib/roles'
 
 interface Caregiver {
@@ -33,6 +35,7 @@ export default function ProfilePage() {
   const navigate = useNavigate()
   const location = useLocation()
   const myRole = useMyRole()
+  const isPremium = useBabyPremium()
   const [toast, setToast] = useState<string | null>(null)
 
   // Se navegamos aqui com hash #shared-reports, rola até a seção
@@ -64,7 +67,8 @@ export default function ProfilePage() {
   useSheetBackClose(confirmDeleteBaby, () => { setConfirmDeleteBaby(false); setDeleteConfirmText('') })
 
   // Invite
-  const { code: inviteCode, generating: generatingCode, generate: generateInvite, deactivate: deactivateInvite } = useInviteCodes()
+  const { code: inviteCode, generating: generatingCode, canInviteMore, generate: generateInvite, deactivate: deactivateInvite } = useInviteCodes()
+  const [showCaregiverPaywall, setShowCaregiverPaywall] = useState(false)
 
   // Vaccines — só para o subtítulo do botão
   const { counts: vaccineCounts } = useVaccines(baby?.id, baby?.birthDate)
@@ -94,9 +98,14 @@ export default function ProfilePage() {
   )
 
   const handleGenerateInvite = useCallback(async () => {
+    if (!canInviteMore) {
+      setShowCaregiverPaywall(true)
+      return
+    }
     const ok = await generateInvite()
     if (ok) setToast('Código gerado!')
-  }, [generateInvite])
+    else setToast('Não foi possível gerar o código.')
+  }, [generateInvite, canInviteMore])
 
   const handleDeactivateCode = useCallback(async () => {
     const ok = await deactivateInvite()
@@ -125,13 +134,18 @@ export default function ProfilePage() {
     const next = nextRoleUp(currentRole as BabyRole)
     if (!next) return
     if (next === 'parent') {
+      // Free só pode ter 1 parent no bebê. Abre paywall em vez do confirm.
+      if (!isPremium && parentCount >= 1) {
+        setShowCaregiverPaywall(true)
+        return
+      }
       // Abre modal de confirmação in-app (não usa confirm() nativo do browser)
       setConfirmPromoteParent({ userId, currentRole })
       return
     }
     const ok = await updateMemberRole(dispatch, baby.id, userId, next)
     if (ok) setToast(`Promovido para ${roleLabel(next)}!`)
-  }, [baby, dispatch])
+  }, [baby, dispatch, isPremium, parentCount])
 
   const confirmPromoteToParent = useCallback(async () => {
     if (!baby || !confirmPromoteParent) return
@@ -617,6 +631,13 @@ export default function ProfilePage() {
           </div>
         </div>
       )}
+
+      {/* Paywall — cuidador extra no plano free */}
+      <PaywallModal
+        isOpen={showCaregiverPaywall}
+        onClose={() => setShowCaregiverPaywall(false)}
+        trigger="multi_caregiver"
+      />
 
       {toast && <Toast message={toast} onDismiss={() => setToast(null)} />}
     </div>

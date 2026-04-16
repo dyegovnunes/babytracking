@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
 import { useAppState, useAppDispatch, switchBaby } from '../../contexts/AppContext'
@@ -7,11 +7,15 @@ import { useSheetBackClose } from '../../hooks/useSheetBackClose'
 import { hapticLight, hapticSuccess } from '../../lib/haptics'
 import { autoRegisterPastMilestones } from '../../features/milestones/autoRegister'
 import { autoRegisterPastVaccines } from '../../features/vaccines/autoRegister'
+import { PaywallModal } from './PaywallModal'
 import Toast from './Toast'
 
 interface Props {
   onClose: () => void
 }
+
+const FREE_BABY_LIMIT = 1
+const PREMIUM_BABY_LIMIT = 2
 
 /**
  * Modal sheet for adding an additional baby (user already has at least one).
@@ -20,7 +24,7 @@ interface Props {
  */
 export default function AddBabySheet({ onClose }: Props) {
   const { user } = useAuth()
-  const { members } = useAppState()
+  const { members, babiesWithRole } = useAppState()
   const dispatch = useAppDispatch()
   useSheetBackClose(true, onClose)
 
@@ -29,6 +33,16 @@ export default function AddBabySheet({ onClose }: Props) {
   const [gender, setGender] = useState<'boy' | 'girl' | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [showPaywall, setShowPaywall] = useState(false)
+
+  // Quantos bebês o usuário é parent + se algum é premium (define o plano "efetivo" do user)
+  const parentedBabies = useMemo(
+    () => babiesWithRole.filter(b => b.myRole === 'parent'),
+    [babiesWithRole],
+  )
+  const userHasPremium = parentedBabies.some(b => b.isPremium)
+  const currentLimit = userHasPremium ? PREMIUM_BABY_LIMIT : FREE_BABY_LIMIT
+  const reachedLimit = parentedBabies.length >= currentLimit
 
   // Reuse the user's name from existing membership (or fallback to email prefix)
   const existingDisplayName =
@@ -39,6 +53,11 @@ export default function AddBabySheet({ onClose }: Props) {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!name.trim() || !birthDate || !gender || !user) return
+    // Enforce limite de bebês por plano
+    if (reachedLimit) {
+      setShowPaywall(true)
+      return
+    }
     hapticLight()
     setLoading(true)
     setError(null)
@@ -109,6 +128,20 @@ export default function AddBabySheet({ onClose }: Props) {
             <span className="material-symbols-outlined text-on-surface-variant">close</span>
           </button>
         </div>
+
+        {reachedLimit && (
+          <div className="mb-4 p-3 rounded-md bg-primary/10 border border-primary/20 flex items-start gap-2">
+            <span className="material-symbols-outlined text-primary text-base mt-0.5">lock</span>
+            <div className="flex-1">
+              <p className="font-label text-xs text-on-surface leading-relaxed">
+                {userHasPremium
+                  ? `Seu plano Yaya+ cobre até ${PREMIUM_BABY_LIMIT} bebês. Para adicionar mais, em breve teremos perfis extras.`
+                  : `No plano grátis você pode ter ${FREE_BABY_LIMIT} bebê cadastrado. Assine o Yaya+ para acompanhar até ${PREMIUM_BABY_LIMIT} bebês.`
+                }
+              </p>
+            </div>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Nome */}
@@ -181,6 +214,12 @@ export default function AddBabySheet({ onClose }: Props) {
 
         {error && <Toast message={error} onDismiss={() => setError(null)} />}
       </div>
+
+      <PaywallModal
+        isOpen={showPaywall}
+        onClose={() => setShowPaywall(false)}
+        trigger="multi_profile"
+      />
     </div>
   )
 }
