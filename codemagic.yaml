@@ -27,27 +27,9 @@ workflows:
           cd app
           npx cap add ios || true
           npx cap sync ios
-      - name: Configure entitlements and automatic signing
+      - name: Configure entitlements
         script: |
-          # ============================================================
-          # SIGNING STRATEGY: Automatic via Xcode + ASC API Key
-          # ============================================================
-          # NÃO usamos `xcode-project use-profiles` porque o Codemagic CLI
-          # cria profiles via App Store Connect API que NÃO incluem a
-          # capability Sign In with Apple (bug conhecido com capabilities
-          # adicionadas depois do primeiro profile). Em vez disso:
-          #
-          # 1. Criamos o entitlements file com SIWA
-          # 2. Linkamos no pbxproj
-          # 3. Mantemos CODE_SIGN_STYLE = Automatic (default do Capacitor)
-          # 4. Setamos DEVELOPMENT_TEAM no pbxproj
-          # 5. Passamos -allowProvisioningUpdates + API key pro xcodebuild
-          #
-          # O Xcode cria/baixa o profile correto automaticamente, incluindo
-          # todas as capabilities do App ID.
-          # ============================================================
-
-          # 1. Cria entitlements file
+          # Cria entitlements file com Sign In with Apple
           cat > app/ios/App/App/App.entitlements <<'EOF'
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -61,57 +43,154 @@ workflows:
           </plist>
           EOF
 
-          # 2. Injeta CODE_SIGN_ENTITLEMENTS + DEVELOPMENT_TEAM no pbxproj
-          #    Mantém CODE_SIGN_STYLE = Automatic (já é o default do Capacitor)
+          # Injeta CODE_SIGN_ENTITLEMENTS no pbxproj (antes do use-profiles)
           python3 <<'PYEOF'
           with open('app/ios/App/App.xcodeproj/project.pbxproj', 'r') as f:
               content = f.read()
-
-          modified = False
-
-          # Adiciona CODE_SIGN_ENTITLEMENTS se ainda não existe
           if 'CODE_SIGN_ENTITLEMENTS' not in content:
               content = content.replace(
                   'CODE_SIGN_STYLE = Automatic;',
                   'CODE_SIGN_STYLE = Automatic;\n\t\t\t\tCODE_SIGN_ENTITLEMENTS = App/App.entitlements;'
               )
-              modified = True
+              with open('app/ios/App/App.xcodeproj/project.pbxproj', 'w') as f:
+                  f.write(content)
               print('Added CODE_SIGN_ENTITLEMENTS to pbxproj')
+          else:
+              print('CODE_SIGN_ENTITLEMENTS already present')
+          PYEOF
+          plutil -lint app/ios/App/App.xcodeproj/project.pbxproj
+      - name: Install certificate via Codemagic
+        script: |
+          # use-profiles instala o certificado de distribuição + cria um
+          # provisioning profile. O profile pode não ter SIWA, mas não importa
+          # — vamos trocar pra automatic signing no próximo step.
+          xcode-project use-profiles
+      - name: Switch to automatic signing + prepare API key
+        script: |
+          # ============================================================
+          # O use-profiles setou Manual signing + um profile sem SIWA.
+          # Trocamos pra Automatic e deixamos o Xcode criar o profile
+          # correto via API key do App Store Connect.
+          # ============================================================
 
-          # Garante DEVELOPMENT_TEAM = 8TC26XK3WP em todas as build configs
+          # 1. Debug: mostra entitlements do profile instalado
+          echo "=== Profile entitlements ==="
+          for f in "$HOME/Library/MobileDevice/Provisioning Profiles"/*.mobileprovision; do
+            echo "--- $(basename "$f") ---"
+            security cms -D -i "$f" 2>/dev/null | plutil -extract Entitlements xml1 -o - - 2>/dev/null || \
+              security cms -D -i "$f" 2>/dev/null | grep -A2 "apple" || echo "(could not extract)"
+          done
+
+          # 2. Switch pbxproj: Manual → Automatic, remove profile specifier, set team
+          python3 <<'PYEOF'
+          import re
+
+          with open('app/ios/App/App.xcodeproj/project.pbxproj', 'r') as f:
+              content = f.read()
+
+          # use-profiles set Manual — switch back to Automatic
+          content = content.replace('CODE_SIGN_STYLE = Manual;', 'CODE_SIGN_STYLE = Automatic;')
+          print(f'Manual→Automatic replacements: {content.count("CODE_SIGN_STYLE = Automatic;")}')
+
+          # Remove PROVISIONING_PROFILE_SPECIFIER (use-profiles added it)
+          content = re.sub(r'\t*PROVISIONING_PROFILE_SPECIFIER = ".*?";\n', '', content)
+          print('Removed PROVISIONING_PROFILE_SPECIFIER')
+
+          # Ensure DEVELOPMENT_TEAM
           if 'DEVELOPMENT_TEAM = 8TC26XK3WP' not in content:
               content = content.replace(
                   'CODE_SIGN_STYLE = Automatic;',
                   'CODE_SIGN_STYLE = Automatic;\n\t\t\t\tDEVELOPMENT_TEAM = 8TC26XK3WP;'
               )
-              modified = True
-              print('Added DEVELOPMENT_TEAM to pbxproj')
+              print('Added DEVELOPMENT_TEAM')
 
-          if modified:
-              with open('app/ios/App/App.xcodeproj/project.pbxproj', 'w') as f:
-                  f.write(content)
-          else:
-              print('pbxproj already configured, skipping')
+          with open('app/ios/App/App.xcodeproj/project.pbxproj', 'w') as f:
+              f.write(content)
+          print('pbxproj updated for automatic signing')
           PYEOF
 
-          # 3. Valida pbxproj
           plutil -lint app/ios/App/App.xcodeproj/project.pbxproj
 
-          # 4. Prepara API key pro xcodebuild usar automatic provisioning
-          #    A env var pode ter \n literais — printf %b converte em newlines reais
-          mkdir -p ~/.appstoreconnect/private_keys
-          KEY_PATH=~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_IDENTIFIER}.p8
-          printf '%b' "${APP_STORE_CONNECT_PRIVATE_KEY}" > "$KEY_PATH"
-          echo "API Key written: AuthKey_${APP_STORE_CONNECT_KEY_IDENTIFIER}.p8"
-          echo "Key file size: $(wc -c < "$KEY_PATH") bytes, $(wc -l < "$KEY_PATH") lines"
-          head -1 "$KEY_PATH"
-          tail -1 "$KEY_PATH"
+          # 3. Write API key using Python (handles all newline/encoding formats)
+          python3 <<'PYEOF'
+          import os, sys
+
+          key_id = os.environ.get('APP_STORE_CONNECT_KEY_IDENTIFIER', '')
+          issuer = os.environ.get('APP_STORE_CONNECT_ISSUER_ID', '')
+          raw_key = os.environ.get('APP_STORE_CONNECT_PRIVATE_KEY', '')
+
+          print(f'Key ID: {key_id}')
+          print(f'Issuer ID: {issuer[:8]}...' if issuer else 'Issuer: MISSING')
+          print(f'Raw key length: {len(raw_key)} chars')
+
+          if not raw_key or not key_id:
+              print('ERROR: Missing API key env vars')
+              sys.exit(1)
+
+          # Try multiple formats:
+          # Format 1: literal \n in the string
+          key = raw_key.replace('\\n', '\n')
+          # Format 2: remove any \r
+          key = key.replace('\r', '')
+          # Ensure it ends with a newline
+          if not key.endswith('\n'):
+              key += '\n'
+
+          # Write to the standard location xcodebuild searches
+          key_dir = os.path.expanduser('~/.appstoreconnect/private_keys')
+          os.makedirs(key_dir, exist_ok=True)
+          key_path = os.path.join(key_dir, f'AuthKey_{key_id}.p8')
+
+          with open(key_path, 'w') as f:
+              f.write(key)
+
+          # Also write to ~/private_keys (another standard location)
+          key_dir2 = os.path.expanduser('~/private_keys')
+          os.makedirs(key_dir2, exist_ok=True)
+          key_path2 = os.path.join(key_dir2, f'AuthKey_{key_id}.p8')
+          with open(key_path2, 'w') as f:
+              f.write(key)
+
+          # Validate
+          lines = key.strip().split('\n')
+          print(f'Written to: {key_path}')
+          print(f'Also to: {key_path2}')
+          print(f'Lines: {len(lines)}')
+          print(f'First line: {lines[0]}')
+          print(f'Last line:  {lines[-1]}')
+
+          if '-----BEGIN PRIVATE KEY-----' not in key:
+              print('WARNING: Missing PEM header! Key might be base64 encoded.')
+              # Try base64 decode
+              import base64
+              try:
+                  decoded = base64.b64decode(raw_key).decode('utf-8')
+                  if '-----BEGIN' in decoded:
+                      with open(key_path, 'w') as f:
+                          f.write(decoded)
+                      with open(key_path2, 'w') as f:
+                          f.write(decoded)
+                      print('Decoded from base64 successfully')
+                  else:
+                      print('Base64 decode did not produce PEM')
+              except Exception as e:
+                  print(f'Base64 decode failed: {e}')
+          else:
+              print('PEM header found - key looks valid')
+
+          # Also search for any existing .p8 files Codemagic might have installed
+          print('\n=== Existing .p8 files on system ===')
+          import subprocess
+          result = subprocess.run(['find', '/Users/builder', '-name', '*.p8', '-type', 'f'],
+                                capture_output=True, text=True, timeout=5)
+          print(result.stdout if result.stdout else '(none found)')
+          PYEOF
 
           echo ""
           echo "=== signing config summary ==="
-          grep -n "CODE_SIGN_ENTITLEMENTS\|CODE_SIGN_STYLE\|DEVELOPMENT_TEAM" app/ios/App/App.xcodeproj/project.pbxproj || echo "NOT FOUND"
-          echo "--- entitlements ---"
-          cat app/ios/App/App/App.entitlements
+          grep -c "CODE_SIGN_STYLE = Automatic" app/ios/App/App.xcodeproj/project.pbxproj | xargs -I{} echo "Automatic signing count: {}"
+          grep -c "DEVELOPMENT_TEAM = 8TC26XK3WP" app/ios/App/App.xcodeproj/project.pbxproj | xargs -I{} echo "Team ID count: {}"
+          grep -c "CODE_SIGN_ENTITLEMENTS" app/ios/App/App.xcodeproj/project.pbxproj | xargs -I{} echo "Entitlements count: {}"
       - name: Set app icon
         script: |
           cp app/assets/app-icon-1024.png app/ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png
@@ -122,10 +201,10 @@ workflows:
           /usr/libexec/PlistBuddy -c "Add :ITSAppUsesNonExemptEncryption bool false" Info.plist || /usr/libexec/PlistBuddy -c "Set :ITSAppUsesNonExemptEncryption false" Info.plist
           # AdMob
           /usr/libexec/PlistBuddy -c "Add :GADApplicationIdentifier string ca-app-pub-5445931232409285~9773184902" Info.plist || /usr/libexec/PlistBuddy -c "Set :GADApplicationIdentifier ca-app-pub-5445931232409285~9773184902" Info.plist
-          # Photo library + camera usage descriptions (iOS 26 exige pra qualquer framework que toque PhotoKit)
+          # Photo library + camera usage descriptions
           /usr/libexec/PlistBuddy -c "Add :NSPhotoLibraryUsageDescription string 'O Yaya precisa acessar suas fotos para você escolher a imagem do perfil do bebê.'" Info.plist || /usr/libexec/PlistBuddy -c "Set :NSPhotoLibraryUsageDescription 'O Yaya precisa acessar suas fotos para você escolher a imagem do perfil do bebê.'" Info.plist
           /usr/libexec/PlistBuddy -c "Add :NSCameraUsageDescription string 'O Yaya precisa acessar a câmera para você tirar uma foto do bebê para o perfil.'" Info.plist || /usr/libexec/PlistBuddy -c "Set :NSCameraUsageDescription 'O Yaya precisa acessar a câmera para você tirar uma foto do bebê para o perfil.'" Info.plist
-          # URL scheme pra deep link OAuth (Google Android continua usando; no iOS mantemos pra compat)
+          # URL scheme
           /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes array" Info.plist 2>/dev/null || true
           /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0 dict" Info.plist 2>/dev/null || true
           /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLName string app.yayababy" Info.plist 2>/dev/null || true
@@ -140,7 +219,36 @@ workflows:
         script: |
           cd app/ios/App
 
-          echo "=== xcodebuild archive (automatic signing + ASC API key) ==="
+          # Encontra a API key (escrita pelo step anterior ou já existente)
+          KEY_PATH=""
+          for dir in ~/.appstoreconnect/private_keys ~/private_keys ~/.private_keys; do
+            found=$(find "$dir" -name "AuthKey_*.p8" 2>/dev/null | head -1)
+            if [ -n "$found" ]; then
+              KEY_PATH="$found"
+              break
+            fi
+          done
+
+          # Fallback: busca em qualquer lugar do home
+          if [ -z "$KEY_PATH" ]; then
+            KEY_PATH=$(find "$HOME" -name "AuthKey_*.p8" -type f 2>/dev/null | head -1)
+          fi
+
+          if [ -z "$KEY_PATH" ]; then
+            echo "ERROR: No API key (.p8) file found!"
+            find "$HOME" -name "*.p8" -type f 2>/dev/null || echo "No .p8 files anywhere"
+            exit 1
+          fi
+
+          echo "=== Using API key: $KEY_PATH ==="
+          echo "Key ID: $APP_STORE_CONNECT_KEY_IDENTIFIER"
+          echo "Issuer: ${APP_STORE_CONNECT_ISSUER_ID:0:8}..."
+          wc -l "$KEY_PATH"
+          head -1 "$KEY_PATH"
+          tail -1 "$KEY_PATH"
+
+          echo ""
+          echo "=== xcodebuild archive ==="
           mkdir -p build/ios/xcarchive build/ios/ipa
           set +e
           xcodebuild \
@@ -150,9 +258,9 @@ workflows:
             -destination 'generic/platform=iOS' \
             -archivePath build/ios/xcarchive/App.xcarchive \
             -allowProvisioningUpdates \
-            -authenticationKeyPath ~/".appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_IDENTIFIER}.p8" \
-            -authenticationKeyID "${APP_STORE_CONNECT_KEY_IDENTIFIER}" \
-            -authenticationKeyIssuerID "${APP_STORE_CONNECT_ISSUER_ID}" \
+            -authenticationKeyPath "$KEY_PATH" \
+            -authenticationKeyID "$APP_STORE_CONNECT_KEY_IDENTIFIER" \
+            -authenticationKeyIssuerID "$APP_STORE_CONNECT_ISSUER_ID" \
             COMPILER_INDEX_STORE_ENABLE=NO \
             archive 2>&1 | tee /tmp/archive.log
           ARCHIVE_EXIT=${PIPESTATUS[0]}
@@ -196,9 +304,9 @@ workflows:
             -exportPath build/ios/ipa \
             -exportOptionsPlist /tmp/ExportOptions.plist \
             -allowProvisioningUpdates \
-            -authenticationKeyPath ~/".appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_IDENTIFIER}.p8" \
-            -authenticationKeyID "${APP_STORE_CONNECT_KEY_IDENTIFIER}" \
-            -authenticationKeyIssuerID "${APP_STORE_CONNECT_ISSUER_ID}" \
+            -authenticationKeyPath "$KEY_PATH" \
+            -authenticationKeyID "$APP_STORE_CONNECT_KEY_IDENTIFIER" \
+            -authenticationKeyIssuerID "$APP_STORE_CONNECT_ISSUER_ID" \
             2>&1 | tee /tmp/export.log
           EXPORT_EXIT=${PIPESTATUS[0]}
           set -e
