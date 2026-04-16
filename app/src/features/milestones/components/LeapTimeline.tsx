@@ -11,7 +11,6 @@ interface LeapTimelineProps {
   onToggle: (id: number) => void
   birthDate: string
 
-
   logs: LogEntry[]
   notes: Map<number, LeapNote>
   onSaveNote: (leapId: number, text: string) => Promise<{ error: string | null } | undefined>
@@ -31,7 +30,9 @@ function StatusDot({ status }: { status: LeapStatus }) {
   }
   if (status === 'active') {
     return (
-      <div className="w-7 h-7 rounded-full border-2 border-primary bg-primary/10 animate-pulse flex-shrink-0" />
+      <div className="w-7 h-7 rounded-full border-2 border-primary bg-primary/15 animate-pulse flex items-center justify-center flex-shrink-0">
+        <div className="w-2.5 h-2.5 rounded-full bg-primary" />
+      </div>
     )
   }
   if (status === 'upcoming') {
@@ -39,12 +40,16 @@ function StatusDot({ status }: { status: LeapStatus }) {
       <div className="w-7 h-7 rounded-full border-2 border-amber-400 bg-amber-50 flex-shrink-0" />
     )
   }
+  // future — lock icon
   return (
-    <div className="w-7 h-7 rounded-full border-2 border-outline-variant bg-surface flex-shrink-0 opacity-50" />
+    <div className="w-7 h-7 rounded-full border-2 border-outline-variant/30 bg-surface flex items-center justify-center flex-shrink-0">
+      <span className="material-symbols-outlined text-on-surface-variant/40 text-sm">lock</span>
+    </div>
   )
 }
 
 const MS_PER_WEEK = 7 * 86400000
+const MS_PER_DAY = 86400000
 
 function formatDateShort(date: Date): string {
   return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })
@@ -54,7 +59,105 @@ function formatDateRange(birthDate: string, leap: DevelopmentLeap): string {
   const birthMs = new Date(birthDate).getTime()
   const start = new Date(birthMs + leap.weekStart * MS_PER_WEEK)
   const end = new Date(birthMs + (leap.weekEnd + 1) * MS_PER_WEEK)
-  return `aprox. entre ${formatDateShort(start)} e ${formatDateShort(end)}`
+  const days = Math.round((end.getTime() - start.getTime()) / MS_PER_DAY)
+  return `aprox. entre ${formatDateShort(start)} e ${formatDateShort(end)} (${days} dias)`
+}
+
+/** Progress bar for the active leap */
+function ActiveLeapProgress({ birthDate, leap }: { birthDate: string; leap: DevelopmentLeap }) {
+  const birthMs = new Date(birthDate).getTime()
+  const startMs = birthMs + leap.weekStart * MS_PER_WEEK
+  const endMs = birthMs + (leap.weekEnd + 1) * MS_PER_WEEK
+  const now = Date.now()
+  const progress = Math.min(1, Math.max(0, (now - startMs) / (endMs - startMs)))
+  const weeksIn = Math.max(1, Math.ceil((now - startMs) / MS_PER_WEEK))
+  const totalWeeks = leap.weekEnd - leap.weekStart + 1
+
+  return (
+    <div className="mt-2 mb-1">
+      <div className="flex justify-between text-xs text-on-surface-variant font-label mb-1">
+        <span>Semana {Math.min(weeksIn, totalWeeks)} de {totalWeeks}</span>
+        <span>{Math.round(progress * 100)}%</span>
+      </div>
+      <div className="h-2 bg-primary/15 rounded-full overflow-hidden">
+        <div
+          className="h-full bg-primary rounded-full transition-all duration-500"
+          style={{ width: `${progress * 100}%` }}
+        />
+      </div>
+    </div>
+  )
+}
+
+/** Interval row between leaps */
+function IntervalItem({
+  prevLeap,
+  nextLeap,
+  birthDate,
+  isFirst,
+}: {
+  prevLeap: DevelopmentLeap | null
+  nextLeap: DevelopmentLeap
+  birthDate: string
+  isFirst: boolean
+}) {
+  const birthMs = new Date(birthDate).getTime()
+  const now = Date.now()
+
+  let intervalStartWeek: number
+  let intervalEndWeek: number
+
+  if (isFirst) {
+    intervalStartWeek = 0
+    intervalEndWeek = nextLeap.weekStart - 1
+  } else {
+    intervalStartWeek = prevLeap!.weekEnd + 1
+    intervalEndWeek = nextLeap.weekStart - 1
+  }
+
+  const gapWeeks = intervalEndWeek - intervalStartWeek + 1
+  if (gapWeeks < 1) return null
+
+  const intervalStartMs = birthMs + intervalStartWeek * MS_PER_WEEK
+  const intervalEndMs = birthMs + (intervalEndWeek + 1) * MS_PER_WEEK
+  const isCurrentlyHere = now >= intervalStartMs && now < intervalEndMs
+
+  const daysUntilNext = Math.max(0, Math.ceil((birthMs + nextLeap.weekStart * MS_PER_WEEK - now) / MS_PER_DAY))
+
+  return (
+    <div className="relative flex gap-3">
+      {/* Vertical line continues */}
+      <div className="absolute left-[13px] top-0 bottom-0 border-l-2 border-outline-variant/40" />
+
+      {/* Small diamond dot */}
+      <div className="w-7 h-7 flex items-center justify-center flex-shrink-0 z-[1]">
+        <span className="text-on-surface-variant/40 text-[10px]">&#9670;</span>
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 pb-4 pt-0.5">
+        <p className="font-label text-xs text-on-surface-variant/70 font-medium">
+          {isFirst ? 'Primeiras semanas' : 'Fase de calmaria'}
+        </p>
+        {isCurrentlyHere ? (
+          <p className="text-xs text-tertiary font-semibold mt-0.5">
+            Aproveitem a fase tranquila!
+            {daysUntilNext > 0 && (
+              <span className="text-on-surface-variant/70 font-normal">
+                {' '}· {daysUntilNext} {daysUntilNext === 1 ? 'dia' : 'dias'} até o próximo salto
+              </span>
+            )}
+          </p>
+        ) : (
+          now < intervalStartMs && daysUntilNext > 0 && (
+            <p className="text-xs text-on-surface-variant/50 mt-0.5">
+              {daysUntilNext} {daysUntilNext === 1 ? 'dia' : 'dias'} até o próximo salto
+            </p>
+          )
+        )}
+      </div>
+    </div>
+  )
 }
 
 export default function LeapTimeline({
@@ -73,58 +176,75 @@ export default function LeapTimeline({
         const isLast = index === leaps.length - 1
         const isExpanded = expandedId === leap.id
         const dimmed = status === 'past' || status === 'future'
+        const prevLeap = index > 0 ? leaps[index - 1].leap : null
 
         return (
-          <div key={leap.id} className="relative flex gap-3">
-            {/* Vertical line */}
-            {!isLast && (
-              <div
-                className="absolute left-[13px] top-7 bottom-0 border-l-2 border-outline-variant/40"
-              />
-            )}
+          <div key={leap.id}>
+            {/* Interval before this leap */}
+            <IntervalItem
+              prevLeap={prevLeap}
+              nextLeap={leap}
+              birthDate={birthDate}
+              isFirst={index === 0}
+            />
 
-            {/* Dot */}
-            <StatusDot status={status} />
-
-            {/* Content */}
-            <div className={`flex-1 pb-5 ${dimmed ? 'opacity-60' : ''}`}>
-              <button
-                type="button"
-                className="w-full text-left"
-                onClick={() => onToggle(leap.id)}
-              >
-                <p className="font-label font-semibold text-sm text-on-surface">
-                  Salto {leap.id}: {leap.name}
-                </p>
-                <p className="text-xs text-on-surface-variant mt-0.5">
-                  {leap.subtitle}
-                </p>
-                {(status === 'active' || status === 'upcoming' || status === 'future') && (
-                  <p className="text-xs text-on-surface-variant/70 mt-0.5">
-                    {formatDateRange(birthDate, leap)}
-                  </p>
-                )}
-                {status === 'active' && (
-                  <span className="inline-block mt-1 px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-semibold">
-                    Em andamento
-                  </span>
-                )}
-              </button>
-
-              {isExpanded && (
-                <div className="mt-3">
-                  <LeapCard
-                    leap={leap}
-                    status={status}
-                    estimatedDate={estimatedDate}
-                    birthDate={birthDate}
-                    logs={logs}
-                    note={notes.get(leap.id)}
-                    onSaveNote={onSaveNote}
-                    isPremium={isPremium}
-                  />
-                </div>
+            {/* Leap item */}
+            <div className="relative flex gap-3">
+              {/* Vertical line */}
+              {!isLast && (
+                <div
+                  className="absolute left-[13px] top-7 bottom-0 border-l-2 border-outline-variant/40"
+                />
               )}
+
+              {/* Dot */}
+              <StatusDot status={status} />
+
+              {/* Content */}
+              <div className={`flex-1 pb-5 ${dimmed ? 'opacity-60' : ''}`}>
+                <button
+                  type="button"
+                  className="w-full text-left"
+                  onClick={() => onToggle(leap.id)}
+                >
+                  <p className="font-label font-semibold text-sm text-on-surface">
+                    Salto {leap.id}: {leap.name}
+                  </p>
+                  <p className="text-xs text-on-surface-variant mt-0.5">
+                    {leap.subtitle}
+                  </p>
+                  {(status === 'active' || status === 'upcoming' || status === 'future') && (
+                    <p className="text-xs text-on-surface-variant/70 mt-0.5">
+                      {formatDateRange(birthDate, leap)}
+                    </p>
+                  )}
+                  {status === 'active' && (
+                    <span className="inline-block mt-1 px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-semibold">
+                      Em andamento
+                    </span>
+                  )}
+                </button>
+
+                {/* Progress bar for active leap */}
+                {status === 'active' && (
+                  <ActiveLeapProgress birthDate={birthDate} leap={leap} />
+                )}
+
+                {isExpanded && (
+                  <div className="mt-3">
+                    <LeapCard
+                      leap={leap}
+                      status={status}
+                      estimatedDate={estimatedDate}
+                      birthDate={birthDate}
+                      logs={logs}
+                      note={notes.get(leap.id)}
+                      onSaveNote={onSaveNote}
+                      isPremium={isPremium}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )

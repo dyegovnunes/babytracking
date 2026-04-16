@@ -44,11 +44,11 @@ export default function LeapsPage() {
   }, [baby?.birthDate])
 
   // Auto-expandir o salto ativo
-  const activeLeap = leapsWithStatus.find(l => l.status === 'active')
+  const activeLeapEntry = leapsWithStatus.find(l => l.status === 'active')
 
   // Se não expandiu nada ainda e há salto ativo, mostrar ele
   const effectiveExpanded =
-    expandedId ?? (activeLeap ? activeLeap.leap.id : null)
+    expandedId ?? (activeLeapEntry ? activeLeapEntry.leap.id : null)
 
   function handleToggle(id: number) {
     setExpandedId(prev => (prev === id ? null : id))
@@ -91,69 +91,6 @@ export default function LeapsPage() {
 
       {/* Conteúdo */}
       <div className="flex-1 overflow-y-auto px-4 py-4">
-        {/* Card do salto ativo */}
-        {activeLeap && (
-          <div className="mb-4 bg-primary/8 border border-primary/20 rounded-md p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-lg">⚡</span>
-              <div>
-                <h2 className="text-on-surface font-headline text-sm font-bold">
-                  Salto {activeLeap.leap.id}: {activeLeap.leap.name}
-                </h2>
-                <p className="text-on-surface-variant font-label text-xs">
-                  {activeLeap.leap.subtitle}
-                </p>
-              </div>
-            </div>
-
-            {/* Barra de progresso */}
-            {(() => {
-              const birthMs = new Date(baby.birthDate).getTime()
-              const startMs =
-                birthMs + activeLeap.leap.weekStart * MS_PER_WEEK
-              const endMs =
-                birthMs + (activeLeap.leap.weekEnd + 1) * MS_PER_WEEK
-              const now = Date.now()
-              const progress = Math.min(
-                1,
-                Math.max(0, (now - startMs) / (endMs - startMs)),
-              )
-              const weeksIn = Math.max(
-                1,
-                Math.ceil((now - startMs) / MS_PER_WEEK),
-              )
-              const totalWeeks =
-                activeLeap.leap.weekEnd - activeLeap.leap.weekStart + 1
-
-              return (
-                <div>
-                  <div className="flex justify-between text-xs text-on-surface-variant font-label mb-1">
-                    <span>
-                      Semana {Math.min(weeksIn, totalWeeks)} de {totalWeeks}
-                    </span>
-                    <span>{Math.round(progress * 100)}%</span>
-                  </div>
-                  <div className="h-2 bg-primary/15 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-primary rounded-full transition-all duration-500"
-                      style={{ width: `${progress * 100}%` }}
-                    />
-                  </div>
-                </div>
-              )
-            })()}
-
-            <button
-              onClick={() => handleToggle(activeLeap.leap.id)}
-              className="mt-3 text-primary font-label text-xs font-medium"
-            >
-              {effectiveExpanded === activeLeap.leap.id
-                ? 'Recolher detalhes'
-                : 'Ver detalhes'}
-            </button>
-          </div>
-        )}
-
         {/* Timeline completa */}
         <LeapTimeline
           leaps={leapsWithStatus}

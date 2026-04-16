@@ -88,7 +88,7 @@ export default function LeapCard({
       {/* Registro impact */}
       <div className="rounded-md bg-primary/5 p-3">
         <p className="text-xs font-semibold text-on-surface-variant mb-0.5">
-          Impacto nos registros
+          Impacto na rotina
         </p>
         <p className="text-xs text-on-surface-variant leading-relaxed">
           {leap.registroImpact}

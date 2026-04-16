@@ -206,7 +206,7 @@ function renderContent({
             <ul className="space-y-1.5">
               {leap.tips.map((tip, i) => (
                 <li key={i} className="flex gap-2 items-start">
-                  <span className="text-tertiary text-sm leading-tight">✓</span>
+                  <span className="text-tertiary text-sm leading-tight">💡</span>
                   <span className="font-body text-xs text-on-surface leading-relaxed">{tip}</span>
                 </li>
               ))}
@@ -215,7 +215,7 @@ function renderContent({
 
           <div className="mt-3 p-3 rounded-md bg-primary/5 border border-primary/15">
             <p className="font-label text-[10px] font-bold uppercase tracking-wider text-primary mb-1">
-              Impacto no registro
+              Impacto na rotina {babyGender === 'girl' ? 'da' : 'do'} {babyName}
             </p>
             <p className="font-body text-xs text-on-surface-variant leading-relaxed">
               {leap.registroImpact}
