@@ -1,5 +1,4 @@
 import type { DevelopmentLeap } from '../developmentLeaps'
-import type { LeapNote } from '../useLeapNotes'
 import type { LogEntry } from '../../../types'
 import LeapCard from './LeapCard'
 
@@ -10,19 +9,20 @@ interface LeapTimelineProps {
   expandedId: number | null
   onToggle: (id: number) => void
   birthDate: string
+  babyName: string
+  babyGender?: 'boy' | 'girl'
+  babyId: string
 
   logs: LogEntry[]
-  notes: Map<number, LeapNote>
-  onSaveNote: (leapId: number, text: string) => Promise<{ error: string | null } | undefined>
   isPremium: boolean
 }
 
 function StatusDot({ status }: { status: LeapStatus }) {
   if (status === 'past') {
     return (
-      <div className="w-7 h-7 rounded-full bg-tertiary/15 flex items-center justify-center flex-shrink-0">
+      <div className="w-7 h-7 rounded-full bg-green-500/15 flex items-center justify-center flex-shrink-0">
         <span
-          className="material-symbols-outlined text-tertiary text-lg"
+          className="material-symbols-outlined text-green-500 text-lg"
           style={{ fontVariationSettings: "'FILL' 1" }}
         >check_circle</span>
       </div>
@@ -140,20 +140,18 @@ function IntervalItem({
           {isFirst ? 'Primeiras semanas' : 'Fase de calmaria'}
         </p>
         {isCurrentlyHere ? (
-          <p className="text-xs text-tertiary font-semibold mt-0.5">
-            Aproveitem a fase tranquila!
+          <p className="text-xs text-green-600 dark:text-green-400 font-semibold mt-0.5">
+            Voces estao aqui!
             {daysUntilNext > 0 && (
               <span className="text-on-surface-variant/70 font-normal">
-                {' '}· {daysUntilNext} {daysUntilNext === 1 ? 'dia' : 'dias'} até o próximo salto
+                {' '}· Proximo salto em {daysUntilNext} {daysUntilNext === 1 ? 'dia' : 'dias'}
               </span>
             )}
           </p>
         ) : (
-          now < intervalStartMs && daysUntilNext > 0 && (
-            <p className="text-xs text-on-surface-variant/50 mt-0.5">
-              {daysUntilNext} {daysUntilNext === 1 ? 'dia' : 'dias'} até o próximo salto
-            </p>
-          )
+          <p className="text-xs text-on-surface-variant/50 mt-0.5">
+            ~{gapWeeks} {gapWeeks === 1 ? 'semana' : 'semanas'} de intervalo
+          </p>
         )}
       </div>
     </div>
@@ -165,9 +163,10 @@ export default function LeapTimeline({
   expandedId,
   onToggle,
   birthDate,
+  babyName,
+  babyGender,
+  babyId,
   logs,
-  notes,
-  onSaveNote,
   isPremium,
 }: LeapTimelineProps) {
   return (
@@ -213,11 +212,10 @@ export default function LeapTimeline({
                   <p className="text-xs text-on-surface-variant mt-0.5">
                     {leap.subtitle}
                   </p>
-                  {(status === 'active' || status === 'upcoming' || status === 'future') && (
-                    <p className="text-xs text-on-surface-variant/70 mt-0.5">
-                      {formatDateRange(birthDate, leap)}
-                    </p>
-                  )}
+                  {/* Show date range for ALL statuses */}
+                  <p className="text-xs text-on-surface-variant/70 mt-0.5">
+                    {formatDateRange(birthDate, leap)}
+                  </p>
                   {status === 'active' && (
                     <span className="inline-block mt-1 px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-semibold">
                       Em andamento
@@ -231,15 +229,19 @@ export default function LeapTimeline({
                 )}
 
                 {isExpanded && (
-                  <div className="mt-3">
+                  <div
+                    className="mt-3 overflow-hidden"
+                    style={{ animation: 'fadeSlideIn 0.25s ease-out' }}
+                  >
                     <LeapCard
                       leap={leap}
                       status={status}
                       estimatedDate={estimatedDate}
                       birthDate={birthDate}
+                      babyName={babyName}
+                      babyGender={babyGender}
+                      babyId={babyId}
                       logs={logs}
-                      note={notes.get(leap.id)}
-                      onSaveNote={onSaveNote}
                       isPremium={isPremium}
                     />
                   </div>
@@ -249,6 +251,20 @@ export default function LeapTimeline({
           </div>
         )
       })}
+
+      {/* Keyframes for expand animation */}
+      <style>{`
+        @keyframes fadeSlideIn {
+          from {
+            opacity: 0;
+            transform: translateY(-8px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
     </div>
   )
 }

@@ -1,8 +1,7 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppState } from '../../contexts/AppContext'
 import { useBabyPremium } from '../../hooks/useBabyPremium'
-import { useLeapNotes } from './useLeapNotes'
 import { DEVELOPMENT_LEAPS, type DevelopmentLeap } from './developmentLeaps'
 import { contractionDe } from '../../lib/genderUtils'
 import LeapTimeline from './components/LeapTimeline'
@@ -30,9 +29,9 @@ export default function LeapsPage() {
   const navigate = useNavigate()
   const { baby, logs } = useAppState()
   const isPremium = useBabyPremium()
-  const { notes, saveNote } = useLeapNotes(baby?.id)
 
   const [expandedId, setExpandedId] = useState<number | null>(null)
+  const hasInteracted = useRef(false)
 
   const leapsWithStatus = useMemo(() => {
     if (!baby?.birthDate) return []
@@ -43,14 +42,15 @@ export default function LeapsPage() {
     })
   }, [baby?.birthDate])
 
-  // Auto-expandir o salto ativo
+  // Auto-expand the active leap only until user interacts
   const activeLeapEntry = leapsWithStatus.find(l => l.status === 'active')
 
-  // Se não expandiu nada ainda e há salto ativo, mostrar ele
-  const effectiveExpanded =
-    expandedId ?? (activeLeapEntry ? activeLeapEntry.leap.id : null)
+  const effectiveExpanded = hasInteracted.current
+    ? expandedId
+    : (activeLeapEntry?.leap.id ?? null)
 
   function handleToggle(id: number) {
+    hasInteracted.current = true
     setExpandedId(prev => (prev === id ? null : id))
   }
 
@@ -89,7 +89,7 @@ export default function LeapsPage() {
         </div>
       </div>
 
-      {/* Conteúdo */}
+      {/* Conteudo */}
       <div className="flex-1 overflow-y-auto px-4 py-4">
         {/* Timeline completa */}
         <LeapTimeline
@@ -97,9 +97,10 @@ export default function LeapsPage() {
           expandedId={effectiveExpanded}
           onToggle={handleToggle}
           birthDate={baby.birthDate}
+          babyName={baby.name}
+          babyGender={baby.gender as 'boy' | 'girl' | undefined}
+          babyId={baby.id}
           logs={logs}
-          notes={notes}
-          onSaveNote={saveNote}
           isPremium={isPremium}
         />
       </div>

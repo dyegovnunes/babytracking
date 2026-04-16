@@ -1,8 +1,8 @@
 import type { DevelopmentLeap } from '../developmentLeaps'
-import type { LeapNote } from '../useLeapNotes'
 import type { LogEntry } from '../../../types'
+import { contractionDe, adjEnding } from '../../../lib/genderUtils'
 import LeapDataInsight from './LeapDataInsight'
-import LeapNoteForm from './LeapNoteForm'
+import LeapMoodTracker from './LeapMoodTracker'
 
 type LeapStatus = 'past' | 'active' | 'upcoming' | 'future'
 
@@ -11,10 +11,11 @@ interface LeapCardProps {
   status: LeapStatus
   estimatedDate: Date
   birthDate: string
+  babyName: string
+  babyGender?: 'boy' | 'girl'
+  babyId: string
 
   logs: LogEntry[]
-  note: LeapNote | undefined
-  onSaveNote: (leapId: number, text: string) => Promise<{ error: string | null } | undefined>
   isPremium: boolean
 }
 
@@ -27,23 +28,26 @@ export default function LeapCard({
   status,
   estimatedDate,
   birthDate,
+  babyName,
+  babyGender,
+  babyId,
   logs,
-  note,
-  onSaveNote,
   isPremium,
 }: LeapCardProps) {
   const durationWeeks = leap.weekEnd - leap.weekStart + 1
+  const de = contractionDe(babyGender)
+  const adjAgitado = `agitad${adjEnding(babyGender)}`
 
   return (
     <div className="rounded-md bg-surface-container p-4 space-y-3">
       {/* Celebratory header for past leaps */}
       {status === 'past' && (
-        <div className="rounded-md bg-tertiary/10 p-3 text-center">
-          <p className="text-sm font-semibold text-tertiary">
-            ✅ Salto {leap.id} superado!
+        <div className="rounded-md bg-green-500/10 p-3 text-center">
+          <p className="text-sm font-semibold text-green-600 dark:text-green-400">
+            Salto {leap.id} superado!
           </p>
           <p className="text-xs text-on-surface-variant mt-0.5">
-            Concluído em {formatDateShort(estimatedDate)} · {durationWeeks} {durationWeeks === 1 ? 'semana' : 'semanas'}
+            Concluido em {formatDateShort(estimatedDate)} · {durationWeeks} {durationWeeks === 1 ? 'semana' : 'semanas'}
           </p>
         </div>
       )}
@@ -51,6 +55,9 @@ export default function LeapCard({
       {/* Description */}
       <div>
         <p className="text-sm text-on-surface leading-relaxed">
+          {status === 'active' && (
+            <span className="font-semibold">{babyName} pode estar mais {adjAgitado}. </span>
+          )}
           {leap.description}
         </p>
       </div>
@@ -78,7 +85,7 @@ export default function LeapCard({
         <ul className="space-y-0.5">
           {leap.tips.map((tip, i) => (
             <li key={i} className="flex gap-1.5 text-xs text-on-surface-variant">
-              <span className="mt-0.5 text-[8px] text-on-surface-variant/50">&#9679;</span>
+              <span className="mt-0.5 text-sm leading-none">💡</span>
               <span>{tip}</span>
             </li>
           ))}
@@ -86,9 +93,9 @@ export default function LeapCard({
       </div>
 
       {/* Registro impact */}
-      <div className="rounded-md bg-primary/5 p-3">
-        <p className="text-xs font-semibold text-on-surface-variant mb-0.5">
-          Impacto na rotina
+      <div className="p-3 rounded-md bg-primary/5 border border-primary/15">
+        <p className="text-[10px] font-bold uppercase tracking-wider text-primary mb-1">
+          Impacto na rotina {de} {babyName}
         </p>
         <p className="text-xs text-on-surface-variant leading-relaxed">
           {leap.registroImpact}
@@ -100,21 +107,9 @@ export default function LeapCard({
         <LeapDataInsight logs={logs} birthDate={birthDate} leap={leap} />
       )}
 
-      {/* Note form (premium only) */}
+      {/* Mood tracker (premium only) */}
       {isPremium && (
-        <LeapNoteForm leapId={leap.id} note={note} onSave={onSaveNote} />
-      )}
-
-      {/* Read-only note for non-premium users who previously wrote one */}
-      {!isPremium && note && (
-        <div className="rounded-md bg-surface-container-high p-3">
-          <p className="text-xs font-semibold text-on-surface-variant mb-1">
-            Sua anotação
-          </p>
-          <p className="text-xs text-on-surface-variant leading-relaxed">
-            {note.note}
-          </p>
-        </div>
+        <LeapMoodTracker leapId={leap.id} babyId={babyId} status={status} isPremium={isPremium} />
       )}
     </div>
   )
