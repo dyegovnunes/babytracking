@@ -92,10 +92,30 @@ workflows:
           content = content.replace('CODE_SIGN_STYLE = Manual;', 'CODE_SIGN_STYLE = Automatic;')
           print(f'Manual→Automatic replacements: {content.count("CODE_SIGN_STYLE = Automatic;")}')
 
-          # Remove settings that use-profiles injected (conflict with Automatic)
+          # Remove PROVISIONING_PROFILE_SPECIFIER (conflicts with Automatic)
           content = re.sub(r'\t*PROVISIONING_PROFILE_SPECIFIER = ".*?";\n', '', content)
-          content = re.sub(r'\t*"?CODE_SIGN_IDENTITY(\[sdk=iphoneos\*\])?"? = ".*?";\n', '', content)
-          print('Removed PROVISIONING_PROFILE_SPECIFIER + CODE_SIGN_IDENTITY')
+          print('Removed PROVISIONING_PROFILE_SPECIFIER')
+
+          # Replace any CODE_SIGN_IDENTITY with generic "Apple Distribution"
+          # WITHOUT this, Xcode defaults to Development signing which requires
+          # registered devices (we have none). "Apple Distribution" tells Xcode
+          # to use the distribution cert for App Store builds.
+          content = re.sub(
+              r'("?CODE_SIGN_IDENTITY(\[sdk=iphoneos\*\])?"?) = ".*?"',
+              r'\1 = "Apple Distribution"',
+              content
+          )
+          identity_count = content.count('CODE_SIGN_IDENTITY')
+          print(f'CODE_SIGN_IDENTITY set to Apple Distribution (count: {content.count("Apple Distribution")})')
+
+          # Safety net: if use-profiles didn't inject CODE_SIGN_IDENTITY at all,
+          # we must add it ourselves — otherwise Xcode defaults to Development signing
+          if identity_count == 0:
+              content = content.replace(
+                  'CODE_SIGN_STYLE = Automatic;',
+                  'CODE_SIGN_STYLE = Automatic;\n\t\t\t\tCODE_SIGN_IDENTITY = "Apple Distribution";'
+              )
+              print('SAFETY NET: Injected CODE_SIGN_IDENTITY (was missing entirely)')
 
           # Ensure DEVELOPMENT_TEAM
           if 'DEVELOPMENT_TEAM = 8TC26XK3WP' not in content:
