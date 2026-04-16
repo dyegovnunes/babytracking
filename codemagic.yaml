@@ -61,78 +61,55 @@ workflows:
           plutil -lint app/ios/App/App.xcodeproj/project.pbxproj
       - name: Install certificate via Codemagic
         script: |
-          # use-profiles instala o certificado de distribuição + cria um
-          # provisioning profile. O profile pode não ter SIWA, mas não importa
-          # — vamos trocar pra automatic signing no próximo step.
+          # Save pbxproj BEFORE use-profiles touches it.
+          # use-profiles installs the distribution cert to the keychain (we need that)
+          # but also modifies pbxproj (Manual signing, profile specifier, etc) — we DON'T want that.
+          # Strategy: save → run → restore. Cert stays in keychain, pbxproj stays clean.
+          cp app/ios/App/App.xcodeproj/project.pbxproj /tmp/project.pbxproj.bak
           xcode-project use-profiles
-      - name: Switch to automatic signing + prepare API key
+          cp /tmp/project.pbxproj.bak app/ios/App/App.xcodeproj/project.pbxproj
+          echo "Certificate installed. pbxproj restored to pre-use-profiles state."
+          plutil -lint app/ios/App/App.xcodeproj/project.pbxproj
+      - name: Prepare signing + API key
         script: |
           # ============================================================
-          # O use-profiles setou Manual signing + um profile sem SIWA.
-          # Trocamos pra Automatic e deixamos o Xcode criar o profile
-          # correto via API key do App Store Connect.
+          # Signing strategy (Xcode 26 compatible):
+          #
+          # - pbxproj stays with CODE_SIGN_STYLE = Automatic (from cap sync)
+          #   plus CODE_SIGN_ENTITLEMENTS (from previous step)
+          # - We only add DEVELOPMENT_TEAM to pbxproj
+          # - ALL other signing settings are passed as xcodebuild CLI overrides
+          #   (CLI settings ALWAYS take precedence over pbxproj)
+          # - xcodebuild gets: CODE_SIGN_STYLE=Manual + CODE_SIGN_IDENTITY="Apple Distribution"
+          #   + -allowProvisioningUpdates + API key auth → creates correct profile with SIWA
           # ============================================================
 
-          # 1. Debug: mostra entitlements do profile instalado
-          echo "=== Profile entitlements ==="
-          for f in "$HOME/Library/MobileDevice/Provisioning Profiles"/*.mobileprovision; do
-            echo "--- $(basename "$f") ---"
-            security cms -D -i "$f" 2>/dev/null | plutil -extract Entitlements xml1 -o - - 2>/dev/null || \
-              security cms -D -i "$f" 2>/dev/null | grep -A2 "apple" || echo "(could not extract)"
-          done
-
-          # 2. Switch pbxproj: Manual → Automatic, remove profile specifier, set team
+          # 1. Add DEVELOPMENT_TEAM to pbxproj if missing
           python3 <<'PYEOF'
-          import re
-
           with open('app/ios/App/App.xcodeproj/project.pbxproj', 'r') as f:
               content = f.read()
 
-          # use-profiles set Manual — switch back to Automatic
-          content = content.replace('CODE_SIGN_STYLE = Manual;', 'CODE_SIGN_STYLE = Automatic;')
-          print(f'Manual→Automatic replacements: {content.count("CODE_SIGN_STYLE = Automatic;")}')
-
-          # Remove PROVISIONING_PROFILE_SPECIFIER (conflicts with Automatic)
-          content = re.sub(r'\t*PROVISIONING_PROFILE_SPECIFIER = ".*?";\n', '', content)
-          print('Removed PROVISIONING_PROFILE_SPECIFIER')
-
-          # Replace any CODE_SIGN_IDENTITY with generic "Apple Distribution"
-          # WITHOUT this, Xcode defaults to Development signing which requires
-          # registered devices (we have none). "Apple Distribution" tells Xcode
-          # to use the distribution cert for App Store builds.
-          content = re.sub(
-              r'("?CODE_SIGN_IDENTITY(\[sdk=iphoneos\*\])?"?) = ".*?"',
-              r'\1 = "Apple Distribution"',
-              content
-          )
-          identity_count = content.count('CODE_SIGN_IDENTITY')
-          print(f'CODE_SIGN_IDENTITY set to Apple Distribution (count: {content.count("Apple Distribution")})')
-
-          # Safety net: if use-profiles didn't inject CODE_SIGN_IDENTITY at all,
-          # we must add it ourselves — otherwise Xcode defaults to Development signing
-          if identity_count == 0:
-              content = content.replace(
-                  'CODE_SIGN_STYLE = Automatic;',
-                  'CODE_SIGN_STYLE = Automatic;\n\t\t\t\tCODE_SIGN_IDENTITY = "Apple Distribution";'
-              )
-              print('SAFETY NET: Injected CODE_SIGN_IDENTITY (was missing entirely)')
-
-          # Ensure DEVELOPMENT_TEAM
           if 'DEVELOPMENT_TEAM = 8TC26XK3WP' not in content:
               content = content.replace(
                   'CODE_SIGN_STYLE = Automatic;',
                   'CODE_SIGN_STYLE = Automatic;\n\t\t\t\tDEVELOPMENT_TEAM = 8TC26XK3WP;'
               )
-              print('Added DEVELOPMENT_TEAM')
+              with open('app/ios/App/App.xcodeproj/project.pbxproj', 'w') as f:
+                  f.write(content)
+              print('Added DEVELOPMENT_TEAM to pbxproj')
+          else:
+              print('DEVELOPMENT_TEAM already present')
 
-          with open('app/ios/App/App.xcodeproj/project.pbxproj', 'w') as f:
-              f.write(content)
-          print('pbxproj updated for automatic signing')
+          # Sanity check
+          sign_count = content.count('CODE_SIGN_STYLE = Automatic;')
+          team_count = content.count('DEVELOPMENT_TEAM = 8TC26XK3WP')
+          ent_count = content.count('CODE_SIGN_ENTITLEMENTS')
+          print(f'Automatic: {sign_count}, Team: {team_count}, Entitlements: {ent_count}')
           PYEOF
 
           plutil -lint app/ios/App/App.xcodeproj/project.pbxproj
 
-          # 3. Resolve API key — Codemagic stores it as @file:path reference
+          # 2. Resolve API key — Codemagic stores it as @file:path reference
           python3 <<'PYEOF'
           import os, sys, shutil
 
@@ -142,10 +119,8 @@ workflows:
           print(f'Key ID: {key_id}')
           print(f'Raw value (first 40 chars): {raw_key[:40]}')
 
-          # Codemagic stores the key as "@file:/path/to/key.p8"
-          # The REAL key is already on disk — DON'T overwrite it!
           if raw_key.startswith('@file:'):
-              src_path = raw_key[6:]  # strip @file: prefix
+              src_path = raw_key[6:]
               print(f'Codemagic file reference detected: {src_path}')
               if os.path.exists(src_path):
                   with open(src_path, 'r') as f:
@@ -154,7 +129,6 @@ workflows:
                   print(f'File exists: {len(content)} bytes, {len(lines)} lines')
                   print(f'First: {lines[0]}')
                   print(f'Last:  {lines[-1]}')
-                  # Copy to standard xcodebuild search locations (if not already there)
                   for d in ['~/.appstoreconnect/private_keys', '~/private_keys']:
                       dest_dir = os.path.expanduser(d)
                       os.makedirs(dest_dir, exist_ok=True)
@@ -167,7 +141,6 @@ workflows:
                   print(f'ERROR: Referenced file does not exist: {src_path}')
                   sys.exit(1)
           else:
-              # Raw PEM content — write it
               key = raw_key.replace('\\n', '\n').replace('\r', '')
               if not key.endswith('\n'):
                   key += '\n'
@@ -181,12 +154,6 @@ workflows:
               lines = key.strip().split('\n')
               print(f'Lines: {len(lines)}, First: {lines[0]}')
           PYEOF
-
-          echo ""
-          echo "=== signing config summary ==="
-          grep -c "CODE_SIGN_STYLE = Automatic" app/ios/App/App.xcodeproj/project.pbxproj | xargs -I{} echo "Automatic signing count: {}"
-          grep -c "DEVELOPMENT_TEAM = 8TC26XK3WP" app/ios/App/App.xcodeproj/project.pbxproj | xargs -I{} echo "Team ID count: {}"
-          grep -c "CODE_SIGN_ENTITLEMENTS" app/ios/App/App.xcodeproj/project.pbxproj | xargs -I{} echo "Entitlements count: {}"
       - name: Set app icon
         script: |
           cp app/assets/app-icon-1024.png app/ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png
@@ -257,6 +224,9 @@ workflows:
             -authenticationKeyPath "$KEY_PATH" \
             -authenticationKeyID "$APP_STORE_CONNECT_KEY_IDENTIFIER" \
             -authenticationKeyIssuerID "$APP_STORE_CONNECT_ISSUER_ID" \
+            CODE_SIGN_STYLE=Manual \
+            CODE_SIGN_IDENTITY="Apple Distribution" \
+            DEVELOPMENT_TEAM=8TC26XK3WP \
             COMPILER_INDEX_STORE_ENABLE=NO \
             archive 2>&1 | tee /tmp/archive.log
           ARCHIVE_EXIT=${PIPESTATUS[0]}
@@ -284,7 +254,7 @@ workflows:
               <key>teamID</key>
               <string>8TC26XK3WP</string>
               <key>signingStyle</key>
-              <string>automatic</string>
+              <string>manual</string>
               <key>uploadSymbols</key>
               <true/>
               <key>stripSwiftSymbols</key>
