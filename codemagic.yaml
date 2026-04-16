@@ -27,12 +27,27 @@ workflows:
           cd app
           npx cap add ios || true
           npx cap sync ios
-      - name: Configure Apple Sign-in entitlement
+      - name: Configure entitlements and automatic signing
         script: |
-          # ORDEM IMPORTA: entitlement precisa existir ANTES do `xcode-project
-          # use-profiles` rodar, senão o Codemagic busca um profile sem a
-          # capability e o archive falha. E precisa estar linkado no pbxproj
-          # pra `use-profiles` enxergar.
+          # ============================================================
+          # SIGNING STRATEGY: Automatic via Xcode + ASC API Key
+          # ============================================================
+          # NÃO usamos `xcode-project use-profiles` porque o Codemagic CLI
+          # cria profiles via App Store Connect API que NÃO incluem a
+          # capability Sign In with Apple (bug conhecido com capabilities
+          # adicionadas depois do primeiro profile). Em vez disso:
+          #
+          # 1. Criamos o entitlements file com SIWA
+          # 2. Linkamos no pbxproj
+          # 3. Mantemos CODE_SIGN_STYLE = Automatic (default do Capacitor)
+          # 4. Setamos DEVELOPMENT_TEAM no pbxproj
+          # 5. Passamos -allowProvisioningUpdates + API key pro xcodebuild
+          #
+          # O Xcode cria/baixa o profile correto automaticamente, incluindo
+          # todas as capabilities do App ID.
+          # ============================================================
+
+          # 1. Cria entitlements file
           cat > app/ios/App/App/App.entitlements <<'EOF'
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -45,28 +60,53 @@ workflows:
           </dict>
           </plist>
           EOF
-          # Linka CODE_SIGN_ENTITLEMENTS em todas as configurações do target App.
-          # Usa Python ao invés da gem xcodeproj porque a gem não é compatível
-          # com o formato pbxproj do Xcode 26 (corrompia o arquivo).
+
+          # 2. Injeta CODE_SIGN_ENTITLEMENTS + DEVELOPMENT_TEAM no pbxproj
+          #    Mantém CODE_SIGN_STYLE = Automatic (já é o default do Capacitor)
           python3 <<'PYEOF'
           with open('app/ios/App/App.xcodeproj/project.pbxproj', 'r') as f:
               content = f.read()
+
+          modified = False
+
+          # Adiciona CODE_SIGN_ENTITLEMENTS se ainda não existe
           if 'CODE_SIGN_ENTITLEMENTS' not in content:
-              new_content = content.replace(
+              content = content.replace(
                   'CODE_SIGN_STYLE = Automatic;',
                   'CODE_SIGN_STYLE = Automatic;\n\t\t\t\tCODE_SIGN_ENTITLEMENTS = App/App.entitlements;'
               )
-              with open('app/ios/App/App.xcodeproj/project.pbxproj', 'w') as f:
-                  f.write(new_content)
+              modified = True
               print('Added CODE_SIGN_ENTITLEMENTS to pbxproj')
+
+          # Garante DEVELOPMENT_TEAM = 8TC26XK3WP em todas as build configs
+          if 'DEVELOPMENT_TEAM = 8TC26XK3WP' not in content:
+              content = content.replace(
+                  'CODE_SIGN_STYLE = Automatic;',
+                  'CODE_SIGN_STYLE = Automatic;\n\t\t\t\tDEVELOPMENT_TEAM = 8TC26XK3WP;'
+              )
+              modified = True
+              print('Added DEVELOPMENT_TEAM to pbxproj')
+
+          if modified:
+              with open('app/ios/App/App.xcodeproj/project.pbxproj', 'w') as f:
+                  f.write(content)
           else:
-              print('CODE_SIGN_ENTITLEMENTS already in pbxproj, skipping')
+              print('pbxproj already configured, skipping')
           PYEOF
-          # Verificação rápida pra garantir que o pbxproj ainda é válido
+
+          # 3. Valida pbxproj
           plutil -lint app/ios/App/App.xcodeproj/project.pbxproj
-      - name: Set up code signing
-        script: |
-          xcode-project use-profiles
+
+          # 4. Prepara API key pro xcodebuild usar automatic provisioning
+          mkdir -p ~/.appstoreconnect/private_keys
+          echo "${APP_STORE_CONNECT_PRIVATE_KEY}" > ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_IDENTIFIER}.p8
+          echo "API Key written: AuthKey_${APP_STORE_CONNECT_KEY_IDENTIFIER}.p8"
+
+          echo ""
+          echo "=== signing config summary ==="
+          grep -n "CODE_SIGN_ENTITLEMENTS\|CODE_SIGN_STYLE\|DEVELOPMENT_TEAM" app/ios/App/App.xcodeproj/project.pbxproj || echo "NOT FOUND"
+          echo "--- entitlements ---"
+          cat app/ios/App/App/App.entitlements
       - name: Set app icon
         script: |
           cp app/assets/app-icon-1024.png app/ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png
@@ -93,25 +133,9 @@ workflows:
           /usr/libexec/PlistBuddy -c "Set :CFBundleVersion 34" "$PLIST"
       - name: Build iOS
         script: |
-          # Chamamos xcodebuild diretamente ao invés do wrapper do Codemagic
-          # (`xcode-project build-ipa`) porque o wrapper engolia a mensagem
-          # real do erro de archive. Assim temos output completo no log.
           cd app/ios/App
 
-          echo "=== sanity checks ==="
-          grep -n "CODE_SIGN_ENTITLEMENTS" App.xcodeproj/project.pbxproj || echo "NOT FOUND"
-          echo "--- installed provisioning profiles ---"
-          ls -la "$HOME/Library/MobileDevice/Provisioning Profiles/" 2>/dev/null | head -20 || echo "(no profiles dir)"
-          echo "--- entitlements file ---"
-          cat App/App.entitlements
-
-          echo ""
-          echo "=== xcodebuild archive (direct call, minimal args) ==="
-          # SEM override de CODE_SIGN_IDENTITY / CODE_SIGN_STYLE / DEVELOPMENT_TEAM
-          # no command line — esses flags afetam TODOS os targets, inclusive os
-          # SPM packages (RevenueCat etc) que devem assinar automático em dev.
-          # O target App já tem Manual signing + profile "Yaya Distribution"
-          # configurado pelo `xcode-project use-profiles` no pbxproj.
+          echo "=== xcodebuild archive (automatic signing + ASC API key) ==="
           mkdir -p build/ios/xcarchive build/ios/ipa
           set +e
           xcodebuild \
@@ -121,6 +145,9 @@ workflows:
             -destination 'generic/platform=iOS' \
             -archivePath build/ios/xcarchive/App.xcarchive \
             -allowProvisioningUpdates \
+            -authenticationKeyPath ~/".appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_IDENTIFIER}.p8" \
+            -authenticationKeyID "${APP_STORE_CONNECT_KEY_IDENTIFIER}" \
+            -authenticationKeyIssuerID "${APP_STORE_CONNECT_ISSUER_ID}" \
             COMPILER_INDEX_STORE_ENABLE=NO \
             archive 2>&1 | tee /tmp/archive.log
           ARCHIVE_EXIT=${PIPESTATUS[0]}
@@ -163,7 +190,11 @@ workflows:
             -archivePath build/ios/xcarchive/App.xcarchive \
             -exportPath build/ios/ipa \
             -exportOptionsPlist /tmp/ExportOptions.plist \
-            -allowProvisioningUpdates 2>&1 | tee /tmp/export.log
+            -allowProvisioningUpdates \
+            -authenticationKeyPath ~/".appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_IDENTIFIER}.p8" \
+            -authenticationKeyID "${APP_STORE_CONNECT_KEY_IDENTIFIER}" \
+            -authenticationKeyIssuerID "${APP_STORE_CONNECT_ISSUER_ID}" \
+            2>&1 | tee /tmp/export.log
           EXPORT_EXIT=${PIPESTATUS[0]}
           set -e
 
