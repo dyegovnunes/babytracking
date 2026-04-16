@@ -44,12 +44,20 @@ workflows:
 
           # 2. Decode and install the .p12 certificate
           echo "$CM_CERTIFICATE" | base64 --decode > /tmp/distribution.p12
+
+          # Find the keychain created by 'keychain initialize'
+          CM_KEYCHAIN=$(security list-keychains | grep codemagic | tr -d ' "' | head -1)
+          if [ -z "$CM_KEYCHAIN" ]; then
+            CM_KEYCHAIN="$HOME/Library/Keychains/codemagic.keychain-db"
+          fi
+          echo "=== Using keychain: $CM_KEYCHAIN ==="
+
           security import /tmp/distribution.p12 \
-            -k ~/Library/Keychains/codemagic.keychain-db \
-            -P "codemagic" \
+            -k "$CM_KEYCHAIN" \
+            -P "$CM_CERTIFICATE_PASSWORD" \
             -T /usr/bin/codesign \
             -T /usr/bin/security
-          security set-key-partition-list -S apple-tool:,apple: -k "" ~/Library/Keychains/codemagic.keychain-db
+          security set-key-partition-list -S apple-tool:,apple: -k "" "$CM_KEYCHAIN"
 
           echo "=== Certificate installed ==="
           security find-identity -v -p codesigning
@@ -126,40 +134,21 @@ workflows:
         script: |
           cd app/ios/App
 
-          # Generate ExportOptions.plist for App Store
-          cat > /tmp/ExportOptions.plist << 'EXPORT'
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-            <key>method</key>
-            <string>app-store</string>
-            <key>teamID</key>
-            <string>8TC26XK3WP</string>
-            <key>signingStyle</key>
-            <string>manual</string>
-            <key>provisioningProfiles</key>
-            <dict>
-              <key>app.yayababy</key>
-              <string>Yaya Codemagic Distribution</string>
-            </dict>
-            <key>signingCertificate</key>
-            <string>Apple Distribution</string>
-          </dict>
-          </plist>
-          EXPORT
+          # Generate ExportOptions.plist for App Store (usando printf para evitar indentacao YAML)
+          printf '<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<plist version="1.0">\n<dict>\n\t<key>method</key>\n\t<string>app-store</string>\n\t<key>teamID</key>\n\t<string>8TC26XK3WP</string>\n\t<key>signingStyle</key>\n\t<string>manual</string>\n\t<key>provisioningProfiles</key>\n\t<dict>\n\t\t<key>app.yayababy</key>\n\t\t<string>Yaya Codemagic Distribution</string>\n\t</dict>\n\t<key>signingCertificate</key>\n\t<string>Apple Distribution</string>\n</dict>\n</plist>\n' > /tmp/ExportOptions.plist
+          echo "=== ExportOptions.plist ==="
+          cat /tmp/ExportOptions.plist
+          plutil -lint /tmp/ExportOptions.plist
 
           # Archive
+          # NOTE: NÃO passar CODE_SIGN_ENTITLEMENTS aqui — ele vaza para
+          # todos os targets (SPM packages). Está configurado no pbxproj
+          # apenas para o target App.
           xcodebuild archive \
             -project "App.xcodeproj" \
             -scheme "App" \
             -destination "generic/platform=iOS" \
             -archivePath "$CM_BUILD_DIR/App.xcarchive" \
-            CODE_SIGN_STYLE=Manual \
-            DEVELOPMENT_TEAM=8TC26XK3WP \
-            CODE_SIGN_IDENTITY="Apple Distribution" \
-            CODE_SIGN_ENTITLEMENTS="App/App.entitlements" \
-            PROVISIONING_PROFILE_SPECIFIER="Yaya Codemagic Distribution" \
             COMPILER_INDEX_STORE_ENABLE=NO
 
           # Export IPA
