@@ -32,66 +32,68 @@ workflows:
           echo "=== Validating App.entitlements ==="
           cat app/ios/App/App/App.entitlements
           plutil -lint app/ios/App/App/App.entitlements
-
-          # Injeta CODE_SIGN_ENTITLEMENTS no pbxproj
-          python3 << 'PYEOF'
-          with open('app/ios/App/App.xcodeproj/project.pbxproj', 'r') as f:
-              content = f.read()
-          if 'CODE_SIGN_ENTITLEMENTS' not in content:
-              content = content.replace(
-                  'CODE_SIGN_STYLE = Automatic;',
-                  'CODE_SIGN_STYLE = Automatic;\n\t\t\t\tCODE_SIGN_ENTITLEMENTS = App/App.entitlements;'
-              )
-              with open('app/ios/App/App.xcodeproj/project.pbxproj', 'w') as f:
-                  f.write(content)
-              print('Injected CODE_SIGN_ENTITLEMENTS into pbxproj')
-          else:
-              print('CODE_SIGN_ENTITLEMENTS already present')
-          PYEOF
-          plutil -lint app/ios/App/App.xcodeproj/project.pbxproj
-      - name: Set up code signing
+      - name: Install certificate and profile manually
         script: |
+          # ========================================
+          # MANUAL SIGNING — bypasses Codemagic's
+          # fetch-signing-files / use-profiles entirely
+          # ========================================
+
+          # 1. Setup keychain
           keychain initialize
 
-          # Fetch ou cria certificado + profile usando CERTIFICATE_PRIVATE_KEY do env
-          app-store-connect fetch-signing-files "app.yayababy" \
-            --type IOS_APP_STORE \
-            --strict-match-identifier \
-            --create
+          # 2. Decode and install the .p12 certificate
+          echo "$CM_CERTIFICATE" | base64 --decode > /tmp/distribution.p12
+          security import /tmp/distribution.p12 \
+            -k ~/Library/Keychains/codemagic.keychain-db \
+            -P "codemagic" \
+            -T /usr/bin/codesign \
+            -T /usr/bin/security
+          security set-key-partition-list -S apple-tool:,apple: -k "" ~/Library/Keychains/codemagic.keychain-db
 
-          keychain add-certificates
-          xcode-project use-profiles
+          echo "=== Certificate installed ==="
+          security find-identity -v -p codesigning
 
-          # CRITICAL: use-profiles pode apagar CODE_SIGN_ENTITLEMENTS do pbxproj
-          # Re-injetamos apos use-profiles para garantir que persiste
+          # 3. Decode and install provisioning profile
+          echo "$CM_PROVISIONING_PROFILE" | base64 --decode > /tmp/yaya.mobileprovision
+          PROFILE_UUID=$(security cms -D -i /tmp/yaya.mobileprovision 2>/dev/null | grep -A1 UUID | grep string | sed 's/.*<string>//;s/<\/string>.*//')
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp /tmp/yaya.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/${PROFILE_UUID}.mobileprovision
+
+          echo "=== Profile installed: UUID=$PROFILE_UUID ==="
+
+          # 4. Configure pbxproj with explicit signing settings
           python3 << 'PYEOF'
-          with open('app/ios/App/App.xcodeproj/project.pbxproj', 'r') as f:
+          import re
+
+          pbxproj = 'app/ios/App/App.xcodeproj/project.pbxproj'
+          with open(pbxproj, 'r') as f:
               content = f.read()
 
-          import re
-          # Conta quantas vezes CODE_SIGN_ENTITLEMENTS aparece
-          count = content.count('CODE_SIGN_ENTITLEMENTS')
-          print(f'CODE_SIGN_ENTITLEMENTS found {count} times after use-profiles')
+          # Replace all CODE_SIGN_STYLE occurrences in target build configs
+          content = content.replace(
+              'CODE_SIGN_STYLE = Automatic;',
+              'CODE_SIGN_STYLE = Manual;'
+          )
 
-          if count == 0:
-              # use-profiles apagou - re-injetar em TODAS as build configurations do target
-              # use-profiles muda CODE_SIGN_STYLE para Manual, entao buscamos por Manual agora
+          # Inject signing settings after each CODE_SIGN_STYLE = Manual
+          # Only inject if not already present
+          if 'DEVELOPMENT_TEAM = 8TC26XK3WP' not in content:
               content = content.replace(
                   'CODE_SIGN_STYLE = Manual;',
-                  'CODE_SIGN_STYLE = Manual;\n\t\t\t\tCODE_SIGN_ENTITLEMENTS = App/App.entitlements;'
+                  'CODE_SIGN_STYLE = Manual;\n'
+                  '\t\t\t\tDEVELOPMENT_TEAM = 8TC26XK3WP;\n'
+                  '\t\t\t\tCODE_SIGN_ENTITLEMENTS = App/App.entitlements;\n'
+                  '\t\t\t\tCODE_SIGN_IDENTITY = "Apple Distribution";\n'
+                  '\t\t\t\tPROVISIONING_PROFILE_SPECIFIER = "Yaya Codemagic Distribution";'
               )
-              # Tambem cobre caso Automatic (se use-profiles nao mudou)
-              if 'CODE_SIGN_ENTITLEMENTS' not in content:
-                  content = content.replace(
-                      'CODE_SIGN_STYLE = Automatic;',
-                      'CODE_SIGN_STYLE = Automatic;\n\t\t\t\tCODE_SIGN_ENTITLEMENTS = App/App.entitlements;'
-                  )
-              with open('app/ios/App/App.xcodeproj/project.pbxproj', 'w') as f:
-                  f.write(content)
-              new_count = content.count('CODE_SIGN_ENTITLEMENTS')
-              print(f'Re-injected CODE_SIGN_ENTITLEMENTS ({new_count} occurrences)')
+              print('Injected manual signing settings into pbxproj')
           else:
-              print('CODE_SIGN_ENTITLEMENTS survived use-profiles, no action needed')
+              print('Signing settings already present')
+
+          with open(pbxproj, 'w') as f:
+              f.write(content)
+
           PYEOF
 
           echo "=== Final pbxproj signing settings ==="
@@ -119,16 +121,56 @@ workflows:
         script: |
           PLIST="app/ios/App/App/Info.plist"
           /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString 1.7.0" "$PLIST"
-          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion 34" "$PLIST"
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion 35" "$PLIST"
       - name: Build iOS
         script: |
           cd app/ios/App
-          xcode-project build-ipa \
-            --project "App.xcodeproj" \
-            --scheme "App" \
-            --archive-flags="-destination 'generic/platform=iOS' CODE_SIGN_ENTITLEMENTS=App/App.entitlements"
+
+          # Generate ExportOptions.plist for App Store
+          cat > /tmp/ExportOptions.plist << 'EXPORT'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>app-store</string>
+            <key>teamID</key>
+            <string>8TC26XK3WP</string>
+            <key>signingStyle</key>
+            <string>manual</string>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>app.yayababy</key>
+              <string>Yaya Codemagic Distribution</string>
+            </dict>
+            <key>signingCertificate</key>
+            <string>Apple Distribution</string>
+          </dict>
+          </plist>
+          EXPORT
+
+          # Archive
+          xcodebuild archive \
+            -project "App.xcodeproj" \
+            -scheme "App" \
+            -destination "generic/platform=iOS" \
+            -archivePath "$CM_BUILD_DIR/App.xcarchive" \
+            CODE_SIGN_STYLE=Manual \
+            DEVELOPMENT_TEAM=8TC26XK3WP \
+            CODE_SIGN_IDENTITY="Apple Distribution" \
+            CODE_SIGN_ENTITLEMENTS="App/App.entitlements" \
+            PROVISIONING_PROFILE_SPECIFIER="Yaya Codemagic Distribution" \
+            COMPILER_INDEX_STORE_ENABLE=NO
+
+          # Export IPA
+          xcodebuild -exportArchive \
+            -archivePath "$CM_BUILD_DIR/App.xcarchive" \
+            -exportOptionsPlist /tmp/ExportOptions.plist \
+            -exportPath "$CM_BUILD_DIR/ipa"
     artifacts:
       - app/ios/App/build/ios/ipa/*.ipa
+      - "*.xcarchive"
+      - /Users/builder/clone/**/*.ipa
     publishing:
       app_store_connect:
         auth: integration
