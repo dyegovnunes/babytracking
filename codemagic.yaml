@@ -51,7 +51,11 @@ workflows:
           /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLSchemes:0 string app.yayababy" Info.plist 2>/dev/null || true
       - name: Configure Apple Sign-in entitlement
         script: |
-          # Cria App.entitlements com a capability Sign in with Apple
+          # Cria App.entitlements com a capability Sign in with Apple.
+          # Não mexemos no project.pbxproj — o CODE_SIGN_ENTITLEMENTS é passado
+          # direto como build setting na linha de comando do xcodebuild lá no
+          # step "Build iOS" (evita corromper o pbxproj com gem xcodeproj que
+          # pode não ser compatível com o formato do Xcode 26).
           cat > app/ios/App/App/App.entitlements <<'EOF'
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -64,19 +68,7 @@ workflows:
           </dict>
           </plist>
           EOF
-          # Linka o entitlement no project.pbxproj via ruby + xcodeproj gem (já vem nos runners do Codemagic)
-          ruby -e '
-            require "xcodeproj"
-            project = Xcodeproj::Project.open("app/ios/App/App.xcodeproj")
-            project.targets.each do |target|
-              next unless target.name == "App"
-              target.build_configurations.each do |config|
-                config.build_settings["CODE_SIGN_ENTITLEMENTS"] = "App/App.entitlements"
-              end
-            end
-            project.save
-            puts "Entitlements linked in project.pbxproj"
-          '
+          ls -la app/ios/App/App/App.entitlements
       - name: Set version and build number
         script: |
           PLIST="app/ios/App/App/Info.plist"
@@ -85,10 +77,17 @@ workflows:
       - name: Build iOS
         script: |
           cd app/ios/App
+          # Debug: garantir que o projeto e o scheme existem antes de chamar o wrapper do Codemagic
+          echo "=== xcodebuild -list ==="
+          xcodebuild -project App.xcodeproj -list 2>&1 || true
+          echo "=== raw xcodebuild -showBuildSettings (pra ver erro real se houver) ==="
+          xcodebuild -project App.xcodeproj -scheme App -showBuildSettings 2>&1 | head -40 || true
+          echo "=== starting build-ipa ==="
+          # CODE_SIGN_ENTITLEMENTS vai direto como build setting — não precisa estar no pbxproj
           xcode-project build-ipa \
             --project "App.xcodeproj" \
             --scheme "App" \
-            --archive-flags="-destination 'generic/platform=iOS'"
+            --archive-flags="-destination 'generic/platform=iOS' CODE_SIGN_ENTITLEMENTS=App/App.entitlements"
     artifacts:
       - app/ios/App/build/ios/ipa/*.ipa
     publishing:
