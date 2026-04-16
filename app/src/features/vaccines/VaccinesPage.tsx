@@ -343,7 +343,7 @@ export default function VaccinesPage() {
       <PaywallModal
         isOpen={showPaywall}
         onClose={() => setShowPaywall(false)}
-        trigger="vaccines"
+        trigger="generic"
       />
 
       {/* Welcome modal — primeira visita quando há vacinas auto-registradas */}

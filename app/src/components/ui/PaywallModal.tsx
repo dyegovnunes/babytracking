@@ -7,7 +7,7 @@ import { Capacitor } from '@capacitor/core';
 interface PaywallModalProps {
   isOpen: boolean;
   onClose: () => void;
-  trigger?: 'history' | 'insights' | 'pdf' | 'multi_caregiver' | 'multi_profile' | 'daily_limit' | 'generic' | 'shared_report' | 'milestones' | 'vaccines' | 'medications';
+  trigger?: 'history' | 'insights' | 'multi_caregiver' | 'multi_profile' | 'daily_limit' | 'generic' | 'shared_report' | 'medications';
 }
 
 const TRIGGER_MESSAGES: Record<string, { title: string; description: string }> = {
@@ -16,51 +16,44 @@ const TRIGGER_MESSAGES: Record<string, { title: string; description: string }> =
     description: 'No plano grátis você vê apenas hoje e ontem. Com o Yaya+, o histórico é ilimitado.',
   },
   insights: {
-    title: 'Insights semanais',
-    description: 'Veja padrões de sono, frequência de amamentações e resumos semanais com o Yaya+.',
-  },
-  pdf: {
-    title: 'Relatório para pediatra',
-    description: 'Exporte um PDF completo da rotina do seu bebê para levar na consulta.',
+    title: 'Insights completos',
+    description: 'Tenha acesso a todos os insights, ao gráfico semanal e padrões de sono/alimentação.',
   },
   multi_caregiver: {
-    title: 'Compartilhar com cuidadores',
-    description: 'Compartilhe o acompanhamento com o parceiro, avós ou babá com o Yaya+.',
+    title: 'Convide mais cuidadores',
+    description: 'No plano grátis você pode convidar 1 pessoa. Com o Yaya+, convide pai, mãe, avós e babá — sem limite.',
   },
   multi_profile: {
-    title: 'Múltiplos bebês',
-    description: 'Adicione perfis para outros filhos. Com o Yaya+, até 4 perfis.',
+    title: 'Mais de um bebê',
+    description: 'No plano grátis você cadastra 1 bebê. Com o Yaya+ pode acompanhar até 2.',
   },
   daily_limit: {
     title: 'Registros ilimitados',
     description: 'Você atingiu o limite de 5 registros hoje. Com o Yaya+, registre sem limites.',
   },
+  shared_report: {
+    title: 'Super Relatório para o pediatra',
+    description: 'Gere um link seguro com toda a rotina do seu bebê para compartilhar com o pediatra ou a babá.',
+  },
+  medications: {
+    title: 'Medicamentos ilimitados',
+    description: 'Cadastre vários medicamentos, receba lembretes de horário e veja o histórico completo.',
+  },
   generic: {
     title: 'Yaya+',
     description: 'Desbloqueie o melhor do Yaya.',
   },
-  milestones: {
-    title: 'Todos os marcos',
-    description: 'Veja e registre marcos de desenvolvimento até os 24 meses com o Yaya+.',
-  },
-  vaccines: {
-    title: 'Controle de vacinas',
-    description: 'Marque vacinas como aplicadas e receba lembretes da caderneta com o Yaya+.',
-  },
-  medications: {
-    title: 'Medicamentos ilimitados',
-    description: 'Cadastre vários medicamentos, receba lembretes de horário e veja o histórico completo com o Yaya+.',
-  },
 };
 
 const BENEFITS = [
-  'Registros ilimitados por dia',
-  'Histórico ilimitado de registros',
-  'Até 4 perfis de bebê',
-  'Cuidadores ilimitados',
-  'Insights e padrões semanais',
-  'Relatório PDF para pediatra',
   'Sem anúncios',
+  'Registros ilimitados por dia',
+  'Histórico completo',
+  'Insights e gráficos semanais',
+  'Marcar vacinas livremente',
+  'Até 2 bebês',
+  'Cuidadores ilimitados',
+  'Lembretes de medicamento',
 ];
 
 interface PlanOption {

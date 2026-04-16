@@ -420,7 +420,7 @@ export default function MilestonesPage() {
       <PaywallModal
         isOpen={showPaywall}
         onClose={() => setShowPaywall(false)}
-        trigger="milestones"
+        trigger="generic"
       />
 
       {/* Welcome modal — primeira visita quando há marcos auto-registrados */}
