@@ -515,13 +515,15 @@ export async function updateMemberRole(
   userId: string,
   newRole: string,
 ): Promise<boolean> {
-  const { error } = await supabase
+  // Usar .select() para detectar se RLS silenciosamente bloqueou o update
+  const { data, error } = await supabase
     .from('baby_members')
     .update({ role: newRole })
     .eq('baby_id', babyId)
     .eq('user_id', userId)
+    .select('id')
 
-  if (error) return false
+  if (error || !data || data.length === 0) return false
 
   dispatch({ type: 'UPDATE_MEMBER', userId, role: newRole })
   return true
@@ -533,13 +535,14 @@ export async function removeMember(
   babyId: string,
   userId: string,
 ): Promise<boolean> {
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from('baby_members')
     .delete()
     .eq('baby_id', babyId)
     .eq('user_id', userId)
+    .select('id')
 
-  if (error) return false
+  if (error || !data || data.length === 0) return false
 
   dispatch({ type: 'REMOVE_MEMBER', userId })
   return true
