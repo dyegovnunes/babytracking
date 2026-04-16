@@ -1,6 +1,6 @@
 import { useMemo, useState, useRef, useCallback } from 'react';
 import { useAppState } from '../../contexts/AppContext';
-import { usePremium } from '../../hooks/usePremium';
+import { useBabyPremium } from '../../hooks/useBabyPremium';
 
 const DAILY_LIMIT = 5;
 const BONUS_PER_AD = 2;
@@ -12,9 +12,16 @@ function countToday(logs: { timestamp: number }[]): number {
   return logs.filter((l) => l.timestamp >= todayMs).length;
 }
 
+/**
+ * Limite diário de registros. Segue a regra "premium por bebê":
+ * se o bebê ativo é premium (qualquer parent paga), não há limite —
+ * mesmo que o usuário logado seja um caregiver free.
+ */
 export function useDailyLimit() {
   const { logs } = useAppState();
-  const { isPremium, isLoading } = usePremium();
+  const isPremium = useBabyPremium();
+  // isLoading deixa de existir — useBabyPremium é derivado do estado sincrono
+  const isLoading = false;
   const [bonusRecords, setBonusRecords] = useState(0);
 
   const recordsToday = useMemo(() => countToday(logs), [logs]);

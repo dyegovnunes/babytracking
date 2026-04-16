@@ -13,7 +13,7 @@ interface PaywallModalProps {
 const TRIGGER_MESSAGES: Record<string, { title: string; description: string }> = {
   history: {
     title: 'Histórico completo',
-    description: 'Você está tentando acessar registros com mais de 3 dias. Com o Yaya+, seu histórico é ilimitado.',
+    description: 'No plano grátis você vê apenas hoje e ontem. Com o Yaya+, o histórico é ilimitado.',
   },
   insights: {
     title: 'Insights semanais',

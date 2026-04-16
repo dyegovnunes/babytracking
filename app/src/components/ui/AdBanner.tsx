@@ -1,9 +1,14 @@
 import { useEffect } from 'react';
-import { usePremium } from '../../hooks/usePremium';
+import { useBabyPremium } from '../../hooks/useBabyPremium';
 import { showBanner, hideBanner } from '../../lib/admob';
 
+/**
+ * Banner AdMob. Segue a regra "premium por bebê":
+ * se o bebê ativo é premium (qualquer parent paga), o banner é escondido
+ * mesmo para cuidadores free do grupo.
+ */
 export function AdBanner() {
-  const { isPremium } = usePremium();
+  const isPremium = useBabyPremium();
 
   useEffect(() => {
     if (isPremium) {
