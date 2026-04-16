@@ -38,12 +38,12 @@ export default function LeapCard({
     <div className="rounded-md bg-surface-container p-4 space-y-3">
       {/* Celebratory header for past leaps */}
       {status === 'past' && (
-        <div className="rounded-md bg-green-50 p-3 text-center">
-          <p className="text-sm font-semibold text-green-700">
-            Salto {leap.id} superado!
+        <div className="rounded-md bg-tertiary/10 p-3 text-center">
+          <p className="text-sm font-semibold text-tertiary">
+            ✅ Salto {leap.id} superado!
           </p>
-          <p className="text-xs text-green-600 mt-0.5">
-            Concluido em {formatDateShort(estimatedDate)} &middot; {durationWeeks} {durationWeeks === 1 ? 'semana' : 'semanas'}
+          <p className="text-xs text-on-surface-variant mt-0.5">
+            Concluído em {formatDateShort(estimatedDate)} · {durationWeeks} {durationWeeks === 1 ? 'semana' : 'semanas'}
           </p>
         </div>
       )}
@@ -109,7 +109,7 @@ export default function LeapCard({
       {!isPremium && note && (
         <div className="rounded-md bg-surface-container-high p-3">
           <p className="text-xs font-semibold text-on-surface-variant mb-1">
-            Sua anotacao
+            Sua anotação
           </p>
           <p className="text-xs text-on-surface-variant leading-relaxed">
             {note.note}

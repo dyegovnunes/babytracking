@@ -30,9 +30,9 @@ export default function LeapNoteForm({ leapId, note, onSave }: LeapNoteFormProps
     setSaving(false)
 
     if (result?.error) {
-      setToast('Erro ao salvar anotacao')
+      setToast('Erro ao salvar anotação')
     } else {
-      setToast('Anotacao salva')
+      setToast('Anotação salva')
       setEditing(false)
     }
   }
@@ -40,7 +40,7 @@ export default function LeapNoteForm({ leapId, note, onSave }: LeapNoteFormProps
   return (
     <div className="rounded-md bg-surface-container-high p-3">
       <p className="text-xs font-semibold text-on-surface-variant mb-1.5">
-        Sua anotacao
+        Sua anotação
       </p>
 
       {isShowingNote && (

@@ -21,8 +21,11 @@ interface LeapTimelineProps {
 function StatusDot({ status }: { status: LeapStatus }) {
   if (status === 'past') {
     return (
-      <div className="w-7 h-7 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-        <span className="material-symbols-rounded text-green-600 text-base">check</span>
+      <div className="w-7 h-7 rounded-full bg-tertiary/15 flex items-center justify-center flex-shrink-0">
+        <span
+          className="material-symbols-outlined text-tertiary text-lg"
+          style={{ fontVariationSettings: "'FILL' 1" }}
+        >check_circle</span>
       </div>
     )
   }
@@ -41,8 +44,17 @@ function StatusDot({ status }: { status: LeapStatus }) {
   )
 }
 
-function formatEstimatedDate(date: Date): string {
-  return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })
+const MS_PER_WEEK = 7 * 86400000
+
+function formatDateShort(date: Date): string {
+  return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })
+}
+
+function formatDateRange(birthDate: string, leap: DevelopmentLeap): string {
+  const birthMs = new Date(birthDate).getTime()
+  const start = new Date(birthMs + leap.weekStart * MS_PER_WEEK)
+  const end = new Date(birthMs + (leap.weekEnd + 1) * MS_PER_WEEK)
+  return `aprox. entre ${formatDateShort(start)} e ${formatDateShort(end)}`
 }
 
 export default function LeapTimeline({
@@ -87,9 +99,9 @@ export default function LeapTimeline({
                 <p className="text-xs text-on-surface-variant mt-0.5">
                   {leap.subtitle}
                 </p>
-                {(status === 'upcoming' || status === 'future') && (
+                {(status === 'active' || status === 'upcoming' || status === 'future') && (
                   <p className="text-xs text-on-surface-variant/70 mt-0.5">
-                    aprox. {formatEstimatedDate(estimatedDate)}
+                    {formatDateRange(birthDate, leap)}
                   </p>
                 )}
                 {status === 'active' && (
