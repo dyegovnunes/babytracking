@@ -1,6 +1,8 @@
 import { useState } from 'react'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
+import { useAppState } from '../contexts/AppContext'
 import { getDefaultIntervals } from '../lib/ageUtils'
 
 interface Props {
@@ -9,7 +11,17 @@ interface Props {
 
 export default function OnboardingPage({ onComplete }: Props) {
   const { user } = useAuth()
-  const [mode, setMode] = useState<'choose' | 'create' | 'join'>('choose')
+  const { babies } = useAppState()
+  const navigate = useNavigate()
+  const canGoBack = babies.length > 0
+  const [searchParams] = useSearchParams()
+  const initialMode = (() => {
+    const urlMode = searchParams.get('mode')
+    if (urlMode === 'add') return 'create'
+    if (urlMode === 'join') return 'join'
+    return 'choose'
+  })()
+  const [mode, setMode] = useState<'choose' | 'create' | 'join'>(initialMode)
   const [name, setName] = useState('')
   const [birthDate, setBirthDate] = useState('')
   const [gender, setGender] = useState<'boy' | 'girl' | null>(null)
@@ -130,12 +142,23 @@ export default function OnboardingPage({ onComplete }: Props) {
   if (mode === 'choose') {
     return (
       <div className="min-h-screen bg-surface flex flex-col items-center justify-center px-6">
+        {canGoBack && (
+          <button
+            onClick={() => navigate('/')}
+            className="absolute top-4 left-4 p-2 rounded-md active:bg-surface-container transition-colors"
+            aria-label="Voltar"
+          >
+            <span className="material-symbols-outlined text-on-surface">arrow_back</span>
+          </button>
+        )}
         <div className="w-full max-w-sm page-enter">
           <div className="text-center mb-8">
             <div className="w-16 h-16 rounded-full bg-primary-container/20 flex items-center justify-center mx-auto mb-4">
               <span className="material-symbols-outlined text-primary text-3xl">celebration</span>
             </div>
-            <h1 className="font-headline text-2xl font-bold text-on-surface mb-1">Bem-vindo ao Yaya!</h1>
+            <h1 className="font-headline text-2xl font-bold text-on-surface mb-1">
+              {canGoBack ? 'Adicionar um bebê' : 'Bem-vindo ao Yaya!'}
+            </h1>
             <p className="font-label text-sm text-on-surface-variant">Como você gostaria de começar?</p>
           </div>
 
