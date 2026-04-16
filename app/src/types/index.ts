@@ -37,6 +37,12 @@ export interface Baby {
   birthDate: string
   gender?: 'boy' | 'girl'
   photoUrl?: string
+  isPremium: boolean
+}
+
+/** Baby com o papel do usuário logado — usado no seletor de bebê */
+export interface BabyWithRole extends Baby {
+  myRole: string
 }
 
 export interface Member {

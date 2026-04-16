@@ -1,5 +1,5 @@
 import { createContext, useContext, useReducer, useEffect, useCallback, useRef, type ReactNode } from 'react'
-import type { LogEntry, IntervalConfig, Baby, Member } from '../types'
+import type { LogEntry, IntervalConfig, Baby, BabyWithRole, Member } from '../types'
 import { supabase } from '../lib/supabase'
 import { DEFAULT_INTERVALS } from '../lib/constants'
 import { useAuth } from './AuthContext'
@@ -12,6 +12,7 @@ interface AppState {
   intervals: Record<string, IntervalConfig>
   baby: Baby | null
   babies: Baby[]
+  babiesWithRole: BabyWithRole[]
   members: Record<string, Member>
   loading: boolean
   needsOnboarding: boolean
@@ -22,7 +23,7 @@ interface AppState {
 }
 
 type Action =
-  | { type: 'SET_INITIAL'; logs: LogEntry[]; intervals: Record<string, IntervalConfig>; baby: Baby; babies: Baby[]; members: Record<string, Member>; needsWelcome?: boolean }
+  | { type: 'SET_INITIAL'; logs: LogEntry[]; intervals: Record<string, IntervalConfig>; baby: Baby; babies: Baby[]; babiesWithRole: BabyWithRole[]; members: Record<string, Member>; needsWelcome?: boolean }
   | { type: 'SET_NO_BABY' }
   | { type: 'SET_LOADING' }
   | { type: 'ADD_LOG'; log: LogEntry }
@@ -44,6 +45,7 @@ const initialState: AppState = {
   intervals: DEFAULT_INTERVALS,
   baby: null,
   babies: [],
+  babiesWithRole: [],
   members: {},
   loading: true,
   needsOnboarding: false,
@@ -56,7 +58,7 @@ const initialState: AppState = {
 function reducer(state: AppState, action: Action): AppState {
   switch (action.type) {
     case 'SET_INITIAL':
-      return { ...state, logs: action.logs, intervals: action.intervals, baby: action.baby, babies: action.babies, members: action.members, loading: false, needsOnboarding: false, needsWelcome: action.needsWelcome ?? false }
+      return { ...state, logs: action.logs, intervals: action.intervals, baby: action.baby, babies: action.babies, babiesWithRole: action.babiesWithRole, members: action.members, loading: false, needsOnboarding: false, needsWelcome: action.needsWelcome ?? false }
     case 'SET_NO_BABY':
       return { ...state, loading: false, needsOnboarding: true }
     case 'SET_LOADING':
@@ -119,10 +121,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'SET_LOADING' })
 
     async function load() {
-      // Find all babies the user has access to
+      // Find all babies the user has access to (with role)
       const { data: memberships } = await supabase
         .from('baby_members')
-        .select('baby_id')
+        .select('baby_id, role')
         .eq('user_id', user!.id)
 
       if (!memberships || memberships.length === 0) {
@@ -151,6 +153,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
         birthDate: row.birth_date,
         gender: row.gender ?? undefined,
         photoUrl: row.photo_url,
+        isPremium: row.is_premium ?? false,
+      }))
+
+      // Build babiesWithRole using membership roles
+      const roleMap = new Map<string, string>()
+      for (const m of memberships) roleMap.set(m.baby_id, m.role)
+      const babiesWithRole: BabyWithRole[] = allBabies.map((b) => ({
+        ...b,
+        myRole: roleMap.get(b.id) ?? 'caregiver',
       }))
 
       const baby = allBabies.find((b) => b.id === babyId)
@@ -202,7 +213,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         needsWelcome = !profile?.welcome_shown_at
       }
 
-      dispatch({ type: 'SET_INITIAL', logs, intervals, baby, babies: allBabies, members, needsWelcome })
+      dispatch({ type: 'SET_INITIAL', logs, intervals, baby, babies: allBabies, babiesWithRole, members, needsWelcome })
 
       // Init push notifications if user has logs (not first-time user)
       if (logs.length > 0) {
@@ -271,7 +282,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
         // Only update if logs actually changed
         if (JSON.stringify(freshLogs.map(l => l.id)) !== JSON.stringify(state.logs.map(l => l.id))) {
-          dispatch({ type: 'SET_INITIAL', logs: freshLogs, intervals: state.intervals, baby: state.baby, babies: state.babies, members: state.members })
+          dispatch({ type: 'SET_INITIAL', logs: freshLogs, intervals: state.intervals, baby: state.baby, babies: state.babies, babiesWithRole: state.babiesWithRole, members: state.members })
         }
       }
 
@@ -526,6 +537,7 @@ export async function switchBaby(
     birthDate: babyRes.data.birth_date,
     gender: babyRes.data.gender ?? undefined,
     photoUrl: babyRes.data.photo_url,
+    isPremium: babyRes.data.is_premium ?? false,
   }
 
   const logs: LogEntry[] = (logsRes.data ?? []).map((row) => ({
