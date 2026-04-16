@@ -43,7 +43,7 @@ workflows:
           </plist>
           EOF
 
-          # Injeta CODE_SIGN_ENTITLEMENTS no pbxproj (antes do use-profiles)
+          # Injeta CODE_SIGN_ENTITLEMENTS no pbxproj
           python3 <<'PYEOF'
           with open('app/ios/App/App.xcodeproj/project.pbxproj', 'r') as f:
               content = f.read()
@@ -59,101 +59,9 @@ workflows:
               print('CODE_SIGN_ENTITLEMENTS already present')
           PYEOF
           plutil -lint app/ios/App/App.xcodeproj/project.pbxproj
-      - name: Install certificate via Codemagic
+      - name: Set up code signing
         script: |
-          # Save pbxproj BEFORE use-profiles touches it.
-          # use-profiles installs the distribution cert to the keychain (we need that)
-          # but also modifies pbxproj (Manual signing, profile specifier, etc) — we DON'T want that.
-          # Strategy: save → run → restore. Cert stays in keychain, pbxproj stays clean.
-          cp app/ios/App/App.xcodeproj/project.pbxproj /tmp/project.pbxproj.bak
           xcode-project use-profiles
-          cp /tmp/project.pbxproj.bak app/ios/App/App.xcodeproj/project.pbxproj
-          echo "Certificate installed. pbxproj restored to pre-use-profiles state."
-          plutil -lint app/ios/App/App.xcodeproj/project.pbxproj
-      - name: Prepare signing + API key
-        script: |
-          # ============================================================
-          # Signing strategy (Xcode 26 compatible):
-          #
-          # - pbxproj stays with CODE_SIGN_STYLE = Automatic (from cap sync)
-          #   plus CODE_SIGN_ENTITLEMENTS (from previous step)
-          # - We only add DEVELOPMENT_TEAM to pbxproj
-          # - ALL other signing settings are passed as xcodebuild CLI overrides
-          #   (CLI settings ALWAYS take precedence over pbxproj)
-          # - xcodebuild gets: CODE_SIGN_STYLE=Manual + CODE_SIGN_IDENTITY="Apple Distribution"
-          #   + -allowProvisioningUpdates + API key auth → creates correct profile with SIWA
-          # ============================================================
-
-          # 1. Add DEVELOPMENT_TEAM to pbxproj if missing
-          python3 <<'PYEOF'
-          with open('app/ios/App/App.xcodeproj/project.pbxproj', 'r') as f:
-              content = f.read()
-
-          if 'DEVELOPMENT_TEAM = 8TC26XK3WP' not in content:
-              content = content.replace(
-                  'CODE_SIGN_STYLE = Automatic;',
-                  'CODE_SIGN_STYLE = Automatic;\n\t\t\t\tDEVELOPMENT_TEAM = 8TC26XK3WP;'
-              )
-              with open('app/ios/App/App.xcodeproj/project.pbxproj', 'w') as f:
-                  f.write(content)
-              print('Added DEVELOPMENT_TEAM to pbxproj')
-          else:
-              print('DEVELOPMENT_TEAM already present')
-
-          # Sanity check
-          sign_count = content.count('CODE_SIGN_STYLE = Automatic;')
-          team_count = content.count('DEVELOPMENT_TEAM = 8TC26XK3WP')
-          ent_count = content.count('CODE_SIGN_ENTITLEMENTS')
-          print(f'Automatic: {sign_count}, Team: {team_count}, Entitlements: {ent_count}')
-          PYEOF
-
-          plutil -lint app/ios/App/App.xcodeproj/project.pbxproj
-
-          # 2. Resolve API key — Codemagic stores it as @file:path reference
-          python3 <<'PYEOF'
-          import os, sys, shutil
-
-          key_id = os.environ.get('APP_STORE_CONNECT_KEY_IDENTIFIER', '')
-          raw_key = os.environ.get('APP_STORE_CONNECT_PRIVATE_KEY', '')
-
-          print(f'Key ID: {key_id}')
-          print(f'Raw value (first 40 chars): {raw_key[:40]}')
-
-          if raw_key.startswith('@file:'):
-              src_path = raw_key[6:]
-              print(f'Codemagic file reference detected: {src_path}')
-              if os.path.exists(src_path):
-                  with open(src_path, 'r') as f:
-                      content = f.read()
-                  lines = content.strip().split('\n')
-                  print(f'File exists: {len(content)} bytes, {len(lines)} lines')
-                  print(f'First: {lines[0]}')
-                  print(f'Last:  {lines[-1]}')
-                  for d in ['~/.appstoreconnect/private_keys', '~/private_keys']:
-                      dest_dir = os.path.expanduser(d)
-                      os.makedirs(dest_dir, exist_ok=True)
-                      dest = os.path.join(dest_dir, f'AuthKey_{key_id}.p8')
-                      if os.path.abspath(dest) != os.path.abspath(src_path):
-                          shutil.copy2(src_path, dest)
-                          print(f'Copied to: {dest}')
-                  print('API key ready')
-              else:
-                  print(f'ERROR: Referenced file does not exist: {src_path}')
-                  sys.exit(1)
-          else:
-              key = raw_key.replace('\\n', '\n').replace('\r', '')
-              if not key.endswith('\n'):
-                  key += '\n'
-              for d in ['~/.appstoreconnect/private_keys', '~/private_keys']:
-                  dest_dir = os.path.expanduser(d)
-                  os.makedirs(dest_dir, exist_ok=True)
-                  dest = os.path.join(dest_dir, f'AuthKey_{key_id}.p8')
-                  with open(dest, 'w') as f:
-                      f.write(key)
-                  print(f'Written to: {dest}')
-              lines = key.strip().split('\n')
-              print(f'Lines: {len(lines)}, First: {lines[0]}')
-          PYEOF
       - name: Set app icon
         script: |
           cp app/assets/app-icon-1024.png app/ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png
@@ -181,112 +89,10 @@ workflows:
       - name: Build iOS
         script: |
           cd app/ios/App
-
-          # Encontra a API key (escrita pelo step anterior ou já existente)
-          KEY_PATH=""
-          for dir in ~/.appstoreconnect/private_keys ~/private_keys ~/.private_keys; do
-            found=$(find "$dir" -name "AuthKey_*.p8" 2>/dev/null | head -1)
-            if [ -n "$found" ]; then
-              KEY_PATH="$found"
-              break
-            fi
-          done
-
-          # Fallback: busca em qualquer lugar do home
-          if [ -z "$KEY_PATH" ]; then
-            KEY_PATH=$(find "$HOME" -name "AuthKey_*.p8" -type f 2>/dev/null | head -1)
-          fi
-
-          if [ -z "$KEY_PATH" ]; then
-            echo "ERROR: No API key (.p8) file found!"
-            find "$HOME" -name "*.p8" -type f 2>/dev/null || echo "No .p8 files anywhere"
-            exit 1
-          fi
-
-          echo "=== Using API key: $KEY_PATH ==="
-          echo "Key ID: $APP_STORE_CONNECT_KEY_IDENTIFIER"
-          echo "Issuer: ${APP_STORE_CONNECT_ISSUER_ID:0:8}..."
-          wc -l "$KEY_PATH"
-          head -1 "$KEY_PATH"
-          tail -1 "$KEY_PATH"
-
-          echo ""
-          echo "=== xcodebuild archive ==="
-          mkdir -p build/ios/xcarchive build/ios/ipa
-          set +e
-          xcodebuild \
-            -project App.xcodeproj \
-            -scheme App \
-            -configuration Release \
-            -destination 'generic/platform=iOS' \
-            -archivePath build/ios/xcarchive/App.xcarchive \
-            -allowProvisioningUpdates \
-            -authenticationKeyPath "$KEY_PATH" \
-            -authenticationKeyID "$APP_STORE_CONNECT_KEY_IDENTIFIER" \
-            -authenticationKeyIssuerID "$APP_STORE_CONNECT_ISSUER_ID" \
-            CODE_SIGN_STYLE=Manual \
-            CODE_SIGN_IDENTITY="Apple Distribution" \
-            DEVELOPMENT_TEAM=8TC26XK3WP \
-            COMPILER_INDEX_STORE_ENABLE=NO \
-            archive 2>&1 | tee /tmp/archive.log
-          ARCHIVE_EXIT=${PIPESTATUS[0]}
-          set -e
-
-          if [ $ARCHIVE_EXIT -ne 0 ]; then
-            echo ""
-            echo "=================================================="
-            echo "ARCHIVE FAILED (exit $ARCHIVE_EXIT)"
-            echo "=== last 200 lines of xcodebuild output ==="
-            echo "=================================================="
-            tail -200 /tmp/archive.log
-            exit $ARCHIVE_EXIT
-          fi
-
-          echo ""
-          echo "=== archive OK, exporting IPA ==="
-          cat > /tmp/ExportOptions.plist <<'EOF'
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-              <key>method</key>
-              <string>app-store</string>
-              <key>teamID</key>
-              <string>8TC26XK3WP</string>
-              <key>signingStyle</key>
-              <string>manual</string>
-              <key>uploadSymbols</key>
-              <true/>
-              <key>stripSwiftSymbols</key>
-              <true/>
-          </dict>
-          </plist>
-          EOF
-
-          set +e
-          xcodebuild \
-            -exportArchive \
-            -archivePath build/ios/xcarchive/App.xcarchive \
-            -exportPath build/ios/ipa \
-            -exportOptionsPlist /tmp/ExportOptions.plist \
-            -allowProvisioningUpdates \
-            -authenticationKeyPath "$KEY_PATH" \
-            -authenticationKeyID "$APP_STORE_CONNECT_KEY_IDENTIFIER" \
-            -authenticationKeyIssuerID "$APP_STORE_CONNECT_ISSUER_ID" \
-            2>&1 | tee /tmp/export.log
-          EXPORT_EXIT=${PIPESTATUS[0]}
-          set -e
-
-          if [ $EXPORT_EXIT -ne 0 ]; then
-            echo ""
-            echo "=== EXPORT FAILED (exit $EXPORT_EXIT), last 100 lines ==="
-            tail -100 /tmp/export.log
-            exit $EXPORT_EXIT
-          fi
-
-          echo ""
-          echo "=== done ==="
-          ls -la build/ios/ipa/
+          xcode-project build-ipa \
+            --project "App.xcodeproj" \
+            --scheme "App" \
+            --archive-flags="-destination 'generic/platform=iOS'"
     artifacts:
       - app/ios/App/build/ios/ipa/*.ipa
     publishing:
