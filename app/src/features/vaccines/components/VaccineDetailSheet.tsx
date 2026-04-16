@@ -183,7 +183,7 @@ export default function VaccineDetailSheet({
               className="w-full py-3 rounded-md bg-primary text-on-primary font-label text-xs font-bold active:opacity-90 flex items-center justify-center gap-2"
             >
               {!isPremium && (
-                <span className="material-symbols-outlined text-base">lock</span>
+                <span className="material-symbols-outlined text-base">play_circle</span>
               )}
               Marcar como aplicada
             </button>
@@ -196,7 +196,7 @@ export default function VaccineDetailSheet({
               className="w-full py-2.5 rounded-md bg-transparent text-on-surface-variant font-label text-xs font-bold active:bg-surface-container flex items-center justify-center gap-2"
             >
               {!isPremium && (
-                <span className="material-symbols-outlined text-base">lock</span>
+                <span className="material-symbols-outlined text-base">play_circle</span>
               )}
               Não vou aplicar esta vacina
             </button>

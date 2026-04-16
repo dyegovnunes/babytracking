@@ -1,9 +1,11 @@
-import { useState, useMemo, useRef } from 'react'
+import { useEffect, useState, useMemo, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppState } from '../../contexts/AppContext'
 import { useBabyPremium } from '../../hooks/useBabyPremium'
 import { DEVELOPMENT_LEAPS, type DevelopmentLeap } from './developmentLeaps'
 import { contractionDe } from '../../lib/genderUtils'
+import { maybeShowInterstitialOncePerDay } from '../../lib/admob'
+import { AdBanner } from '../../components/ui/AdBanner'
 import LeapTimeline from './components/LeapTimeline'
 
 type LeapStatus = 'past' | 'active' | 'upcoming' | 'future'
@@ -34,6 +36,13 @@ export default function LeapsPage() {
 
   const [expandedId, setExpandedId] = useState<number | null>(null)
   const hasInteracted = useRef(false)
+
+  // Interstitial skippable na primeira visita do dia (só free)
+  useEffect(() => {
+    if (!isPremium) {
+      maybeShowInterstitialOncePerDay('leaps').catch(() => {})
+    }
+  }, [isPremium])
 
   const leapsWithStatus = useMemo(() => {
     if (!baby?.birthDate) return []
@@ -106,6 +115,8 @@ export default function LeapsPage() {
           isPremium={isPremium}
         />
       </div>
+
+      <AdBanner />
     </div>
   )
 }

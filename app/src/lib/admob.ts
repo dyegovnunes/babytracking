@@ -43,6 +43,32 @@ export async function hideBanner(): Promise<void> {
   }
 }
 
+/**
+ * Mostra um interstitial pulável (3s, skippable) na primeira vez do dia
+ * para uma chave específica. A chave permite controlar o cadenciamento
+ * por feature: 'milestones', 'leaps', etc.
+ *
+ * No momento usamos rewarded como fallback (garante experiência similar
+ * de "ad de ~3s que pode fechar"). TODO: criar um interstitial dedicado
+ * no AdMob quando o inventário estiver configurado.
+ */
+export async function maybeShowInterstitialOncePerDay(key: string): Promise<void> {
+  const today = new Date().toISOString().slice(0, 10) // YYYY-MM-DD
+  const storageKey = `yaya_ad_${key}_${today}`
+  if (typeof localStorage === 'undefined') return
+  if (localStorage.getItem(storageKey) === '1') return
+  localStorage.setItem(storageKey, '1')
+
+  if (!Capacitor.isNativePlatform()) return // web: no-op
+
+  // Usa rewarded como stub para ad pulável; resultado ignorado (sem reward)
+  try {
+    await showRewardedAd()
+  } catch {
+    // swallow — não queremos bloquear a navegação se o ad falhar
+  }
+}
+
 export async function showRewardedAd(): Promise<boolean> {
   if (!Capacitor.isNativePlatform()) {
     // Web fallback: simulate ad

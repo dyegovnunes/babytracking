@@ -23,6 +23,7 @@ import { PaywallModal } from '../../components/ui/PaywallModal'
 import Toast from '../../components/ui/Toast'
 import { hapticLight } from '../../lib/haptics'
 import { contractionDe } from '../../lib/genderUtils'
+import { maybeShowInterstitialOncePerDay } from '../../lib/admob'
 import { useSheetBackClose } from '../../hooks/useSheetBackClose'
 
 type FilterMode = 'all' | 'achieved' | 'pending'
@@ -77,6 +78,13 @@ export default function MilestonesPage() {
   const [showPaywall, setShowPaywall] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
 
+  // Interstitial skippable na primeira visita do dia (só free)
+  useEffect(() => {
+    if (!isPremium) {
+      maybeShowInterstitialOncePerDay('milestones').catch(() => {})
+    }
+  }, [isPremium])
+
   // Open register flow from query param (?register=code)
   useEffect(() => {
     const code = searchParams.get('register')
@@ -89,7 +97,6 @@ export default function MilestonesPage() {
     }
   }, [searchParams, setSearchParams])
 
-  const currentBandIdx = AGE_BAND_ORDER.indexOf(currentBand)
 
   // Progress bar: achieved vs total up to current age (+30 days grace)
   const totalForAge = useMemo(
@@ -310,10 +317,9 @@ export default function MilestonesPage() {
 
       {/* Timeline */}
       <div className="px-5 space-y-5">
-        {AGE_BAND_ORDER.map((band, idx) => {
+        {AGE_BAND_ORDER.map((band) => {
           const items = grouped[band]
           if (items.length === 0) return null
-          const isLocked = !isPremium && idx > currentBandIdx
 
           return (
             <section key={band}>
@@ -326,31 +332,7 @@ export default function MilestonesPage() {
                 )}
               </h3>
 
-              {isLocked ? (
-                <button
-                  type="button"
-                  onClick={() => setShowPaywall(true)}
-                  className="w-full rounded-md p-4 text-left border border-primary/20 bg-primary/[0.04] active:scale-[0.98] transition-transform"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-primary text-xl">
-                      lock
-                    </span>
-                    <div className="flex-1">
-                      <p className="font-label text-sm text-on-surface">
-                        {items.length} marcos nesta fase
-                      </p>
-                      <p className="font-label text-xs text-primary font-semibold">
-                        Desbloquear com Yaya+
-                      </p>
-                    </div>
-                    <span className="material-symbols-outlined text-primary">
-                      chevron_right
-                    </span>
-                  </div>
-                </button>
-              ) : (
-                <div className="space-y-2">
+              <div className="space-y-2">
                   {items.map((m) => {
                     const entry = achievedByCode.get(m.code)
                     const isAchieved = !!entry
@@ -375,8 +357,7 @@ export default function MilestonesPage() {
                       />
                     )
                   })}
-                </div>
-              )}
+              </div>
             </section>
           )
         })}

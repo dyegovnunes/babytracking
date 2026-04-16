@@ -102,15 +102,11 @@ export default function LeapCard({
         </p>
       </div>
 
-      {/* Data insight (premium only) */}
-      {isPremium && (
-        <LeapDataInsight logs={logs} birthDate={birthDate} leap={leap} />
-      )}
+      {/* Data insight (livre — free vê com banner/ad na página) */}
+      <LeapDataInsight logs={logs} birthDate={birthDate} leap={leap} />
 
-      {/* Mood tracker (premium only) */}
-      {isPremium && (
-        <LeapMoodTracker leapId={leap.id} babyId={babyId} status={status} isPremium={isPremium} />
-      )}
+      {/* Mood tracker (livre — free vê com banner/ad na página) */}
+      <LeapMoodTracker leapId={leap.id} babyId={babyId} status={status} isPremium={isPremium} />
     </div>
   )
 }

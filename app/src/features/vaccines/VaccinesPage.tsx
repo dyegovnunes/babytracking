@@ -13,8 +13,10 @@ import {
 import { contractionDe } from '../../lib/genderUtils'
 import { hapticLight, hapticSuccess } from '../../lib/haptics'
 import { PaywallModal } from '../../components/ui/PaywallModal'
+import { AdBanner } from '../../components/ui/AdBanner'
 import Toast from '../../components/ui/Toast'
 import { useSheetBackClose } from '../../hooks/useSheetBackClose'
+import { useVaccineUnlock } from './useVaccineUnlock'
 import VaccineRow from './components/VaccineRow'
 import VaccineDetailSheet from './components/VaccineDetailSheet'
 import VaccineApplySheet from './components/VaccineApplySheet'
@@ -75,6 +77,7 @@ export default function VaccinesPage() {
   const [selected, setSelected] = useState<Vaccine | null>(null)
   const [applySheetFor, setApplySheetFor] = useState<Vaccine | null>(null)
   const [showPaywall, setShowPaywall] = useState(false)
+  const { ensureUnlocked } = useVaccineUnlock(baby?.id)
   const [toast, setToast] = useState<string | null>(null)
 
   // Filtra vacinas segundo o chip ativo.
@@ -117,12 +120,12 @@ export default function VaccinesPage() {
     setSelected(v)
   }
 
-  const handleMarkApplied = () => {
+  const handleMarkApplied = async () => {
     if (!selected) return
+    // Premium passa direto, free precisa ver rewarded ad (desbloqueia 10min)
     if (!isPremium) {
-      setSelected(null)
-      setShowPaywall(true)
-      return
+      const unlocked = await ensureUnlocked()
+      if (!unlocked) return
     }
     // Fecha o detail sheet primeiro, depois abre o apply sheet em um novo
     // tick. Isso evita o conflito do `useSheetBackClose` — quando dois
@@ -140,8 +143,8 @@ export default function VaccinesPage() {
    */
   const handleCheckboxTap = async (vaccine: Vaccine) => {
     if (!isPremium) {
-      setShowPaywall(true)
-      return
+      const unlocked = await ensureUnlocked()
+      if (!unlocked) return
     }
     hapticLight()
     const wasApplied = statusByCode.get(vaccine.code) === 'applied'
@@ -155,9 +158,8 @@ export default function VaccinesPage() {
   const handleSkip = async () => {
     if (!selected) return
     if (!isPremium) {
-      setSelected(null)
-      setShowPaywall(true)
-      return
+      const unlocked = await ensureUnlocked()
+      if (!unlocked) return
     }
     const name = selected.name
     const result = await skipVaccine(selected.code, user?.id)
@@ -302,32 +304,8 @@ export default function VaccinesPage() {
         ))}
       </section>
 
-      {/* Banner paywall (free) */}
-      {!isPremium && (
-        <section className="px-5 mt-6">
-          <button
-            type="button"
-            onClick={() => {
-              hapticLight()
-              setShowPaywall(true)
-            }}
-            className="w-full p-4 rounded-md bg-gradient-to-br from-primary/15 to-tertiary/10 border border-primary/25 text-left active:opacity-90"
-          >
-            <div className="flex items-center gap-2 mb-1">
-              <span className="material-symbols-outlined text-primary text-lg">
-                lock_open
-              </span>
-              <span className="font-headline text-sm font-bold text-on-surface">
-                Yaya+
-              </span>
-            </div>
-            <p className="font-body text-xs text-on-surface-variant leading-relaxed">
-              Marque vacinas como aplicadas e receba lembretes para nunca atrasar
-              o calendário do seu bebê.
-            </p>
-          </button>
-        </section>
-      )}
+      {/* AdBanner: mostrado só para free (via useBabyPremium internamente) */}
+      <AdBanner />
 
       {/* Sheets */}
       {selected && (

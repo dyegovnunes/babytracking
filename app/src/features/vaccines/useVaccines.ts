@@ -165,7 +165,7 @@ export function useVaccines(
       input: ApplyVaccineInput,
       userId?: string,
     ): Promise<ApplyVaccineResult> => {
-      if (!isPremium) return { ok: false, error: 'not_premium' }
+      // Premium check é feito fora do hook (via useVaccineUnlock)
       if (!babyId) return { ok: false, error: 'no_baby' }
 
       const vaccineId = await resolveVaccineId(code)
@@ -222,7 +222,7 @@ export function useVaccines(
    */
   const quickToggle = useCallback(
     async (code: string, userId?: string): Promise<boolean> => {
-      if (!isPremium) return false
+      // Premium check fica no consumer (useVaccineUnlock)
       if (!babyId) return false
 
       const existing = records.find((r) => r.vaccineCode === code)
@@ -286,7 +286,7 @@ export function useVaccines(
   /** Marca uma vacina como "não vou aplicar" (ex: SBP opcional). */
   const skipVaccine = useCallback(
     async (code: string, userId?: string): Promise<ApplyVaccineResult> => {
-      if (!isPremium) return { ok: false, error: 'not_premium' }
+      // Premium check fica no consumer (useVaccineUnlock)
       if (!babyId) return { ok: false, error: 'no_baby' }
 
       const vaccineId = await resolveVaccineId(code)
