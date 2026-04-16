@@ -19,28 +19,25 @@ interface LeapTimelineProps {
 
 function StatusDot({ status }: { status: LeapStatus }) {
   if (status === 'past') {
+    // Roxo (primary) — identidade visual do app
     return (
-      <div className="w-7 h-7 rounded-full bg-green-800/15 flex items-center justify-center flex-shrink-0">
+      <div className="w-7 h-7 rounded-full bg-primary/15 flex items-center justify-center flex-shrink-0">
         <span
-          className="material-symbols-outlined text-green-400/70 text-lg"
+          className="material-symbols-outlined text-primary/70 text-lg"
           style={{ fontVariationSettings: "'FILL' 1" }}
         >check_circle</span>
       </div>
     )
   }
   if (status === 'active') {
+    // Roxo pulsante — em andamento
     return (
       <div className="w-7 h-7 rounded-full border-2 border-primary bg-primary/15 animate-pulse flex items-center justify-center flex-shrink-0">
         <div className="w-2.5 h-2.5 rounded-full bg-primary" />
       </div>
     )
   }
-  if (status === 'upcoming') {
-    return (
-      <div className="w-7 h-7 rounded-full border-2 border-amber-400 bg-amber-50 flex-shrink-0" />
-    )
-  }
-  // future — lock icon
+  // upcoming + future — cadeado (ainda não começou)
   return (
     <div className="w-7 h-7 rounded-full border-2 border-outline-variant/30 bg-surface flex items-center justify-center flex-shrink-0">
       <span className="material-symbols-outlined text-on-surface-variant/40 text-sm">lock</span>
@@ -131,8 +128,8 @@ function IntervalItem({
 
       {/* Dot — pulsing if currently here */}
       {isCurrentlyHere ? (
-        <div className="w-7 h-7 rounded-full border-2 border-primary bg-primary/15 animate-pulse flex items-center justify-center flex-shrink-0 z-[1]">
-          <div className="w-2.5 h-2.5 rounded-full bg-primary" />
+        <div className="w-7 h-7 rounded-full border-2 border-green-400 bg-green-400/15 animate-pulse flex items-center justify-center flex-shrink-0 z-[1]">
+          <div className="w-2.5 h-2.5 rounded-full bg-green-400" />
         </div>
       ) : (
         <div className="w-7 h-7 flex items-center justify-center flex-shrink-0 z-[1]">
@@ -146,7 +143,7 @@ function IntervalItem({
           {isFirst ? 'Primeiras semanas' : 'Fase de calmaria'}
         </p>
         {isCurrentlyHere ? (
-          <p className="text-xs text-primary font-semibold mt-0.5">
+          <p className="text-xs text-green-400 font-semibold mt-0.5">
             Vocês estão aqui!
             {daysUntilNext > 0 && (
               <span className="text-on-surface-variant/70 font-normal">
