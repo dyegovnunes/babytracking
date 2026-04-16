@@ -50,6 +50,9 @@ export default function AddBabySheet({ onClose }: Props) {
         birth_date: birthDate,
         gender,
         created_by: user.id,
+        // TODO(premium): remover quando webhook RevenueCat estiver em produção
+        // Por ora (fase de teste) todos os bebês novos já vêm premium
+        is_premium: true,
       })
       .select()
       .single()

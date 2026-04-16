@@ -117,17 +117,23 @@ export default function MilestonesPage() {
     [achieved],
   )
 
-  // Banner mostrado quando há auto-registrados e usuário não dispensou
-  const bannerDismissKey = baby ? `yaya_milestones_banner_dismissed_${baby.id}` : ''
-  const [bannerDismissed, setBannerDismissed] = useState(() =>
-    bannerDismissKey ? localStorage.getItem(bannerDismissKey) === '1' : false,
-  )
-  const showAutoBanner = autoRegisteredCount > 0 && !bannerDismissed
+  // Modal de boas-vindas: aparece só na primeira visita à página quando há
+  // marcos auto-registrados (bebê adicionado com idade > 14 dias)
+  const welcomeKey = baby ? `yaya_milestones_welcome_seen_${baby.id}` : ''
+  const [welcomeOpen, setWelcomeOpen] = useState(false)
 
-  function dismissBanner() {
-    if (bannerDismissKey) localStorage.setItem(bannerDismissKey, '1')
-    setBannerDismissed(true)
+  useEffect(() => {
+    if (!welcomeKey || loading) return
+    if (autoRegisteredCount === 0) return
+    if (localStorage.getItem(welcomeKey) === '1') return
+    setWelcomeOpen(true)
+  }, [loading, autoRegisteredCount, welcomeKey])
+
+  function dismissWelcome() {
+    if (welcomeKey) localStorage.setItem(welcomeKey, '1')
+    setWelcomeOpen(false)
   }
+  useSheetBackClose(welcomeOpen, dismissWelcome)
 
   // "Esperados agora": marcos não registrados da faixa atual + próxima faixa
   const expectedNow = useMemo(() => {
@@ -232,27 +238,6 @@ export default function MilestonesPage() {
           </p>
         </div>
       </section>
-
-      {/* Banner: auto-registered milestones */}
-      {showAutoBanner && (
-        <section className="px-5 mb-3">
-          <div className="bg-primary/[0.08] border border-primary/20 rounded-md p-3 flex items-start gap-2.5">
-            <span className="material-symbols-outlined text-primary text-base mt-0.5">info</span>
-            <div className="flex-1 min-w-0">
-              <p className="font-label text-xs text-on-surface leading-relaxed">
-                Marcamos <strong>{autoRegisteredCount}</strong> marcos automaticamente com base na idade {contractionDe(baby.gender)} {baby.name}. Revise ou desmarque se algum não aconteceu.
-              </p>
-              <button
-                type="button"
-                onClick={() => { hapticLight(); dismissBanner() }}
-                className="mt-2 text-primary font-label text-xs font-semibold"
-              >
-                Dispensar
-              </button>
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* Progress */}
       <section className="px-5 mb-4">
@@ -456,6 +441,38 @@ export default function MilestonesPage() {
         onClose={() => setShowPaywall(false)}
         trigger="milestones"
       />
+
+      {/* Welcome modal — primeira visita quando há marcos auto-registrados */}
+      {welcomeOpen && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/75 backdrop-blur-sm p-6"
+          onClick={(e) => e.target === e.currentTarget && dismissWelcome()}
+        >
+          <div className="w-full max-w-md bg-surface-container-highest rounded-md p-6 animate-slide-up">
+            <div className="flex items-center gap-3 mb-3">
+              <span className="w-10 h-10 rounded-full bg-primary/15 flex items-center justify-center flex-shrink-0">
+                <span className="material-symbols-outlined text-primary text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>flag</span>
+              </span>
+              <h3 className="font-headline text-lg font-bold text-on-surface leading-tight">
+                Marcos {contractionDe(baby.gender)} {baby.name}
+              </h3>
+            </div>
+            <p className="font-body text-sm text-on-surface-variant leading-relaxed mb-4">
+              Marcamos automaticamente <strong className="text-on-surface">{autoRegisteredCount}</strong> {autoRegisteredCount === 1 ? 'marco que o bebê provavelmente já atingiu' : 'marcos que o bebê provavelmente já atingiu'} com base na idade.
+            </p>
+            <p className="font-body text-xs text-on-surface-variant/80 leading-relaxed mb-5">
+              Revise a lista e desmarque caso algum não tenha acontecido. Toque na linha para adicionar data, foto ou nota — ótimo para guardar a lembrança.
+            </p>
+            <button
+              type="button"
+              onClick={() => { hapticLight(); dismissWelcome() }}
+              className="w-full py-3 rounded-md bg-primary text-on-primary font-label font-semibold text-sm"
+            >
+              Entendi
+            </button>
+          </div>
+        </div>
+      )}
 
       {toast && <Toast message={toast} onDismiss={() => setToast(null)} />}
     </div>

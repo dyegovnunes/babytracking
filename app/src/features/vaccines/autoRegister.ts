@@ -21,6 +21,14 @@ export async function autoRegisterPastVaccines(
   babyId: string,
   birthDate: string,
 ): Promise<number> {
+  // Auto-registro é feature premium (vacinas é feature premium)
+  const { data: babyRow } = await supabase
+    .from('babies')
+    .select('is_premium')
+    .eq('id', babyId)
+    .single()
+  if (!babyRow?.is_premium) return 0
+
   const birthMs = new Date(birthDate).getTime()
   const ageDays = Math.floor((Date.now() - birthMs) / MS_PER_DAY)
 
