@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppState, useAppDispatch } from '../../contexts/AppContext'
 import { switchBaby } from '../../contexts/AppContext'
@@ -5,6 +6,8 @@ import { formatAge } from '../../lib/formatters'
 import { hapticLight } from '../../lib/haptics'
 import { useSheetBackClose } from '../../hooks/useSheetBackClose'
 import { roleLabel } from '../../lib/roles'
+import AddBabySheet from './AddBabySheet'
+import JoinWithCodeSheet from './JoinWithCodeSheet'
 import type { Baby } from '../../types'
 
 interface Props {
@@ -15,11 +18,18 @@ export default function BabySwitcher({ onClose }: Props) {
   const { babiesWithRole, baby } = useAppState()
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
-  useSheetBackClose(true, onClose)
+  const [showAddBaby, setShowAddBaby] = useState(false)
+  const [showJoin, setShowJoin] = useState(false)
+
+  // Only bind back button if no nested sheet is open
+  useSheetBackClose(!showAddBaby && !showJoin, onClose)
 
   function handleSelect(selected: Baby) {
+    // Tap no bebê ativo → abre o perfil (comportamento útil em vez de só fechar)
     if (selected.id === baby?.id) {
+      hapticLight()
       onClose()
+      navigate('/profile')
       return
     }
     hapticLight()
@@ -28,13 +38,13 @@ export default function BabySwitcher({ onClose }: Props) {
   }
 
   function handleAddBaby() {
-    onClose()
-    navigate('/onboarding?mode=add')
+    hapticLight()
+    setShowAddBaby(true)
   }
 
   function handleJoinWithCode() {
-    onClose()
-    navigate('/onboarding?mode=join')
+    hapticLight()
+    setShowJoin(true)
   }
 
   return (
@@ -125,6 +135,9 @@ export default function BabySwitcher({ onClose }: Props) {
           Cancelar
         </button>
       </div>
+
+      {showAddBaby && <AddBabySheet onClose={() => setShowAddBaby(false)} />}
+      {showJoin && <JoinWithCodeSheet onClose={() => setShowJoin(false)} />}
     </div>
   )
 }

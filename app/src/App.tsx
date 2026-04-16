@@ -93,11 +93,6 @@ function AuthenticatedRoutes() {
   return (
     <Suspense fallback={<RouteFallback />}>
       <Routes>
-        {/* Onboarding route (accessible to add baby or join via code when already logged in) */}
-        <Route
-          path="onboarding"
-          element={<OnboardingPage onComplete={() => window.location.reload()} />}
-        />
         <Route element={<AppShell />}>
           <Route index element={<TrackerPage />} />
           <Route path="history" element={<HistoryPage />} />

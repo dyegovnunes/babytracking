@@ -14,7 +14,7 @@ const tabs = [
   { to: '/profile', icon: 'person', label: 'Perfil' },
 ] as const
 
-const LONG_PRESS_MS = 1500
+const LONG_PRESS_MS = 600
 const DOUBLE_TAP_MS = 300
 
 export default function BottomNav() {
