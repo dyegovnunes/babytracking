@@ -92,9 +92,10 @@ workflows:
           content = content.replace('CODE_SIGN_STYLE = Manual;', 'CODE_SIGN_STYLE = Automatic;')
           print(f'Manual→Automatic replacements: {content.count("CODE_SIGN_STYLE = Automatic;")}')
 
-          # Remove PROVISIONING_PROFILE_SPECIFIER (use-profiles added it)
+          # Remove settings that use-profiles injected (conflict with Automatic)
           content = re.sub(r'\t*PROVISIONING_PROFILE_SPECIFIER = ".*?";\n', '', content)
-          print('Removed PROVISIONING_PROFILE_SPECIFIER')
+          content = re.sub(r'\t*"?CODE_SIGN_IDENTITY(\[sdk=iphoneos\*\])?"? = ".*?";\n', '', content)
+          print('Removed PROVISIONING_PROFILE_SPECIFIER + CODE_SIGN_IDENTITY')
 
           # Ensure DEVELOPMENT_TEAM
           if 'DEVELOPMENT_TEAM = 8TC26XK3WP' not in content:
