@@ -27,21 +27,14 @@ workflows:
       - name: Configure entitlements
         script: |
           # Cria entitlements file com Sign In with Apple
-          cat > app/ios/App/App/App.entitlements <<'EOF'
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-            <key>com.apple.developer.applesignin</key>
-            <array>
-              <string>Default</string>
-            </array>
-          </dict>
-          </plist>
-          EOF
+          # Usando printf para evitar problemas de indentacao do YAML
+          printf '<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<plist version="1.0">\n<dict>\n\t<key>com.apple.developer.applesignin</key>\n\t<array>\n\t\t<string>Default</string>\n\t</array>\n</dict>\n</plist>\n' > app/ios/App/App/App.entitlements
+          echo "--- Entitlements file ---"
+          cat app/ios/App/App/App.entitlements
+          plutil -lint app/ios/App/App/App.entitlements
 
-          # Injeta CODE_SIGN_ENTITLEMENTS no pbxproj
-          python3 <<'PYEOF'
+          # Injeta CODE_SIGN_ENTITLEMENTS no pbxproj (se ainda nao tiver)
+          python3 << 'PYEOF'
           with open('app/ios/App/App.xcodeproj/project.pbxproj', 'r') as f:
               content = f.read()
           if 'CODE_SIGN_ENTITLEMENTS' not in content:
@@ -63,7 +56,8 @@ workflows:
           keychain initialize
           app-store-connect fetch-signing-files "app.yayababy" \
             --type IOS_APP_STORE \
-            --strict-match-identifier
+            --strict-match-identifier \
+            --create=false
           keychain add-certificates
           xcode-project use-profiles
       - name: Set app icon
