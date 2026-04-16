@@ -50,7 +50,11 @@ export default function ProfilePage() {
 
   // Member management
   const [confirmRemove, setConfirmRemove] = useState<string | null>(null)
+  const [confirmPromoteParent, setConfirmPromoteParent] = useState<{ userId: string; currentRole: string } | null>(null)
+  const [rolesInfoOpen, setRolesInfoOpen] = useState(false)
   useSheetBackClose(!!confirmRemove, () => setConfirmRemove(null))
+  useSheetBackClose(!!confirmPromoteParent, () => setConfirmPromoteParent(null))
+  useSheetBackClose(rolesInfoOpen, () => setRolesInfoOpen(false))
 
   // Invite
   const { code: inviteCode, generating: generatingCode, generate: generateInvite, deactivate: deactivateInvite } = useInviteCodes()
@@ -114,12 +118,21 @@ export default function ProfilePage() {
     const next = nextRoleUp(currentRole as BabyRole)
     if (!next) return
     if (next === 'parent') {
-      // Confirmação extra ao promover para parent
-      if (!confirm(`Promover para ${roleLabel(next)}? Isso dá acesso total ao perfil do bebê.`)) return
+      // Abre modal de confirmação in-app (não usa confirm() nativo do browser)
+      setConfirmPromoteParent({ userId, currentRole })
+      return
     }
     const ok = await updateMemberRole(dispatch, baby.id, userId, next)
     if (ok) setToast(`Promovido para ${roleLabel(next)}!`)
   }, [baby, dispatch])
+
+  const confirmPromoteToParent = useCallback(async () => {
+    if (!baby || !confirmPromoteParent) return
+    const { userId } = confirmPromoteParent
+    setConfirmPromoteParent(null)
+    const ok = await updateMemberRole(dispatch, baby.id, userId, 'parent')
+    if (ok) setToast('Promovido para Pai/Mãe!')
+  }, [baby, dispatch, confirmPromoteParent])
 
   const handleDemote = useCallback(async (userId: string, currentRole: string) => {
     if (!baby) return
@@ -260,30 +273,40 @@ export default function ProfilePage() {
 
         {/* ===== CUIDADORES ===== */}
         {can.manageMembers(myRole) && <div className="bg-surface-container rounded-md p-4">
-          <button
-            onClick={() => { hapticLight(); setCaregiversExpanded(!caregiversExpanded) }}
-            className="w-full flex items-start gap-3 text-left"
-          >
-            <span className="material-symbols-outlined text-primary text-xl mt-0.5">group</span>
-            <div className="flex-1 min-w-0">
-              <h3 className="text-on-surface font-headline text-sm font-bold">Cuidadores</h3>
-              {!caregiversExpanded && (
-                <>
-                  <p className="font-body text-xs text-on-surface-variant mt-0.5 truncate">
-                    {caregivers.length > 0
-                      ? caregivers.map((c) => c.displayName.split(' ')[0]).join(', ')
-                      : 'Nenhum cuidador ainda'}
-                  </p>
-                  <p className="font-label text-[11px] text-primary mt-1">
-                    {inviteCode ? 'Código de convite ativo · toque para gerenciar' : 'Toque para convidar outro cuidador'}
-                  </p>
-                </>
-              )}
-            </div>
-            <span className={`material-symbols-outlined text-on-surface-variant text-base mt-0.5 transition-transform ${caregiversExpanded ? 'rotate-180' : ''}`}>
-              expand_more
-            </span>
-          </button>
+          <div className="w-full flex items-start gap-3">
+            <button
+              onClick={() => { hapticLight(); setCaregiversExpanded(!caregiversExpanded) }}
+              className="flex items-start gap-3 text-left flex-1 min-w-0"
+            >
+              <span className="material-symbols-outlined text-primary text-xl mt-0.5">group</span>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <h3 className="text-on-surface font-headline text-sm font-bold">Cuidadores</h3>
+                  <span
+                    onClick={(e) => { e.stopPropagation(); hapticLight(); setRolesInfoOpen(true) }}
+                    role="button"
+                    aria-label="Saiba mais sobre os papéis"
+                    className="material-symbols-outlined text-on-surface-variant/60 text-base cursor-pointer"
+                  >info</span>
+                </div>
+                {!caregiversExpanded && (
+                  <>
+                    <p className="font-body text-xs text-on-surface-variant mt-0.5 truncate">
+                      {caregivers.length > 0
+                        ? caregivers.map((c) => c.displayName.split(' ')[0]).join(', ')
+                        : 'Nenhum cuidador ainda'}
+                    </p>
+                    <p className="font-label text-[11px] text-primary mt-1">
+                      {inviteCode ? 'Código de convite ativo · toque para gerenciar' : 'Toque para convidar outro cuidador'}
+                    </p>
+                  </>
+                )}
+              </div>
+              <span className={`material-symbols-outlined text-on-surface-variant text-base mt-0.5 transition-transform ${caregiversExpanded ? 'rotate-180' : ''}`}>
+                expand_more
+              </span>
+            </button>
+          </div>
 
           {caregiversExpanded && (
           <div className="mt-4">
@@ -399,6 +422,91 @@ export default function ProfilePage() {
                 Remover
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Confirmação de promoção para Pai/Mãe */}
+      {confirmPromoteParent && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm" onClick={() => setConfirmPromoteParent(null)}>
+          <div className="bg-surface-container-highest rounded-md p-6 mx-6 max-w-sm" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center gap-3 mb-4">
+              <span className="material-symbols-outlined text-primary text-2xl">upgrade</span>
+              <h3 className="font-headline text-lg font-bold text-on-surface">Promover para Pai/Mãe</h3>
+            </div>
+            <p className="font-body text-sm text-on-surface-variant mb-2">
+              <strong className="text-on-surface">{members[confirmPromoteParent.userId]?.displayName}</strong> terá acesso <strong>total</strong> ao perfil do bebê:
+            </p>
+            <ul className="font-body text-xs text-on-surface-variant space-y-1 mb-5 pl-1">
+              <li>· Editar dados do bebê</li>
+              <li>· Convidar, promover e remover outros membros</li>
+              <li>· Gerenciar assinatura Yaya+</li>
+            </ul>
+            <div className="flex gap-2">
+              <button onClick={() => setConfirmPromoteParent(null)} className="flex-1 py-2.5 rounded-md bg-surface-variant text-on-surface-variant font-label text-sm font-semibold">
+                Cancelar
+              </button>
+              <button onClick={confirmPromoteToParent} className="flex-1 py-2.5 rounded-md bg-primary text-on-primary font-label text-sm font-semibold">
+                Promover
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal informativo sobre os papéis */}
+      {rolesInfoOpen && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/75 backdrop-blur-sm" onClick={() => setRolesInfoOpen(false)}>
+          <div className="w-full max-w-md bg-surface-container-highest rounded-t-md sm:rounded-md p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] animate-slide-up" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-headline text-lg font-bold text-on-surface">Papéis do cuidador</h3>
+              <button onClick={() => setRolesInfoOpen(false)} aria-label="Fechar" className="p-1 -m-1 rounded-md active:bg-surface-container">
+                <span className="material-symbols-outlined text-on-surface-variant">close</span>
+              </button>
+            </div>
+
+            <p className="font-body text-xs text-on-surface-variant mb-4">
+              Cada pessoa convidada tem um papel. Você pode promover ou rebaixar pelo ▲ ▼ nos cuidadores.
+            </p>
+
+            <div className="space-y-3">
+              {/* Pai/Mãe */}
+              <div className="rounded-md bg-primary/5 p-3 border border-primary/20">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="material-symbols-outlined text-primary text-base">family_restroom</span>
+                  <p className="font-label text-sm font-bold text-on-surface">Pai/Mãe</p>
+                </div>
+                <p className="font-body text-xs text-on-surface-variant leading-relaxed">
+                  Acesso total. Edita dados do bebê, convida e promove membros, gerencia a assinatura Yaya+.
+                </p>
+              </div>
+
+              {/* Responsável */}
+              <div className="rounded-md bg-surface-container p-3">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="material-symbols-outlined text-primary text-base">shield_person</span>
+                  <p className="font-label text-sm font-bold text-on-surface">Responsável</p>
+                </div>
+                <p className="font-body text-xs text-on-surface-variant leading-relaxed">
+                  Avó, avô, tio, padrinho. Vê e registra tudo — marcos, saltos, vacinas, relatórios. Não gerencia membros nem assinatura.
+                </p>
+              </div>
+
+              {/* Cuidador(a) */}
+              <div className="rounded-md bg-surface-container p-3">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="material-symbols-outlined text-primary text-base">badge</span>
+                  <p className="font-label text-sm font-bold text-on-surface">Cuidador(a)</p>
+                </div>
+                <p className="font-body text-xs text-on-surface-variant leading-relaxed">
+                  Babá ou cuidador temporário. Vê e registra só o operacional do dia: alimentação, sono, fraldas, medicamentos. Não vê marcos, saltos, vacinas ou insights.
+                </p>
+              </div>
+            </div>
+
+            <p className="font-label text-[11px] text-on-surface-variant/70 mt-4 text-center">
+              Todo mundo entra como <strong>Cuidador(a)</strong>. Promova depois se precisar.
+            </p>
           </div>
         </div>
       )}
