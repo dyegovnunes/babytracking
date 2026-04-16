@@ -10,9 +10,6 @@ workflows:
         - yaya_ios
       node: 22
       xcode: latest
-      ios_signing:
-        distribution_type: app_store
-        bundle_identifier: app.yayababy
     scripts:
       - name: Install dependencies
         script: |
@@ -61,6 +58,13 @@ workflows:
           plutil -lint app/ios/App/App.xcodeproj/project.pbxproj
       - name: Set up code signing
         script: |
+          # Manual signing setup: download existing profiles (not create new ones)
+          # This picks up the manually-created "Yaya App Store" profile with SIWA
+          keychain initialize
+          app-store-connect fetch-signing-files "app.yayababy" \
+            --type IOS_APP_STORE \
+            --strict-match-identifier
+          keychain add-certificates
           xcode-project use-profiles
       - name: Set app icon
         script: |
