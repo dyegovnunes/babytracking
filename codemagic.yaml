@@ -106,7 +106,12 @@ workflows:
           cat App/App.entitlements
 
           echo ""
-          echo "=== xcodebuild archive (direct call, full output) ==="
+          echo "=== xcodebuild archive (direct call, minimal args) ==="
+          # SEM override de CODE_SIGN_IDENTITY / CODE_SIGN_STYLE / DEVELOPMENT_TEAM
+          # no command line — esses flags afetam TODOS os targets, inclusive os
+          # SPM packages (RevenueCat etc) que devem assinar automático em dev.
+          # O target App já tem Manual signing + profile "Yaya Distribution"
+          # configurado pelo `xcode-project use-profiles` no pbxproj.
           mkdir -p build/ios/xcarchive build/ios/ipa
           set +e
           xcodebuild \
@@ -116,9 +121,6 @@ workflows:
             -destination 'generic/platform=iOS' \
             -archivePath build/ios/xcarchive/App.xcarchive \
             -allowProvisioningUpdates \
-            DEVELOPMENT_TEAM=8TC26XK3WP \
-            "CODE_SIGN_IDENTITY=Apple Distribution" \
-            CODE_SIGN_STYLE=Automatic \
             COMPILER_INDEX_STORE_ENABLE=NO \
             archive 2>&1 | tee /tmp/archive.log
           ARCHIVE_EXIT=${PIPESTATUS[0]}
