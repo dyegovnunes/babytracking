@@ -1,7 +1,6 @@
 import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Toast from '../components/ui/Toast'
-import { AdBanner } from '../components/ui/AdBanner'
 import { useBathHours } from './settings/useBathHours'
 import { useNotificationPrefs } from './settings/useNotificationPrefs'
 import IntervalsSection from './settings/sections/IntervalsSection'
@@ -129,8 +128,6 @@ export default function SettingsPage() {
         onClose={() => setPickingBathHour(false)}
       />
       <InfoModals kind={infoModal} onClose={() => setInfoModal(null)} />
-
-      <AdBanner />
 
       {toast && <Toast message={toast} onDismiss={() => setToast(null)} />}
     </div>

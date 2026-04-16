@@ -10,7 +10,6 @@ import { HistorySkeleton } from '../../components/ui/Skeleton'
 import { hapticMedium } from '../../lib/haptics'
 import { useBabyPremium } from '../../hooks/useBabyPremium'
 import { PaywallModal } from '../../components/ui/PaywallModal'
-import { AdBanner } from '../../components/ui/AdBanner'
 
 // Free: hoje e ontem apenas (2 dias = HOJE + DIA ANTERIOR)
 const HISTORY_LIMIT_DAYS = 2
@@ -234,8 +233,6 @@ export default function HistoryPage() {
         onClose={() => setShowPaywall(false)}
         trigger="history"
       />
-
-      <AdBanner />
     </div>
   )
 }

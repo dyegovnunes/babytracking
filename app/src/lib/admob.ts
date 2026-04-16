@@ -13,6 +13,10 @@ const AD_IDS = Capacitor.getPlatform() === 'ios'
     };
 
 let initialized = false;
+// Estado do banner para evitar chamadas duplicadas (show/hide em sequência
+// muito rápida já causou crash de race condition no plugin AdMob).
+let bannerVisible = false;
+let bannerCall: Promise<void> | null = null;
 
 export async function initAdMob(): Promise<void> {
   if (!Capacitor.isNativePlatform() || initialized) return;
@@ -21,26 +25,53 @@ export async function initAdMob(): Promise<void> {
   initialized = true;
 }
 
+/**
+ * Mostra o banner nativo. Idempotente: se já está mostrando, não faz nada.
+ * Serializa chamadas (show/hide) para evitar race no plugin.
+ */
 export async function showBanner(): Promise<void> {
   if (!Capacitor.isNativePlatform()) return;
+  // Aguarda qualquer operação de banner em andamento
+  if (bannerCall) await bannerCall.catch(() => {});
+  if (bannerVisible) return;
 
   const options: BannerAdOptions = {
     adId: AD_IDS.banner,
     adSize: BannerAdSize.ADAPTIVE_BANNER,
     position: BannerAdPosition.BOTTOM_CENTER,
-    margin: 56, // above bottom nav
+    // 80 dp — cobre o bottom nav (5rem ≈ 80px). Anteriormente 56 deixava o
+    // banner sobrepondo a nav em alguns dispositivos.
+    margin: 80,
   };
 
-  await AdMob.showBanner(options);
+  bannerCall = (async () => {
+    try {
+      await AdMob.showBanner(options);
+      bannerVisible = true;
+    } catch {
+      bannerVisible = false;
+    }
+  })();
+  await bannerCall;
+  bannerCall = null;
 }
 
 export async function hideBanner(): Promise<void> {
   if (!Capacitor.isNativePlatform()) return;
-  try {
-    await AdMob.removeBanner();
-  } catch {
-    // Banner might not be showing
-  }
+  if (bannerCall) await bannerCall.catch(() => {});
+  if (!bannerVisible) return;
+
+  bannerCall = (async () => {
+    try {
+      await AdMob.removeBanner();
+    } catch {
+      // Banner pode não estar visível mais — ignora
+    } finally {
+      bannerVisible = false;
+    }
+  })();
+  await bannerCall;
+  bannerCall = null;
 }
 
 /**

@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom'
 import Header from './Header'
 import BottomNav from './BottomNav'
+import { AdBanner } from '../ui/AdBanner'
 
 export default function AppShell() {
   return (
@@ -15,6 +16,9 @@ export default function AppShell() {
       >
         <Outlet />
       </main>
+      {/* Banner AdMob — montado uma única vez no shell.
+          Ao mudar de página não há mais sequência hide/show que causava crash. */}
+      <AdBanner />
       <BottomNav />
     </div>
   )

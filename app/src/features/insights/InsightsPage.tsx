@@ -11,7 +11,6 @@ import InsightCard from './components/InsightCard'
 import InsightPaywallBanner from './components/InsightPaywallBanner'
 import WeekChart from './components/WeekChart'
 import { PaywallModal } from '../../components/ui/PaywallModal'
-import { AdBanner } from '../../components/ui/AdBanner'
 import { hapticLight } from '../../lib/haptics'
 
 const FREE_INSIGHT_LIMIT = 2
@@ -223,8 +222,6 @@ export default function InsightsPage() {
         onClose={() => setShowPaywall(false)}
         trigger="insights"
       />
-
-      <AdBanner />
     </div>
   )
 }

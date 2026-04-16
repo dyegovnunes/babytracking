@@ -17,7 +17,6 @@ import { PaywallModal } from '../../components/ui/PaywallModal'
 import { useDailyLimit } from './useDailyLimit'
 import HighlightsStrip from './components/HighlightsStrip'
 import { collectHighlights } from './highlights'
-import { AdBanner } from '../../components/ui/AdBanner'
 import { getAgeBand, getHighlightedEvents } from '../../lib/ageUtils'
 import { useMilestones } from '../milestones'
 import { useVaccines, VACCINES } from '../vaccines'
@@ -209,8 +208,6 @@ export default function TrackerPage() {
           onChange={() => setHighlightsTick((t) => t + 1)}
         />
       )}
-
-      <AdBanner />
 
       <RecentLogs logs={logs} members={members} onEdit={handleEditLog} />
 

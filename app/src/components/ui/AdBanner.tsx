@@ -6,6 +6,9 @@ import { showBanner, hideBanner } from '../../lib/admob';
  * Banner AdMob. Segue a regra "premium por bebê":
  * se o bebê ativo é premium (qualquer parent paga), o banner é escondido
  * mesmo para cuidadores free do grupo.
+ *
+ * Montado UMA VEZ no AppShell. Não deve ser colocado em páginas individuais
+ * (navegação causava crash por race show/hide no plugin AdMob).
  */
 export function AdBanner() {
   const isPremium = useBabyPremium();
@@ -13,16 +16,13 @@ export function AdBanner() {
   useEffect(() => {
     if (isPremium) {
       hideBanner();
-      return;
+    } else {
+      showBanner();
     }
-
-    showBanner();
-    return () => { hideBanner(); };
+    // Sem cleanup: o banner vive com o AppShell. Cleanup só no unmount final
+    // (logout), onde a tela já muda de qualquer forma.
   }, [isPremium]);
 
-  // Native banner is rendered by the plugin overlay — no DOM element needed
-  // Keep a spacer so content doesn't get hidden behind the banner
-  if (isPremium) return null;
-
-  return <div className="w-full h-14 shrink-0" />;
+  // Banner é nativo (overlay). Sem elemento DOM.
+  return null;
 }

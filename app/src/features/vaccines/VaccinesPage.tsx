@@ -13,7 +13,6 @@ import {
 import { contractionDe } from '../../lib/genderUtils'
 import { hapticLight, hapticSuccess } from '../../lib/haptics'
 import { PaywallModal } from '../../components/ui/PaywallModal'
-import { AdBanner } from '../../components/ui/AdBanner'
 import Toast from '../../components/ui/Toast'
 import { useSheetBackClose } from '../../hooks/useSheetBackClose'
 import { useVaccineUnlock } from './useVaccineUnlock'
@@ -303,9 +302,6 @@ export default function VaccinesPage() {
           </div>
         ))}
       </section>
-
-      {/* AdBanner: mostrado só para free (via useBabyPremium internamente) */}
-      <AdBanner />
 
       {/* Sheets */}
       {selected && (
