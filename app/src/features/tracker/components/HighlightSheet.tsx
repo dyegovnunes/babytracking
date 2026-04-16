@@ -79,10 +79,7 @@ export default function HighlightSheet({
       return
     }
     if (highlight.data.type === 'leap_active' || highlight.data.type === 'leap_upcoming') {
-      // Até existir uma página dedicada de saltos, abrimos a página de perfil
-      // onde a seção de saltos deve viver. Por enquanto, fallback para a própria
-      // TrackerPage (o sheet já trouxe o conteúdo completo).
-      // TODO: quando criar /saltos, trocar por navigate('/saltos').
+      navigate('/saltos')
       onNavigated()
       return
     }
@@ -187,7 +184,7 @@ function renderContent({
     return {
       heading: leap.name,
       subheading: leap.subtitle,
-      seeMoreLabel: 'Fechar',
+      seeMoreLabel: 'Ver todos os saltos',
       body: (
         <>
           <p className="font-body text-sm text-on-surface-variant leading-relaxed mb-4">
@@ -235,7 +232,7 @@ function renderContent({
     return {
       heading: `Salto ${leap.id}: ${leap.name}`,
       subheading: `Chega em ${data.weeksUntil} ${data.weeksUntil === 1 ? 'semana' : 'semanas'}`,
-      seeMoreLabel: 'Fechar',
+      seeMoreLabel: 'Ver todos os saltos',
       body: (
         <>
           <p className="font-body text-sm text-on-surface-variant leading-relaxed mb-4">

@@ -33,3 +33,10 @@ export {
   getActiveLeap,
   getUpcomingLeap,
 } from './developmentLeaps'
+
+// Leap data insights
+export type { LeapInsight } from './leapDataInsight'
+
+// Leap notes hook
+export { useLeapNotes } from './useLeapNotes'
+export type { LeapNote } from './useLeapNotes'

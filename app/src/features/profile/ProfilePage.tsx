@@ -14,6 +14,7 @@ import { useSheetBackClose } from '../../hooks/useSheetBackClose'
 import { useInviteCodes } from './useInviteCodes'
 import { useVaccines } from '../vaccines'
 import { useMedications } from '../medications'
+import { getActiveLeap, getUpcomingLeap, DEVELOPMENT_LEAPS } from '../milestones'
 
 interface Caregiver {
   userId: string
@@ -162,6 +163,36 @@ export default function ProfilePage() {
             <h3 className="text-on-surface font-headline text-sm font-bold">Marcos do Desenvolvimento</h3>
             <p className="text-on-surface-variant font-label text-xs">
               Registre e acompanhe a evolução {contractionDe(baby.gender)} {baby.name}
+            </p>
+          </div>
+          <span className="material-symbols-outlined text-on-surface-variant text-lg">chevron_right</span>
+        </button>
+
+        {/* ===== SALTOS DO DESENVOLVIMENTO ===== */}
+        <button
+          onClick={() => navigate('/saltos')}
+          className="w-full bg-surface-container rounded-md p-4 flex items-center gap-3 active:bg-surface-container-high transition-colors"
+        >
+          <span className="material-symbols-outlined text-primary text-xl">bolt</span>
+          <div className="flex-1 text-left">
+            <h3 className="text-on-surface font-headline text-sm font-bold">Saltos do Desenvolvimento</h3>
+            <p className="text-on-surface-variant font-label text-xs">
+              {(() => {
+                if (!baby?.birthDate) return 'Acompanhe os 10 saltos'
+                const active = getActiveLeap(baby.birthDate)
+                if (active) {
+                  const remaining = DEVELOPMENT_LEAPS.filter(l => l.id > active.id).length
+                  return `Salto ${active.id} em andamento · ${remaining} restantes`
+                }
+                const upcoming = getUpcomingLeap(baby.birthDate)
+                if (upcoming) return `Salto ${upcoming.leap.id} em ${upcoming.weeksUntil} semanas`
+                const ageWeeks = Math.floor((Date.now() - new Date(baby.birthDate).getTime()) / (7 * 86400000))
+                const past = DEVELOPMENT_LEAPS.filter(l => ageWeeks > l.weekEnd + 1).length
+                const remaining = DEVELOPMENT_LEAPS.length - past
+                return remaining > 0
+                  ? `${past} concluídos · ${remaining} restantes`
+                  : 'Todos os saltos concluídos!'
+              })()}
             </p>
           </div>
           <span className="material-symbols-outlined text-on-surface-variant text-lg">chevron_right</span>

@@ -21,6 +21,7 @@ const WelcomePage = lazy(() => import('./pages/WelcomePage'))
 const SettingsPage = lazy(() => import('./pages/SettingsPage'))
 const InsightsPage = lazy(() => import('./features/insights/InsightsPage'))
 const MilestonesPage = lazy(() => import('./features/milestones/MilestonesPage'))
+const LeapsPage = lazy(() => import('./features/milestones/LeapsPage'))
 const VaccinesPage = lazy(() => import('./features/vaccines/VaccinesPage'))
 const MedicationsPage = lazy(() => import('./features/medications/MedicationsPage'))
 const PrivacyPage = lazy(() => import('./pages/PrivacyPage'))
@@ -97,6 +98,7 @@ function AuthenticatedRoutes() {
           <Route path="history" element={<HistoryPage />} />
           <Route path="insights" element={<InsightsPage />} />
           <Route path="marcos" element={<MilestonesPage />} />
+          <Route path="saltos" element={<LeapsPage />} />
           <Route path="vacinas" element={<VaccinesPage />} />
           <Route path="medicamentos" element={<MedicationsPage />} />
           <Route path="profile" element={<ProfilePage />} />
