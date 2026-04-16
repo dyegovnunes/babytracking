@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 import { getDefaultIntervals } from '../lib/ageUtils'
+import { autoRegisterPastMilestones } from '../features/milestones/autoRegister'
 
 interface Props {
   onComplete: () => void
@@ -59,6 +60,9 @@ export default function OnboardingPage({ onComplete }: Props) {
 
     const defaultIntervals = getDefaultIntervals(baby.id, birthDate)
     await supabase.from('interval_configs').insert(defaultIntervals)
+
+    // Auto-registrar marcos passados se o bebê tem idade > 14 dias
+    await autoRegisterPastMilestones(baby.id, birthDate).catch(() => {})
 
     setLoading(false)
     onComplete()

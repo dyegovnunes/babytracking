@@ -9,6 +9,7 @@ import {
   AGE_BAND_ORDER,
   AGE_BAND_LABEL,
   CATEGORY_LABEL,
+  CATEGORY_CHIP_CLASS,
   formatAgeAtDate,
   type Milestone,
   type BabyMilestone,
@@ -28,8 +29,9 @@ type FilterMode = 'all' | 'achieved' | 'pending'
 
 function getLeapAtDate(
   birthDate: string,
-  achievedAt: string,
+  achievedAt: string | null,
 ): string | null {
+  if (!achievedAt) return null
   const birth = new Date(birthDate)
   const achieved = new Date(achievedAt + 'T12:00:00')
   const ageWeeks = Math.floor(
@@ -108,6 +110,36 @@ export default function MilestonesPage() {
     return map
   }, [achieved])
 
+  // Contagem de marcos auto-registrados (para o banner informativo)
+  const autoRegisteredCount = useMemo(
+    () => achieved.filter((a) => a.autoRegistered).length,
+    [achieved],
+  )
+
+  // Banner mostrado quando há auto-registrados e usuário não dispensou
+  const bannerDismissKey = baby ? `yaya_milestones_banner_dismissed_${baby.id}` : ''
+  const [bannerDismissed, setBannerDismissed] = useState(() =>
+    bannerDismissKey ? localStorage.getItem(bannerDismissKey) === '1' : false,
+  )
+  const showAutoBanner = autoRegisteredCount > 0 && !bannerDismissed
+
+  function dismissBanner() {
+    if (bannerDismissKey) localStorage.setItem(bannerDismissKey, '1')
+    setBannerDismissed(true)
+  }
+
+  // "Esperados agora": marcos não registrados da faixa atual + próxima faixa
+  const expectedNow = useMemo(() => {
+    const idx = AGE_BAND_ORDER.indexOf(currentBand)
+    const relevantBands = new Set([
+      currentBand,
+      AGE_BAND_ORDER[idx + 1],
+    ].filter(Boolean) as AgeBand[])
+    return MILESTONES.filter(
+      (m) => relevantBands.has(m.ageBand) && !achievedCodes.has(m.code),
+    ).slice(0, 6)
+  }, [currentBand, achievedCodes])
+
   // Group milestones by age band
   const grouped = useMemo(() => {
     const g: Record<AgeBand, Milestone[]> = {
@@ -122,11 +154,15 @@ export default function MilestonesPage() {
     }
     MILESTONES.forEach((m) => {
       if (filter === 'achieved' && !achievedCodes.has(m.code)) return
-      if (filter === 'pending' && achievedCodes.has(m.code)) return
+      // "Esperados" = não registrado E na faixa de tempo relevante (até idade+60d)
+      if (filter === 'pending') {
+        if (achievedCodes.has(m.code)) return
+        if (m.typicalAgeDaysMin > ageDays + 60) return
+      }
       g[m.ageBand].push(m)
     })
     return g
-  }, [filter, achievedCodes])
+  }, [filter, achievedCodes, ageDays])
 
   const handleRegister = async (args: {
     achievedAt: string
@@ -155,6 +191,13 @@ export default function MilestonesPage() {
       setToast('Marco removido')
       setDetailEntry(null)
     }
+  }
+
+  // Desmarcar diretamente (auto-registered → deleta sem modal)
+  const handleUncheck = async (entry: BabyMilestone) => {
+    hapticLight()
+    const ok = await deleteMilestone(entry.id)
+    if (ok) setToast('Marco desmarcado')
   }
 
   if (loading || !baby) {
@@ -188,6 +231,27 @@ export default function MilestonesPage() {
           </p>
         </div>
       </section>
+
+      {/* Banner: auto-registered milestones */}
+      {showAutoBanner && (
+        <section className="px-5 mb-3">
+          <div className="bg-primary/[0.08] border border-primary/20 rounded-md p-3 flex items-start gap-2.5">
+            <span className="material-symbols-outlined text-primary text-base mt-0.5">info</span>
+            <div className="flex-1 min-w-0">
+              <p className="font-label text-xs text-on-surface leading-relaxed">
+                Marcamos <strong>{autoRegisteredCount}</strong> marcos automaticamente com base na idade {contractionDe(baby.gender)} {baby.name}. Revise ou desmarque se algum não aconteceu.
+              </p>
+              <button
+                type="button"
+                onClick={() => { hapticLight(); dismissBanner() }}
+                className="mt-2 text-primary font-label text-xs font-semibold"
+              >
+                Dispensar
+              </button>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Progress */}
       <section className="px-5 mb-4">
@@ -229,10 +293,34 @@ export default function MilestonesPage() {
           >
             {f === 'all' && 'Todos'}
             {f === 'achieved' && 'Registrados'}
-            {f === 'pending' && 'Pendentes'}
+            {f === 'pending' && 'Esperados'}
           </button>
         ))}
       </section>
+
+      {/* Esperados agora — marcos da faixa atual e próxima ainda não registrados */}
+      {filter === 'all' && expectedNow.length > 0 && (
+        <section className="px-5 mb-5">
+          <h3 className="font-headline text-xs font-bold text-primary uppercase tracking-wider mb-2 flex items-center gap-2">
+            <span className="material-symbols-outlined text-sm">visibility</span>
+            Esperados agora
+          </h3>
+          <div className="space-y-2">
+            {expectedNow.map((m) => (
+              <MilestoneRow
+                key={`expected-${m.code}`}
+                milestone={m}
+                entry={undefined}
+                birthDate={baby.birthDate}
+                isAchieved={false}
+                isFuture={false}
+                onRowClick={() => { hapticLight(); setRegisterTarget(m) }}
+                onCheckboxClick={() => { hapticLight(); setRegisterTarget(m) }}
+              />
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Timeline */}
       <div className="px-5 space-y-5">
@@ -289,11 +377,27 @@ export default function MilestonesPage() {
                         birthDate={baby.birthDate}
                         isAchieved={isAchieved}
                         isFuture={isFuture}
-                        onClick={() => {
+                        onRowClick={() => {
                           hapticLight()
                           if (isAchieved && entry) {
                             setDetailEntry({ milestone: m, entry })
                           } else {
+                            setRegisterTarget(m)
+                          }
+                        }}
+                        onCheckboxClick={() => {
+                          if (isAchieved && entry) {
+                            // Auto-registrado → desmarca direto
+                            if (entry.autoRegistered) {
+                              handleUncheck(entry)
+                            } else {
+                              // Já registrado com data → abre modal de detalhes
+                              hapticLight()
+                              setDetailEntry({ milestone: m, entry })
+                            }
+                          } else {
+                            // Não registrado → abre modal de registro
+                            hapticLight()
                             setRegisterTarget(m)
                           }
                         }}
@@ -322,7 +426,7 @@ export default function MilestonesPage() {
         <MilestoneCelebration
           milestone={celebrationData.milestone}
           babyName={baby.name}
-          achievedAt={celebrationData.entry.achievedAt}
+          achievedAt={celebrationData.entry.achievedAt ?? ''}
           birthDate={baby.birthDate}
           photoUrl={celebrationData.entry.photoUrl}
           note={celebrationData.entry.note}
@@ -338,7 +442,7 @@ export default function MilestonesPage() {
         <MilestoneShareImage
           milestone={shareData.milestone}
           babyName={baby.name}
-          achievedAt={shareData.entry.achievedAt}
+          achievedAt={shareData.entry.achievedAt ?? ''}
           birthDate={baby.birthDate}
           photoUrl={shareData.entry.photoUrl}
           note={shareData.entry.note}
@@ -380,64 +484,70 @@ function MilestoneRow({
   birthDate,
   isAchieved,
   isFuture,
-  onClick,
+  onRowClick,
+  onCheckboxClick,
 }: {
   milestone: Milestone
   entry?: BabyMilestone
   birthDate: string
   isAchieved: boolean
   isFuture: boolean
-  onClick: () => void
+  onRowClick: () => void
+  onCheckboxClick: () => void
 }) {
-  const dotClass = isAchieved
-    ? 'bg-tertiary border-tertiary'
-    : isFuture
-      ? 'bg-transparent border-white/15'
-      : 'bg-primary/20 border-primary animate-pulse-soft'
+  const isAutoRegistered = isAchieved && entry?.autoRegistered === true
 
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`w-full flex items-start gap-3 p-3 rounded-md text-left active:scale-[0.99] transition-transform ${
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={onRowClick}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onRowClick() } }}
+      className={`w-full flex items-start gap-3 p-3 rounded-md text-left cursor-pointer active:scale-[0.99] transition-transform ${
         isAchieved
-          ? 'bg-tertiary/[0.05] border border-tertiary/15'
+          ? 'bg-primary/[0.05] border border-primary/15'
           : isFuture
             ? 'bg-surface-container/40 border border-white/5'
             : 'bg-surface-container border border-primary/15'
       }`}
     >
-      <div
-        className={`w-3 h-3 rounded-full border-2 mt-1.5 flex-shrink-0 ${dotClass}`}
-      />
-      <span className="text-xl leading-none mt-0.5">{milestone.emoji}</span>
+      <span className="text-xl leading-none mt-0.5 flex-shrink-0">{milestone.emoji}</span>
       <div className="flex-1 min-w-0">
-        <div className="flex items-baseline gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <h4
-            className={`font-headline text-sm font-bold truncate ${
+            className={`font-headline text-sm font-bold ${
               isAchieved ? 'text-on-surface' : isFuture ? 'text-on-surface/60' : 'text-on-surface'
             }`}
           >
             {milestone.name}
           </h4>
-          {isAchieved && entry && (
-            <span className="font-label text-[10px] text-tertiary flex-shrink-0">
+          <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${CATEGORY_CHIP_CLASS[milestone.category]}`}>
+            {CATEGORY_LABEL[milestone.category]}
+          </span>
+          {isAchieved && entry?.achievedAt && (
+            <span className="font-label text-[10px] text-primary flex-shrink-0">
               {formatAgeAtDate(birthDate, entry.achievedAt)}
             </span>
           )}
         </div>
-        <p className="font-label text-xs text-on-surface-variant leading-snug truncate">
-          {CATEGORY_LABEL[milestone.category]}
-          {isAchieved && entry && (
-            <>
-              {' · '}
+        {isAchieved && entry ? (
+          entry.achievedAt ? (
+            <p className="font-label text-xs text-on-surface-variant mt-0.5">
               {new Date(entry.achievedAt + 'T12:00:00').toLocaleDateString(
                 'pt-BR',
                 { day: '2-digit', month: '2-digit', year: '2-digit' },
               )}
-            </>
-          )}
-        </p>
+            </p>
+          ) : isAutoRegistered ? (
+            <p className="font-label text-[10px] text-on-surface-variant/60 italic mt-0.5">
+              Marcado automaticamente
+            </p>
+          ) : null
+        ) : (
+          <p className="font-label text-xs text-on-surface-variant/70 leading-snug mt-0.5 truncate">
+            {milestone.description}
+          </p>
+        )}
       </div>
       {isAchieved && entry?.photoUrl && (
         <img
@@ -446,12 +556,25 @@ function MilestoneRow({
           className="w-10 h-10 rounded-md object-cover flex-shrink-0"
         />
       )}
-      {!isAchieved && !isFuture && (
-        <span className="material-symbols-outlined text-on-surface-variant/60 text-base mt-1">
-          add_circle
+      {/* Checkbox à direita */}
+      <button
+        type="button"
+        onClick={(e) => { e.stopPropagation(); onCheckboxClick() }}
+        aria-label={isAchieved ? 'Desmarcar' : 'Marcar como alcançado'}
+        className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 active:scale-90 transition-transform ${
+          isFuture ? 'opacity-40 pointer-events-none' : ''
+        }`}
+      >
+        <span
+          className={`material-symbols-outlined text-[28px] ${
+            isAchieved ? 'text-primary' : 'text-on-surface-variant/40'
+          }`}
+          style={isAchieved ? { fontVariationSettings: "'FILL' 1" } : undefined}
+        >
+          {isAchieved ? 'check_circle' : 'radio_button_unchecked'}
         </span>
-      )}
-    </button>
+      </button>
+    </div>
   )
 }
 
@@ -475,10 +598,12 @@ function MilestoneDetailModal({
   const [confirmDelete, setConfirmDelete] = useState(false)
   useSheetBackClose(true, onClose)
   const leapInfo = getLeapAtDate(birthDate, entry.achievedAt)
-  const dateLabel = new Date(entry.achievedAt + 'T12:00:00').toLocaleDateString(
-    'pt-BR',
-    { day: '2-digit', month: 'long', year: 'numeric' },
-  )
+  const dateLabel = entry.achievedAt
+    ? new Date(entry.achievedAt + 'T12:00:00').toLocaleDateString(
+        'pt-BR',
+        { day: '2-digit', month: 'long', year: 'numeric' },
+      )
+    : 'Data não informada'
 
   return (
     <div
@@ -494,7 +619,9 @@ function MilestoneDetailModal({
                 {milestone.name}
               </h3>
               <p className="font-label text-xs text-tertiary">
-                {formatAgeAtDate(birthDate, entry.achievedAt)} · {dateLabel}
+                {entry.achievedAt
+                  ? `${formatAgeAtDate(birthDate, entry.achievedAt)} · ${dateLabel}`
+                  : dateLabel}
               </p>
             </div>
           </div>

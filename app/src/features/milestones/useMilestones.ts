@@ -10,11 +10,12 @@ interface BabyMilestoneRow {
   id: string
   baby_id: string
   milestone_id: string
-  achieved_at: string
+  achieved_at: string | null
   photo_url: string | null
   note: string | null
   recorded_by: string | null
   created_at: string
+  auto_registered: boolean | null
   milestones: { code: string } | { code: string }[] | null
 }
 
@@ -31,6 +32,7 @@ function mapRow(row: BabyMilestoneRow): BabyMilestone {
     note: row.note,
     recordedBy: row.recorded_by,
     createdAt: row.created_at,
+    autoRegistered: row.auto_registered ?? false,
   }
 }
 
@@ -59,10 +61,10 @@ export function useMilestones(
     supabase
       .from('baby_milestones')
       .select(
-        'id, baby_id, milestone_id, achieved_at, photo_url, note, recorded_by, created_at, milestones(code)',
+        'id, baby_id, milestone_id, achieved_at, photo_url, note, recorded_by, created_at, auto_registered, milestones(code)',
       )
       .eq('baby_id', babyId)
-      .order('achieved_at', { ascending: true })
+      .order('achieved_at', { ascending: true, nullsFirst: true })
       .then(({ data, error }) => {
         if (cancelled) return
         if (!error && data) {
@@ -125,18 +127,25 @@ export function useMilestones(
         }
       }
 
+      // Upsert para suportar a "conversão" de um auto_registered em
+      // registro explícito com data: se já existe (baby_id, milestone_id),
+      // atualiza achieved_at + seta auto_registered=false
       const { data, error } = await supabase
         .from('baby_milestones')
-        .insert({
-          baby_id: babyId,
-          milestone_id: mData.id,
-          achieved_at: achievedAt,
-          photo_url: photoUrl,
-          note: note?.trim() || null,
-          recorded_by: userId || null,
-        })
+        .upsert(
+          {
+            baby_id: babyId,
+            milestone_id: mData.id,
+            achieved_at: achievedAt,
+            photo_url: photoUrl,
+            note: note?.trim() || null,
+            recorded_by: userId || null,
+            auto_registered: false,
+          },
+          { onConflict: 'baby_id,milestone_id' },
+        )
         .select(
-          'id, baby_id, milestone_id, achieved_at, photo_url, note, recorded_by, created_at',
+          'id, baby_id, milestone_id, achieved_at, photo_url, note, recorded_by, created_at, auto_registered',
         )
         .single()
 
@@ -152,13 +161,15 @@ export function useMilestones(
         note: data.note,
         recordedBy: data.recorded_by,
         createdAt: data.created_at,
+        autoRegistered: data.auto_registered ?? false,
       }
 
-      setAchieved((prev) =>
-        [...prev, newEntry].sort((a, b) =>
-          a.achievedAt.localeCompare(b.achievedAt),
-        ),
-      )
+      setAchieved((prev) => {
+        const filtered = prev.filter((a) => a.milestoneCode !== milestoneCode)
+        return [...filtered, newEntry].sort((a, b) =>
+          (a.achievedAt ?? '').localeCompare(b.achievedAt ?? ''),
+        )
+      })
       return newEntry
     },
     [babyId],

@@ -28,11 +28,14 @@ export interface BabyMilestone {
   babyId: string
   milestoneId: string
   milestoneCode: string
-  achievedAt: string // YYYY-MM-DD
+  /** YYYY-MM-DD — pode ser null quando foi auto-registrado (pai não sabe a data) */
+  achievedAt: string | null
   photoUrl: string | null
   note: string | null
   recordedBy: string | null
   createdAt: string
+  /** true quando marcado automaticamente pelo sistema (sem confirmação do pai) */
+  autoRegistered: boolean
 }
 
 export const MILESTONES: Milestone[] = [
@@ -92,6 +95,22 @@ export const CATEGORY_LABEL: Record<MilestoneCategory, string> = {
   comunicacao: 'Comunicação',
   alimentacao: 'Alimentação',
   autonomia: 'Autonomia',
+}
+
+/**
+ * Classes Tailwind para o chip de categoria.
+ * Usa cores explícitas (não do tema) para garantir legibilidade em dark mode
+ * e diferenciação visual clara entre categorias.
+ */
+export const CATEGORY_CHIP_CLASS: Record<MilestoneCategory, string> = {
+  motor:        'bg-blue-500/15 text-blue-400',
+  motor_fino:   'bg-cyan-500/15 text-cyan-400',
+  cognitivo:    'bg-purple-500/15 text-purple-400',
+  social:       'bg-pink-500/15 text-pink-400',
+  linguagem:    'bg-emerald-500/15 text-emerald-400',
+  comunicacao:  'bg-teal-500/15 text-teal-400',
+  alimentacao:  'bg-orange-500/15 text-orange-400',
+  autonomia:    'bg-amber-500/15 text-amber-400',
 }
 
 /** Ordem oficial das faixas etárias para agrupamento na timeline */

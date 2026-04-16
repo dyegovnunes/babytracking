@@ -5,6 +5,7 @@ import { useAppState, useAppDispatch, switchBaby } from '../../contexts/AppConte
 import { getDefaultIntervals } from '../../lib/ageUtils'
 import { useSheetBackClose } from '../../hooks/useSheetBackClose'
 import { hapticLight, hapticSuccess } from '../../lib/haptics'
+import { autoRegisterPastMilestones } from '../../features/milestones/autoRegister'
 import Toast from './Toast'
 
 interface Props {
@@ -74,6 +75,9 @@ export default function AddBabySheet({ onClose }: Props) {
     }
 
     await supabase.from('interval_configs').insert(getDefaultIntervals(baby.id, birthDate))
+
+    // Auto-registrar marcos passados se o bebê tem idade > 14 dias
+    await autoRegisterPastMilestones(baby.id, birthDate).catch(() => {})
 
     hapticSuccess()
     // Switch to the newly created baby

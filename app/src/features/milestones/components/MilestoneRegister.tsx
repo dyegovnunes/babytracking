@@ -1,4 +1,6 @@
 import { useRef, useState } from 'react'
+import { Capacitor } from '@capacitor/core'
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera'
 import { hapticLight, hapticSuccess } from '../../../lib/haptics'
 import type { Milestone } from '../milestoneData'
 import { useSheetBackClose } from '../../../hooks/useSheetBackClose'
@@ -63,8 +65,25 @@ export default function MilestoneRegister({
   const fileInputRef = useRef<HTMLInputElement>(null)
   useSheetBackClose(true, onCancel)
 
-  const handlePickPhoto = () => {
+  const handlePickPhoto = async () => {
     hapticLight()
+    // Native (Android/iOS): usa o Capacitor Camera plugin → prompt câmera/galeria
+    if (Capacitor.isNativePlatform()) {
+      try {
+        const photo = await Camera.getPhoto({
+          source: CameraSource.Prompt,
+          resultType: CameraResultType.DataUrl,
+          quality: 85,
+          width: 1280,
+          correctOrientation: true,
+        })
+        if (photo.dataUrl) setPhotoDataUrl(photo.dataUrl)
+      } catch {
+        // user cancelled or denied permission — silently ignore
+      }
+      return
+    }
+    // Web: fallback para input file (com capture, por se for mobile web)
     fileInputRef.current?.click()
   }
 
