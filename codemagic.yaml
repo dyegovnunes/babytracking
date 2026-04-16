@@ -72,20 +72,29 @@ workflows:
 
           # 4. Configure pbxproj with explicit signing settings
           python3 << 'PYEOF'
-          import re
-
           pbxproj = 'app/ios/App/App.xcodeproj/project.pbxproj'
           with open(pbxproj, 'r') as f:
               content = f.read()
 
-          # Replace all CODE_SIGN_STYLE occurrences in target build configs
+          # A) Fix project-level signing identity (applies to all targets as default)
+          content = content.replace(
+              'CODE_SIGN_IDENTITY = "iPhone Developer";',
+              'CODE_SIGN_IDENTITY = "Apple Distribution";'
+          )
+
+          # B) Fix ProvisioningStyle in TargetAttributes
+          content = content.replace(
+              'ProvisioningStyle = Automatic;',
+              'ProvisioningStyle = Manual;'
+          )
+
+          # C) Replace target-level CODE_SIGN_STYLE
           content = content.replace(
               'CODE_SIGN_STYLE = Automatic;',
               'CODE_SIGN_STYLE = Manual;'
           )
 
-          # Inject signing settings after each CODE_SIGN_STYLE = Manual
-          # Only inject if not already present
+          # D) Inject full signing config for App target (after CODE_SIGN_STYLE = Manual)
           if 'DEVELOPMENT_TEAM = 8TC26XK3WP' not in content:
               content = content.replace(
                   'CODE_SIGN_STYLE = Manual;',
