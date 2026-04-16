@@ -144,7 +144,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         supabase.from('babies').select('*').in('id', babyIds),
         supabase.from('logs').select('*').eq('baby_id', babyId).order('timestamp', { ascending: true }),
         supabase.from('interval_configs').select('*').eq('baby_id', babyId),
-        supabase.from('baby_members').select('user_id, display_name, role').eq('baby_id', babyId),
+        supabase.from('baby_members').select('user_id, display_name, role, caregiver_permissions').eq('baby_id', babyId),
       ])
 
       const allBabies: Baby[] = (allBabiesRes.data ?? []).map((row) => ({
@@ -186,6 +186,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           userId: row.user_id,
           displayName: row.display_name || '',
           role: row.role,
+          caregiverPermissions: row.caregiver_permissions ?? {},
         }
       }
 
@@ -570,7 +571,7 @@ export async function switchBaby(
     supabase.from('babies').select('*').eq('id', babyId).single(),
     supabase.from('logs').select('*').eq('baby_id', babyId).order('timestamp', { ascending: true }),
     supabase.from('interval_configs').select('*').eq('baby_id', babyId),
-    supabase.from('baby_members').select('user_id, display_name, role').eq('baby_id', babyId),
+    supabase.from('baby_members').select('user_id, display_name, role, caregiver_permissions').eq('baby_id', babyId),
   ])
 
   if (!babyRes.data) return
@@ -600,6 +601,7 @@ export async function switchBaby(
       userId: row.user_id,
       displayName: row.display_name || '',
       role: row.role,
+      caregiverPermissions: row.caregiver_permissions ?? {},
     }
   }
 

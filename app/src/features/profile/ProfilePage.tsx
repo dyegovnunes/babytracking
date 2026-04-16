@@ -6,6 +6,7 @@ import { supabase } from '../../lib/supabase'
 import type { Baby } from '../../types'
 import BabyCard from './components/BabyCard'
 import GrowthSection from './components/GrowthSection'
+import CaregiverEditSheet from './components/CaregiverEditSheet'
 import Toast from '../../components/ui/Toast'
 import BabySwitcher from '../../components/ui/BabySwitcher'
 import { PaywallModal } from '../../components/ui/PaywallModal'
@@ -14,6 +15,7 @@ import { hapticLight } from '../../lib/haptics'
 import { contractionDe } from '../../lib/genderUtils'
 import { useSheetBackClose } from '../../hooks/useSheetBackClose'
 import { useInviteCodes } from './useInviteCodes'
+import { useCaregiverSchedule } from './useCaregiverSchedule'
 import { useVaccines } from '../vaccines'
 import { useMedications } from '../medications'
 import { getActiveLeap, getUpcomingLeap, DEVELOPMENT_LEAPS } from '../milestones'
@@ -60,10 +62,20 @@ export default function ProfilePage() {
   const [confirmDeleteBaby, setConfirmDeleteBaby] = useState(false)
   const [deleteConfirmText, setDeleteConfirmText] = useState('')
   const [deletingBaby, setDeletingBaby] = useState(false)
+  const [editingCaregiver, setEditingCaregiver] = useState<string | null>(null)
+  const [fullInstructionsOpen, setFullInstructionsOpen] = useState(false)
   useSheetBackClose(!!confirmRemove, () => setConfirmRemove(null))
   useSheetBackClose(!!confirmPromoteParent, () => setConfirmPromoteParent(null))
   useSheetBackClose(rolesInfoOpen, () => setRolesInfoOpen(false))
   useSheetBackClose(confirmDeleteBaby, () => { setConfirmDeleteBaby(false); setDeleteConfirmText('') })
+  useSheetBackClose(fullInstructionsOpen, () => setFullInstructionsOpen(false))
+
+  // Instructions do próprio usuário quando ele é caregiver (read-only)
+  const { schedule: mySchedule } = useCaregiverSchedule(
+    myRole === 'caregiver' ? baby?.id : undefined,
+    myRole === 'caregiver' ? user?.id : undefined,
+  )
+  const myInstructions = mySchedule?.instructions ?? null
 
   // Invite
   const { code: inviteCode, generating: generatingCode, canInviteMore, generate: generateInvite, deactivate: deactivateInvite } = useInviteCodes()
@@ -219,6 +231,29 @@ export default function ProfilePage() {
       </section>
 
       <div className="px-5 space-y-4">
+        {/* ===== INSTRUÇÕES (só para caregiver que tem texto definido) ===== */}
+        {myRole === 'caregiver' && myInstructions && (
+          <div className="bg-primary/5 border border-primary/15 rounded-md p-4">
+            <div className="flex items-start gap-3">
+              <span className="material-symbols-outlined text-primary text-xl mt-0.5">sticky_note_2</span>
+              <div className="flex-1 min-w-0">
+                <h3 className="font-headline text-sm font-bold text-on-surface mb-1">Instruções</h3>
+                <p className="font-body text-sm text-on-surface leading-relaxed line-clamp-3 whitespace-pre-wrap">
+                  {myInstructions}
+                </p>
+                {myInstructions.length > 120 && (
+                  <button
+                    onClick={() => { hapticLight(); setFullInstructionsOpen(true) }}
+                    className="mt-2 font-label text-xs text-primary font-semibold"
+                  >
+                    Ver tudo
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* ===== PERFIL DO BEBÊ ===== */}
         <BabyCard baby={baby} onSave={handleSaveBaby} canEdit={can.editBaby(myRole)} />
 
@@ -354,17 +389,43 @@ export default function ProfilePage() {
           {caregiversExpanded && (
           <div className="mt-4">
           <div className="space-y-2 mb-4">
-            {caregivers.map((c) => (
+            {caregivers.map((c) => {
+              const isCaregiverRow = c.role === 'caregiver'
+              const canEditCaregiver = isParent && isCaregiverRow && c.userId !== user?.id
+              const openEdit = () => { hapticLight(); setEditingCaregiver(c.userId) }
+              return (
               <div key={c.userId} className="flex items-center gap-3 py-2">
-                <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
-                  <span className="font-label text-xs text-primary font-bold">
-                    {c.displayName.charAt(0).toUpperCase()}
-                  </span>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-body text-sm text-on-surface truncate">{c.displayName}</p>
-                  <p className="font-label text-xs text-on-surface-variant">{roleLabel(c.role)}</p>
-                </div>
+                {canEditCaregiver ? (
+                  <button
+                    onClick={openEdit}
+                    className="flex items-center gap-3 flex-1 min-w-0 text-left -my-2 py-2 rounded-md active:bg-surface-container-high transition-colors"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+                      <span className="font-label text-xs text-primary font-bold">
+                        {c.displayName.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-body text-sm text-on-surface truncate">{c.displayName}</p>
+                      <p className="font-label text-xs text-on-surface-variant flex items-center gap-1">
+                        <span>{roleLabel(c.role)}</span>
+                        <span className="material-symbols-outlined text-[14px] text-primary/80">tune</span>
+                      </p>
+                    </div>
+                  </button>
+                ) : (
+                  <>
+                    <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+                      <span className="font-label text-xs text-primary font-bold">
+                        {c.displayName.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-body text-sm text-on-surface truncate">{c.displayName}</p>
+                      <p className="font-label text-xs text-on-surface-variant">{roleLabel(c.role)}</p>
+                    </div>
+                  </>
+                )}
                 {c.userId === user?.id ? (
                   <span className="font-label text-[10px] text-primary bg-primary/10 px-2 py-0.5 rounded-full">Você</span>
                 ) : isParent && (
@@ -397,7 +458,8 @@ export default function ProfilePage() {
                   </div>
                 )}
               </div>
-            ))}
+              )
+            })}
           </div>
 
           {/* Invite section */}
@@ -635,6 +697,44 @@ export default function ProfilePage() {
         onClose={() => setShowCaregiverPaywall(false)}
         trigger="multi_caregiver"
       />
+
+      {/* Edição de caregiver (parent only) */}
+      {editingCaregiver && baby && (
+        <CaregiverEditSheet
+          babyId={baby.id}
+          caregiverId={editingCaregiver}
+          caregiverName={members[editingCaregiver]?.displayName || 'Cuidador(a)'}
+          onClose={() => setEditingCaregiver(null)}
+          onSaved={() => setToast('Configurações salvas!')}
+        />
+      )}
+
+      {/* Instruções completas (caregiver read-only) */}
+      {fullInstructionsOpen && myInstructions && (
+        <div
+          className="fixed inset-0 z-[60] flex items-end justify-center bg-black/75 backdrop-blur-sm"
+          onClick={(e) => e.target === e.currentTarget && setFullInstructionsOpen(false)}
+        >
+          <div className="w-full max-w-lg max-h-[80vh] overflow-y-auto bg-surface-container-highest rounded-t-md p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] border-t-2 border-primary-fixed animate-slide-up">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="material-symbols-outlined text-primary text-lg">sticky_note_2</span>
+                <h2 className="font-headline text-lg font-bold text-on-surface truncate">Instruções</h2>
+              </div>
+              <button
+                onClick={() => setFullInstructionsOpen(false)}
+                aria-label="Fechar"
+                className="p-1 -m-1 rounded-md active:bg-surface-container"
+              >
+                <span className="material-symbols-outlined text-on-surface-variant">close</span>
+              </button>
+            </div>
+            <p className="font-body text-sm text-on-surface leading-relaxed whitespace-pre-wrap">
+              {myInstructions}
+            </p>
+          </div>
+        </div>
+      )}
 
       {toast && <Toast message={toast} onDismiss={() => setToast(null)} />}
     </div>

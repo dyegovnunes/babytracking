@@ -45,10 +45,18 @@ export interface BabyWithRole extends Baby {
   myRole: string
 }
 
+export interface CaregiverPermissions {
+  show_milestones?: boolean
+  show_leaps?: boolean
+  show_vaccines?: boolean
+  show_growth?: boolean
+}
+
 export interface Member {
   userId: string
   displayName: string
   role: string
+  caregiverPermissions?: CaregiverPermissions
 }
 
 export interface Projection {
