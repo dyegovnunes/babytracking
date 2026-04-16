@@ -21,8 +21,7 @@ export default function BabySwitcher({ onClose }: Props) {
   const [showAddBaby, setShowAddBaby] = useState(false)
   const [showJoin, setShowJoin] = useState(false)
 
-  // Only bind back button if no nested sheet is open
-  useSheetBackClose(!showAddBaby && !showJoin, onClose)
+  useSheetBackClose(true, onClose)
 
   function handleSelect(selected: Baby) {
     // Tap no bebê ativo → abre o perfil (comportamento útil em vez de só fechar)
