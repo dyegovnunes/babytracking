@@ -93,18 +93,88 @@ workflows:
           /usr/libexec/PlistBuddy -c "Set :CFBundleVersion 34" "$PLIST"
       - name: Build iOS
         script: |
+          # Chamamos xcodebuild diretamente ao invés do wrapper do Codemagic
+          # (`xcode-project build-ipa`) porque o wrapper engolia a mensagem
+          # real do erro de archive. Assim temos output completo no log.
           cd app/ios/App
-          # Verificação rápida antes do build: mostra os schemes e settings
-          # disponíveis, útil pra debug se algo quebrar.
-          echo "=== xcodebuild -list ==="
-          xcodebuild -project App.xcodeproj -list 2>&1 || true
-          echo "=== CODE_SIGN_ENTITLEMENTS no projeto ==="
+
+          echo "=== sanity checks ==="
           grep -n "CODE_SIGN_ENTITLEMENTS" App.xcodeproj/project.pbxproj || echo "NOT FOUND"
-          echo "=== starting build-ipa ==="
-          xcode-project build-ipa \
-            --project "App.xcodeproj" \
-            --scheme "App" \
-            --archive-flags="-destination 'generic/platform=iOS'"
+          echo "--- installed provisioning profiles ---"
+          ls -la "$HOME/Library/MobileDevice/Provisioning Profiles/" 2>/dev/null | head -20 || echo "(no profiles dir)"
+          echo "--- entitlements file ---"
+          cat App/App.entitlements
+
+          echo ""
+          echo "=== xcodebuild archive (direct call, full output) ==="
+          mkdir -p build/ios/xcarchive build/ios/ipa
+          set +e
+          xcodebuild \
+            -project App.xcodeproj \
+            -scheme App \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath build/ios/xcarchive/App.xcarchive \
+            -allowProvisioningUpdates \
+            DEVELOPMENT_TEAM=8TC26XK3WP \
+            "CODE_SIGN_IDENTITY=Apple Distribution" \
+            CODE_SIGN_STYLE=Automatic \
+            COMPILER_INDEX_STORE_ENABLE=NO \
+            archive 2>&1 | tee /tmp/archive.log
+          ARCHIVE_EXIT=${PIPESTATUS[0]}
+          set -e
+
+          if [ $ARCHIVE_EXIT -ne 0 ]; then
+            echo ""
+            echo "=================================================="
+            echo "ARCHIVE FAILED (exit $ARCHIVE_EXIT)"
+            echo "=== last 200 lines of xcodebuild output ==="
+            echo "=================================================="
+            tail -200 /tmp/archive.log
+            exit $ARCHIVE_EXIT
+          fi
+
+          echo ""
+          echo "=== archive OK, exporting IPA ==="
+          cat > /tmp/ExportOptions.plist <<'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+              <key>method</key>
+              <string>app-store</string>
+              <key>teamID</key>
+              <string>8TC26XK3WP</string>
+              <key>signingStyle</key>
+              <string>automatic</string>
+              <key>uploadSymbols</key>
+              <true/>
+              <key>stripSwiftSymbols</key>
+              <true/>
+          </dict>
+          </plist>
+          EOF
+
+          set +e
+          xcodebuild \
+            -exportArchive \
+            -archivePath build/ios/xcarchive/App.xcarchive \
+            -exportPath build/ios/ipa \
+            -exportOptionsPlist /tmp/ExportOptions.plist \
+            -allowProvisioningUpdates 2>&1 | tee /tmp/export.log
+          EXPORT_EXIT=${PIPESTATUS[0]}
+          set -e
+
+          if [ $EXPORT_EXIT -ne 0 ]; then
+            echo ""
+            echo "=== EXPORT FAILED (exit $EXPORT_EXIT), last 100 lines ==="
+            tail -100 /tmp/export.log
+            exit $EXPORT_EXIT
+          fi
+
+          echo ""
+          echo "=== done ==="
+          ls -la build/ios/ipa/
     artifacts:
       - app/ios/App/build/ios/ipa/*.ipa
     publishing:
