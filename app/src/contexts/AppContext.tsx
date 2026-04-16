@@ -246,13 +246,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
     })
   }, [user])
 
-  // Realtime: escuta quando o usuário é REMOVIDO de um baby_members
-  // (outro parent removeu, ou o usuário auto-saiu) e recarrega o estado.
-  // Isso evita que o app continue mostrando um bebê ao qual o user não tem mais acesso.
+  // Realtime: escuta mudanças no baby_members do usuário logado.
+  // - DELETE: foi removido → recarrega e perde acesso
+  // - UPDATE: papel mudou (foi promovido/rebaixado) → recarrega para refletir permissões
   useEffect(() => {
     if (!user) return
     const channel = supabase
-      .channel(`baby-members-del-${user.id}`)
+      .channel(`baby-members-${user.id}`)
       .on(
         'postgres_changes' as never,
         {
@@ -262,11 +262,22 @@ export function AppProvider({ children }: { children: ReactNode }) {
           filter: `user_id=eq.${user.id}`,
         },
         () => {
-          // Limpar localStorage caso o bebê ativo tenha sido removido
           const activeId = localStorage.getItem('yaya_active_baby')
           if (activeId) localStorage.removeItem('yaya_active_baby')
-          // Reload do app: simples e garantido
           window.location.href = '/'
+        },
+      )
+      .on(
+        'postgres_changes' as never,
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'baby_members',
+          filter: `user_id=eq.${user.id}`,
+        },
+        () => {
+          // Papel mudou — recarrega para UI refletir permissões novas
+          window.location.reload()
         },
       )
       .subscribe()
