@@ -16,7 +16,7 @@ import { useVaccines } from '../vaccines'
 import { useMedications } from '../medications'
 import { getActiveLeap, getUpcomingLeap, DEVELOPMENT_LEAPS } from '../milestones'
 import { useMyRole } from '../../hooks/useMyRole'
-import { can } from '../../lib/roles'
+import { can, roleLabel, nextRoleUp, nextRoleDown, type BabyRole } from '../../lib/roles'
 
 interface Caregiver {
   userId: string
@@ -109,15 +109,28 @@ export default function ProfilePage() {
   const isParent = can.manageMembers(myRole)
   const parentCount = Object.values(members).filter(m => m.role === 'parent').length
 
-  const handleToggleRole = useCallback(async (userId: string, currentRole: string) => {
+  const handlePromote = useCallback(async (userId: string, currentRole: string) => {
+    if (!baby) return
+    const next = nextRoleUp(currentRole as BabyRole)
+    if (!next) return
+    if (next === 'parent') {
+      // Confirmação extra ao promover para parent
+      if (!confirm(`Promover para ${roleLabel(next)}? Isso dá acesso total ao perfil do bebê.`)) return
+    }
+    const ok = await updateMemberRole(dispatch, baby.id, userId, next)
+    if (ok) setToast(`Promovido para ${roleLabel(next)}!`)
+  }, [baby, dispatch])
+
+  const handleDemote = useCallback(async (userId: string, currentRole: string) => {
     if (!baby) return
     if (currentRole === 'parent' && parentCount <= 1) {
-      setToast('Deve haver pelo menos um responsável')
+      setToast('Deve haver pelo menos um pai/mãe')
       return
     }
-    const newRole = currentRole === 'parent' ? 'caregiver' : 'parent'
-    const ok = await updateMemberRole(dispatch, baby.id, userId, newRole)
-    if (ok) setToast(newRole === 'parent' ? 'Promovido a Responsável!' : 'Alterado para Cuidador!')
+    const next = nextRoleDown(currentRole as BabyRole)
+    if (!next) return
+    const ok = await updateMemberRole(dispatch, baby.id, userId, next)
+    if (ok) setToast(`Alterado para ${roleLabel(next)}`)
   }, [baby, dispatch, parentCount])
 
   const handleRemoveMember = useCallback(async (userId: string) => {
@@ -284,21 +297,30 @@ export default function ProfilePage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-body text-sm text-on-surface truncate">{c.displayName}</p>
-                  <p className="font-label text-xs text-on-surface-variant">{c.role === 'parent' ? 'Responsável' : 'Cuidador'}</p>
+                  <p className="font-label text-xs text-on-surface-variant">{roleLabel(c.role)}</p>
                 </div>
                 {c.userId === user?.id ? (
                   <span className="font-label text-[10px] text-primary bg-primary/10 px-2 py-0.5 rounded-full">Você</span>
                 ) : isParent && (
                   <div className="flex items-center gap-1">
-                    <button
-                      onClick={() => handleToggleRole(c.userId, c.role)}
-                      className="w-9 h-9 rounded-md bg-surface-variant/50 flex items-center justify-center active:bg-surface-variant"
-                      title={c.role === 'parent' ? 'Rebaixar para Cuidador' : 'Promover a Responsável'}
-                    >
-                      <span className="material-symbols-outlined text-on-surface-variant text-base">
-                        {c.role === 'parent' ? 'arrow_downward' : 'arrow_upward'}
-                      </span>
-                    </button>
+                    {nextRoleUp(c.role as BabyRole) && (
+                      <button
+                        onClick={() => handlePromote(c.userId, c.role)}
+                        className="w-9 h-9 rounded-md bg-surface-variant/50 flex items-center justify-center active:bg-surface-variant"
+                        title={`Promover para ${roleLabel(nextRoleUp(c.role as BabyRole))}`}
+                      >
+                        <span className="material-symbols-outlined text-on-surface-variant text-base">arrow_upward</span>
+                      </button>
+                    )}
+                    {nextRoleDown(c.role as BabyRole) && (
+                      <button
+                        onClick={() => handleDemote(c.userId, c.role)}
+                        className="w-9 h-9 rounded-md bg-surface-variant/50 flex items-center justify-center active:bg-surface-variant"
+                        title={`Rebaixar para ${roleLabel(nextRoleDown(c.role as BabyRole))}`}
+                      >
+                        <span className="material-symbols-outlined text-on-surface-variant text-base">arrow_downward</span>
+                      </button>
+                    )}
                     <button
                       onClick={() => setConfirmRemove(c.userId)}
                       className="w-9 h-9 rounded-md bg-error/10 flex items-center justify-center active:bg-error/20"

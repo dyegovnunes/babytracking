@@ -1,8 +1,10 @@
+import { useNavigate } from 'react-router-dom'
 import { useAppState, useAppDispatch } from '../../contexts/AppContext'
 import { switchBaby } from '../../contexts/AppContext'
 import { formatAge } from '../../lib/formatters'
 import { hapticLight } from '../../lib/haptics'
 import { useSheetBackClose } from '../../hooks/useSheetBackClose'
+import { roleLabel } from '../../lib/roles'
 import type { Baby } from '../../types'
 
 interface Props {
@@ -10,8 +12,9 @@ interface Props {
 }
 
 export default function BabySwitcher({ onClose }: Props) {
-  const { babies, baby } = useAppState()
+  const { babiesWithRole, baby } = useAppState()
   const dispatch = useAppDispatch()
+  const navigate = useNavigate()
   useSheetBackClose(true, onClose)
 
   function handleSelect(selected: Baby) {
@@ -24,6 +27,16 @@ export default function BabySwitcher({ onClose }: Props) {
     onClose()
   }
 
+  function handleAddBaby() {
+    onClose()
+    navigate('/onboarding?mode=add')
+  }
+
+  function handleJoinWithCode() {
+    onClose()
+    navigate('/onboarding?mode=join')
+  }
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-end justify-center bg-black/75 backdrop-blur-sm"
@@ -31,11 +44,11 @@ export default function BabySwitcher({ onClose }: Props) {
     >
       <div className="w-full max-w-lg bg-surface-container-highest rounded-t-md p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] border-t-2 border-primary-fixed animate-slide-up">
         <h2 className="font-headline text-lg font-bold text-on-surface mb-4">
-          Trocar bebê
+          Seus bebês
         </h2>
 
         <div className="space-y-2">
-          {babies.map((b) => {
+          {babiesWithRole.map((b) => {
             const isActive = b.id === baby?.id
             return (
               <button
@@ -64,12 +77,21 @@ export default function BabySwitcher({ onClose }: Props) {
                   <p className="font-body text-sm text-on-surface font-semibold truncate">
                     {b.name}
                   </p>
-                  <p className="font-label text-xs text-on-surface-variant">
-                    {formatAge(b.birthDate)}
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <span className="font-label text-xs text-on-surface-variant">
+                      {formatAge(b.birthDate)}
+                    </span>
+                    <span className="text-on-surface-variant/40">·</span>
+                    <span className="font-label text-xs text-on-surface-variant/70">
+                      {roleLabel(b.myRole)}
+                    </span>
+                  </div>
                 </div>
                 {isActive && (
-                  <span className="material-symbols-outlined text-primary text-xl">
+                  <span
+                    className="material-symbols-outlined text-primary text-xl"
+                    style={{ fontVariationSettings: "'FILL' 1" }}
+                  >
                     check_circle
                   </span>
                 )}
@@ -78,9 +100,27 @@ export default function BabySwitcher({ onClose }: Props) {
           })}
         </div>
 
+        {/* Ações */}
+        <div className="mt-4 pt-4 border-t border-outline-variant/30 space-y-2">
+          <button
+            onClick={handleAddBaby}
+            className="w-full flex items-center gap-3 p-3 rounded-md bg-surface-container active:bg-surface-container-high transition-colors"
+          >
+            <span className="material-symbols-outlined text-primary text-xl">add_circle</span>
+            <span className="font-label text-sm text-on-surface">Adicionar bebê</span>
+          </button>
+          <button
+            onClick={handleJoinWithCode}
+            className="w-full flex items-center gap-3 p-3 rounded-md bg-surface-container active:bg-surface-container-high transition-colors"
+          >
+            <span className="material-symbols-outlined text-primary text-xl">qr_code</span>
+            <span className="font-label text-sm text-on-surface">Entrar com código de convite</span>
+          </button>
+        </div>
+
         <button
           onClick={onClose}
-          className="w-full mt-4 py-3 rounded-md bg-surface-variant text-on-surface-variant font-label font-semibold text-sm"
+          className="w-full mt-3 py-3 rounded-md bg-surface-variant text-on-surface-variant font-label font-semibold text-sm"
         >
           Cancelar
         </button>
