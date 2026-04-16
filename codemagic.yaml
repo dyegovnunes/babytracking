@@ -27,6 +27,43 @@ workflows:
           cd app
           npx cap add ios || true
           npx cap sync ios
+      - name: Configure Apple Sign-in entitlement
+        script: |
+          # ORDEM IMPORTA: entitlement precisa existir ANTES do `xcode-project
+          # use-profiles` rodar, senão o Codemagic busca um profile sem a
+          # capability e o archive falha. E precisa estar linkado no pbxproj
+          # pra `use-profiles` enxergar.
+          cat > app/ios/App/App/App.entitlements <<'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>com.apple.developer.applesignin</key>
+            <array>
+              <string>Default</string>
+            </array>
+          </dict>
+          </plist>
+          EOF
+          # Linka CODE_SIGN_ENTITLEMENTS em todas as configurações do target App.
+          # Usa Python ao invés da gem xcodeproj porque a gem não é compatível
+          # com o formato pbxproj do Xcode 26 (corrompia o arquivo).
+          python3 <<'PYEOF'
+          with open('app/ios/App/App.xcodeproj/project.pbxproj', 'r') as f:
+              content = f.read()
+          if 'CODE_SIGN_ENTITLEMENTS' not in content:
+              new_content = content.replace(
+                  'CODE_SIGN_STYLE = Automatic;',
+                  'CODE_SIGN_STYLE = Automatic;\n\t\t\t\tCODE_SIGN_ENTITLEMENTS = App/App.entitlements;'
+              )
+              with open('app/ios/App/App.xcodeproj/project.pbxproj', 'w') as f:
+                  f.write(new_content)
+              print('Added CODE_SIGN_ENTITLEMENTS to pbxproj')
+          else:
+              print('CODE_SIGN_ENTITLEMENTS already in pbxproj, skipping')
+          PYEOF
+          # Verificação rápida pra garantir que o pbxproj ainda é válido
+          plutil -lint app/ios/App/App.xcodeproj/project.pbxproj
       - name: Set up code signing
         script: |
           xcode-project use-profiles
@@ -49,26 +86,6 @@ workflows:
           /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLName string app.yayababy" Info.plist 2>/dev/null || true
           /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLSchemes array" Info.plist 2>/dev/null || true
           /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLSchemes:0 string app.yayababy" Info.plist 2>/dev/null || true
-      - name: Configure Apple Sign-in entitlement
-        script: |
-          # Cria App.entitlements com a capability Sign in with Apple.
-          # Não mexemos no project.pbxproj — o CODE_SIGN_ENTITLEMENTS é passado
-          # direto como build setting na linha de comando do xcodebuild lá no
-          # step "Build iOS" (evita corromper o pbxproj com gem xcodeproj que
-          # pode não ser compatível com o formato do Xcode 26).
-          cat > app/ios/App/App/App.entitlements <<'EOF'
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-            <key>com.apple.developer.applesignin</key>
-            <array>
-              <string>Default</string>
-            </array>
-          </dict>
-          </plist>
-          EOF
-          ls -la app/ios/App/App/App.entitlements
       - name: Set version and build number
         script: |
           PLIST="app/ios/App/App/Info.plist"
@@ -77,17 +94,17 @@ workflows:
       - name: Build iOS
         script: |
           cd app/ios/App
-          # Debug: garantir que o projeto e o scheme existem antes de chamar o wrapper do Codemagic
+          # Verificação rápida antes do build: mostra os schemes e settings
+          # disponíveis, útil pra debug se algo quebrar.
           echo "=== xcodebuild -list ==="
           xcodebuild -project App.xcodeproj -list 2>&1 || true
-          echo "=== raw xcodebuild -showBuildSettings (pra ver erro real se houver) ==="
-          xcodebuild -project App.xcodeproj -scheme App -showBuildSettings 2>&1 | head -40 || true
+          echo "=== CODE_SIGN_ENTITLEMENTS no projeto ==="
+          grep -n "CODE_SIGN_ENTITLEMENTS" App.xcodeproj/project.pbxproj || echo "NOT FOUND"
           echo "=== starting build-ipa ==="
-          # CODE_SIGN_ENTITLEMENTS vai direto como build setting — não precisa estar no pbxproj
           xcode-project build-ipa \
             --project "App.xcodeproj" \
             --scheme "App" \
-            --archive-flags="-destination 'generic/platform=iOS' CODE_SIGN_ENTITLEMENTS=App/App.entitlements"
+            --archive-flags="-destination 'generic/platform=iOS'"
     artifacts:
       - app/ios/App/build/ios/ipa/*.ipa
     publishing:
