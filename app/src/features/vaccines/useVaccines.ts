@@ -20,6 +20,7 @@ interface BabyVaccineRow {
   batch_number: string | null
   recorded_by: string | null
   created_at: string
+  auto_registered: boolean | null
   vaccines: { code: string } | { code: string }[] | null
 }
 
@@ -37,6 +38,7 @@ function mapRow(row: BabyVaccineRow): BabyVaccine {
     batchNumber: row.batch_number,
     recordedBy: row.recorded_by,
     createdAt: row.created_at,
+    autoRegistered: row.auto_registered ?? false,
   }
 }
 
@@ -75,7 +77,7 @@ export function useVaccines(
     supabase
       .from('baby_vaccines')
       .select(
-        'id, baby_id, vaccine_id, applied_at, status, location, batch_number, recorded_by, created_at, vaccines(code)',
+        'id, baby_id, vaccine_id, applied_at, status, location, batch_number, recorded_by, created_at, auto_registered, vaccines(code)',
       )
       .eq('baby_id', babyId)
       .order('created_at', { ascending: true })
@@ -180,11 +182,12 @@ export function useVaccines(
             location: input.location?.trim() || null,
             batch_number: input.batchNumber?.trim() || null,
             recorded_by: userId || null,
+            auto_registered: false,
           },
           { onConflict: 'baby_id,vaccine_id' },
         )
         .select(
-          'id, baby_id, vaccine_id, applied_at, status, location, batch_number, recorded_by, created_at',
+          'id, baby_id, vaccine_id, applied_at, status, location, batch_number, recorded_by, created_at, auto_registered',
         )
         .single()
 
@@ -201,6 +204,7 @@ export function useVaccines(
         batchNumber: data.batch_number,
         recordedBy: data.recorded_by,
         createdAt: data.created_at,
+        autoRegistered: data.auto_registered ?? false,
       }
 
       setRecords((prev) => {
@@ -210,6 +214,73 @@ export function useVaccines(
       return { ok: true }
     },
     [babyId, isPremium, resolveVaccineId],
+  )
+
+  /**
+   * Toggle rápido via checkbox — sem modal, sem data.
+   * Marca como aplicada (auto_registered=true) se não existe; deleta se existe.
+   */
+  const quickToggle = useCallback(
+    async (code: string, userId?: string): Promise<boolean> => {
+      if (!isPremium) return false
+      if (!babyId) return false
+
+      const existing = records.find((r) => r.vaccineCode === code)
+      if (existing) {
+        // Desmarca (deleta)
+        const { error } = await supabase
+          .from('baby_vaccines')
+          .delete()
+          .eq('id', existing.id)
+        if (error) return false
+        setRecords((prev) => prev.filter((r) => r.vaccineCode !== code))
+        return true
+      }
+
+      // Marca sem data (auto-registered)
+      const vaccineId = await resolveVaccineId(code)
+      if (!vaccineId) return false
+
+      const { data, error } = await supabase
+        .from('baby_vaccines')
+        .upsert(
+          {
+            baby_id: babyId,
+            vaccine_id: vaccineId,
+            applied_at: null,
+            status: 'applied',
+            location: null,
+            batch_number: null,
+            recorded_by: userId || null,
+            auto_registered: true,
+          },
+          { onConflict: 'baby_id,vaccine_id' },
+        )
+        .select(
+          'id, baby_id, vaccine_id, applied_at, status, location, batch_number, recorded_by, created_at, auto_registered',
+        )
+        .single()
+
+      if (error || !data) return false
+
+      const newEntry: BabyVaccine = {
+        id: data.id,
+        babyId: data.baby_id,
+        vaccineId: data.vaccine_id,
+        vaccineCode: code,
+        appliedAt: data.applied_at,
+        status: 'applied',
+        location: null,
+        batchNumber: null,
+        recordedBy: data.recorded_by,
+        createdAt: data.created_at,
+        autoRegistered: data.auto_registered ?? true,
+      }
+
+      setRecords((prev) => [...prev, newEntry])
+      return true
+    },
+    [babyId, isPremium, records, resolveVaccineId],
   )
 
   /** Marca uma vacina como "não vou aplicar" (ex: SBP opcional). */
@@ -232,11 +303,12 @@ export function useVaccines(
             location: null,
             batch_number: null,
             recorded_by: userId || null,
+            auto_registered: false,
           },
           { onConflict: 'baby_id,vaccine_id' },
         )
         .select(
-          'id, baby_id, vaccine_id, applied_at, status, location, batch_number, recorded_by, created_at',
+          'id, baby_id, vaccine_id, applied_at, status, location, batch_number, recorded_by, created_at, auto_registered',
         )
         .single()
 
@@ -253,6 +325,7 @@ export function useVaccines(
         batchNumber: null,
         recordedBy: data.recorded_by,
         createdAt: data.created_at,
+        autoRegistered: data.auto_registered ?? false,
       }
 
       setRecords((prev) => {
@@ -299,6 +372,7 @@ export function useVaccines(
     applyVaccine,
     skipVaccine,
     clearRecord,
+    quickToggle,
     getStatusFor,
   }
 }

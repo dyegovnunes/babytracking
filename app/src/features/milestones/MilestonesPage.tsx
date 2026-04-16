@@ -56,6 +56,7 @@ export default function MilestonesPage() {
     currentBand,
     registerMilestone,
     deleteMilestone,
+    quickToggle,
     loading,
   } = useMilestones(baby?.id, baby?.birthDate)
 
@@ -193,11 +194,11 @@ export default function MilestonesPage() {
     }
   }
 
-  // Desmarcar diretamente (auto-registered → deleta sem modal)
-  const handleUncheck = async (entry: BabyMilestone) => {
+  // Toggle simples do checkbox — marca sem data ou desmarca
+  const handleCheckboxTap = async (code: string, isAchieved: boolean) => {
     hapticLight()
-    const ok = await deleteMilestone(entry.id)
-    if (ok) setToast('Marco desmarcado')
+    const ok = await quickToggle(code, user?.id)
+    if (ok) setToast(isAchieved ? 'Marco desmarcado' : 'Marco registrado')
   }
 
   if (loading || !baby) {
@@ -315,7 +316,7 @@ export default function MilestonesPage() {
                 isAchieved={false}
                 isFuture={false}
                 onRowClick={() => { hapticLight(); setRegisterTarget(m) }}
-                onCheckboxClick={() => { hapticLight(); setRegisterTarget(m) }}
+                onCheckboxClick={() => handleCheckboxTap(m.code, false)}
               />
             ))}
           </div>
@@ -385,22 +386,7 @@ export default function MilestonesPage() {
                             setRegisterTarget(m)
                           }
                         }}
-                        onCheckboxClick={() => {
-                          if (isAchieved && entry) {
-                            // Auto-registrado → desmarca direto
-                            if (entry.autoRegistered) {
-                              handleUncheck(entry)
-                            } else {
-                              // Já registrado com data → abre modal de detalhes
-                              hapticLight()
-                              setDetailEntry({ milestone: m, entry })
-                            }
-                          } else {
-                            // Não registrado → abre modal de registro
-                            hapticLight()
-                            setRegisterTarget(m)
-                          }
-                        }}
+                        onCheckboxClick={() => handleCheckboxTap(m.code, isAchieved)}
                       />
                     )
                   })}

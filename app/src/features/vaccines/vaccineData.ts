@@ -55,13 +55,15 @@ export interface BabyVaccine {
   babyId: string
   vaccineId: string
   vaccineCode: string
-  /** null quando status === 'skipped' */
+  /** null quando status === 'skipped' ou quando foi auto-registrada sem data */
   appliedAt: string | null
   status: BabyVaccineStatus
   location: string | null
   batchNumber: string | null
   recordedBy: string | null
   createdAt: string
+  /** true quando marcada automaticamente pelo sistema (sem confirmação do pai) */
+  autoRegistered: boolean
 }
 
 // -------------------------------------------------------------------------

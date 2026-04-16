@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 import { getDefaultIntervals } from '../lib/ageUtils'
 import { autoRegisterPastMilestones } from '../features/milestones/autoRegister'
+import { autoRegisterPastVaccines } from '../features/vaccines/autoRegister'
 
 interface Props {
   onComplete: () => void
@@ -63,6 +64,9 @@ export default function OnboardingPage({ onComplete }: Props) {
 
     // Auto-registrar marcos passados se o bebê tem idade > 14 dias
     await autoRegisterPastMilestones(baby.id, birthDate).catch(() => {})
+
+    // Auto-registrar vacinas obrigatórias (PNI) até a idade atual
+    await autoRegisterPastVaccines(baby.id, birthDate).catch(() => {})
 
     setLoading(false)
     onComplete()

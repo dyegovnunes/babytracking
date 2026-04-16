@@ -1,47 +1,57 @@
 import type { Vaccine, VaccineStatus } from '../vaccineData'
-import { hapticLight, hapticSuccess } from '../../../lib/haptics'
+import { hapticLight } from '../../../lib/haptics'
 
 interface Props {
   vaccine: Vaccine
   status: VaccineStatus
   appliedAt?: string | null
+  autoRegistered?: boolean
   onTap: () => void
-  /** Ação rápida: aplica a vacina com a data de hoje, sem abrir nenhuma sheet. */
-  onQuickApply: () => void
+  /** Toggle do checkbox: marca sem data (auto) se não aplicada, ou desmarca. */
+  onCheckboxTap: () => void
 }
 
 /**
  * Linha individual de uma vacina.
- * Ícone de status + nome + subtítulo (dose/proteção) + 2 badges:
- *   - SUS / Particular (source)
- *   - Obrigatória / Opcional (isMandatory)
+ * Tap na linha → abre o detail sheet (com opções de data/local/lote).
+ * Tap no checkbox lateral → marca/desmarca sem modal (auto_registered).
  *
- * Tap na linha → abre o detail sheet.
- * Tap no botão ✓ (lateral direita) → aplica direto com a data de hoje,
- * sem sheets intermediárias. Só aparece em can_take / overdue.
+ * Para vacinas "future" (idade ainda não alcançada) o checkbox é ocultado.
+ * Para vacinas "skipped" também não há checkbox — precisa abrir pra reconsiderar.
  */
 export default function VaccineRow({
   vaccine,
   status,
   appliedAt,
+  autoRegistered = false,
   onTap,
-  onQuickApply,
+  onCheckboxTap,
 }: Props) {
   const statusInfo = getStatusInfo(status)
   const isSkipped = status === 'skipped'
-  const isDim = status === 'future' || isSkipped
-  const canQuickApply = status === 'can_take' || status === 'overdue'
+  const isFuture = status === 'future'
+  const isDim = isFuture || isSkipped
+  const isApplied = status === 'applied'
+  const canToggle = !isFuture && !isSkipped
 
   const handleRowClick = () => {
     hapticLight()
     onTap()
   }
 
-  const handleQuick = (e: React.MouseEvent) => {
+  const handleCheck = (e: React.MouseEvent) => {
     e.stopPropagation()
-    hapticSuccess()
-    onQuickApply()
+    onCheckboxTap()
   }
+
+  // Texto secundário: data de aplicação, ou label de estado, ou "Registrada automaticamente"
+  const subtitle = (() => {
+    if (isApplied) {
+      if (autoRegistered || !appliedAt) return 'Registrada automaticamente'
+      return `Aplicada em ${formatAppliedDate(appliedAt)}`
+    }
+    return statusInfo.label
+  })()
 
   return (
     <div
@@ -80,14 +90,11 @@ export default function VaccineRow({
           {vaccine.name}
         </h3>
         <p className="font-label text-[11px] text-on-surface-variant truncate">
-          {vaccine.doseLabel}
-          {status === 'applied' && appliedAt
-            ? ` · Aplicada em ${formatAppliedDate(appliedAt)}`
-            : ` · ${statusInfo.label}`}
+          {vaccine.doseLabel} · {subtitle}
         </p>
       </div>
 
-      {/* Badges */}
+      {/* Badges compactas */}
       <div className="flex flex-col gap-1 items-end shrink-0">
         <span
           className={`font-label text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
@@ -109,19 +116,21 @@ export default function VaccineRow({
         </span>
       </div>
 
-      {/* Quick apply button — só em can_take / overdue */}
-      {canQuickApply && (
+      {/* Checkbox: toggle simples sem modal */}
+      {canToggle && (
         <button
           type="button"
-          onClick={handleQuick}
-          aria-label={`Marcar ${vaccine.name} como aplicada hoje`}
-          className="w-10 h-10 rounded-full bg-primary/15 text-primary flex items-center justify-center shrink-0 active:bg-primary/25 transition-colors"
+          onClick={handleCheck}
+          aria-label={isApplied ? `Desmarcar ${vaccine.name}` : `Marcar ${vaccine.name} como aplicada`}
+          className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 active:scale-90 transition-transform"
         >
           <span
-            className="material-symbols-outlined text-xl"
-            style={{ fontVariationSettings: "'FILL' 1" }}
+            className={`material-symbols-outlined text-[28px] ${
+              isApplied ? 'text-primary' : 'text-on-surface-variant/40'
+            }`}
+            style={isApplied ? { fontVariationSettings: "'FILL' 1" } : undefined}
           >
-            check
+            {isApplied ? 'check_circle' : 'radio_button_unchecked'}
           </span>
         </button>
       )}

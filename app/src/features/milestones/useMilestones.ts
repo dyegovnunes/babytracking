@@ -175,6 +175,72 @@ export function useMilestones(
     [babyId],
   )
 
+  /**
+   * Toggle rápido via checkbox — sem modal, sem data.
+   * Marca como auto_registered (sem data) se não existe; deleta se existe.
+   */
+  const quickToggle = useCallback(
+    async (milestoneCode: string, userId?: string): Promise<boolean> => {
+      if (!babyId) return false
+
+      const existing = achieved.find((a) => a.milestoneCode === milestoneCode)
+      if (existing) {
+        // Desmarca (deleta)
+        const { error } = await supabase
+          .from('baby_milestones')
+          .delete()
+          .eq('id', existing.id)
+        if (error) return false
+        setAchieved((prev) => prev.filter((a) => a.milestoneCode !== milestoneCode))
+        return true
+      }
+
+      // Marca sem data (auto-registered)
+      const { data: mData, error: mErr } = await supabase
+        .from('milestones')
+        .select('id')
+        .eq('code', milestoneCode)
+        .single()
+      if (mErr || !mData) return false
+
+      const { data, error } = await supabase
+        .from('baby_milestones')
+        .upsert(
+          {
+            baby_id: babyId,
+            milestone_id: mData.id,
+            achieved_at: null,
+            auto_registered: true,
+            recorded_by: userId || null,
+          },
+          { onConflict: 'baby_id,milestone_id' },
+        )
+        .select(
+          'id, baby_id, milestone_id, achieved_at, photo_url, note, recorded_by, created_at, auto_registered',
+        )
+        .single()
+
+      if (error || !data) return false
+
+      const newEntry: BabyMilestone = {
+        id: data.id,
+        babyId: data.baby_id,
+        milestoneId: data.milestone_id,
+        milestoneCode,
+        achievedAt: data.achieved_at,
+        photoUrl: data.photo_url,
+        note: data.note,
+        recordedBy: data.recorded_by,
+        createdAt: data.created_at,
+        autoRegistered: data.auto_registered ?? true,
+      }
+
+      setAchieved((prev) => [...prev, newEntry])
+      return true
+    },
+    [babyId, achieved],
+  )
+
   const deleteMilestone = useCallback(async (id: string) => {
     const { error } = await supabase
       .from('baby_milestones')
@@ -205,5 +271,6 @@ export function useMilestones(
     loading,
     registerMilestone,
     deleteMilestone,
+    quickToggle,
   }
 }

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppState } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
@@ -12,9 +12,9 @@ import {
 } from './vaccineData'
 import { contractionDe } from '../../lib/genderUtils'
 import { hapticLight, hapticSuccess } from '../../lib/haptics'
-import { getLocalDateString } from '../../lib/formatters'
 import { PaywallModal } from '../../components/ui/PaywallModal'
 import Toast from '../../components/ui/Toast'
+import { useSheetBackClose } from '../../hooks/useSheetBackClose'
 import VaccineRow from './components/VaccineRow'
 import VaccineDetailSheet from './components/VaccineDetailSheet'
 import VaccineApplySheet from './components/VaccineApplySheet'
@@ -43,8 +43,33 @@ export default function VaccinesPage() {
     applyVaccine,
     skipVaccine,
     clearRecord,
+    quickToggle,
     loading,
   } = useVaccines(baby?.id, baby?.birthDate)
+
+  // Modal de boas-vindas: aparece só na primeira visita à página quando há
+  // vacinas auto-registradas (bebê adicionado com idade > 0)
+  const autoRegisteredCount = useMemo(
+    () => records.filter((r) => r.autoRegistered).length,
+    [records],
+  )
+  const welcomeKey = baby ? `yaya_vaccines_welcome_seen_${baby.id}` : ''
+  const [welcomeOpen, setWelcomeOpen] = useState(false)
+
+  // Abre quando detecta auto-registradas e ainda não viu
+  useEffect(() => {
+    if (!welcomeKey || loading) return
+    if (autoRegisteredCount === 0) return
+    if (localStorage.getItem(welcomeKey) === '1') return
+    setWelcomeOpen(true)
+  }, [loading, autoRegisteredCount, welcomeKey])
+
+  function dismissWelcome() {
+    if (welcomeKey) localStorage.setItem(welcomeKey, '1')
+    setWelcomeOpen(false)
+  }
+
+  useSheetBackClose(welcomeOpen, dismissWelcome)
 
   const [filter, setFilter] = useState<FilterMode>('all')
   const [selected, setSelected] = useState<Vaccine | null>(null)
@@ -110,19 +135,20 @@ export default function VaccinesPage() {
   }
 
   /**
-   * Quick apply: aplica a vacina direto com a data de hoje, sem abrir
-   * qualquer sheet. Chamado pelo botão ✓ na linha (can_take / overdue).
+   * Toggle rápido do checkbox: marca/desmarca sem modal, sem data.
+   * Se quiser registrar data/local/lote, o user abre a linha.
    */
-  const handleQuickApply = async (vaccine: Vaccine) => {
+  const handleCheckboxTap = async (vaccine: Vaccine) => {
     if (!isPremium) {
       setShowPaywall(true)
       return
     }
-    const today = getLocalDateString(new Date())
-    const result = await applyVaccine(vaccine.code, { date: today }, user?.id)
-    if (result.ok) {
+    hapticLight()
+    const wasApplied = statusByCode.get(vaccine.code) === 'applied'
+    const ok = await quickToggle(vaccine.code, user?.id)
+    if (ok) {
       hapticSuccess()
-      setToast(`${vaccine.name} marcada como aplicada hoje`)
+      setToast(wasApplied ? `${vaccine.name} desmarcada` : `${vaccine.name} marcada como aplicada`)
     }
   }
 
@@ -265,8 +291,9 @@ export default function VaccinesPage() {
                     vaccine={v}
                     status={status}
                     appliedAt={record?.appliedAt}
+                    autoRegistered={record?.autoRegistered ?? false}
                     onTap={() => handleRowTap(v)}
-                    onQuickApply={() => handleQuickApply(v)}
+                    onCheckboxTap={() => handleCheckboxTap(v)}
                   />
                 )
               })}
@@ -340,6 +367,38 @@ export default function VaccinesPage() {
         onClose={() => setShowPaywall(false)}
         trigger="vaccines"
       />
+
+      {/* Welcome modal — primeira visita quando há vacinas auto-registradas */}
+      {welcomeOpen && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/75 backdrop-blur-sm p-6"
+          onClick={(e) => e.target === e.currentTarget && dismissWelcome()}
+        >
+          <div className="w-full max-w-md bg-surface-container-highest rounded-md p-6 animate-slide-up">
+            <div className="flex items-center gap-3 mb-3">
+              <span className="w-10 h-10 rounded-full bg-primary/15 flex items-center justify-center flex-shrink-0">
+                <span className="material-symbols-outlined text-primary text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>vaccines</span>
+              </span>
+              <h3 className="font-headline text-lg font-bold text-on-surface leading-tight">
+                Caderneta {contractionDe(baby.gender)} {baby.name}
+              </h3>
+            </div>
+            <p className="font-body text-sm text-on-surface-variant leading-relaxed mb-4">
+              Marcamos automaticamente as <strong className="text-on-surface">{autoRegisteredCount}</strong> {autoRegisteredCount === 1 ? 'vacina obrigatória (PNI) que provavelmente já foi aplicada' : 'vacinas obrigatórias (PNI) que provavelmente já foram aplicadas'}, com base na idade.
+            </p>
+            <p className="font-body text-xs text-on-surface-variant/80 leading-relaxed mb-5">
+              Revise a lista e desmarque caso alguma não tenha sido aplicada. Você pode tocar na linha para adicionar data, local e lote.
+            </p>
+            <button
+              type="button"
+              onClick={() => { hapticLight(); dismissWelcome() }}
+              className="w-full py-3 rounded-md bg-primary text-on-primary font-label font-semibold text-sm"
+            >
+              Entendi
+            </button>
+          </div>
+        </div>
+      )}
 
       {toast && <Toast message={toast} onDismiss={() => setToast(null)} />}
     </div>
