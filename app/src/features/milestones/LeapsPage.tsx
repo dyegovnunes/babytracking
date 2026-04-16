@@ -11,13 +11,15 @@ type LeapStatus = 'past' | 'active' | 'upcoming' | 'future'
 const MS_PER_WEEK = 7 * 86400000
 
 function getLeapStatus(birthDate: string, leap: DevelopmentLeap): LeapStatus {
-  const ageWeeks = Math.floor(
-    (Date.now() - new Date(birthDate).getTime()) / MS_PER_WEEK,
-  )
-  if (ageWeeks > leap.weekEnd + 1) return 'past'
-  if (ageWeeks >= leap.weekStart - 1 && ageWeeks <= leap.weekEnd + 1)
-    return 'active'
-  if (leap.weekStart - ageWeeks <= 2) return 'upcoming'
+  const birthMs = new Date(birthDate).getTime()
+  const now = Date.now()
+  const leapStartMs = birthMs + leap.weekStart * MS_PER_WEEK
+  const leapEndMs = birthMs + (leap.weekEnd + 1) * MS_PER_WEEK
+
+  if (now >= leapEndMs) return 'past'
+  if (now >= leapStartMs && now < leapEndMs) return 'active'
+  // Próximo se faltam 2 semanas ou menos
+  if (leapStartMs - now <= 2 * MS_PER_WEEK) return 'upcoming'
   return 'future'
 }
 

@@ -20,9 +20,9 @@ interface LeapTimelineProps {
 function StatusDot({ status }: { status: LeapStatus }) {
   if (status === 'past') {
     return (
-      <div className="w-7 h-7 rounded-full bg-green-500/15 flex items-center justify-center flex-shrink-0">
+      <div className="w-7 h-7 rounded-full bg-green-800/15 flex items-center justify-center flex-shrink-0">
         <span
-          className="material-symbols-outlined text-green-500 text-lg"
+          className="material-symbols-outlined text-green-400/70 text-lg"
           style={{ fontVariationSettings: "'FILL' 1" }}
         >check_circle</span>
       </div>
@@ -129,10 +129,16 @@ function IntervalItem({
       {/* Vertical line continues */}
       <div className="absolute left-[13px] top-0 bottom-0 border-l-2 border-outline-variant/40" />
 
-      {/* Small diamond dot */}
-      <div className="w-7 h-7 flex items-center justify-center flex-shrink-0 z-[1]">
-        <span className="text-on-surface-variant/40 text-[10px]">&#9670;</span>
-      </div>
+      {/* Dot — pulsing if currently here */}
+      {isCurrentlyHere ? (
+        <div className="w-7 h-7 rounded-full border-2 border-primary bg-primary/15 animate-pulse flex items-center justify-center flex-shrink-0 z-[1]">
+          <div className="w-2.5 h-2.5 rounded-full bg-primary" />
+        </div>
+      ) : (
+        <div className="w-7 h-7 flex items-center justify-center flex-shrink-0 z-[1]">
+          <span className="text-on-surface-variant/40 text-[10px]">&#9670;</span>
+        </div>
+      )}
 
       {/* Content */}
       <div className="flex-1 pb-4 pt-0.5">
@@ -140,11 +146,11 @@ function IntervalItem({
           {isFirst ? 'Primeiras semanas' : 'Fase de calmaria'}
         </p>
         {isCurrentlyHere ? (
-          <p className="text-xs text-green-600 dark:text-green-400 font-semibold mt-0.5">
-            Voces estao aqui!
+          <p className="text-xs text-primary font-semibold mt-0.5">
+            Vocês estão aqui!
             {daysUntilNext > 0 && (
               <span className="text-on-surface-variant/70 font-normal">
-                {' '}· Proximo salto em {daysUntilNext} {daysUntilNext === 1 ? 'dia' : 'dias'}
+                {' '}· Próximo salto em {daysUntilNext} {daysUntilNext === 1 ? 'dia' : 'dias'}
               </span>
             )}
           </p>
