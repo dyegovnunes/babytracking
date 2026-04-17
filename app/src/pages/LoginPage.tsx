@@ -252,34 +252,36 @@ export default function LoginPage() {
           paddingBottom: 'max(env(safe-area-inset-bottom), 1.5rem)',
         }}
       >
-        {/* Spacer superior — deixa a foto respirar nos ~40% superiores */}
-        <div className="flex-1 min-h-[25vh]" />
+        {/* Logo no topo — deixa o centro da foto livre para o rosto das
+            pessoas. Padding top pequeno garante que não encosta na status bar. */}
+        <div className="text-center pt-6 sm:pt-10">
+          <div className="flex items-center justify-center mx-auto mb-3">
+            <img
+              src="./logo-symbol.png"
+              alt="Yaya"
+              className="w-16 h-16 drop-shadow-[0_4px_16px_rgba(0,0,0,0.5)]"
+              style={{ filter: 'brightness(0) saturate(100%) invert(72%) sepia(40%) saturate(1500%) hue-rotate(220deg) brightness(105%) contrast(95%)' }}
+            />
+          </div>
+          <h1
+            className="font-headline text-3xl font-extrabold text-white tracking-tight"
+            style={{ textShadow: '0 2px 12px rgba(0,0,0,0.6)' }}
+          >
+            Ya<span className="text-primary">ya</span>
+          </h1>
+          <p
+            className="font-label text-sm text-white/80 mt-1.5"
+            style={{ textShadow: '0 1px 8px rgba(0,0,0,0.55)' }}
+          >
+            Cada momento conta.
+          </p>
+        </div>
+
+        {/* Spacer flexível — empurra o form pra parte inferior, deixando
+            o meio da tela livre pra foto respirar. */}
+        <div className="flex-1 min-h-[12vh]" />
 
         <div className="w-full max-w-sm mx-auto">
-          {/* Logo */}
-          <div className="text-center mb-8">
-            <div className="flex items-center justify-center mx-auto mb-4">
-              <img
-                src="./logo-symbol.png"
-                alt="Yaya"
-                className="w-20 h-20 drop-shadow-[0_4px_16px_rgba(0,0,0,0.5)]"
-                style={{ filter: 'brightness(0) saturate(100%) invert(72%) sepia(40%) saturate(1500%) hue-rotate(220deg) brightness(105%) contrast(95%)' }}
-              />
-            </div>
-            <h1
-              className="font-headline text-3xl font-extrabold text-white tracking-tight"
-              style={{ textShadow: '0 2px 12px rgba(0,0,0,0.6)' }}
-            >
-              Ya<span className="text-primary">ya</span>
-            </h1>
-            <p
-              className="font-label text-sm text-white/80 mt-2"
-              style={{ textShadow: '0 1px 8px rgba(0,0,0,0.55)' }}
-            >
-              Cada momento conta.
-            </p>
-          </div>
-
           {sent ? (
             /* OTP verification */
             <div className="text-center page-enter">
@@ -312,7 +314,7 @@ export default function LoginPage() {
                     onChange={(e) => handleOtpChange(i, e.target.value)}
                     onKeyDown={(e) => handleOtpKeyDown(i, e)}
                     disabled={verifying}
-                    className="w-9 h-12 bg-white/10 backdrop-blur-md border border-white/20 rounded-lg text-center text-white font-headline text-xl font-bold outline-none focus:ring-2 focus:ring-primary/60 focus:border-primary/60 disabled:opacity-50"
+                    className="w-9 h-12 bg-white/10 backdrop-blur-md border border-white/20 rounded-md text-center text-white font-headline text-xl font-bold outline-none focus:ring-2 focus:ring-primary/60 focus:border-primary/60 disabled:opacity-50"
                   />
                 ))}
               </div>
@@ -355,7 +357,7 @@ export default function LoginPage() {
               <button
                 onClick={handleGoogle}
                 disabled={socialLoading}
-                className="w-full py-3.5 rounded-xl bg-white/12 backdrop-blur-md border border-white/20 flex items-center justify-center gap-3 font-label font-semibold text-base text-white active:bg-white/20 transition-colors disabled:opacity-50"
+                className="w-full py-3.5 rounded-md bg-white/12 backdrop-blur-md border border-white/20 flex items-center justify-center gap-3 font-label font-semibold text-base text-white active:bg-white/20 transition-colors disabled:opacity-50"
               >
                 {socialLoading ? (
                   <span className="material-symbols-outlined animate-spin text-xl">
@@ -377,7 +379,7 @@ export default function LoginPage() {
               {showAppleAuth && <button
                 onClick={handleApple}
                 disabled={socialLoading}
-                className="w-full py-3.5 rounded-xl bg-white/12 backdrop-blur-md border border-white/20 flex items-center justify-center gap-3 font-label font-semibold text-base text-white active:bg-white/20 transition-colors disabled:opacity-50 mt-3"
+                className="w-full py-3.5 rounded-md bg-white/12 backdrop-blur-md border border-white/20 flex items-center justify-center gap-3 font-label font-semibold text-base text-white active:bg-white/20 transition-colors disabled:opacity-50 mt-3"
               >
                 {socialLoading ? (
                   <span className="material-symbols-outlined animate-spin text-xl">
@@ -409,7 +411,7 @@ export default function LoginPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="seu@email.com"
                   autoComplete="email"
-                  className="w-full bg-white/10 backdrop-blur-md border border-white/20 rounded-lg px-4 py-3.5 text-white placeholder-white/40 font-body text-base outline-none focus:ring-2 focus:ring-primary/60 focus:border-primary/60 mb-4"
+                  className="w-full bg-white/10 backdrop-blur-md border border-white/20 rounded-md px-4 py-3.5 text-white placeholder-white/40 font-body text-base outline-none focus:ring-2 focus:ring-primary/60 focus:border-primary/60 mb-4"
                 />
 
                 {error && (
@@ -419,7 +421,7 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={loading || !email.trim()}
-                  className="w-full py-3.5 rounded-xl bg-gradient-to-br from-primary to-primary-container text-on-primary font-label font-bold text-base disabled:opacity-50 transition-opacity shadow-[0_8px_24px_rgba(91,61,181,0.4)]"
+                  className="w-full py-3.5 rounded-md bg-gradient-to-br from-primary to-primary-container text-on-primary font-label font-bold text-base disabled:opacity-50 transition-opacity shadow-[0_8px_24px_rgba(91,61,181,0.4)]"
                 >
                   {loading ? (
                     <span className="material-symbols-outlined animate-spin text-xl align-middle">
