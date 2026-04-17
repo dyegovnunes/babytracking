@@ -57,15 +57,7 @@ workflows:
           # se outro sistema depender do mesmo cert, precisa persistir a
           # key em CERTIFICATE_PRIVATE_KEY env var e remover este cleanup.
           echo "Limpando certs DISTRIBUTION existentes na ASC..."
-          DIST_IDS=$(app-store-connect certificates list \
-            --type IOS_DISTRIBUTION --json 2>/dev/null \
-            | python3 -c "import sys,json
-try:
-    data = json.load(sys.stdin)
-    print(' '.join(c['id'] for c in data))
-except Exception:
-    pass
-" || echo "")
+          DIST_IDS=$(app-store-connect certificates list --type IOS_DISTRIBUTION --json 2>/dev/null | python3 -c "import sys,json; data=json.load(sys.stdin); print(' '.join(c['id'] for c in data))" 2>/dev/null || echo "")
 
           if [ -n "$DIST_IDS" ]; then
             echo "Revogando: $DIST_IDS"
