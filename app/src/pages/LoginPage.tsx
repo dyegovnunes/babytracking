@@ -228,13 +228,19 @@ export default function LoginPage() {
           draggable={false}
         />
       )}
-      {/* Gradiente sobre a foto: topo transparente pra foto respirar, base
-          escura pra botões legíveis. */}
+      {/* Tint roxo sobre a foto — ancora a identidade de cor do Yaya. Blend
+          mode multiply escurece e reforça o tom sem apagar a imagem. */}
+      <div
+        className="absolute inset-0 pointer-events-none mix-blend-multiply"
+        style={{ background: 'rgba(91, 61, 181, 0.45)' }}
+      />
+      {/* Gradiente preto em cima do tint: topo transparente pra foto respirar,
+          base escura pra botões legíveis. */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            'linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.82) 45%, rgba(0,0,0,0.45) 75%, rgba(0,0,0,0.15) 100%)',
+            'linear-gradient(to top, rgba(13,10,39,0.92) 0%, rgba(13,10,39,0.78) 45%, rgba(13,10,39,0.35) 75%, rgba(13,10,39,0.10) 100%)',
         }}
       />
 
@@ -431,14 +437,6 @@ export default function LoginPage() {
             </div>
           )}
 
-          <div className="mt-6 text-center">
-            <a
-              href="/privacy"
-              className="font-label text-[11px] text-white/50 underline relative z-0"
-            >
-              Política de Privacidade
-            </a>
-          </div>
         </div>
       </div>
 
