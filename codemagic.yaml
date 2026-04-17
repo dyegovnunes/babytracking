@@ -80,26 +80,17 @@ workflows:
 
       - name: Build iOS
         script: |
+          # xcode-project build-ipa é o utilitário oficial do Codemagic
+          # que faz archive + export num único comando, usando os profiles
+          # que xcode-project use-profiles baixou pra keychain. Evita o
+          # problema do -exportArchive com signingStyle=automatic não
+          # encontrar profiles no momento do export.
           cd app/ios/App
-
-          # ExportOptions.plist — automatic signing
-          printf '<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<plist version="1.0">\n<dict>\n\t<key>method</key>\n\t<string>app-store</string>\n\t<key>teamID</key>\n\t<string>8TC26XK3WP</string>\n\t<key>signingStyle</key>\n\t<string>automatic</string>\n</dict>\n</plist>\n' > /tmp/ExportOptions.plist
-          plutil -lint /tmp/ExportOptions.plist
-
-          # Archive — sem overrides de signing, Xcode usa tudo do pbxproj
-          # e dos profiles que xcode-project use-profiles configurou.
-          xcodebuild archive \
-            -project "App.xcodeproj" \
-            -scheme "App" \
-            -destination "generic/platform=iOS" \
-            -archivePath "$CM_BUILD_DIR/App.xcarchive" \
-            COMPILER_INDEX_STORE_ENABLE=NO
-
-          # Export IPA
-          xcodebuild -exportArchive \
-            -archivePath "$CM_BUILD_DIR/App.xcarchive" \
-            -exportOptionsPlist /tmp/ExportOptions.plist \
-            -exportPath "$CM_BUILD_DIR/ipa"
+          xcode-project build-ipa \
+            --project "App.xcodeproj" \
+            --scheme "App" \
+            --archive-directory "$CM_BUILD_DIR" \
+            --ipa-directory "$CM_BUILD_DIR/ipa"
     artifacts:
       - $CM_BUILD_DIR/ipa/*.ipa
       - $CM_BUILD_DIR/*.xcarchive
