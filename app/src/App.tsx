@@ -72,7 +72,8 @@ function AuthenticatedRoutes() {
     )
   }
 
-  // Welcome screen for parents who haven't seen it yet
+  // Welcome screen: aparece na 1ª vez que um parent abre CADA bebê. Flag é por
+  // par (user, baby) em baby_members.welcome_shown_at.
   if (needsWelcome && baby) {
     return (
       <Suspense fallback={<RouteFallback />}>
@@ -80,9 +81,10 @@ function AuthenticatedRoutes() {
           baby={baby}
           onComplete={async () => {
             await supabase
-              .from('profiles')
+              .from('baby_members')
               .update({ welcome_shown_at: new Date().toISOString() })
-              .eq('id', user!.id)
+              .eq('user_id', user!.id)
+              .eq('baby_id', baby.id)
             dispatch({ type: 'SET_WELCOME_SHOWN' })
           }}
         />

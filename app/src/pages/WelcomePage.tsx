@@ -108,7 +108,7 @@ export default function WelcomePage({ onComplete, baby }: Props) {
             boxShadow: '0 8px 28px rgba(91,61,181,0.45)',
           }}
         >
-          Vamos la
+          Vamos lá
         </button>
 
         {/* Leap info if active */}

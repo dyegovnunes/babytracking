@@ -57,6 +57,7 @@ export interface Member {
   displayName: string
   role: string
   caregiverPermissions?: CaregiverPermissions
+  welcomeShownAt?: string | null
 }
 
 export interface Projection {

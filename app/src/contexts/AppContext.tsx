@@ -31,7 +31,7 @@ type Action =
   | { type: 'DELETE_LOG'; id: string }
   | { type: 'SET_INTERVALS'; intervals: Record<string, IntervalConfig> }
   | { type: 'SET_BABY'; baby: Baby }
-  | { type: 'SWITCH_BABY'; baby: Baby; logs: LogEntry[]; intervals: Record<string, IntervalConfig>; members: Record<string, Member> }
+  | { type: 'SWITCH_BABY'; baby: Baby; logs: LogEntry[]; intervals: Record<string, IntervalConfig>; members: Record<string, Member>; needsWelcome: boolean }
   | { type: 'UPDATE_MEMBER'; userId: string; role: string }
   | { type: 'REMOVE_MEMBER'; userId: string }
   | { type: 'CLEAR_LOGS' }
@@ -74,7 +74,7 @@ function reducer(state: AppState, action: Action): AppState {
     case 'SET_BABY':
       return { ...state, baby: action.baby }
     case 'SWITCH_BABY':
-      return { ...state, baby: action.baby, logs: action.logs, intervals: action.intervals, members: action.members, pauseDuringSleep: true, quietHours: { enabled: false, start: 22, end: 7 } }
+      return { ...state, baby: action.baby, logs: action.logs, intervals: action.intervals, members: action.members, needsWelcome: action.needsWelcome, pauseDuringSleep: true, quietHours: { enabled: false, start: 22, end: 7 } }
     case 'UPDATE_MEMBER':
       return { ...state, members: { ...state.members, [action.userId]: { ...state.members[action.userId], role: action.role } } }
     case 'REMOVE_MEMBER': {
@@ -144,7 +144,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         supabase.from('babies').select('*').in('id', babyIds),
         supabase.from('logs').select('*').eq('baby_id', babyId).order('timestamp', { ascending: true }),
         supabase.from('interval_configs').select('*').eq('baby_id', babyId),
-        supabase.from('baby_members').select('user_id, display_name, role, caregiver_permissions').eq('baby_id', babyId),
+        supabase.from('baby_members').select('user_id, display_name, role, caregiver_permissions, welcome_shown_at').eq('baby_id', babyId),
       ])
 
       const allBabies: Baby[] = (allBabiesRes.data ?? []).map((row) => ({
@@ -187,6 +187,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           displayName: row.display_name || '',
           role: row.role,
           caregiverPermissions: row.caregiver_permissions ?? {},
+          welcomeShownAt: row.welcome_shown_at ?? null,
         }
       }
 
@@ -202,17 +203,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
         }
       }
 
-      // Check if user needs welcome screen (parent who hasn't seen it)
-      const myRole = members[user!.id]?.role
-      let needsWelcome = false
-      if (myRole === 'parent') {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('welcome_shown_at')
-          .eq('id', user!.id)
-          .single()
-        needsWelcome = !profile?.welcome_shown_at
-      }
+      // Welcome screen é por par (parent, bebê). Aparece na primeira vez que
+      // um parent abre CADA bebê. Guardian/caregiver nunca vê.
+      const myMember = members[user!.id]
+      const needsWelcome = myMember?.role === 'parent' && !myMember.welcomeShownAt
 
       dispatch({ type: 'SET_INITIAL', logs, intervals, baby, babies: allBabies, babiesWithRole, members, needsWelcome })
 
@@ -571,7 +565,7 @@ export async function switchBaby(
     supabase.from('babies').select('*').eq('id', babyId).single(),
     supabase.from('logs').select('*').eq('baby_id', babyId).order('timestamp', { ascending: true }),
     supabase.from('interval_configs').select('*').eq('baby_id', babyId),
-    supabase.from('baby_members').select('user_id, display_name, role, caregiver_permissions').eq('baby_id', babyId),
+    supabase.from('baby_members').select('user_id, display_name, role, caregiver_permissions, welcome_shown_at').eq('baby_id', babyId),
   ])
 
   if (!babyRes.data) return
@@ -602,6 +596,7 @@ export async function switchBaby(
       displayName: row.display_name || '',
       role: row.role,
       caregiverPermissions: row.caregiver_permissions ?? {},
+      welcomeShownAt: row.welcome_shown_at ?? null,
     }
   }
 
@@ -617,7 +612,12 @@ export async function switchBaby(
     }
   }
 
-  dispatch({ type: 'SWITCH_BABY', baby, logs, intervals, members })
+  // Welcome aparece na 1ª vez que o parent abre este bebê (flag por baby_member).
+  const user = (await supabase.auth.getUser()).data.user
+  const myMember = user ? members[user.id] : null
+  const needsWelcome = myMember?.role === 'parent' && !myMember.welcomeShownAt
+
+  dispatch({ type: 'SWITCH_BABY', baby, logs, intervals, members, needsWelcome })
 
   // Load notification preferences for new baby
   const { data: prefData } = await supabase

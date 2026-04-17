@@ -56,67 +56,67 @@ export function getWelcomeContent(
 
   const map: Record<AgeBand, WelcomeContent> = {
     newborn: {
-      paragraph: 'Recem-nascidos precisam comer a cada 2 ou 3 horas, dia e noite. Registre por alguns dias e o Yaya identifica o padrao. Mais rapido do que parece.',
+      paragraph: 'Recém-nascidos precisam mamar a cada 2 ou 3 horas, dia e noite. Registre por alguns dias e o Yaya identifica o padrão. Mais rápido do que parece.',
       features: [
         featureFirst,
-        { icon: '🌙', title: 'Padroes de sono', desc: 'O Yaya aprende o ritmo do seu bebe' },
+        { icon: '🌙', title: 'Padrões de sono', desc: 'O Yaya aprende o ritmo do seu bebê' },
         { icon: '🌱', title: 'Salto em andamento', desc: 'Acompanhe essa fase de desenvolvimento' },
       ],
     },
     early: {
-      paragraph: `Entre 1 e 3 meses, os padroes de sono comecam a surgir. Registre por alguns dias e o Yaya te mostra quando ${babyName} esta ${readyPronoun} para dormir.`,
+      paragraph: `Entre 1 e 3 meses, os padrões de sono começam a surgir. Registre por alguns dias e o Yaya te mostra quando ${babyName} está ${readyPronoun} para dormir.`,
       features: [
         featureFirst,
-        { icon: '🌙', title: 'Previsao de sono', desc: `Descubra quando el${pronoun} esta ${readyPronoun} para dormir` },
+        { icon: '🌙', title: 'Previsão de sono', desc: `Descubra quando el${pronoun} está ${readyPronoun} para dormir` },
         { icon: '🌊', title: 'Salto chegando', desc: 'Fique por dentro do desenvolvimento' },
       ],
     },
     growing: {
-      paragraph: 'Nessa fase, a maioria dos bebes comeca a dormir periodos mais longos. Registre o sono por uma semana e o Yaya identifica o horario ideal.',
+      paragraph: 'Nessa fase, a maioria dos bebês começa a dormir períodos mais longos. Registre o sono por uma semana e o Yaya identifica o horário ideal.',
       features: [
         featureFirst,
-        { icon: '🌙', title: 'Sono em evolucao', desc: 'Veja como o padrao muda semana a semana' },
-        { icon: '🎭', title: 'Salto ativo', desc: 'Entenda o que esta acontecendo agora' },
+        { icon: '🌙', title: 'Sono em evolução', desc: 'Veja como o padrão muda semana a semana' },
+        { icon: '🎭', title: 'Salto ativo', desc: 'Entenda o que está acontecendo agora' },
       ],
     },
     weaning: {
-      paragraph: '6 meses e o inicio da introducao alimentar. O padrao de sono e alimentacao vao mudar bastante. O Yaya acompanha essa transicao com voce.',
+      paragraph: '6 meses é o início da introdução alimentar. Os padrões de sono e alimentação vão mudar bastante. O Yaya acompanha essa transição com você.',
       features: [
         featureFirst,
-        { icon: '🌙', title: 'Sono em transicao', desc: 'Acompanhe as mudancas dessa fase' },
+        { icon: '🌙', title: 'Sono em transição', desc: 'Acompanhe as mudanças dessa fase' },
         { icon: '🌍', title: 'Salto chegando', desc: 'Prepare-se para mais descobertas' },
       ],
     },
     active: {
-      paragraph: 'Entre 9 e 12 meses, muitos bebes migram para 2 sonecas por dia. Registre o sono e o Yaya identifica quando essa transicao esta acontecendo.',
+      paragraph: 'Entre 9 e 12 meses, muitos bebês migram para 2 sonecas por dia. Registre o sono e o Yaya identifica quando essa transição está acontecendo.',
       features: [
         featureFirst,
-        { icon: '🌙', title: 'Transicao de sonecas', desc: 'De 3 para 2 sonecas: o Yaya detecta' },
+        { icon: '🌙', title: 'Transição de sonecas', desc: 'De 3 para 2 sonecas: o Yaya detecta' },
         { icon: '🔄', title: 'Salto ativo', desc: 'Entenda o comportamento atual' },
       ],
     },
     toddler_early: {
-      paragraph: 'No primeiro aninho, muitos bebes transitam para uma soneca so. O Yaya acompanha essa mudanca e te avisa quando o padrao se estabilizar.',
+      paragraph: 'No primeiro aninho, muitos bebês passam a ter uma soneca só. O Yaya acompanha essa mudança e te avisa quando o padrão se estabilizar.',
       features: [
         featureFirst,
-        { icon: '🌙', title: 'Transicao para 1 soneca', desc: 'O Yaya detecta quando chega a hora' },
+        { icon: '🌙', title: 'Transição para 1 soneca', desc: 'O Yaya detecta quando chega a hora' },
         { icon: '🎯', title: 'Salto chegando', desc: 'A autonomia vai explodir em breve' },
       ],
     },
     toddler: {
-      paragraph: `Entre 18 e 24 meses, o sono noturno fica mais estavel, mas a hora de dormir pode virar uma batalha. Registre para encontrar o horario ideal.`,
+      paragraph: `Entre 18 e 24 meses, o sono noturno fica mais estável, mas a hora de dormir pode virar uma batalha. Registre para encontrar o horário ideal.`,
       features: [
         featureFirst,
-        { icon: '🌙', title: 'Hora de dormir', desc: `Descubra o horario ideal para ${babyName}` },
-        { icon: '🌟', title: 'Salto ativo', desc: 'O maior salto da infancia. Saiba o que esperar' },
+        { icon: '🌙', title: 'Hora de dormir', desc: `Descubra o horário ideal para ${babyName}` },
+        { icon: '🌟', title: 'Salto ativo', desc: 'O maior salto da infância. Saiba o que esperar' },
       ],
     },
     beyond: {
-      paragraph: `O Yaya acompanha criancas de qualquer idade. Registre a rotina ${doPronoun} ${babyName} e acompanhe padroes de sono, alimentacao e cuidados.`,
+      paragraph: `O Yaya acompanha crianças de qualquer idade. Registre a rotina ${doPronoun} ${babyName} e acompanhe padrões de sono, alimentação e cuidados.`,
       features: [
         featureFirst,
-        { icon: '🌙', title: 'Padroes de sono', desc: 'Acompanhe a rotina de sono' },
-        { icon: '📊', title: 'Historico completo', desc: 'Tudo registrado para consultas e acompanhamento' },
+        { icon: '🌙', title: 'Padrões de sono', desc: 'Acompanhe a rotina de sono' },
+        { icon: '📊', title: 'Histórico completo', desc: 'Tudo registrado para consultas e acompanhamento' },
       ],
     },
   }
