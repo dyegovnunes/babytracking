@@ -34,9 +34,9 @@ export default function ShiftSummaryRow({ shift, caregiverName }: Props) {
   const preview = shift.note
     ? shift.note.slice(0, 80) + (shift.note.length > 80 ? '…' : '')
     : 'Resumo enviado sem anotações.'
-  const hasThumbsInfo = shift.ateWell !== null || shift.sleptWell !== null
+  const hasScoreInfo = shift.ateScore !== null || shift.sleptScore !== null
   const hasDetails =
-    (shift.note && shift.note.length > 80) || shift.quickNotes.length > 0 || hasThumbsInfo
+    (shift.note && shift.note.length > 80) || shift.quickNotes.length > 0 || hasScoreInfo
 
   return (
     <div className="bg-primary/[0.05] border border-primary/15 rounded-md px-3 py-3 my-2">
@@ -65,13 +65,13 @@ export default function ShiftSummaryRow({ shift, caregiverName }: Props) {
             {moodEmoji && <span className="mr-1">{moodEmoji}</span>}
             {preview}
           </p>
-          {hasThumbsInfo && (
+          {hasScoreInfo && (
             <div className="mt-1.5 flex items-center gap-2 flex-wrap">
-              {shift.ateWell !== null && (
-                <ThumbChip icon="restaurant" value={shift.ateWell} label="Comeu bem" />
+              {shift.ateScore !== null && (
+                <ScoreChip icon="restaurant" score={shift.ateScore} label="Comeu" />
               )}
-              {shift.sleptWell !== null && (
-                <ThumbChip icon="bedtime" value={shift.sleptWell} label="Dormiu bem" />
+              {shift.sleptScore !== null && (
+                <ScoreChip icon="bedtime" score={shift.sleptScore} label="Dormiu" />
               )}
             </div>
           )}
@@ -108,21 +108,25 @@ export default function ShiftSummaryRow({ shift, caregiverName }: Props) {
   )
 }
 
-interface ThumbChipProps {
+interface ScoreChipProps {
   icon: string
-  value: boolean
+  score: 1 | 2 | 3
   label: string
 }
 
-function ThumbChip({ icon, value, label }: ThumbChipProps) {
-  const color = value
-    ? 'bg-primary/10 text-primary border-primary/20'
-    : 'bg-error/10 text-error border-error/20'
+const SCORE_CHIP_STYLE: Record<1 | 2 | 3, { tone: string; text: string }> = {
+  1: { tone: 'bg-error/10 text-error border-error/20', text: 'ruim' },
+  2: { tone: 'bg-amber-500/10 text-amber-700 border-amber-500/25', text: 'médio' },
+  3: { tone: 'bg-primary/10 text-primary border-primary/20', text: 'bom' },
+}
+
+function ScoreChip({ icon, score, label }: ScoreChipProps) {
+  const style = SCORE_CHIP_STYLE[score]
   return (
-    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border ${color}`}>
+    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border ${style.tone}`}>
       <span className="material-symbols-outlined text-[13px]">{icon}</span>
       <span className="font-label text-[11px] font-semibold">
-        {label}: {value ? 'sim' : 'não'}
+        {label}: {style.text}
       </span>
     </span>
   )

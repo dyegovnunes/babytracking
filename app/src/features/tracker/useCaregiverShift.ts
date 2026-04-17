@@ -2,16 +2,17 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { supabase } from '../../lib/supabase'
 import { getLocalDateString } from '../../lib/formatters'
 
+/** 1 = ruim, 2 = médio, 3 = bom. null = não respondeu. */
+export type ShiftScore = 1 | 2 | 3 | null
+
 export interface CaregiverShift {
   id: string
   babyId: string
   caregiverId: string
   shiftDate: string // YYYY-MM-DD
   moodScore: number | null
-  /** Comeu bem? true = joinha pra cima, false = pra baixo, null = sem resposta */
-  ateWell: boolean | null
-  /** Dormiu bem? true/false/null */
-  sleptWell: boolean | null
+  ateScore: ShiftScore
+  sleptScore: ShiftScore
   note: string | null
   quickNotes: string[]
   submittedAt: string | null // ISO
@@ -20,13 +21,18 @@ export interface CaregiverShift {
 
 interface SubmitInput {
   moodScore?: number | null
-  ateWell?: boolean | null
-  sleptWell?: boolean | null
+  ateScore?: ShiftScore
+  sleptScore?: ShiftScore
   note?: string | null
 }
 
 const SHIFT_COLUMNS =
-  'id, baby_id, caregiver_id, shift_date, mood_score, ate_well, slept_well, note, quick_notes, submitted_at, created_at'
+  'id, baby_id, caregiver_id, shift_date, mood_score, ate_score, slept_score, note, quick_notes, submitted_at, created_at'
+
+function toScore(value: number | null | undefined): ShiftScore {
+  if (value === 1 || value === 2 || value === 3) return value
+  return null
+}
 
 function mapRow(row: {
   id: string
@@ -34,8 +40,8 @@ function mapRow(row: {
   caregiver_id: string
   shift_date: string
   mood_score: number | null
-  ate_well: boolean | null
-  slept_well: boolean | null
+  ate_score: number | null
+  slept_score: number | null
   note: string | null
   quick_notes: string[] | null
   submitted_at: string | null
@@ -47,8 +53,8 @@ function mapRow(row: {
     caregiverId: row.caregiver_id,
     shiftDate: row.shift_date,
     moodScore: row.mood_score,
-    ateWell: row.ate_well,
-    sleptWell: row.slept_well,
+    ateScore: toScore(row.ate_score),
+    sleptScore: toScore(row.slept_score),
     note: row.note,
     quickNotes: row.quick_notes ?? [],
     submittedAt: row.submitted_at,
@@ -113,8 +119,8 @@ export function useCaregiverShift(
         caregiver_id: caregiverId,
         shift_date: date,
         mood_score: input.moodScore ?? null,
-        ate_well: input.ateWell ?? null,
-        slept_well: input.sleptWell ?? null,
+        ate_score: input.ateScore ?? null,
+        slept_score: input.sleptScore ?? null,
         note: input.note?.trim() ? input.note.trim() : null,
         submitted_at: new Date().toISOString(),
       }

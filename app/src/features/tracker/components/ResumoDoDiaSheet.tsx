@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useSheetBackClose } from '../../../hooks/useSheetBackClose'
 import { hapticLight, hapticSuccess } from '../../../lib/haptics'
 import { supabase } from '../../../lib/supabase'
-import { useCaregiverShift } from '../useCaregiverShift'
+import { useCaregiverShift, type ShiftScore } from '../useCaregiverShift'
 import Toast from '../../../components/ui/Toast'
 
 interface Props {
@@ -22,6 +22,12 @@ const MOODS: Array<{ value: number; emoji: string; label: string }> = [
 
 const NOTE_MAX = 280
 
+const SCORE_LABEL: Record<1 | 2 | 3, string> = {
+  1: 'ruim',
+  2: 'médio',
+  3: 'bom',
+}
+
 /**
  * Sheet para o caregiver registrar o "resumo do dia" antes de encerrar o turno.
  * Dispara push para os parents/guardians (via edge function send-immediate-push).
@@ -32,8 +38,8 @@ export default function ResumoDoDiaSheet({ babyId, babyName, caregiverId, onClos
   const existingQuickNotes = shift?.quickNotes ?? []
 
   const [mood, setMood] = useState<number | null>(null)
-  const [ateWell, setAteWell] = useState<boolean | null>(null)
-  const [sleptWell, setSleptWell] = useState<boolean | null>(null)
+  const [ateScore, setAteScore] = useState<ShiftScore>(null)
+  const [sleptScore, setSleptScore] = useState<ShiftScore>(null)
   const [note, setNote] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
@@ -46,8 +52,8 @@ export default function ResumoDoDiaSheet({ babyId, babyName, caregiverId, onClos
     setSubmitting(true)
     const row = await submitResume({
       moodScore: mood,
-      ateWell,
-      sleptWell,
+      ateScore,
+      sleptScore,
       note: note || null,
     })
     if (!row) {
@@ -61,8 +67,8 @@ export default function ResumoDoDiaSheet({ babyId, babyName, caregiverId, onClos
     // Dispara push imediato (fire-and-forget, não bloqueia o fluxo se falhar)
     const moodEmoji = MOODS.find((m) => m.value === mood)?.emoji ?? ''
     const chips: string[] = []
-    if (ateWell !== null) chips.push(`🍽 ${ateWell ? 'sim' : 'não'}`)
-    if (sleptWell !== null) chips.push(`😴 ${sleptWell ? 'sim' : 'não'}`)
+    if (ateScore !== null) chips.push(`🍽 ${SCORE_LABEL[ateScore]}`)
+    if (sleptScore !== null) chips.push(`😴 ${SCORE_LABEL[sleptScore]}`)
     const preview = note.trim()
       ? note.trim().slice(0, 60) + (note.trim().length > 60 ? '…' : '')
       : chips.length > 0
@@ -136,17 +142,17 @@ export default function ResumoDoDiaSheet({ babyId, babyName, caregiverId, onClos
         </div>
 
         {/* Comeu bem? */}
-        <ThumbsQuestion
-          label={`Comeu bem?`}
-          value={ateWell}
-          onChange={setAteWell}
+        <ScoreQuestion
+          label="Comeu bem?"
+          value={ateScore}
+          onChange={setAteScore}
         />
 
         {/* Dormiu bem? */}
-        <ThumbsQuestion
-          label={`Dormiu bem?`}
-          value={sleptWell}
-          onChange={setSleptWell}
+        <ScoreQuestion
+          label="Dormiu bem?"
+          value={sleptScore}
+          onChange={setSleptScore}
         />
 
         {/* Quick notes (se houver) */}
@@ -214,58 +220,60 @@ export default function ResumoDoDiaSheet({ babyId, babyName, caregiverId, onClos
   )
 }
 
-interface ThumbsQuestionProps {
+interface ScoreQuestionProps {
   label: string
-  value: boolean | null
-  onChange: (next: boolean | null) => void
+  value: ShiftScore
+  onChange: (next: ShiftScore) => void
 }
 
-function ThumbsQuestion({ label, value, onChange }: ThumbsQuestionProps) {
-  const pick = (v: boolean) => () => {
+// Ordem visual: Ruim → Médio → Bom. value: 1 = ruim, 2 = médio, 3 = bom.
+const SCORE_OPTIONS: Array<{ value: 1 | 2 | 3; label: string; activeClass: string }> = [
+  {
+    value: 1,
+    label: 'Ruim',
+    activeClass: 'bg-error/15 ring-2 ring-error text-error',
+  },
+  {
+    value: 2,
+    label: 'Médio',
+    activeClass: 'bg-amber-500/15 ring-2 ring-amber-500 text-amber-600',
+  },
+  {
+    value: 3,
+    label: 'Bom',
+    activeClass: 'bg-primary/15 ring-2 ring-primary text-primary',
+  },
+]
+
+function ScoreQuestion({ label, value, onChange }: ScoreQuestionProps) {
+  const pick = (v: 1 | 2 | 3) => () => {
     hapticLight()
-    // Tap no botão já marcado → desmarca (volta pra null)
+    // Tap no já-selecionado → desmarca (volta pra null)
     onChange(value === v ? null : v)
   }
   return (
-    <div className="mb-5 flex items-center justify-between gap-3">
-      <span className="font-label text-sm text-on-surface">{label}</span>
-      <div className="flex items-center gap-2">
-        <button
-          type="button"
-          onClick={pick(true)}
-          aria-pressed={value === true}
-          aria-label={`${label} — Sim`}
-          className={`w-11 h-11 rounded-md flex items-center justify-center transition-colors ${
-            value === true
-              ? 'bg-primary/15 ring-2 ring-primary text-primary'
-              : 'bg-surface-container text-on-surface-variant active:bg-surface-container-high'
-          }`}
-        >
-          <span
-            className="material-symbols-outlined text-xl"
-            style={{ fontVariationSettings: value === true ? "'FILL' 1" : undefined }}
-          >
-            thumb_up
-          </span>
-        </button>
-        <button
-          type="button"
-          onClick={pick(false)}
-          aria-pressed={value === false}
-          aria-label={`${label} — Não`}
-          className={`w-11 h-11 rounded-md flex items-center justify-center transition-colors ${
-            value === false
-              ? 'bg-error/15 ring-2 ring-error text-error'
-              : 'bg-surface-container text-on-surface-variant active:bg-surface-container-high'
-          }`}
-        >
-          <span
-            className="material-symbols-outlined text-xl"
-            style={{ fontVariationSettings: value === false ? "'FILL' 1" : undefined }}
-          >
-            thumb_down
-          </span>
-        </button>
+    <div className="mb-5">
+      <span className="block font-label text-sm text-on-surface mb-2">{label}</span>
+      <div className="grid grid-cols-3 gap-2">
+        {SCORE_OPTIONS.map((opt) => {
+          const active = value === opt.value
+          return (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={pick(opt.value)}
+              aria-pressed={active}
+              aria-label={`${label} — ${opt.label}`}
+              className={`h-11 rounded-md font-label text-sm font-semibold transition-colors ${
+                active
+                  ? opt.activeClass
+                  : 'bg-surface-container text-on-surface-variant active:bg-surface-container-high'
+              }`}
+            >
+              {opt.label}
+            </button>
+          )
+        })}
       </div>
     </div>
   )
