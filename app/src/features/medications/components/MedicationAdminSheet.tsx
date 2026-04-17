@@ -13,6 +13,8 @@ interface Props {
   onGiveNow: () => Promise<boolean>
   /** Dar em outro horário: recebe uma Date custom */
   onGiveAt: (when: Date) => Promise<boolean>
+  /** Editar horário de um log existente (pai dá às 8h mas só marca às 16h). */
+  onEditLog: (logId: string, newAdministeredAt: Date) => Promise<boolean>
   /** Apagar um log (corrigir engano) */
   onDeleteLog: (logId: string) => Promise<boolean>
   /** Editar este medicamento (abre o form em modo edit) */
@@ -36,6 +38,7 @@ export default function MedicationAdminSheet({
   onClose,
   onGiveNow,
   onGiveAt,
+  onEditLog,
   onDeleteLog,
   onEdit,
   onDeactivate,
@@ -44,6 +47,13 @@ export default function MedicationAdminSheet({
   const [customTime, setCustomTime] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [confirmDeactivate, setConfirmDeactivate] = useState(false)
+  // Edit mode inline pra logs do dia: guarda o id sendo editado + o tempo provisório
+  const [editingLogId, setEditingLogId] = useState<string | null>(null)
+  const [editingTime, setEditingTime] = useState('')
+
+  // Quando todas as doses do dia já foram dadas, bloquear o add pra evitar
+  // registro duplicado ou sobreposição com a UNIQUE constraint do banco.
+  const allDosesGiven = status.givenCount >= status.totalCount && status.totalCount > 0
 
   useSheetBackClose(true, onClose)
 
@@ -159,12 +169,24 @@ export default function MedicationAdminSheet({
           </div>
         )}
 
+        {/* Mensagem quando todas as doses já foram dadas */}
+        {allDosesGiven && (
+          <div className="mb-4 p-3 rounded-md bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-2">
+            <span className="material-symbols-outlined text-emerald-400 text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>
+              check_circle
+            </span>
+            <p className="font-body text-xs text-emerald-400">
+              Todas as doses de hoje já foram registradas.
+            </p>
+          </div>
+        )}
+
         {/* Botão principal: Dar agora */}
         <button
           type="button"
           onClick={handleGiveNow}
-          disabled={saving}
-          className="w-full py-4 rounded-md bg-primary text-on-primary font-headline text-base font-bold mb-2 active:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2"
+          disabled={saving || allDosesGiven}
+          className="w-full py-4 rounded-md bg-primary text-on-primary font-headline text-base font-bold mb-2 active:opacity-90 disabled:opacity-40 flex items-center justify-center gap-2"
         >
           <span
             className="material-symbols-outlined text-xl"
@@ -179,6 +201,7 @@ export default function MedicationAdminSheet({
         {customTime === null ? (
           <button
             type="button"
+            disabled={allDosesGiven}
             onClick={() => {
               hapticLight()
               const h = new Date().getHours()
@@ -187,7 +210,7 @@ export default function MedicationAdminSheet({
                 `${String(h).padStart(2, '0')}:${String(mm).padStart(2, '0')}`,
               )
             }}
-            className="w-full py-2.5 rounded-md text-on-surface-variant font-label text-xs font-semibold active:text-on-surface mb-5"
+            className="w-full py-2.5 rounded-md text-on-surface-variant font-label text-xs font-semibold active:text-on-surface mb-5 disabled:opacity-40"
           >
             Registrar em outro horário
           </button>
@@ -239,10 +262,76 @@ export default function MedicationAdminSheet({
                 const by = log.administeredBy
                   ? membersById[log.administeredBy] ?? 'cuidador'
                   : 'anônimo'
+                const isEditing = editingLogId === log.id
+
+                const handleStartEdit = () => {
+                  hapticLight()
+                  setEditingTime(time)
+                  setEditingLogId(log.id)
+                }
+
+                const handleSaveEdit = async () => {
+                  if (!editingTime.match(/^\d{2}:\d{2}$/)) return
+                  const [nh, nm] = editingTime.split(':').map((v) => parseInt(v, 10))
+                  const newDate = new Date(log.administeredAt)
+                  newDate.setHours(nh, nm, 0, 0)
+                  setSaving(true)
+                  const ok = await onEditLog(log.id, newDate)
+                  setSaving(false)
+                  if (ok) {
+                    hapticSuccess()
+                    setEditingLogId(null)
+                  }
+                }
+
+                if (isEditing) {
+                  return (
+                    <li
+                      key={log.id}
+                      className="px-3 py-2 rounded-md bg-surface-container-highest"
+                    >
+                      <p className="font-label text-[10px] font-bold uppercase tracking-wider text-on-surface-variant mb-1.5">
+                        Editar horário
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="time"
+                          value={editingTime}
+                          onChange={(e) => setEditingTime(e.target.value)}
+                          className="flex-1 px-3 py-2 rounded-md bg-surface-container border border-white/5 text-on-surface font-body text-sm focus:outline-none focus:border-primary/40"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleSaveEdit}
+                          disabled={saving}
+                          className="px-3 py-2 rounded-md bg-primary text-on-primary font-label text-xs font-bold active:opacity-90 disabled:opacity-50"
+                        >
+                          Salvar
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setEditingLogId(null)}
+                          className="px-3 py-2 rounded-md bg-surface-variant/50 text-on-surface-variant font-label text-xs font-semibold active:bg-surface-variant"
+                        >
+                          Cancelar
+                        </button>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(log.id)}
+                        className="w-full mt-2 py-1.5 rounded-md text-red-400 font-label text-[11px] font-semibold active:text-red-500"
+                      >
+                        Excluir este registro
+                      </button>
+                    </li>
+                  )
+                }
+
                 return (
                   <li
                     key={log.id}
-                    className="flex items-center justify-between gap-2 px-3 py-2 rounded-md bg-surface-container"
+                    onClick={handleStartEdit}
+                    className="flex items-center justify-between gap-2 px-3 py-2 rounded-md bg-surface-container cursor-pointer active:bg-surface-container-high transition-colors"
                   >
                     <div className="flex items-center gap-2 min-w-0">
                       <span
@@ -260,16 +349,9 @@ export default function MedicationAdminSheet({
                         </p>
                       </div>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => handleDelete(log.id)}
-                      className="w-7 h-7 rounded-full bg-surface-container-highest text-on-surface-variant flex items-center justify-center active:bg-surface-variant shrink-0"
-                      aria-label="Remover registro"
-                    >
-                      <span className="material-symbols-outlined text-sm">
-                        delete
-                      </span>
-                    </button>
+                    <span className="material-symbols-outlined text-on-surface-variant/50 text-base shrink-0">
+                      edit
+                    </span>
                   </li>
                 )
               })}

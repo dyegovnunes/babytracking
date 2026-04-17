@@ -52,6 +52,7 @@ export default function MedicationsPage() {
     addMedication,
     updateMedication,
     administerDose,
+    updateLog,
     deleteLog,
     deactivateMedication,
   } = useMedications(baby?.id, membersById, now)
@@ -154,6 +155,19 @@ export default function MedicationsPage() {
       setToast('Registro removido')
       return true
     }
+    return false
+  }
+
+  const handleEditLog = async (
+    logId: string,
+    newAdministeredAt: Date,
+  ): Promise<boolean> => {
+    const result = await updateLog(logId, { administeredAt: newAdministeredAt })
+    if (result.ok) {
+      setToast('Horário atualizado')
+      return true
+    }
+    setToast('Não foi possível atualizar (horário duplicado?)')
     return false
   }
 
@@ -380,6 +394,7 @@ export default function MedicationsPage() {
           onClose={() => setAdminFor(null)}
           onGiveNow={handleGiveNow}
           onGiveAt={handleGiveAt}
+          onEditLog={handleEditLog}
           onDeleteLog={handleDeleteLog}
           onEdit={() => {
             const m = adminFor

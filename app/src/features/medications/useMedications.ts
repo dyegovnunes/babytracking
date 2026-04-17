@@ -406,6 +406,48 @@ export function useMedications(
     [babyId],
   )
 
+  /**
+   * Atualiza um log de dose existente (horário e/ou notas). Usado quando
+   * o pai clica numa dose já registrada pra corrigir o horário que ele
+   * deu de fato (ex: "dei às 8h mas só marquei agora às 16h").
+   */
+  const updateLog = useCallback(
+    async (
+      logId: string,
+      input: { administeredAt?: Date; notes?: string | null },
+    ): Promise<MutationResult> => {
+      if (!babyId) return { ok: false, error: 'no_baby' }
+      const updates: Record<string, unknown> = {}
+      if (input.administeredAt) {
+        updates.administered_at = input.administeredAt.toISOString()
+      }
+      if (input.notes !== undefined) {
+        updates.notes = input.notes
+      }
+      if (Object.keys(updates).length === 0) return { ok: true }
+
+      const { data, error } = await supabase
+        .from('medication_logs')
+        .update(updates)
+        .eq('id', logId)
+        .select(
+          'id, medication_id, baby_id, administered_at, administered_by, notes, created_at, slot_time',
+        )
+        .single()
+      if (error || !data) return { ok: false, error: 'db_error' }
+
+      const updated = mapLog(data as MedicationLogRow)
+      setTodayLogs((prev) => {
+        const today = getLocalDateString(new Date())
+        const isToday = getLocalDateString(new Date(updated.administeredAt)) === today
+        const filtered = prev.filter((l) => l.id !== logId)
+        return isToday ? [...filtered, updated] : filtered
+      })
+      return { ok: true }
+    },
+    [babyId],
+  )
+
   const deactivateMedication = useCallback(
     async (medicationId: string): Promise<MutationResult> => {
       if (!babyId) return { ok: false, error: 'no_baby' }
@@ -464,6 +506,7 @@ export function useMedications(
     addMedication,
     updateMedication,
     administerDose,
+    updateLog,
     deleteLog,
     deactivateMedication,
     reactivateMedication,

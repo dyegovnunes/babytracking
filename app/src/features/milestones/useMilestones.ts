@@ -195,7 +195,10 @@ export function useMilestones(
         return true
       }
 
-      // Marca sem data (auto-registered)
+      // Marca com a data de HOJE (pai clicou o checkbox agora). auto_registered=true
+      // indica que foi via quickToggle (sem photo/note). Auto-registro retroativo
+      // do sistema (na criação do bebê) continua gravando achieved_at=null —
+      // essas não aparecem na timeline unificada.
       const { data: mData, error: mErr } = await supabase
         .from('milestones')
         .select('id')
@@ -203,13 +206,15 @@ export function useMilestones(
         .single()
       if (mErr || !mData) return false
 
+      const todayIso = new Date().toISOString().slice(0, 10)
+
       const { data, error } = await supabase
         .from('baby_milestones')
         .upsert(
           {
             baby_id: babyId,
             milestone_id: mData.id,
-            achieved_at: null,
+            achieved_at: todayIso,
             auto_registered: true,
             recorded_by: userId || null,
           },

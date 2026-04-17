@@ -66,7 +66,9 @@ export default function VaccinesPage() {
     () => records.filter((r) => r.autoRegistered).length,
     [records],
   )
-  const welcomeKey = baby ? `yaya_vaccines_welcome_seen_${baby.id}` : ''
+  // Chave global por user (não por bebê): a explicação sobre auto-registro
+  // é idêntica pra qualquer bebê. Mostrar toda vez que troca de bebê era bug.
+  const welcomeKey = 'yaya_vaccines_welcome_seen'
   const [welcomeOpen, setWelcomeOpen] = useState(false)
 
   // Abre quando detecta auto-registradas e ainda não viu

@@ -237,9 +237,14 @@ export function useVaccines(
         return true
       }
 
-      // Marca sem data (auto-registered)
+      // Marca com a data de HOJE (pai clicou o checkbox agora). auto_registered=true
+      // indica que foi via quickToggle (sem preencher data/local/lote explícitos).
+      // Auto-registro retroativo do sistema (na criação do bebê) continua gravando
+      // applied_at=null — essas não aparecem na timeline unificada.
       const vaccineId = await resolveVaccineId(code)
       if (!vaccineId) return false
+
+      const todayIso = new Date().toISOString().slice(0, 10)
 
       const { data, error } = await supabase
         .from('baby_vaccines')
@@ -247,7 +252,7 @@ export function useVaccines(
           {
             baby_id: babyId,
             vaccine_id: vaccineId,
-            applied_at: null,
+            applied_at: todayIso,
             status: 'applied',
             location: null,
             batch_number: null,

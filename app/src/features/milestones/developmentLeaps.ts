@@ -11,13 +11,24 @@ export interface DevelopmentLeap {
   registroImpact: string;
 }
 
+/**
+ * Intervalos baseados na pesquisa de Frans X. Plooij & Hetty van de Rijt
+ * sobre saltos cognitivos no primeiro ano de vida (1992–2017).
+ * Semanas contadas a partir do nascimento (não da concepção).
+ *
+ * Os intervalos marcam a fase ativa do salto (tempestade + consolidação),
+ * não o arco completo que inclui a fase de tranquilidade anterior.
+ *
+ * NOTA: Existe variação individual de ±1-2 semanas entre bebês.
+ * As datas exibidas no app sempre aparecem com "aprox." para refletir isso.
+ */
 export const DEVELOPMENT_LEAPS: DevelopmentLeap[] = [
   {
     id: 1, weekStart: 5, weekEnd: 6,
     name: 'Sensações', subtitle: 'O mundo fica mais nítido',
-    pushText: 'Salto de desenvolvimento se aproximando (~semana 5). {name} pode ficar mais agitado. Normal!',
+    pushText: 'Salto de desenvolvimento se aproximando (~semana 6). {name} pode ficar mais agitado. Normal!',
     description: 'O bebê começa a perceber o mundo de forma mais intensa. Sensações que antes eram neutras agora chamam atenção.',
-    whatToExpect: ['Mais choroso e grudento', 'Pode querer mamar mais', 'Sono pode ficar mais agitado', 'Duração: ~1 semana'],
+    whatToExpect: ['Mais choroso e grudento', 'Pode querer mamar mais', 'Sono pode ficar mais agitado', 'Duração: ~2 semanas'],
     tips: ['Acolha — não é manha, é desenvolvimento', 'Ofereça o peito/mamadeira com mais frequência se pedir', 'Não se assuste com mudança no padrão de sono'],
     registroImpact: 'Amamentações podem aumentar 20-30%. Sono pode diminuir.',
   },
