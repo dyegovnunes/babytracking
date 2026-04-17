@@ -90,28 +90,28 @@ export default function YayaPlusPage() {
           <ComparisonRow feature="Histórico" free="Hoje + ontem" premium="Completo" />
           <ComparisonRow
             feature="Compartilhar com babá e família"
-            free="—"
+            free={<Cross />}
             premium={<Check />}
           />
           <ComparisonRow
             feature="Caderneta de vacinas"
-            free="Com anúncio"
-            premium="Sem anúncio"
+            free="Limitado"
+            premium="Ilimitado"
           />
           <ComparisonRow
             feature="Marcos do bebê"
-            free="Com anúncio"
-            premium="Sem anúncio"
+            free="Limitado"
+            premium="Ilimitado"
           />
           <ComparisonRow
             feature="Medicamentos"
-            free="Com anúncio"
-            premium="Sem anúncio"
+            free="Limitado"
+            premium="Ilimitado"
           />
           <ComparisonRow
             feature="Saltos de desenvolvimento"
-            free="Com anúncio"
-            premium="Sem anúncio"
+            free="Limitado"
+            premium="Ilimitado"
           />
           <ComparisonRow
             feature="Insights inteligentes"
@@ -119,14 +119,14 @@ export default function YayaPlusPage() {
             premium="Completos"
           />
           <ComparisonRow
-            feature="Super relatório do bebê"
-            free="—"
+            feature="Resumo para o pediatra"
+            free={<Cross />}
             premium={<Check />}
           />
           <ComparisonRow
-            feature="Banner de anúncios"
-            free="Ativo"
-            premium="Sem anúncios"
+            feature="Sem anúncios"
+            free={<Cross />}
+            premium={<Check />}
             last
           />
         </div>
@@ -185,10 +185,23 @@ function ComparisonRow({
 function Check() {
   return (
     <span
-      className="material-symbols-outlined text-primary text-base"
+      className="material-symbols-outlined text-emerald-500 text-base"
       style={{ fontVariationSettings: "'FILL' 1" }}
+      aria-label="Incluído"
     >
       check_circle
+    </span>
+  )
+}
+
+function Cross() {
+  return (
+    <span
+      className="material-symbols-outlined text-error text-base"
+      style={{ fontVariationSettings: "'FILL' 1" }}
+      aria-label="Não incluído"
+    >
+      cancel
     </span>
   )
 }

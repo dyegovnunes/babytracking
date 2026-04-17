@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useTheme } from '../../contexts/ThemeContext'
 import { useAppState } from '../../contexts/AppContext'
+import { useBabyPremium } from '../../hooks/useBabyPremium'
 import { isInQuietHours } from '../../lib/quietHours'
 import { hapticLight } from '../../lib/haptics'
 import PlanBadge from '../ui/PlanBadge'
@@ -9,6 +10,7 @@ export default function Header() {
   const navigate = useNavigate()
   const { theme, adaptiveTheme, setTheme } = useTheme()
   const { quietHours } = useAppState()
+  const isPremium = useBabyPremium()
 
   // Hint visual: em modo adaptado, durante o noturno e ainda em light,
   // o ícone recebe cor primary para sugerir que o noturno "prefere" dark.
@@ -27,6 +29,7 @@ export default function Header() {
         <div className="flex items-center gap-2">
           <h1 className="font-headline text-lg font-bold text-on-surface tracking-tight">
             Ya<span className="text-primary">ya</span>
+            {isPremium && <span className="text-primary">+</span>}
           </h1>
           <PlanBadge />
         </div>
