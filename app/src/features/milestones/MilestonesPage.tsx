@@ -109,6 +109,20 @@ export default function MilestonesPage() {
     }
   }, [searchParams, setSearchParams])
 
+  // Open detail modal from query param (?edit=code). Usado pela timeline
+  // unificada pra levar o pai direto à edição do marco registrado.
+  useEffect(() => {
+    const code = searchParams.get('edit')
+    if (!code) return
+    const m = MILESTONES.find((x) => x.code === code)
+    const entry = achieved.find((a) => a.milestoneCode === code)
+    if (m && entry) {
+      setDetailEntry({ milestone: m, entry })
+    }
+    searchParams.delete('edit')
+    setSearchParams(searchParams, { replace: true })
+  }, [searchParams, setSearchParams, achieved])
+
 
   // Progress bar: achieved vs total up to current age (+30 days grace)
   const totalForAge = useMemo(

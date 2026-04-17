@@ -18,7 +18,9 @@ export default function MilestoneRow({ milestone, displayName }: Props) {
 
   const handleClick = () => {
     hapticLight()
-    navigate('/marcos')
+    // Navega pra /marcos com queryparam pra a página abrir o detail modal
+    // do marco específico direto.
+    navigate(`/marcos?edit=${encodeURIComponent(milestone.milestoneCode)}`)
   }
 
   return (

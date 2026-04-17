@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAppState } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { useBabyPremium } from '../../hooks/useBabyPremium'
@@ -92,6 +92,19 @@ export default function VaccinesPage() {
   const [showPaywall, setShowPaywall] = useState(false)
   const { ensureUnlocked } = useVaccineUnlock(baby?.id)
   const [toast, setToast] = useState<string | null>(null)
+
+  // Deep link: ?edit=CODE abre o detail sheet direto.
+  // Usado pela timeline unificada pra levar o pai pra edição.
+  const [searchParams, setSearchParams] = useSearchParams()
+  useEffect(() => {
+    const code = searchParams.get('edit')
+    if (!code) return
+    const v = VACCINES.find((vv) => vv.code === code)
+    if (v) setSelected(v)
+    // Limpa o queryparam pra não reabrir em próximas renders/back
+    searchParams.delete('edit')
+    setSearchParams(searchParams, { replace: true })
+  }, [searchParams, setSearchParams])
 
   // Filtra vacinas segundo o chip ativo.
   // Vacinas "skipped" só aparecem na aba "Todas" (e ainda assim no final).

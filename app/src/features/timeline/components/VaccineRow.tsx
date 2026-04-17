@@ -18,7 +18,10 @@ export default function VaccineRow({ vaccine, displayName }: Props) {
 
   const handleClick = () => {
     hapticLight()
-    navigate('/vacinas')
+    // Navega pra /vacinas com queryparam pra a página abrir o detail sheet
+    // da vacina específica direto. Edição acontece na feature (preserva a
+    // lógica existente — sem duplicar editor aqui).
+    navigate(`/vacinas?edit=${encodeURIComponent(vaccine.vaccineCode)}`)
   }
 
   return (
