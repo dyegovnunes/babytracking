@@ -35,15 +35,20 @@ export async function showBanner(): Promise<void> {
   if (bannerCall) await bannerCall.catch(() => {});
   if (bannerVisible) return;
 
+  // O plugin @capacitor-community/admob interpreta `margin` em **pixels
+  // físicos**, não dp. Em Android @3x (HiDPI), 110px físicos ≈ 37dp —
+  // mal chega na gesture bar. Fix: calcular dinamicamente baseado no
+  // devicePixelRatio pra garantir que cobrimos a bottom nav (5rem = 80px
+  // CSS = 80dp) + safe-area típica Android com gesture bar (~40dp) = 130dp.
+  const marginDp = 130;
+  const ratio = typeof window !== 'undefined' ? (window.devicePixelRatio || 2) : 2;
+  const marginPx = Math.round(marginDp * ratio);
+
   const options: BannerAdOptions = {
     adId: AD_IDS.banner,
     adSize: BannerAdSize.ADAPTIVE_BANNER,
     position: BannerAdPosition.BOTTOM_CENTER,
-    // 110 dp — cobre o bottom nav (64dp = h-16) + safe-area-inset-bottom
-    // (varia por device, tipicamente 24-36dp no Android com gesture bar).
-    // Valor anterior de 80 dp deixava o banner sobrepondo a nav em Samsungs
-    // com gesture bar maior (reportado 2026-04-17).
-    margin: 110,
+    margin: marginPx,
   };
 
   bannerCall = (async () => {
