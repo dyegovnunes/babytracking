@@ -39,9 +39,11 @@ export async function showBanner(): Promise<void> {
     adId: AD_IDS.banner,
     adSize: BannerAdSize.ADAPTIVE_BANNER,
     position: BannerAdPosition.BOTTOM_CENTER,
-    // 80 dp — cobre o bottom nav (5rem ≈ 80px). Anteriormente 56 deixava o
-    // banner sobrepondo a nav em alguns dispositivos.
-    margin: 80,
+    // 110 dp — cobre o bottom nav (64dp = h-16) + safe-area-inset-bottom
+    // (varia por device, tipicamente 24-36dp no Android com gesture bar).
+    // Valor anterior de 80 dp deixava o banner sobrepondo a nav em Samsungs
+    // com gesture bar maior (reportado 2026-04-17).
+    margin: 110,
   };
 
   bannerCall = (async () => {
