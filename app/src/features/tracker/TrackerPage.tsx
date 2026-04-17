@@ -15,7 +15,6 @@ import ShiftDetailModal from './components/ShiftDetailModal'
 import OutOfHoursBanner from './components/OutOfHoursBanner'
 import { useShiftsForBaby, type CaregiverShift } from './useCaregiverShift'
 import { useCaregiverSchedule, isInWorkWindow } from '../profile/useCaregiverSchedule'
-import { getLocalDateString } from '../../lib/formatters'
 import BottleModal from '../../components/ui/BottleModal'
 import EditModal from '../../components/ui/EditModal'
 import Toast from '../../components/ui/Toast'
@@ -43,9 +42,10 @@ export default function TrackerPage() {
   const myRole = useMyRole()
   const now = useTimer()
 
-  // Shifts de hoje (resumo do dia da babá) — aparecem mesclados no RecentLogs
-  const today = getLocalDateString()
-  const { shifts: todayShifts } = useShiftsForBaby(baby?.id, today, today)
+  // Shifts do bebê — aparecem mesclados no RecentLogs (que já limita a 5
+  // após ordenar por timestamp). Sem filtro de data: um shift enviado ontem
+  // à noite continua aparecendo na Home depois da meia-noite.
+  const { shifts: recentShifts } = useShiftsForBaby(baby?.id)
   // Schedule do próprio usuário (só existe quando ele é caregiver desse bebê)
   const { schedule: myCaregiverSchedule } = useCaregiverSchedule(
     myRole === 'caregiver' ? baby?.id : undefined,
@@ -247,7 +247,7 @@ export default function TrackerPage() {
         logs={logs}
         members={members}
         onEdit={handleEditLog}
-        shifts={todayShifts}
+        shifts={recentShifts}
         onShiftClick={(s) => setDetailShift(s)}
       />
 
