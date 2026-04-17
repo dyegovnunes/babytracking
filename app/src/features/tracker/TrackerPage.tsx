@@ -8,7 +8,9 @@ import { hapticSuccess, hapticLight, hapticMedium } from '../../lib/haptics'
 import HeroIdentity from './components/HeroIdentity'
 import ActivityGrid from './components/ActivityGrid'
 import PredictionCard from './components/PredictionCard'
+import MedicationProjectionCard from './components/MedicationProjectionCard'
 import RecentLogs from './components/RecentLogs'
+import { getMedicationProjections } from './medicationProjections'
 import ResumoDoDiaButton from './components/ResumoDoDiaButton'
 import ResumoDoDiaSheet from './components/ResumoDoDiaSheet'
 import ShiftDetailModal from './components/ShiftDetailModal'
@@ -29,6 +31,7 @@ import { useVaccines, VACCINES } from '../vaccines'
 import { useMedications } from '../medications'
 import { useMyRole } from '../../hooks/useMyRole'
 import { can } from '../../lib/roles'
+import { useTimeline, useMedicationLogsRange } from '../timeline'
 
 import { TrackerSkeleton } from '../../components/ui/Skeleton'
 import type { LogEntry } from '../../types'
@@ -64,16 +67,19 @@ export default function TrackerPage() {
     [user, myCaregiverSchedule],
   )
 
-  // Milestones (home card)
-  const { achievedCodes, ageDays } = useMilestones(baby?.id, baby?.birthDate)
-
-  // Vacinas — só para alimentar os highlights
-  const { statusByCode: vaccineStatusByCode } = useVaccines(
+  // Milestones (home card + timeline)
+  const { achievedCodes, ageDays, achieved: milestoneRecords } = useMilestones(
     baby?.id,
     baby?.birthDate,
   )
 
-  // Medicamentos — alimenta o chip no HighlightsStrip (sem card dedicado na home)
+  // Vacinas — alimenta highlights + timeline
+  const { statusByCode: vaccineStatusByCode, records: vaccineRecords } = useVaccines(
+    baby?.id,
+    baby?.birthDate,
+  )
+
+  // Medicamentos — alimenta o chip no HighlightsStrip e a timeline
   const medicationMembersById = useMemo(() => {
     const map: Record<string, string> = {}
     if (members) {
@@ -83,11 +89,67 @@ export default function TrackerPage() {
     }
     return map
   }, [members])
-  const { homeAlerts: medicationAlerts } = useMedications(
-    baby?.id,
-    medicationMembersById,
-    now,
+  const {
+    homeAlerts: medicationAlerts,
+    activeMedications,
+    archivedMedications,
+    dayStatuses: medicationDayStatuses,
+    administerDose,
+  } = useMedications(baby?.id, medicationMembersById, now)
+
+  // Proximas doses (janela 1h) — card com check inline. Overdues ficam no
+  // alert da HighlightsStrip (complementam, não duplicam).
+  const medicationProjections = useMemo(
+    () => getMedicationProjections(medicationDayStatuses, now),
+    [medicationDayStatuses, now],
   )
+
+  const handleMedicationConfirm = useCallback(
+    async (medicationId: string, slotTime: string) => {
+      await administerDose(medicationId, new Date(), user?.id, slotTime)
+    },
+    [administerDose, user],
+  )
+  const allMedications = useMemo(
+    () => [...activeMedications, ...archivedMedications],
+    [activeMedications, archivedMedications],
+  )
+
+  // Medication logs nas últimas 24h (janela da home) — separado do useMedications
+  // porque este só traz o dia local, não as últimas 24h móveis.
+  const medLogsSinceMs = useMemo(() => Date.now() - 24 * 60 * 60 * 1000, [])
+  const { logs: recentMedicationLogs } = useMedicationLogsRange(
+    baby?.id,
+    medLogsSinceMs,
+  )
+
+  // Timeline unificada pra "Últimos registros"
+  const timelineInputs = useMemo(
+    () => ({
+      logs,
+      shifts: recentShifts,
+      vaccines: vaccineRecords,
+      milestones: milestoneRecords,
+      medicationLogs: recentMedicationLogs,
+      medications: allMedications,
+    }),
+    [
+      logs,
+      recentShifts,
+      vaccineRecords,
+      milestoneRecords,
+      recentMedicationLogs,
+      allMedications,
+    ],
+  )
+  const { items: timelineItems } = useTimeline(timelineInputs)
+
+  // Regra da home: últimas 4h OU últimos 5 items (o que der mais).
+  const recentItems = useMemo(() => {
+    const fourHoursAgo = Date.now() - 4 * 60 * 60 * 1000
+    const last4h = timelineItems.filter((i) => i.ts >= fourHoursAgo)
+    return last4h.length >= 5 ? last4h : timelineItems.slice(0, 5)
+  }, [timelineItems])
 
   // Highlights strip (saltos + marcos + vacinas + medicamentos)
   const [highlightsTick, setHighlightsTick] = useState(0)
@@ -219,12 +281,19 @@ export default function TrackerPage() {
         <ResumoDoDiaButton />
       </div>
 
-      {projections.length > 0 && (
+      {(projections.length > 0 || medicationProjections.length > 0) && (
         <section className="px-5 mt-6">
           <h2 className="font-headline text-base font-bold text-on-surface mb-3">
             Projeções
           </h2>
           <div className="space-y-2">
+            {medicationProjections.map((mp) => (
+              <MedicationProjectionCard
+                key={`med-${mp.medication.id}-${mp.slotTime}`}
+                projection={mp}
+                onConfirm={handleMedicationConfirm}
+              />
+            ))}
             {projections.map((p) => (
               <PredictionCard key={p!.label} projection={p!} onDismiss={handleDismissProjection} />
             ))}
@@ -244,10 +313,9 @@ export default function TrackerPage() {
       )}
 
       <RecentLogs
-        logs={logs}
+        items={recentItems}
         members={members}
-        onEdit={handleEditLog}
-        shifts={recentShifts}
+        onEditLog={handleEditLog}
         onShiftClick={(s) => setDetailShift(s)}
       />
 

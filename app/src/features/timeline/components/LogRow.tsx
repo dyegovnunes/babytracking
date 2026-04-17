@@ -6,7 +6,7 @@ interface Props {
   log: LogEntry
   members: Record<string, Member>
   onEdit: (log: LogEntry) => void
-  /** When set, this entry represents a merged "both breasts" session */
+  /** Quando setado, a row representa uma sessão "ambos os peitos" (par left+right). */
   pairedLog?: LogEntry
 }
 
@@ -22,11 +22,15 @@ const iconBgMap: Record<string, string> = {
   secondary: 'bg-secondary/15 text-secondary',
 }
 
-export default function TimelineEntry({ log, members, onEdit, pairedLog }: Props) {
+/**
+ * Row de log (atividade recorrente: amamentação, fralda, sono, banho).
+ * Tap abre modal de edição inline (via callback).
+ * Extraído do antigo `history/components/TimelineEntry.tsx`.
+ */
+export default function LogRow({ log, members, onEdit, pairedLog }: Props) {
   const event = DEFAULT_EVENTS.find((e) => e.id === log.eventId)
   if (!event) return null
 
-  // If paired, show as "Ambos" (both breasts)
   const isMergedBoth = !!pairedLog
   const bothEvent = isMergedBoth ? DEFAULT_EVENTS.find((e) => e.id === 'breast_both') : null
   const displayEvent = bothEvent ?? event
@@ -35,7 +39,6 @@ export default function TimelineEntry({ log, members, onEdit, pairedLog }: Props
   const iconBg = iconBgMap[displayEvent.color] ?? 'bg-primary/15 text-primary'
   const memberName = log.createdBy ? members[log.createdBy]?.displayName : undefined
 
-  // For merged entries, show the earlier time
   const displayTime = isMergedBoth
     ? new Date(Math.min(log.timestamp, pairedLog!.timestamp))
     : new Date(log.timestamp)

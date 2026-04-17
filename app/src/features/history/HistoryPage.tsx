@@ -1,10 +1,14 @@
 import { useState, useCallback, useMemo, Fragment } from 'react'
 import { useAppState, useAppDispatch, updateLog, deleteLog } from '../../contexts/AppContext'
-import { DEFAULT_EVENTS } from '../../lib/constants'
-import type { EventCategory, LogEntry } from '../../types'
+import type { LogEntry } from '../../types'
 import CategoryFilter from './components/CategoryFilter'
-import TimelineEntry from './components/TimelineEntry'
-import ShiftSummaryRow from './components/ShiftSummaryRow'
+import {
+  useTimeline,
+  useMedicationLogsRange,
+  matchesFilter,
+  TimelineRow,
+} from '../timeline'
+import type { TimelineFilter, TimelineItem } from '../timeline/types'
 import EditModal from '../../components/ui/EditModal'
 import Toast from '../../components/ui/Toast'
 import { HistorySkeleton } from '../../components/ui/Skeleton'
@@ -17,8 +21,11 @@ import ResumoDoDiaSheet from '../tracker/components/ResumoDoDiaSheet'
 import { useAuth } from '../../contexts/AuthContext'
 import { useMyRole } from '../../hooks/useMyRole'
 import { useCaregiverSchedule, isInWorkWindow } from '../profile/useCaregiverSchedule'
+import { useVaccines } from '../vaccines'
+import { useMilestones } from '../milestones'
+import { useMedications } from '../medications'
 
-// Free: hoje e ontem apenas (2 dias = HOJE + DIA ANTERIOR)
+// Free: hoje e ontem apenas (2 dias)
 const HISTORY_LIMIT_DAYS = 2
 
 const MONTHS_PT = [
@@ -45,55 +52,18 @@ function getDayLabel(dayKey: string): string {
   return `${parseInt(day)} de ${MONTHS_PT[parseInt(month) - 1]}`
 }
 
-/** Threshold in ms to consider two breast logs as a single "both" session */
-const BOTH_BREASTS_THRESHOLD = 30 * 60 * 1000
-
-/**
- * Detects breast_left + breast_right pairs within 30 min and returns
- * a map from log id to its paired log. The "secondary" log (later one)
- * is added to the hidden set so it won't render separately.
- */
-function detectBreastPairs(logs: LogEntry[]): { pairs: Map<string, LogEntry>; hidden: Set<string> } {
-  const pairs = new Map<string, LogEntry>()
-  const hidden = new Set<string>()
-  const sorted = [...logs].sort((a, b) => a.timestamp - b.timestamp)
-
-  const leftLogs = sorted.filter((l) => l.eventId === 'breast_left')
-  const rightLogs = sorted.filter((l) => l.eventId === 'breast_right')
-
-  const usedRight = new Set<string>()
-
-  for (const left of leftLogs) {
-    for (const right of rightLogs) {
-      if (usedRight.has(right.id)) continue
-      const diff = Math.abs(left.timestamp - right.timestamp)
-      if (diff <= BOTH_BREASTS_THRESHOLD) {
-        // The earlier log becomes the primary, the later one is hidden
-        const primary = left.timestamp <= right.timestamp ? left : right
-        const secondary = primary === left ? right : left
-        pairs.set(primary.id, secondary)
-        hidden.add(secondary.id)
-        usedRight.add(right.id)
-        break
-      }
-    }
-  }
-
-  return { pairs, hidden }
-}
-
-function groupByDay(logs: LogEntry[]): { dayKey: string; label: string; logs: LogEntry[] }[] {
-  const groups: Map<string, LogEntry[]> = new Map()
-  for (const log of logs) {
-    const key = getDayKey(log.timestamp)
+function groupByDay(items: TimelineItem[]): { dayKey: string; label: string; items: TimelineItem[] }[] {
+  const groups = new Map<string, TimelineItem[]>()
+  for (const it of items) {
+    const key = getDayKey(it.ts)
     const arr = groups.get(key)
-    if (arr) arr.push(log)
-    else groups.set(key, [log])
+    if (arr) arr.push(it)
+    else groups.set(key, [it])
   }
-  return Array.from(groups.entries()).map(([dayKey, dayLogs]) => ({
+  return Array.from(groups.entries()).map(([dayKey, dayItems]) => ({
     dayKey,
     label: getDayLabel(dayKey),
-    logs: dayLogs,
+    items: dayItems,
   }))
 }
 
@@ -119,18 +89,31 @@ export default function HistoryPage() {
     return isInWorkWindow(myCaregiverSchedule, { startOffsetMin: -45, endOffsetMin: 60 })
   }
 
-  // Agrupa shifts por shift_date (YYYY-MM-DD) para render intercalado com logs
-  const shiftsByDay = useMemo(() => {
-    const m = new Map<string, typeof shifts>()
-    for (const s of shifts) {
-      const arr = m.get(s.shiftDate) ?? []
-      arr.push(s)
-      m.set(s.shiftDate, arr)
-    }
-    return m
-  }, [shifts])
+  // Data sources extras pra timeline unificada
+  const { records: vaccineRecords } = useVaccines(baby?.id, baby?.birthDate)
+  const { achieved: milestoneRecords } = useMilestones(baby?.id, baby?.birthDate)
+  const memberMapForMeds = useMemo(() => {
+    const map: Record<string, string> = {}
+    for (const [uid, m] of Object.entries(members)) map[uid] = m.displayName
+    return map
+  }, [members])
+  const { activeMedications, archivedMedications } = useMedications(
+    baby?.id,
+    memberMapForMeds,
+  )
+  const allMedications = useMemo(
+    () => [...activeMedications, ...archivedMedications],
+    [activeMedications, archivedMedications],
+  )
 
-  const [filter, setFilter] = useState<EventCategory | 'all'>('all')
+  // Medication logs — free limit (2 dias) ou tudo pra premium
+  const sinceMs = useMemo(() => {
+    if (isPremium) return undefined
+    return Date.now() - HISTORY_LIMIT_DAYS * 24 * 60 * 60 * 1000
+  }, [isPremium])
+  const { logs: medicationLogs } = useMedicationLogsRange(baby?.id, sinceMs)
+
+  const [filter, setFilter] = useState<TimelineFilter>('all')
   const [editingLog, setEditingLog] = useState<LogEntry | null>(null)
   const [toast, setToast] = useState<string | null>(null)
   const [showPaywall, setShowPaywall] = useState(false)
@@ -140,35 +123,33 @@ export default function HistoryPage() {
     [isPremium]
   )
 
-  const filtered = [...logs]
-    .filter((log) => {
-      if (filter === 'all') return true
-      const event = DEFAULT_EVENTS.find((e) => e.id === log.eventId)
-      return event?.category === filter
+  // Agrega tudo em TimelineItem[]
+  const timelineInputs = useMemo(
+    () => ({
+      logs,
+      shifts,
+      vaccines: vaccineRecords,
+      milestones: milestoneRecords,
+      medicationLogs,
+      medications: allMedications,
+    }),
+    [logs, shifts, vaccineRecords, milestoneRecords, medicationLogs, allMedications],
+  )
+  const { items: allItems } = useTimeline(timelineInputs)
+
+  // Aplica cutoff de 2 dias pra free + filtro de categoria
+  const filteredItems = useMemo(() => {
+    return allItems.filter((item) => {
+      if (cutoffDate !== null && item.ts < cutoffDate) return false
+      return matchesFilter(item, filter)
     })
-    .sort((a, b) => b.timestamp - a.timestamp)
+  }, [allItems, cutoffDate, filter])
 
-  const visibleLogs = cutoffDate
-    ? filtered.filter((log) => log.timestamp >= cutoffDate)
-    : filtered
+  const hasOlderItems = cutoffDate !== null && allItems.some((i) => i.ts < cutoffDate)
 
-  const hasOlderLogs = cutoffDate
-    ? filtered.some((log) => log.timestamp < cutoffDate)
-    : false
+  const grouped = useMemo(() => groupByDay(filteredItems), [filteredItems])
 
-  const { pairs: breastPairs, hidden: hiddenLogs } = useMemo(
-    () => detectBreastPairs(visibleLogs),
-    [visibleLogs],
-  )
-
-  const displayLogs = useMemo(
-    () => visibleLogs.filter((l) => !hiddenLogs.has(l.id)),
-    [visibleLogs, hiddenLogs],
-  )
-
-  const groupedLogs = useMemo(() => groupByDay(displayLogs), [displayLogs])
-
-  const handleEdit = useCallback((log: LogEntry) => {
+  const handleEditLog = useCallback((log: LogEntry) => {
     hapticMedium()
     setEditingLog(log)
   }, [])
@@ -211,46 +192,35 @@ export default function HistoryPage() {
       </div>
 
       <section className="px-5 mt-4 space-y-2 flex-1 overflow-y-auto">
-        {displayLogs.length === 0 ? (
+        {filteredItems.length === 0 ? (
           <p className="text-center text-on-surface-variant font-label text-sm py-12">
             {filter === 'all'
               ? 'Nenhum registro ainda.'
               : 'Nenhum registro nesta categoria.'}
           </p>
         ) : (
-          groupedLogs.map((group) => {
-            const dayShifts = shiftsByDay.get(group.dayKey) ?? []
-            return (
-              <Fragment key={group.dayKey}>
-                <div className="flex items-center gap-3 pt-3 pb-1 first:pt-0">
-                  <span className="font-headline text-xs font-semibold uppercase tracking-wider text-primary">
-                    {group.label}
-                  </span>
-                  <div className="flex-1 h-px bg-primary/20" />
-                </div>
-                {dayShifts.map((s) => (
-                  <ShiftSummaryRow
-                    key={s.id}
-                    shift={s}
-                    caregiverName={members[s.caregiverId]?.displayName || 'Cuidador(a)'}
-                    onClick={() => setDetailShift(s)}
-                  />
-                ))}
-                {group.logs.map((log) => (
-                  <TimelineEntry
-                    key={log.id}
-                    log={log}
-                    members={members}
-                    onEdit={handleEdit}
-                    pairedLog={breastPairs.get(log.id)}
-                  />
-                ))}
-              </Fragment>
-            )
-          })
+          grouped.map((group) => (
+            <Fragment key={group.dayKey}>
+              <div className="flex items-center gap-3 pt-3 pb-1 first:pt-0">
+                <span className="font-headline text-xs font-semibold uppercase tracking-wider text-primary">
+                  {group.label}
+                </span>
+                <div className="flex-1 h-px bg-primary/20" />
+              </div>
+              {group.items.map((item) => (
+                <TimelineRow
+                  key={`${item.kind}-${item.id}`}
+                  item={item}
+                  members={members}
+                  onEditLog={handleEditLog}
+                  onShiftClick={(s) => setDetailShift(s)}
+                />
+              ))}
+            </Fragment>
+          ))
         )}
 
-        {hasOlderLogs && (
+        {hasOlderItems && (
           <button
             onClick={() => setShowPaywall(true)}
             className="w-full py-4 mt-2 rounded-md bg-primary/10 border border-primary/20 flex items-center justify-center gap-2 active:bg-primary/20 transition-colors"

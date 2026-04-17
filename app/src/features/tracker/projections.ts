@@ -171,9 +171,13 @@ function getSleepAwakeProjection(
   }
 }
 
+/** Janela pra mostrar eventos com horário fixo (banho, medicamentos). */
+const SCHEDULED_LOOKAHEAD_MS = 60 * 60 * 1000 // 1 hora
+
 /**
  * Bath projection: scheduled mode with nearest-slot matching.
- * Shows next UPCOMING scheduled bath. Skips past missed slots.
+ * Shows next UPCOMING scheduled bath **dentro da janela de 1h**.
+ * Slots além de 1h ficam ocultos pra não poluir a home.
  */
 function getBathProjection(
   logs: LogEntry[],
@@ -220,7 +224,7 @@ function getBathProjection(
     ? [...allBaths].sort((a, b) => b.timestamp - a.timestamp)[0]
     : null
 
-  // Find next upcoming slot (skip fulfilled and past-missed)
+  // Find next upcoming slot (skip fulfilled and past-missed) — janela 1h
   for (const hour of sortedHours) {
     if (fulfilledHours.has(hour)) continue // already done
 
@@ -229,7 +233,11 @@ function getBathProjection(
     // If this slot is in the past and wasn't done, it was missed → skip
     if (scheduledTime.getTime() < now.getTime()) continue
 
-    // Upcoming slot found
+    // Janela: só mostrar se falta <= 1h pro horário agendado.
+    // Eventos além de 1h no futuro não precisam ocupar espaço na home.
+    if (scheduledTime.getTime() - now.getTime() > SCHEDULED_LOOKAHEAD_MS) return null
+
+    // Upcoming slot dentro da janela
     const warnTime = new Date(scheduledTime.getTime() - interval.warn * 60000)
     const hourStr = hour.toString().padStart(2, '0')
 
@@ -243,21 +251,7 @@ function getBathProjection(
     }
   }
 
-  // All slots done or missed today → show tomorrow's first
-  if (sortedHours.length > 0) {
-    const tomorrowStart = new Date(todayStart.getTime() + 24 * 3600000)
-    const nextTime = new Date(tomorrowStart.getTime() + sortedHours[0] * 3600000)
-    const hourStr = sortedHours[0].toString().padStart(2, '0')
-
-    return {
-      label: `Banho às ${hourStr}:00 (amanhã)`,
-      time: nextTime,
-      isOverdue: false,
-      isWarning: false,
-      lastEvent: lastBath ? 'Banho' : '',
-      lastTime: lastBath ? new Date(lastBath.timestamp) : new Date(),
-    }
-  }
-
+  // Todos os slots feitos ou perdidos hoje → não mostra "amanhã" na home
+  // (amanhã está além da janela de 1h por definição).
   return null
 }

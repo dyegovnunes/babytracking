@@ -1,18 +1,24 @@
-import type { EventCategory } from '../../../types'
+import type { TimelineFilter } from '../../timeline/types'
 
 interface Props {
-  selected: EventCategory | 'all'
-  onChange: (cat: EventCategory | 'all') => void
+  selected: TimelineFilter
+  onChange: (cat: TimelineFilter) => void
 }
 
-const categories: { id: EventCategory | 'all'; label: string }[] = [
+const categories: { id: TimelineFilter; label: string }[] = [
   { id: 'all', label: 'Tudo' },
-  { id: 'feed', label: 'Amamentação' },
-  { id: 'diaper', label: 'Fraldas' },
-  { id: 'sleep', label: 'Sono' },
-  { id: 'care', label: 'Cuidados' },
+  { id: 'activities', label: 'Atividades' },
+  { id: 'health', label: 'Saúde' },
+  { id: 'milestones', label: 'Marcos' },
 ]
 
+/**
+ * Filtro da timeline unificada. Inclui 4 categorias:
+ * - Tudo: sem filtro
+ * - Atividades: logs (mamada, fralda, sono, banho) + resumos da babá
+ * - Saúde: vacinas + medicamentos
+ * - Marcos: só marcos atingidos
+ */
 export default function CategoryFilter({ selected, onChange }: Props) {
   return (
     <div className="flex gap-2 overflow-x-auto px-5 pb-1 scrollbar-none">
