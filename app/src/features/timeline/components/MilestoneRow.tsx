@@ -2,7 +2,6 @@ import { useNavigate } from 'react-router-dom'
 import type { BabyMilestone } from '../../milestones/milestoneData'
 import { formatTime } from '../../../lib/formatters'
 import { hapticLight } from '../../../lib/haptics'
-import TimelinePill from './TimelinePill'
 
 interface Props {
   milestone: BabyMilestone
@@ -10,7 +9,8 @@ interface Props {
 }
 
 /**
- * Row de marco atingido. Tap navega pra `/marcos`.
+ * Row de marco atingido. Borda lateral roxa (primary) sinaliza a categoria.
+ * Tap navega pra `/marcos`.
  */
 export default function MilestoneRow({ milestone, displayName }: Props) {
   const navigate = useNavigate()
@@ -24,7 +24,7 @@ export default function MilestoneRow({ milestone, displayName }: Props) {
   return (
     <button
       onClick={handleClick}
-      className="flex items-center gap-3 w-full text-left py-3 px-4 rounded-md bg-surface-container active:bg-surface-container-high transition-colors"
+      className="flex items-center gap-3 w-full text-left py-3 pl-3 pr-4 rounded-md bg-surface-container border-l-4 border-primary active:bg-surface-container-high transition-colors"
     >
       <div className="flex flex-col items-center gap-1 w-10 shrink-0">
         <span className="font-label text-xs font-semibold text-on-surface-variant">
@@ -38,9 +38,6 @@ export default function MilestoneRow({ milestone, displayName }: Props) {
       </div>
 
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-0.5">
-          <TimelinePill variant="milestone">Marco</TimelinePill>
-        </div>
         <p className="font-body text-sm font-medium text-on-surface truncate">
           {displayName}
         </p>

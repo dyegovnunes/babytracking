@@ -1,13 +1,17 @@
 /**
- * Projeções de medicamento pra home. Regra: aparece na home SÓ quando falta
- * ≤ 1h pra dose agendada. Doses atrasadas (overdue) **não** entram aqui —
- * elas continuam aparecendo no alert da `HighlightsStrip` (decisão de
- * produto: overdue deve ser urgente, não pulável).
+ * Projeções de medicamento pra home. Regra:
+ * - Doses **atrasadas** (até 24h pra trás) aparecem com tratamento vermelho
+ *   pra o pai confirmar "Dei a dose" sem sair da home.
+ * - Próximas doses agendadas aparecem 1h antes (laranja).
+ *
+ * As overdues ficam também no alert da `HighlightsStrip` — é complemento,
+ * não duplicação: o alert é passivo, a projeção é acionável.
  */
 
 import type { Medication, MedicationDayStatus } from '../medications/medicationData'
+import { OVERDUE_EXPIRY_MINUTES } from '../medications/medicationUtils'
 
-/** Janela de antecedência pra mostrar cards de medicamento. */
+/** Janela de antecedência pra mostrar cards de dose futura. */
 const MEDICATION_LOOKAHEAD_MS = 60 * 60 * 1000 // 1 hora
 
 export interface MedicationProjection {
@@ -16,13 +20,16 @@ export interface MedicationProjection {
   slotTime: string
   /** Horário do slot como Date de hoje. */
   scheduledAt: Date
-  /** Minutos até a dose (sempre >= 0 — overdues não entram). */
+  /** Minutos até a dose. Negativo = atrasado. */
   minutesUntil: number
+  /** True quando `minutesUntil < 0` (dose agendada já passou). */
+  isOverdue: boolean
 }
 
 /**
- * Dado os dayStatuses das medicações ativas, retorna as próximas doses
- * que caem na janela de 1h. Ordenado por proximidade (mais perto primeiro).
+ * Dado os dayStatuses das medicações ativas, retorna doses pendentes
+ * próximas (≤1h) ou atrasadas (até 24h). Ordena overdues primeiro
+ * (mais atrasada no topo).
  */
 export function getMedicationProjections(
   dayStatuses: MedicationDayStatus[],
@@ -41,8 +48,9 @@ export function getMedicationProjections(
 
     const minutesUntil = Math.floor((scheduledAt.getTime() - now.getTime()) / 60000)
 
-    // Só janela de 1h no futuro. Overdues (minutesUntil < 0) vão pra HighlightsStrip.
-    if (minutesUntil < 0) continue
+    // Passado: só até OVERDUE_EXPIRY (24h). Doses de ontem não entram.
+    if (minutesUntil < -OVERDUE_EXPIRY_MINUTES) continue
+    // Futuro: só até 1h (janela pra eventos com horário fixo).
     if (scheduledAt.getTime() - now.getTime() > MEDICATION_LOOKAHEAD_MS) continue
 
     out.push({
@@ -50,9 +58,15 @@ export function getMedicationProjections(
       slotTime: status.nextPendingTime,
       scheduledAt,
       minutesUntil,
+      isOverdue: minutesUntil < 0,
     })
   }
 
-  out.sort((a, b) => a.minutesUntil - b.minutesUntil)
+  // Overdues primeiro (mais atrasada no topo); depois próximas (por proximidade).
+  out.sort((a, b) => {
+    if (a.isOverdue !== b.isOverdue) return a.isOverdue ? -1 : 1
+    if (a.isOverdue) return a.minutesUntil - b.minutesUntil // mais negativo primeiro
+    return a.minutesUntil - b.minutesUntil // menor positivo primeiro
+  })
   return out
 }

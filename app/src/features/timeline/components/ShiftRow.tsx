@@ -1,7 +1,6 @@
 import { formatTime } from '../../../lib/formatters'
 import type { CaregiverShift, ShiftScore } from '../../tracker/useCaregiverShift'
 import { hapticLight } from '../../../lib/haptics'
-import TimelinePill from './TimelinePill'
 
 interface Props {
   shift: CaregiverShift
@@ -36,9 +35,9 @@ function scoreIcon(score: ShiftScore, icon: string) {
 }
 
 /**
- * Row de resumo do dia (shift da babá/caregiver). Tap abre sheet read-only
- * com o conteúdo do turno. Layout alinhado com LogRow (ícone circular,
- * time-column à esquerda).
+ * Row de resumo do dia (shift da babá/caregiver). Borda lateral verde sinaliza
+ * a categoria "resumo" — sem pill ou helper text explícito. Tap abre o
+ * ShiftDetailModal read-only.
  */
 export default function ShiftRow({ shift, caregiverName, onClick }: Props) {
   const ts = shift.submittedAt ? new Date(shift.submittedAt) : null
@@ -54,7 +53,7 @@ export default function ShiftRow({ shift, caregiverName, onClick }: Props) {
     <button
       onClick={handleClick}
       disabled={!onClick}
-      className="flex items-center gap-3 w-full text-left py-3 px-4 rounded-md bg-surface-container active:bg-surface-container-high transition-colors disabled:cursor-default disabled:active:bg-surface-container"
+      className="flex items-center gap-3 w-full text-left py-3 pl-3 pr-4 rounded-md bg-surface-container border-l-4 border-emerald-500 active:bg-surface-container-high transition-colors disabled:cursor-default disabled:active:bg-surface-container"
     >
       <div className="flex flex-col items-center gap-1 w-10 shrink-0">
         <span className="font-label text-xs font-semibold text-on-surface-variant">
@@ -68,15 +67,14 @@ export default function ShiftRow({ shift, caregiverName, onClick }: Props) {
       </div>
 
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 flex-wrap">
-          <TimelinePill variant="shift">Resumo</TimelinePill>
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <p className="font-body text-sm font-medium text-on-surface">
+            Resumo do dia
+          </p>
           {moodEmoji && <span className="text-sm leading-none">{moodEmoji}</span>}
           {scoreIcon(shift.ateScore, 'restaurant')}
           {scoreIcon(shift.sleptScore, 'bedtime')}
         </div>
-        <p className="font-body text-sm font-medium text-on-surface mt-0.5">
-          Resumo do dia
-        </p>
         <p className="font-label text-[10px] text-on-surface-variant/60">
           por {caregiverName}
         </p>
