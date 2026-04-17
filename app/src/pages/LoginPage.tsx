@@ -231,15 +231,16 @@ export default function LoginPage() {
           mode multiply escurece e reforça o tom sem apagar a imagem. */}
       <div
         className="absolute inset-0 pointer-events-none mix-blend-multiply"
-        style={{ background: 'rgba(91, 61, 181, 0.45)' }}
+        style={{ background: 'rgba(91, 61, 181, 0.55)' }}
       />
-      {/* Gradiente preto em cima do tint: topo transparente pra foto respirar,
-          base escura pra botões legíveis. */}
+      {/* Gradiente roxo em cima do tint. Topo com ~55% pra destacar a logo
+          e tingir a foto com a identidade do app; meio com ~65%; base bem
+          escura pra legibilidade dos botões. */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            'linear-gradient(to top, rgba(13,10,39,0.92) 0%, rgba(13,10,39,0.78) 45%, rgba(13,10,39,0.35) 75%, rgba(13,10,39,0.10) 100%)',
+            'linear-gradient(to top, rgba(13,10,39,0.94) 0%, rgba(13,10,39,0.82) 40%, rgba(13,10,39,0.68) 70%, rgba(13,10,39,0.55) 100%)',
         }}
       />
 
