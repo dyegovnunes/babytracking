@@ -56,10 +56,15 @@ workflows:
           # de criar um novo. Seguro porque esse projeto só roda daqui —
           # se outro sistema depender do mesmo cert, precisa persistir a
           # key em CERTIFICATE_PRIVATE_KEY env var e remover este cleanup.
+          # Apple tem 2 tipos de cert de distribuição: IOS_DISTRIBUTION
+          # (legacy) e DISTRIBUTION (Apple Distribution, moderno). Precisa
+          # limpar os dois. O fetch-signing-files procura ambos.
           echo "Limpando certs DISTRIBUTION existentes na ASC..."
-          DIST_IDS=$(app-store-connect certificates list --type IOS_DISTRIBUTION --json 2>/dev/null | python3 -c "import sys,json; data=json.load(sys.stdin); print(' '.join(c['id'] for c in data))" 2>/dev/null || echo "")
+          DIST_IDS_LEGACY=$(app-store-connect certificates list --type IOS_DISTRIBUTION --json 2>/dev/null | python3 -c "import sys,json; data=json.load(sys.stdin); print(' '.join(c['id'] for c in data))" 2>/dev/null || echo "")
+          DIST_IDS_MODERN=$(app-store-connect certificates list --type DISTRIBUTION --json 2>/dev/null | python3 -c "import sys,json; data=json.load(sys.stdin); print(' '.join(c['id'] for c in data))" 2>/dev/null || echo "")
+          DIST_IDS="$DIST_IDS_LEGACY $DIST_IDS_MODERN"
 
-          if [ -n "$DIST_IDS" ]; then
+          if [ -n "$(echo $DIST_IDS | tr -d ' ')" ]; then
             echo "Revogando: $DIST_IDS"
             for id in $DIST_IDS; do
               app-store-connect certificates delete "$id" \
