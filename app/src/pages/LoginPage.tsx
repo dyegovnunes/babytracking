@@ -2,9 +2,8 @@ import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { signInWithEmail, signInWithGoogle, signInWithApple, verifyOtp } from '../contexts/AuthContext'
 import { Capacitor } from '@capacitor/core'
 
-// Imports estáticos — Vite inclui no bundle com hash. 10 fotos WebP ~735KB total.
+// Imports estáticos — Vite inclui no bundle com hash. 9 fotos WebP.
 import bg1 from '../assets/Login/login-bg-1.webp'
-import bg2 from '../assets/Login/login-bg-2.webp'
 import bg3 from '../assets/Login/login-bg-3.webp'
 import bg4 from '../assets/Login/login-bg-4.webp'
 import bg5 from '../assets/Login/login-bg-5.webp'
@@ -14,7 +13,7 @@ import bg8 from '../assets/Login/login-bg-8.webp'
 import bg9 from '../assets/Login/login-bg-9.webp'
 import bg10 from '../assets/Login/login-bg-10.webp'
 
-const LOGIN_IMAGES = [bg1, bg2, bg3, bg4, bg5, bg6, bg7, bg8, bg9, bg10]
+const LOGIN_IMAGES = [bg1, bg3, bg4, bg5, bg6, bg7, bg8, bg9, bg10]
 const LAST_BG_KEY = 'yaya_last_login_bg'
 
 const isAndroid = Capacitor.getPlatform() === 'android'
