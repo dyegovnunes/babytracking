@@ -24,8 +24,8 @@ import { useCaregiverSchedule, isInWorkWindow } from '../profile/useCaregiverSch
 import { useVaccines } from '../vaccines'
 import { useMilestones } from '../milestones'
 import { useMedications } from '../medications'
-import VaccineTimelineSheet from '../timeline/components/VaccineTimelineSheet'
-import MilestoneTimelineSheet from '../timeline/components/MilestoneTimelineSheet'
+import VaccineLogEditModal from '../vaccines/components/VaccineLogEditModal'
+import MilestoneLogEditModal from '../milestones/components/MilestoneLogEditModal'
 import type { BabyVaccine } from '../vaccines/vaccineData'
 import type { BabyMilestone } from '../milestones/milestoneData'
 
@@ -94,14 +94,16 @@ export default function HistoryPage() {
   }
 
   // Data sources extras pra timeline unificada
-  const { records: vaccineRecords, quickToggle: vaccineQuickToggle } = useVaccines(
-    baby?.id,
-    baby?.birthDate,
-  )
-  const { achieved: milestoneRecords, quickToggle: milestoneQuickToggle } = useMilestones(
-    baby?.id,
-    baby?.birthDate,
-  )
+  const {
+    records: vaccineRecords,
+    applyVaccine,
+    clearRecord: clearVaccineRecord,
+  } = useVaccines(baby?.id, baby?.birthDate)
+  const {
+    achieved: milestoneRecords,
+    registerMilestone,
+    deleteMilestone,
+  } = useMilestones(baby?.id, baby?.birthDate)
   const memberMapForMeds = useMemo(() => {
     const map: Record<string, string> = {}
     for (const [uid, m] of Object.entries(members)) map[uid] = m.displayName
@@ -291,21 +293,43 @@ export default function HistoryPage() {
       )}
 
       {timelineVaccine && (
-        <VaccineTimelineSheet
+        <VaccineLogEditModal
           vaccine={timelineVaccine}
           onClose={() => setTimelineVaccine(null)}
+          onSave={async (_id, input) => {
+            const res = await applyVaccine(
+              timelineVaccine.vaccineCode,
+              {
+                date: input.appliedAt.toISOString(),
+                location: input.location ?? undefined,
+                batchNumber: input.batchNumber ?? undefined,
+              },
+              user?.id,
+            )
+            return res.ok
+          }}
           onRemove={async () => {
-            await vaccineQuickToggle(timelineVaccine.vaccineCode, user?.id)
+            return await clearVaccineRecord(timelineVaccine.vaccineCode)
           }}
         />
       )}
 
       {timelineMilestone && (
-        <MilestoneTimelineSheet
+        <MilestoneLogEditModal
           milestone={timelineMilestone}
           onClose={() => setTimelineMilestone(null)}
-          onRemove={async () => {
-            await milestoneQuickToggle(timelineMilestone.milestoneCode, user?.id)
+          onSave={async (_id, input) => {
+            const result = await registerMilestone(
+              timelineMilestone.milestoneCode,
+              input.achievedAt.toISOString(),
+              undefined,
+              input.note ?? undefined,
+              user?.id,
+            )
+            return !!result
+          }}
+          onRemove={async (id) => {
+            return await deleteMilestone(id)
           }}
         />
       )}

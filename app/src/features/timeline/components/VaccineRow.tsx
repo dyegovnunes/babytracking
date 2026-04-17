@@ -14,9 +14,8 @@ interface Props {
  * Tap chama callback que abre a sheet leve (info + ações rápidas) sem navegar.
  */
 export default function VaccineRow({ vaccine, displayName, onClick }: Props) {
-  // Horário real do registro vem de createdAt (timestamptz). appliedAt é DATE
-  // puro (sem hora) e quando convertido pra Date cai em 00:00 UTC = 21:00 local.
-  const ts = new Date(vaccine.createdAt)
+  // applied_at agora é TIMESTAMPTZ (hora preservada do click real).
+  const ts = vaccine.appliedAt ? new Date(vaccine.appliedAt) : new Date(vaccine.createdAt)
 
   const handleClick = () => {
     if (!onClick) return

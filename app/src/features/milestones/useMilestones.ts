@@ -195,10 +195,10 @@ export function useMilestones(
         return true
       }
 
-      // Marca com a data de HOJE (pai clicou o checkbox agora). auto_registered=true
-      // indica que foi via quickToggle (sem photo/note). Auto-registro retroativo
-      // do sistema (na criação do bebê) continua gravando achieved_at=null —
-      // essas não aparecem na timeline unificada.
+      // Marca com timestamp atual (pai clicou o checkbox agora). Schema agora
+      // é TIMESTAMPTZ, então gravamos ISO completo com hora. auto_registered=true
+      // indica que foi via quickToggle. Auto-registro retroativo do sistema
+      // (na criação do bebê) continua gravando achieved_at=null.
       const { data: mData, error: mErr } = await supabase
         .from('milestones')
         .select('id')
@@ -206,7 +206,7 @@ export function useMilestones(
         .single()
       if (mErr || !mData) return false
 
-      const todayIso = new Date().toISOString().slice(0, 10)
+      const todayIso = new Date().toISOString()
 
       const { data, error } = await supabase
         .from('baby_milestones')

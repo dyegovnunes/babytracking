@@ -14,8 +14,8 @@ interface Props {
  * Tap chama callback que abre a sheet leve (info + ações rápidas) sem navegar.
  */
 export default function MilestoneRow({ milestone, displayName, onClick }: Props) {
-  // createdAt (timestamptz) em vez de achievedAt (DATE) pra mostrar hora real.
-  const ts = new Date(milestone.createdAt)
+  // achieved_at agora é TIMESTAMPTZ (hora preservada do click real).
+  const ts = milestone.achievedAt ? new Date(milestone.achievedAt) : new Date(milestone.createdAt)
 
   const handleClick = () => {
     if (!onClick) return

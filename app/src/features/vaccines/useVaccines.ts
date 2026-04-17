@@ -237,14 +237,14 @@ export function useVaccines(
         return true
       }
 
-      // Marca com a data de HOJE (pai clicou o checkbox agora). auto_registered=true
-      // indica que foi via quickToggle (sem preencher data/local/lote explícitos).
-      // Auto-registro retroativo do sistema (na criação do bebê) continua gravando
-      // applied_at=null — essas não aparecem na timeline unificada.
+      // Marca com timestamp atual (pai clicou o checkbox agora). Schema agora
+      // é TIMESTAMPTZ, então gravamos ISO completo com hora. auto_registered=true
+      // indica que foi via quickToggle. Auto-registro retroativo do sistema
+      // (na criação do bebê) continua gravando applied_at=null.
       const vaccineId = await resolveVaccineId(code)
       if (!vaccineId) return false
 
-      const todayIso = new Date().toISOString().slice(0, 10)
+      const todayIso = new Date().toISOString()
 
       const { data, error } = await supabase
         .from('baby_vaccines')

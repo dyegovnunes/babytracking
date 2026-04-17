@@ -85,14 +85,11 @@ export function useTimeline(inputs: TimelineInputs): UseTimelineResult {
       const displayName = ref
         ? `${ref.shortName} (${ref.doseLabel})`
         : v.vaccineCode
-      // `applied_at` é DATE (só YYYY-MM-DD) — ruim pra ordenar por hora.
-      // Usamos `created_at` (timestamptz) pro posicionamento na timeline
-      // e mantemos `applied_at` só como filtro de inclusão (excluí
-      // auto-registros retroativos feitos na criação do bebê).
+      // applied_at agora é TIMESTAMPTZ — hora real preservada.
       items.push({
         kind: 'vaccine',
         id: v.id,
-        ts: new Date(v.createdAt).getTime(),
+        ts: new Date(v.appliedAt).getTime(),
         data: v,
         displayName,
       })
@@ -102,12 +99,10 @@ export function useTimeline(inputs: TimelineInputs): UseTimelineResult {
       if (!m.achievedAt) continue
       const ref = MILESTONES.find((mm) => mm.code === m.milestoneCode)
       const displayName = ref ? ref.name : m.milestoneCode
-      // Mesma razão que vaccines: `achieved_at` é DATE; `created_at`
-      // dá a ordem real do registro.
       items.push({
         kind: 'milestone',
         id: m.id,
-        ts: new Date(m.createdAt).getTime(),
+        ts: new Date(m.achievedAt).getTime(),
         data: m,
         displayName,
       })
