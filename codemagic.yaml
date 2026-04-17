@@ -3,8 +3,14 @@ workflows:
     name: iOS TestFlight
     max_build_duration: 30
     instance_type: mac_mini_m2
-    integrations:
-      app_store_connect: codemagic
+    # IMPORTANTE: NÃO usar `integrations: app_store_connect` no workflow.
+    # Essa opção ativa a "automatic code signing" do Codemagic, que sobrescreve
+    # as configs do pbxproj e força CODE_SIGN_IDENTITY="iOS Distribution" via
+    # profile gerado pela App Store Connect API. Isso entra em conflito com
+    # nosso setup manual (Apple Distribution + profile próprio).
+    #
+    # Para o publishing ao TestFlight, as credenciais App Store Connect API
+    # são lidas do environment group `yaya_ios` (variáveis APP_STORE_CONNECT_*).
     environment:
       groups:
         - yaya_ios
@@ -98,6 +104,11 @@ workflows:
       - $CM_BUILD_DIR/ipa/*.ipa
       - $CM_BUILD_DIR/*.xcarchive
     publishing:
+      # Publishing via env vars (sem depender de `integrations:` no workflow).
+      # Requer no group `yaya_ios`:
+      #   - APP_STORE_CONNECT_ISSUER_ID
+      #   - APP_STORE_CONNECT_KEY_IDENTIFIER
+      #   - APP_STORE_CONNECT_PRIVATE_KEY
       app_store_connect:
-        auth: integration
+        auth: env
         submit_to_testflight: true
