@@ -96,8 +96,8 @@ workflows:
       - name: Set version and build number
         script: |
           PBXPROJ="app/ios/App/App.xcodeproj/project.pbxproj"
-          sed -i '' 's/MARKETING_VERSION = [^;]*;/MARKETING_VERSION = 1.7.3;/g' "$PBXPROJ"
-          sed -i '' 's/CURRENT_PROJECT_VERSION = [^;]*;/CURRENT_PROJECT_VERSION = 38;/g' "$PBXPROJ"
+          sed -i '' 's/MARKETING_VERSION = [^;]*;/MARKETING_VERSION = 1.8.0;/g' "$PBXPROJ"
+          sed -i '' 's/CURRENT_PROJECT_VERSION = [^;]*;/CURRENT_PROJECT_VERSION = 39;/g' "$PBXPROJ"
 
       - name: Use fetched profiles
         script: |

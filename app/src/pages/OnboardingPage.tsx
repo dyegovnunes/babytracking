@@ -34,8 +34,8 @@ export default function OnboardingPage({ onComplete }: Props) {
         birth_date: birthDate,
         gender,
         created_by: user.id,
-        // TODO(premium): remover quando webhook RevenueCat estiver em produção
-        is_premium: true,
+        // is_premium default (false) — será promovido pelo trigger
+        // baby_members_premium_sync se o criador (parent) for premium.
       })
       .select()
       .single()
