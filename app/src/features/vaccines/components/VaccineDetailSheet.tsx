@@ -12,6 +12,8 @@ interface Props {
   onMarkApplied: () => void
   onSkip: () => void
   onReconsider: () => void
+  /** Caregiver com permission: esconde todos os CTAs de ação. */
+  readOnly?: boolean
 }
 
 /**
@@ -35,6 +37,7 @@ export default function VaccineDetailSheet({
   onMarkApplied,
   onSkip,
   onReconsider,
+  readOnly = false,
 }: Props) {
   useSheetBackClose(true, onClose)
 
@@ -61,11 +64,11 @@ export default function VaccineDetailSheet({
     onReconsider()
   }
 
-  const showMarkButton = status !== 'applied'
+  const showMarkButton = !readOnly && status !== 'applied'
   const showSkipButton =
-    status === 'future' || status === 'can_take' || status === 'overdue'
-  const showReconsiderButton = status === 'skipped'
-  const showUndoAppliedButton = status === 'applied'
+    !readOnly && (status === 'future' || status === 'can_take' || status === 'overdue')
+  const showReconsiderButton = !readOnly && status === 'skipped'
+  const showUndoAppliedButton = !readOnly && status === 'applied'
 
   return (
     <div

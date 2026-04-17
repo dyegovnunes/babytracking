@@ -15,6 +15,8 @@ interface LeapTimelineProps {
 
   logs: LogEntry[]
   isPremium: boolean
+  /** Caregiver com permission: vê, mas não registra mood/notas. */
+  readOnly?: boolean
 }
 
 function StatusDot({ status }: { status: LeapStatus }) {
@@ -171,6 +173,7 @@ export default function LeapTimeline({
   babyId,
   logs,
   isPremium,
+  readOnly = false,
 }: LeapTimelineProps) {
   return (
     <div className="relative pl-4">
@@ -246,6 +249,7 @@ export default function LeapTimeline({
                       babyId={babyId}
                       logs={logs}
                       isPremium={isPremium}
+                      readOnly={readOnly}
                     />
                   </div>
                 )}

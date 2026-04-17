@@ -2,6 +2,10 @@ import { useEffect, useState } from 'react'
 import { useSheetBackClose } from '../../../hooks/useSheetBackClose'
 import { hapticLight, hapticSuccess } from '../../../lib/haptics'
 import { useCaregiverSchedule } from '../useCaregiverSchedule'
+import { useAppState } from '../../../contexts/AppContext'
+import { useBabyPremium } from '../../../hooks/useBabyPremium'
+import { supabase } from '../../../lib/supabase'
+import type { CaregiverPermissions } from '../../../types'
 import Toast from '../../../components/ui/Toast'
 
 interface Props {
@@ -11,6 +15,19 @@ interface Props {
   onClose: () => void
   onSaved?: () => void
 }
+
+interface PermissionRow {
+  key: keyof CaregiverPermissions
+  label: string
+  description: string
+}
+
+const PERMISSION_ROWS: PermissionRow[] = [
+  { key: 'show_milestones', label: 'Marcos do desenvolvimento', description: 'Consulta da lista e tag de conquistas.' },
+  { key: 'show_leaps', label: 'Saltos do desenvolvimento', description: 'Visualizar fases e emoções recentes.' },
+  { key: 'show_vaccines', label: 'Caderneta de vacinas', description: 'Ver aplicadas e pendentes.' },
+  { key: 'show_growth', label: 'Dados de crescimento', description: 'Peso, altura e percentis.' },
+]
 
 // 0=Dom, 1=Seg ... 6=Sáb (JS getDay)
 const WEEKDAY_LABELS: Array<{ value: number; label: string }> = [
@@ -35,12 +52,15 @@ const INSTRUCTIONS_MAX = 1000
 export default function CaregiverEditSheet({ babyId, caregiverId, caregiverName, onClose, onSaved }: Props) {
   useSheetBackClose(true, onClose)
   const { schedule, loading, saveSchedule } = useCaregiverSchedule(babyId, caregiverId)
+  const { members } = useAppState()
+  const isPremium = useBabyPremium()
 
   // Estado local do form
   const [start, setStart] = useState('08:00')
   const [end, setEnd] = useState('18:00')
   const [days, setDays] = useState<number[]>([1, 2, 3, 4, 5])
   const [instructions, setInstructions] = useState('')
+  const [permissions, setPermissions] = useState<CaregiverPermissions>({})
   const [saving, setSaving] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -53,6 +73,18 @@ export default function CaregiverEditSheet({ babyId, caregiverId, caregiverName,
     setDays(schedule.workdays)
     setInstructions(schedule.instructions ?? '')
   }, [schedule])
+
+  // Permissões carregadas a partir do Member que já vem no AppContext
+  useEffect(() => {
+    const initial = members[caregiverId]?.caregiverPermissions ?? {}
+    setPermissions(initial)
+  }, [caregiverId, members])
+
+  const togglePermission = (key: keyof CaregiverPermissions) => {
+    if (!isPremium) return
+    hapticLight()
+    setPermissions((prev) => ({ ...prev, [key]: !prev[key] }))
+  }
 
   const toggleDay = (value: number) => {
     hapticLight()
@@ -79,15 +111,39 @@ export default function CaregiverEditSheet({ babyId, caregiverId, caregiverName,
       workdays: days,
       instructions: instructions || null,
     })
-    setSaving(false)
     if (!ok) {
+      setSaving(false)
       setError('Não foi possível salvar. Tente novamente.')
       return
     }
+
+    // Só parent que é premium pode tocar em permissões — mas, mesmo no free,
+    // queremos garantir que o registro ficou consistente (se não houver mudança,
+    // o UPDATE é no-op).
+    if (isPremium) {
+      const payload: CaregiverPermissions = {
+        show_milestones: !!permissions.show_milestones,
+        show_leaps: !!permissions.show_leaps,
+        show_vaccines: !!permissions.show_vaccines,
+        show_growth: !!permissions.show_growth,
+      }
+      const { data, error: updErr } = await supabase
+        .from('baby_members')
+        .update({ caregiver_permissions: payload })
+        .eq('baby_id', babyId)
+        .eq('user_id', caregiverId)
+        .select('user_id')
+      if (updErr || !data || data.length === 0) {
+        setSaving(false)
+        setError('Não foi possível salvar as permissões.')
+        return
+      }
+    }
+
+    setSaving(false)
     hapticSuccess()
     setToast('Configurações salvas!')
     onSaved?.()
-    // Fecha após um toque para que o toast seja percebido
     setTimeout(() => onClose(), 700)
   }
 
@@ -188,7 +244,65 @@ export default function CaregiverEditSheet({ babyId, caregiverId, caregiverName,
               </div>
             </section>
 
-            {/* Placeholder para seção 'O que pode visualizar' (Fase 3) */}
+            {/* ===== O que a babá pode visualizar ===== */}
+            <section>
+              <div className="flex items-center gap-2 mb-3">
+                <span className="material-symbols-outlined text-primary text-lg">visibility</span>
+                <h3 className="font-headline text-sm font-bold text-on-surface">
+                  O que {caregiverName.split(' ')[0]} pode ver
+                </h3>
+                {!isPremium && (
+                  <span className="ml-auto font-label text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                    Yaya+
+                  </span>
+                )}
+              </div>
+
+              {!isPremium && (
+                <p className="font-label text-xs text-on-surface-variant/80 mb-3">
+                  Liberação de marcos, saltos, vacinas e crescimento para a babá é um recurso do plano Yaya+.
+                </p>
+              )}
+
+              <div className="space-y-2">
+                {PERMISSION_ROWS.map((row) => {
+                  const checked = !!permissions[row.key]
+                  return (
+                    <button
+                      key={row.key}
+                      type="button"
+                      onClick={() => togglePermission(row.key)}
+                      disabled={!isPremium}
+                      aria-pressed={checked}
+                      className={`w-full flex items-start gap-3 p-3 rounded-md text-left transition-colors ${
+                        checked
+                          ? 'bg-primary/10 border border-primary/30'
+                          : 'bg-surface-container border border-transparent'
+                      } ${isPremium ? 'active:bg-surface-container-high' : 'opacity-50 cursor-not-allowed'}`}
+                    >
+                      <span
+                        className={`material-symbols-outlined text-lg mt-0.5 ${checked ? 'text-primary' : 'text-on-surface-variant/70'}`}
+                        style={{ fontVariationSettings: checked ? "'FILL' 1" : undefined }}
+                      >
+                        {checked ? 'check_box' : 'check_box_outline_blank'}
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <p className={`font-label text-sm font-semibold ${checked ? 'text-on-surface' : 'text-on-surface-variant'}`}>
+                          {row.label}
+                        </p>
+                        <p className="font-label text-xs text-on-surface-variant/80 mt-0.5">
+                          {row.description}
+                        </p>
+                      </div>
+                    </button>
+                  )
+                })}
+              </div>
+
+              <p className="font-label text-[11px] text-on-surface-variant/70 mt-3 leading-relaxed">
+                A babá sempre vê o histórico de atividades e medicamentos. Perfil, relatórios e membros ficam sempre bloqueados para caregivers.
+              </p>
+            </section>
 
             {error && (
               <div className="p-3 rounded-md bg-error/10 border border-error/20">

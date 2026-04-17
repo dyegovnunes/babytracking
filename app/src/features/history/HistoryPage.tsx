@@ -4,12 +4,14 @@ import { DEFAULT_EVENTS } from '../../lib/constants'
 import type { EventCategory, LogEntry } from '../../types'
 import CategoryFilter from './components/CategoryFilter'
 import TimelineEntry from './components/TimelineEntry'
+import ShiftSummaryRow from './components/ShiftSummaryRow'
 import EditModal from '../../components/ui/EditModal'
 import Toast from '../../components/ui/Toast'
 import { HistorySkeleton } from '../../components/ui/Skeleton'
 import { hapticMedium } from '../../lib/haptics'
 import { useBabyPremium } from '../../hooks/useBabyPremium'
 import { PaywallModal } from '../../components/ui/PaywallModal'
+import { useShiftsForBaby } from '../tracker/useCaregiverShift'
 
 // Free: hoje e ontem apenas (2 dias = HOJE + DIA ANTERIOR)
 const HISTORY_LIMIT_DAYS = 2
@@ -91,9 +93,21 @@ function groupByDay(logs: LogEntry[]): { dayKey: string; label: string; logs: Lo
 }
 
 export default function HistoryPage() {
-  const { logs, members, loading } = useAppState()
+  const { logs, members, loading, baby } = useAppState()
   const dispatch = useAppDispatch()
   const isPremium = useBabyPremium()
+  const { shifts } = useShiftsForBaby(baby?.id)
+
+  // Agrupa shifts por shift_date (YYYY-MM-DD) para render intercalado com logs
+  const shiftsByDay = useMemo(() => {
+    const m = new Map<string, typeof shifts>()
+    for (const s of shifts) {
+      const arr = m.get(s.shiftDate) ?? []
+      arr.push(s)
+      m.set(s.shiftDate, arr)
+    }
+    return m
+  }, [shifts])
 
   const [filter, setFilter] = useState<EventCategory | 'all'>('all')
   const [editingLog, setEditingLog] = useState<LogEntry | null>(null)
@@ -183,25 +197,35 @@ export default function HistoryPage() {
               : 'Nenhum registro nesta categoria.'}
           </p>
         ) : (
-          groupedLogs.map((group) => (
-            <Fragment key={group.dayKey}>
-              <div className="flex items-center gap-3 pt-3 pb-1 first:pt-0">
-                <span className="font-headline text-xs font-semibold uppercase tracking-wider text-primary">
-                  {group.label}
-                </span>
-                <div className="flex-1 h-px bg-primary/20" />
-              </div>
-              {group.logs.map((log) => (
-                <TimelineEntry
-                  key={log.id}
-                  log={log}
-                  members={members}
-                  onEdit={handleEdit}
-                  pairedLog={breastPairs.get(log.id)}
-                />
-              ))}
-            </Fragment>
-          ))
+          groupedLogs.map((group) => {
+            const dayShifts = shiftsByDay.get(group.dayKey) ?? []
+            return (
+              <Fragment key={group.dayKey}>
+                <div className="flex items-center gap-3 pt-3 pb-1 first:pt-0">
+                  <span className="font-headline text-xs font-semibold uppercase tracking-wider text-primary">
+                    {group.label}
+                  </span>
+                  <div className="flex-1 h-px bg-primary/20" />
+                </div>
+                {dayShifts.map((s) => (
+                  <ShiftSummaryRow
+                    key={s.id}
+                    shift={s}
+                    caregiverName={members[s.caregiverId]?.displayName || 'Cuidador(a)'}
+                  />
+                ))}
+                {group.logs.map((log) => (
+                  <TimelineEntry
+                    key={log.id}
+                    log={log}
+                    members={members}
+                    onEdit={handleEdit}
+                    pairedLog={breastPairs.get(log.id)}
+                  />
+                ))}
+              </Fragment>
+            )
+          })
         )}
 
         {hasOlderLogs && (

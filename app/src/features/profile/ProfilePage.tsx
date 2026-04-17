@@ -21,6 +21,7 @@ import { useMedications } from '../medications'
 import { getActiveLeap, getUpcomingLeap, DEVELOPMENT_LEAPS } from '../milestones'
 import { useMyRole } from '../../hooks/useMyRole'
 import { useBabyPremium } from '../../hooks/useBabyPremium'
+import { useMyCaregiverPermissions } from '../../hooks/useMyCaregiverPermissions'
 import { can, roleLabel, nextRoleUp, nextRoleDown, type BabyRole } from '../../lib/roles'
 
 interface Caregiver {
@@ -37,6 +38,14 @@ export default function ProfilePage() {
   const location = useLocation()
   const myRole = useMyRole()
   const isPremium = useBabyPremium()
+  const caregiverPerms = useMyCaregiverPermissions()
+  // Papéis/permissões combinadas: parent/guardian veem por `can.*`; caregiver
+  // só vê quando o parent autorizou via permissions.
+  const canShowMilestones = can.viewMilestones(myRole) || (myRole === 'caregiver' && caregiverPerms.show_milestones)
+  const canShowLeaps = can.viewLeaps(myRole) || (myRole === 'caregiver' && caregiverPerms.show_leaps)
+  const canShowVaccines = can.viewVaccines(myRole) || (myRole === 'caregiver' && caregiverPerms.show_vaccines)
+  // Crescimento: parent/guardian editam, caregiver só vê se permission liberada
+  const canShowGrowth = myRole !== 'caregiver' || caregiverPerms.show_growth
   const [toast, setToast] = useState<string | null>(null)
 
   // Se navegamos aqui com hash #shared-reports, rola até a seção
@@ -258,10 +267,10 @@ export default function ProfilePage() {
         <BabyCard baby={baby} onSave={handleSaveBaby} canEdit={can.editBaby(myRole)} />
 
         {/* ===== CRESCIMENTO ===== */}
-        <GrowthSection babyId={baby.id} />
+        {canShowGrowth && <GrowthSection babyId={baby.id} readOnly={myRole === 'caregiver'} />}
 
         {/* ===== MARCOS DO DESENVOLVIMENTO ===== */}
-        {can.viewMilestones(myRole) && (
+        {canShowMilestones && (
           <button
             onClick={() => navigate('/marcos')}
             className="w-full bg-surface-container rounded-md p-4 flex items-center gap-3 active:bg-surface-container-high transition-colors"
@@ -278,7 +287,7 @@ export default function ProfilePage() {
         )}
 
         {/* ===== SALTOS DO DESENVOLVIMENTO ===== */}
-        {can.viewLeaps(myRole) && <button
+        {canShowLeaps && <button
           onClick={() => navigate('/saltos')}
           className="w-full bg-surface-container rounded-md p-4 flex items-center gap-3 active:bg-surface-container-high transition-colors"
         >
@@ -308,7 +317,7 @@ export default function ProfilePage() {
         </button>}
 
         {/* ===== CADERNETA DE VACINAS ===== */}
-        {can.viewVaccines(myRole) && <button
+        {canShowVaccines && <button
           onClick={() => navigate('/vacinas')}
           className="w-full bg-surface-container rounded-md p-4 flex items-center gap-3 active:bg-surface-container-high transition-colors"
         >

@@ -14,6 +14,8 @@ interface Measurement {
 
 interface GrowthSectionProps {
   babyId: string;
+  /** Caregiver com permission show_growth: vê, mas não edita. */
+  readOnly?: boolean;
 }
 
 /** Máscara de peso: direita para esquerda, 1 decimal. Ex: "36" → "3,6", "360" → "36,0" */
@@ -44,7 +46,7 @@ function parseValue(input: string): number {
   return parseFloat(input.replace(',', '.'));
 }
 
-export default function GrowthSection({ babyId }: GrowthSectionProps) {
+export default function GrowthSection({ babyId, readOnly = false }: GrowthSectionProps) {
   const isPremium = useBabyPremium();
   const [measurements, setMeasurements] = useState<Measurement[]>([]);
   const [weightInput, setWeightInput] = useState('');
@@ -264,6 +266,7 @@ export default function GrowthSection({ babyId }: GrowthSectionProps) {
               {formatDate(latestWeight.measured_at)}
             </p>
           )}
+          {!readOnly && (
           <div className="flex gap-1.5 mt-2">
             <div className="flex-1 min-w-0 relative">
               <input
@@ -285,6 +288,7 @@ export default function GrowthSection({ babyId }: GrowthSectionProps) {
               +
             </button>
           </div>
+          )}
         </div>
 
         {/* Altura */}
@@ -302,6 +306,7 @@ export default function GrowthSection({ babyId }: GrowthSectionProps) {
               {formatDate(latestHeight.measured_at)}
             </p>
           )}
+          {!readOnly && (
           <div className="flex gap-1.5 mt-2">
             <div className="flex-1 min-w-0 relative">
               <input
@@ -323,15 +328,18 @@ export default function GrowthSection({ babyId }: GrowthSectionProps) {
               +
             </button>
           </div>
+          )}
         </div>
       </div>
 
       {measurements.length === 0 ? (
         <div className="space-y-2">
           <p className="font-body text-xs text-on-surface-variant text-center py-2">
-            Registre o peso e altura do bebê para acompanhar o crescimento
+            {readOnly
+              ? 'Ainda não há registros de crescimento.'
+              : 'Registre o peso e altura do bebê para acompanhar o crescimento'}
           </p>
-          {!showAddRetro ? (
+          {!readOnly && !showAddRetro ? (
             <button
               onClick={() => { hapticLight(); setShowAddRetro(true); }}
               className="w-full py-2 rounded-md border border-dashed border-primary/30 text-primary font-label text-xs font-semibold flex items-center justify-center gap-1"
@@ -339,7 +347,7 @@ export default function GrowthSection({ babyId }: GrowthSectionProps) {
               <span className="material-symbols-outlined text-sm">add</span>
               Adicionar medição anterior
             </button>
-          ) : (
+          ) : !readOnly ? (
             <div className="p-3 bg-surface-container-low rounded-md border border-primary/20 space-y-2">
               <p className="font-label text-[11px] text-primary uppercase tracking-wider">Nova medição retroativa</p>
               <input
@@ -369,7 +377,7 @@ export default function GrowthSection({ babyId }: GrowthSectionProps) {
                   className="flex-1 py-2 rounded-md bg-white/5 text-on-surface-variant font-label text-xs">Cancelar</button>
               </div>
             </div>
-          )}
+          ) : null}
         </div>
       ) : (
         <>
@@ -387,7 +395,7 @@ export default function GrowthSection({ babyId }: GrowthSectionProps) {
             <div className="mt-2 space-y-1.5 max-h-64 overflow-y-auto">
               {historyDates.map((entry) => (
                 <div key={entry.date} className="py-1.5 px-2 bg-surface-container-low rounded">
-                  {editingId === entry.weight?.id || editingId === entry.height?.id ? (
+                  {!readOnly && (editingId === entry.weight?.id || editingId === entry.height?.id) ? (
                     /* Modo edição */
                     <div className="space-y-2">
                       <input
@@ -449,30 +457,44 @@ export default function GrowthSection({ babyId }: GrowthSectionProps) {
                       </span>
                       <div className="flex items-center gap-2">
                         {entry.weight && (
-                          <button
-                            onClick={() => handleEdit(entry.weight!)}
-                            className="font-body text-xs text-on-surface active:text-primary"
-                          >
-                            {Number(entry.weight.value).toFixed(1).replace('.', ',')} kg
-                          </button>
+                          readOnly ? (
+                            <span className="font-body text-xs text-on-surface">
+                              {Number(entry.weight.value).toFixed(1).replace('.', ',')} kg
+                            </span>
+                          ) : (
+                            <button
+                              onClick={() => handleEdit(entry.weight!)}
+                              className="font-body text-xs text-on-surface active:text-primary"
+                            >
+                              {Number(entry.weight.value).toFixed(1).replace('.', ',')} kg
+                            </button>
+                          )
                         )}
                         {entry.height && (
+                          readOnly ? (
+                            <span className="font-body text-xs text-on-surface">
+                              {Number(entry.height.value).toFixed(1).replace('.', ',')} cm
+                            </span>
+                          ) : (
+                            <button
+                              onClick={() => handleEdit(entry.height!)}
+                              className="font-body text-xs text-on-surface active:text-primary"
+                            >
+                              {Number(entry.height.value).toFixed(1).replace('.', ',')} cm
+                            </button>
+                          )
+                        )}
+                        {!readOnly && (
                           <button
-                            onClick={() => handleEdit(entry.height!)}
-                            className="font-body text-xs text-on-surface active:text-primary"
+                            onClick={() => {
+                              if (entry.weight) handleDelete(entry.weight.id);
+                              if (entry.height) handleDelete(entry.height.id);
+                            }}
+                            className="text-on-surface-variant/40 active:text-error ml-1"
                           >
-                            {Number(entry.height.value).toFixed(1).replace('.', ',')} cm
+                            <span className="material-symbols-outlined text-sm">close</span>
                           </button>
                         )}
-                        <button
-                          onClick={() => {
-                            if (entry.weight) handleDelete(entry.weight.id);
-                            if (entry.height) handleDelete(entry.height.id);
-                          }}
-                          className="text-on-surface-variant/40 active:text-error ml-1"
-                        >
-                          <span className="material-symbols-outlined text-sm">close</span>
-                        </button>
                       </div>
                     </div>
                   )}
@@ -480,7 +502,7 @@ export default function GrowthSection({ babyId }: GrowthSectionProps) {
               ))}
 
               {/* Botão adicionar dado retroativo */}
-              {!showAddRetro ? (
+              {readOnly ? null : !showAddRetro ? (
                 <button
                   onClick={() => { hapticLight(); setShowAddRetro(true); }}
                   className="w-full py-2 rounded-md border border-dashed border-primary/30 text-primary font-label text-xs font-semibold flex items-center justify-center gap-1"

@@ -17,6 +17,8 @@ interface LeapCardProps {
 
   logs: LogEntry[]
   isPremium: boolean
+  /** Caregiver com permission: esconde mood tracker (registro). */
+  readOnly?: boolean
 }
 
 function formatDateShort(date: Date): string {
@@ -33,6 +35,7 @@ export default function LeapCard({
   babyId,
   logs,
   isPremium,
+  readOnly = false,
 }: LeapCardProps) {
   const durationWeeks = leap.weekEnd - leap.weekStart + 1
   const de = contractionDe(babyGender)
@@ -105,8 +108,10 @@ export default function LeapCard({
       {/* Data insight (livre — free vê com banner/ad na página) */}
       <LeapDataInsight logs={logs} birthDate={birthDate} leap={leap} />
 
-      {/* Mood tracker (livre — free vê com banner/ad na página) */}
-      <LeapMoodTracker leapId={leap.id} babyId={babyId} status={status} isPremium={isPremium} />
+      {/* Mood tracker — escondido em read-only (caregiver não registra humor) */}
+      {!readOnly && (
+        <LeapMoodTracker leapId={leap.id} babyId={babyId} status={status} isPremium={isPremium} />
+      )}
     </div>
   )
 }

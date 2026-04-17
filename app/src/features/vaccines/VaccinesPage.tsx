@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { useAppState } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { useBabyPremium } from '../../hooks/useBabyPremium'
+import { useMyRole } from '../../hooks/useMyRole'
+import { useMyCaregiverPermissions } from '../../hooks/useMyCaregiverPermissions'
 import { useVaccines } from './useVaccines'
 import {
   VACCINES,
@@ -37,6 +39,16 @@ export default function VaccinesPage() {
   const { baby } = useAppState()
   const { user } = useAuth()
   const isPremium = useBabyPremium()
+  const myRole = useMyRole()
+  const perms = useMyCaregiverPermissions()
+  const readOnly = myRole === 'caregiver'
+
+  // Redireciona caregiver sem permissão
+  useEffect(() => {
+    if (myRole === 'caregiver' && !perms.show_vaccines) {
+      navigate('/', { replace: true })
+    }
+  }, [myRole, perms.show_vaccines, navigate])
   const {
     records,
     statusByCode,
@@ -120,6 +132,7 @@ export default function VaccinesPage() {
   }
 
   const handleMarkApplied = async () => {
+    if (readOnly) return
     if (!selected) return
     // Premium passa direto, free precisa ver rewarded ad (desbloqueia 10min)
     if (!isPremium) {
@@ -141,6 +154,7 @@ export default function VaccinesPage() {
    * Se quiser registrar data/local/lote, o user abre a linha.
    */
   const handleCheckboxTap = async (vaccine: Vaccine) => {
+    if (readOnly) return
     if (!isPremium) {
       const unlocked = await ensureUnlocked()
       if (!unlocked) return
@@ -155,6 +169,7 @@ export default function VaccinesPage() {
   }
 
   const handleSkip = async () => {
+    if (readOnly) return
     if (!selected) return
     if (!isPremium) {
       const unlocked = await ensureUnlocked()
@@ -169,6 +184,7 @@ export default function VaccinesPage() {
   }
 
   const handleReconsider = async () => {
+    if (readOnly) return
     if (!selected) return
     const name = selected.name
     const ok = await clearRecord(selected.code)
@@ -295,6 +311,7 @@ export default function VaccinesPage() {
                     autoRegistered={record?.autoRegistered ?? false}
                     onTap={() => handleRowTap(v)}
                     onCheckboxTap={() => handleCheckboxTap(v)}
+                    readOnly={readOnly}
                   />
                 )
               })}
@@ -314,6 +331,7 @@ export default function VaccinesPage() {
           onMarkApplied={handleMarkApplied}
           onSkip={handleSkip}
           onReconsider={handleReconsider}
+          readOnly={readOnly}
         />
       )}
 

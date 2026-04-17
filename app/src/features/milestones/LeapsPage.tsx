@@ -2,6 +2,8 @@ import { useEffect, useState, useMemo, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppState } from '../../contexts/AppContext'
 import { useBabyPremium } from '../../hooks/useBabyPremium'
+import { useMyRole } from '../../hooks/useMyRole'
+import { useMyCaregiverPermissions } from '../../hooks/useMyCaregiverPermissions'
 import { DEVELOPMENT_LEAPS, type DevelopmentLeap } from './developmentLeaps'
 import { contractionDe } from '../../lib/genderUtils'
 import { maybeShowInterstitialOncePerDay } from '../../lib/admob'
@@ -32,9 +34,19 @@ export default function LeapsPage() {
   const navigate = useNavigate()
   const { baby, logs } = useAppState()
   const isPremium = useBabyPremium()
+  const myRole = useMyRole()
+  const perms = useMyCaregiverPermissions()
+  const readOnly = myRole === 'caregiver'
 
   const [expandedId, setExpandedId] = useState<number | null>(null)
   const hasInteracted = useRef(false)
+
+  // Redireciona caregiver sem permissão (acesso via URL direto)
+  useEffect(() => {
+    if (myRole === 'caregiver' && !perms.show_leaps) {
+      navigate('/', { replace: true })
+    }
+  }, [myRole, perms.show_leaps, navigate])
 
   // Interstitial skippable na primeira visita do dia (só free)
   useEffect(() => {
@@ -112,6 +124,7 @@ export default function LeapsPage() {
           babyId={baby.id}
           logs={logs}
           isPremium={isPremium}
+          readOnly={readOnly}
         />
       </div>
     </div>

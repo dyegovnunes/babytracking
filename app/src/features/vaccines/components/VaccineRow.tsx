@@ -9,6 +9,8 @@ interface Props {
   onTap: () => void
   /** Toggle do checkbox: marca sem data (auto) se não aplicada, ou desmarca. */
   onCheckboxTap: () => void
+  /** Caregiver com permission: esconde checkbox de registro. */
+  readOnly?: boolean
 }
 
 /**
@@ -26,13 +28,14 @@ export default function VaccineRow({
   autoRegistered = false,
   onTap,
   onCheckboxTap,
+  readOnly = false,
 }: Props) {
   const statusInfo = getStatusInfo(status)
   const isSkipped = status === 'skipped'
   const isFuture = status === 'future'
   const isDim = isFuture || isSkipped
   const isApplied = status === 'applied'
-  const canToggle = !isFuture && !isSkipped
+  const canToggle = !isFuture && !isSkipped && !readOnly
 
   const handleRowClick = () => {
     hapticLight()

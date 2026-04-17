@@ -3,6 +3,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAppState } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { useBabyPremium } from '../../hooks/useBabyPremium'
+import { useMyRole } from '../../hooks/useMyRole'
+import { useMyCaregiverPermissions } from '../../hooks/useMyCaregiverPermissions'
 import { useMilestones } from './useMilestones'
 import {
   MILESTONES,
@@ -50,6 +52,9 @@ export default function MilestonesPage() {
   const { baby } = useAppState()
   const { user } = useAuth()
   const isPremium = useBabyPremium()
+  const myRole = useMyRole()
+  const perms = useMyCaregiverPermissions()
+  const readOnly = myRole === 'caregiver'
   const {
     achieved,
     achievedCodes,
@@ -60,6 +65,13 @@ export default function MilestonesPage() {
     quickToggle,
     loading,
   } = useMilestones(baby?.id, baby?.birthDate)
+
+  // Redireciona caregiver sem permissão (acesso via URL direto)
+  useEffect(() => {
+    if (myRole === 'caregiver' && !perms.show_milestones) {
+      navigate('/', { replace: true })
+    }
+  }, [myRole, perms.show_milestones, navigate])
 
   const [filter, setFilter] = useState<FilterMode>('all')
   const [registerTarget, setRegisterTarget] = useState<Milestone | null>(null)
@@ -307,8 +319,14 @@ export default function MilestonesPage() {
                 birthDate={baby.birthDate}
                 isAchieved={false}
                 isFuture={false}
-                onRowClick={() => { hapticLight(); setRegisterTarget(m) }}
-                onCheckboxClick={() => handleCheckboxTap(m.code, false)}
+                onRowClick={() => {
+                  if (readOnly) return
+                  hapticLight(); setRegisterTarget(m)
+                }}
+                onCheckboxClick={() => {
+                  if (readOnly) return
+                  handleCheckboxTap(m.code, false)
+                }}
               />
             ))}
           </div>
@@ -346,6 +364,13 @@ export default function MilestonesPage() {
                         isAchieved={isAchieved}
                         isFuture={isFuture}
                         onRowClick={() => {
+                          if (readOnly) {
+                            if (isAchieved && entry) {
+                              hapticLight()
+                              setDetailEntry({ milestone: m, entry })
+                            }
+                            return
+                          }
                           hapticLight()
                           if (isAchieved && entry) {
                             setDetailEntry({ milestone: m, entry })
@@ -353,7 +378,10 @@ export default function MilestonesPage() {
                             setRegisterTarget(m)
                           }
                         }}
-                        onCheckboxClick={() => handleCheckboxTap(m.code, isAchieved)}
+                        onCheckboxClick={() => {
+                          if (readOnly) return
+                          handleCheckboxTap(m.code, isAchieved)
+                        }}
                       />
                     )
                   })}
@@ -414,6 +442,7 @@ export default function MilestonesPage() {
             setShareData(detailEntry)
             setDetailEntry(null)
           }}
+          readOnly={readOnly}
         />
       )}
 
@@ -571,6 +600,7 @@ function MilestoneDetailModal({
   onClose,
   onDelete,
   onShare,
+  readOnly = false,
 }: {
   milestone: Milestone
   entry: BabyMilestone
@@ -578,6 +608,7 @@ function MilestoneDetailModal({
   onClose: () => void
   onDelete: () => void
   onShare: () => void
+  readOnly?: boolean
 }) {
   const [confirmDelete, setConfirmDelete] = useState(false)
   useSheetBackClose(true, onClose)
@@ -659,14 +690,16 @@ function MilestoneDetailModal({
             <span className="material-symbols-outlined text-base">share</span>
             Compartilhar
           </button>
-          <button
-            type="button"
-            onClick={() => setConfirmDelete(true)}
-            className="w-12 h-12 rounded-md bg-error/10 text-error flex items-center justify-center"
-            aria-label="Excluir"
-          >
-            <span className="material-symbols-outlined">delete</span>
-          </button>
+          {!readOnly && (
+            <button
+              type="button"
+              onClick={() => setConfirmDelete(true)}
+              className="w-12 h-12 rounded-md bg-error/10 text-error flex items-center justify-center"
+              aria-label="Excluir"
+            >
+              <span className="material-symbols-outlined">delete</span>
+            </button>
+          )}
         </div>
 
         {confirmDelete && (

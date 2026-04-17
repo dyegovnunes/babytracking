@@ -9,6 +9,8 @@ import HeroIdentity from './components/HeroIdentity'
 import ActivityGrid from './components/ActivityGrid'
 import PredictionCard from './components/PredictionCard'
 import RecentLogs from './components/RecentLogs'
+import ResumoDoDiaButton from './components/ResumoDoDiaButton'
+import OutOfHoursBanner from './components/OutOfHoursBanner'
 import BottleModal from '../../components/ui/BottleModal'
 import EditModal from '../../components/ui/EditModal'
 import Toast from '../../components/ui/Toast'
@@ -184,6 +186,12 @@ export default function TrackerPage() {
       <HeroIdentity streak={myRole !== 'caregiver' ? streak : undefined} />
 
       <ActivityGrid events={DEFAULT_EVENTS} logs={logs} onLog={handleLog} highlightedEventIds={highlightedEventIds} />
+
+      <OutOfHoursBanner />
+
+      <div className="mt-4">
+        <ResumoDoDiaButton />
+      </div>
 
       {projections.length > 0 && (
         <section className="px-5 mt-6">
