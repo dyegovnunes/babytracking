@@ -72,14 +72,25 @@ workflows:
 
           # 4. Configure pbxproj with explicit signing settings
           python3 << 'PYEOF'
+          import re
           pbxproj = 'app/ios/App/App.xcodeproj/project.pbxproj'
           with open(pbxproj, 'r') as f:
               content = f.read()
 
-          # A) Fix project-level signing identity (applies to all targets as default)
-          content = content.replace(
-              'CODE_SIGN_IDENTITY = "iPhone Developer";',
-              'CODE_SIGN_IDENTITY = "Apple Distribution";'
+          # A) Normalize ALL CODE_SIGN_IDENTITY occurrences to "Apple Distribution"
+          # O valor padrão varia entre versões do Xcode/Capacitor (pode ser
+          # "iPhone Developer", "iOS Distribution", "Apple Development", etc).
+          # Usamos regex pra cobrir qualquer valor atual.
+          content = re.sub(
+              r'CODE_SIGN_IDENTITY = "[^"]*";',
+              'CODE_SIGN_IDENTITY = "Apple Distribution";',
+              content,
+          )
+          # Também cobrir o formato com variant específico (ex: CODE_SIGN_IDENTITY[sdk=iphoneos*])
+          content = re.sub(
+              r'CODE_SIGN_IDENTITY\[sdk=[^\]]*\] = "[^"]*";',
+              'CODE_SIGN_IDENTITY = "Apple Distribution";',
+              content,
           )
 
           # B) Fix ProvisioningStyle in TargetAttributes
@@ -101,7 +112,6 @@ workflows:
                   'CODE_SIGN_STYLE = Manual;\n'
                   '\t\t\t\tDEVELOPMENT_TEAM = 8TC26XK3WP;\n'
                   '\t\t\t\tCODE_SIGN_ENTITLEMENTS = App/App.entitlements;\n'
-                  '\t\t\t\tCODE_SIGN_IDENTITY = "Apple Distribution";\n'
                   '\t\t\t\tPROVISIONING_PROFILE_SPECIFIER = "Yaya Codemagic Distribution";'
               )
               print('Injected manual signing settings into pbxproj')
