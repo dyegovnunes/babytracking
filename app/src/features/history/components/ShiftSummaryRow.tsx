@@ -5,6 +5,12 @@ import type { CaregiverShift } from '../../tracker/useCaregiverShift'
 interface Props {
   shift: CaregiverShift
   caregiverName: string
+  /**
+   * Quando fornecido, a linha inteira vira um botão clicável que abre o modo edição.
+   * Usado pela Home quando o próprio caregiver está dentro da janela de trabalho
+   * (+/- tolerância). Sem onEdit o comportamento padrão é expandir os detalhes.
+   */
+  onEdit?: () => void
 }
 
 const MOOD_EMOJIS: Record<number, string> = {
@@ -27,8 +33,9 @@ function formatSubmittedTime(iso: string | null): string | null {
  * Linha destacada no HistoryPage representando um resumo de shift de caregiver
  * no dia correspondente. Clique expande para mostrar nota completa + quick notes.
  */
-export default function ShiftSummaryRow({ shift, caregiverName }: Props) {
+export default function ShiftSummaryRow({ shift, caregiverName, onEdit }: Props) {
   const [expanded, setExpanded] = useState(false)
+  const editable = !!onEdit
   const moodEmoji = shift.moodScore ? MOOD_EMOJIS[shift.moodScore] : ''
   const submittedTime = formatSubmittedTime(shift.submittedAt)
   const preview = shift.note
@@ -37,14 +44,27 @@ export default function ShiftSummaryRow({ shift, caregiverName }: Props) {
   const hasScoreInfo = shift.ateScore !== null || shift.sleptScore !== null
   const hasDetails =
     (shift.note && shift.note.length > 80) || shift.quickNotes.length > 0 || hasScoreInfo
+  const buttonDisabled = !editable && !hasDetails
+
+  const handleHeaderClick = () => {
+    if (editable) {
+      hapticLight()
+      onEdit!()
+      return
+    }
+    if (hasDetails) {
+      hapticLight()
+      setExpanded((v) => !v)
+    }
+  }
 
   return (
     <div className="bg-primary/[0.05] border border-primary/15 rounded-md px-3 py-3 my-2">
       <button
         type="button"
-        onClick={() => { if (hasDetails) { hapticLight(); setExpanded((v) => !v) } }}
+        onClick={handleHeaderClick}
         className="w-full flex items-start gap-3 text-left"
-        disabled={!hasDetails}
+        disabled={buttonDisabled}
       >
         <span className="material-symbols-outlined text-primary text-xl mt-0.5">assignment</span>
         <div className="flex-1 min-w-0">
@@ -76,11 +96,15 @@ export default function ShiftSummaryRow({ shift, caregiverName }: Props) {
             </div>
           )}
         </div>
-        {hasDetails && (
+        {editable ? (
+          <span className="material-symbols-outlined text-primary text-base mt-0.5">
+            edit
+          </span>
+        ) : hasDetails ? (
           <span className={`material-symbols-outlined text-on-surface-variant text-base transition-transform mt-0.5 ${expanded ? 'rotate-180' : ''}`}>
             expand_more
           </span>
-        )}
+        ) : null}
       </button>
 
       {expanded && hasDetails && (

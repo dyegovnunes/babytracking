@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSheetBackClose } from '../../../hooks/useSheetBackClose'
 import { hapticLight, hapticSuccess } from '../../../lib/haptics'
 import { supabase } from '../../../lib/supabase'
@@ -46,6 +46,19 @@ export default function ResumoDoDiaSheet({ babyId, babyName, caregiverId, onClos
   const [error, setError] = useState<string | null>(null)
   const [showQuickNotes, setShowQuickNotes] = useState(false)
 
+  // Pré-preenche os campos com o shift existente (edit mode).
+  // O useEffect só dispara quando `shift` muda — se user editar os campos
+  // localmente, os valores locais ficam preservados.
+  useEffect(() => {
+    if (!shift) return
+    setMood(shift.moodScore)
+    setAteScore(shift.ateScore)
+    setSleptScore(shift.sleptScore)
+    setNote(shift.note ?? '')
+  }, [shift])
+
+  const isEditing = !!shift?.submittedAt
+
   const handleSubmit = async () => {
     if (submitting) return
     setError(null)
@@ -62,7 +75,13 @@ export default function ResumoDoDiaSheet({ babyId, babyName, caregiverId, onClos
       return
     }
     hapticSuccess()
-    setToast('Resumo enviado!')
+    setToast(isEditing ? 'Resumo atualizado!' : 'Resumo enviado!')
+
+    // Edit mode: não dispara push de novo (evita notificar parents a cada ajuste)
+    if (isEditing) {
+      setTimeout(() => onClose(), 800)
+      return
+    }
 
     // Dispara push imediato (fire-and-forget, não bloqueia o fluxo se falhar)
     const moodEmoji = MOODS.find((m) => m.value === mood)?.emoji ?? ''
@@ -101,7 +120,9 @@ export default function ResumoDoDiaSheet({ babyId, babyName, caregiverId, onClos
       <div className="w-full max-w-lg max-h-[90vh] overflow-y-auto bg-surface-container-highest rounded-t-md p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] border-t-2 border-primary-fixed animate-slide-up">
         <div className="flex items-center justify-between mb-5">
           <div>
-            <h2 className="font-headline text-lg font-bold text-on-surface">Resumo do dia</h2>
+            <h2 className="font-headline text-lg font-bold text-on-surface">
+              {isEditing ? 'Editar resumo do dia' : 'Resumo do dia'}
+            </h2>
             <p className="font-label text-xs text-on-surface-variant">Como foi com {babyName}?</p>
           </div>
           <button
@@ -211,7 +232,7 @@ export default function ResumoDoDiaSheet({ babyId, babyName, caregiverId, onClos
           disabled={submitting}
           className="w-full py-3 rounded-md bg-primary text-on-primary font-label font-semibold text-sm disabled:opacity-40"
         >
-          {submitting ? 'Enviando...' : 'Enviar resumo'}
+          {submitting ? 'Enviando...' : isEditing ? 'Salvar alterações' : 'Enviar resumo'}
         </button>
       </div>
 

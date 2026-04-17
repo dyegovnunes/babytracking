@@ -11,6 +11,7 @@ import PredictionCard from './components/PredictionCard'
 import RecentLogs from './components/RecentLogs'
 import ResumoDoDiaButton from './components/ResumoDoDiaButton'
 import OutOfHoursBanner from './components/OutOfHoursBanner'
+import TodayShiftsOnHome from './components/TodayShiftsOnHome'
 import BottleModal from '../../components/ui/BottleModal'
 import EditModal from '../../components/ui/EditModal'
 import Toast from '../../components/ui/Toast'
@@ -192,6 +193,8 @@ export default function TrackerPage() {
       <div className="mt-4">
         <ResumoDoDiaButton />
       </div>
+
+      <TodayShiftsOnHome />
 
       {projections.length > 0 && (
         <section className="px-5 mt-6">
