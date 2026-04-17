@@ -77,18 +77,17 @@ workflows:
           with open(pbxproj, 'r') as f:
               content = f.read()
 
-          # A) Normalize ALL CODE_SIGN_IDENTITY occurrences to "Apple Distribution"
-          # O valor padrão varia entre versões do Xcode/Capacitor (pode ser
-          # "iPhone Developer", "iOS Distribution", "Apple Development", etc).
-          # Usamos regex pra cobrir qualquer valor atual.
+          # --- DEBUG: dump existing CODE_SIGN_IDENTITY lines BEFORE ---
+          print('--- CODE_SIGN_IDENTITY lines BEFORE patch ---')
+          for m in re.finditer(r'.*CODE_SIGN_IDENTITY.*', content):
+              print('  ', m.group(0).strip())
+
+          # A) Normalize ALL CODE_SIGN_IDENTITY occurrences to "Apple Distribution".
+          # Cobre: plain, [sdk=*] variant, e key inteira entre aspas.
+          # Padrão genérico: optional leading quote, "CODE_SIGN_IDENTITY",
+          # optional [sdk=...] variant, optional trailing quote, ' = "value";'.
           content = re.sub(
-              r'CODE_SIGN_IDENTITY = "[^"]*";',
-              'CODE_SIGN_IDENTITY = "Apple Distribution";',
-              content,
-          )
-          # Também cobrir o formato com variant específico (ex: CODE_SIGN_IDENTITY[sdk=iphoneos*])
-          content = re.sub(
-              r'CODE_SIGN_IDENTITY\[sdk=[^\]]*\] = "[^"]*";',
+              r'"?CODE_SIGN_IDENTITY(?:\[[^\]]*\])?"?\s*=\s*"[^"]*";',
               'CODE_SIGN_IDENTITY = "Apple Distribution";',
               content,
           )
@@ -121,6 +120,10 @@ workflows:
           with open(pbxproj, 'w') as f:
               f.write(content)
 
+          # --- DEBUG: dump existing CODE_SIGN_IDENTITY lines AFTER ---
+          print('--- CODE_SIGN_IDENTITY lines AFTER patch ---')
+          for m in re.finditer(r'.*CODE_SIGN_IDENTITY.*', content):
+              print('  ', m.group(0).strip())
           PYEOF
 
           echo "=== Final pbxproj signing settings ==="
@@ -163,11 +166,16 @@ workflows:
           # NOTE: NÃO passar CODE_SIGN_ENTITLEMENTS aqui — ele vaza para
           # todos os targets (SPM packages). Está configurado no pbxproj
           # apenas para o target App.
+          #
+          # CODE_SIGN_IDENTITY via CLI como "última linha de defesa" — se
+          # o pbxproj ainda tiver algum residual de "iOS Distribution",
+          # esse override manda. Safe: não vaza entitlements/profile.
           xcodebuild archive \
             -project "App.xcodeproj" \
             -scheme "App" \
             -destination "generic/platform=iOS" \
             -archivePath "$CM_BUILD_DIR/App.xcarchive" \
+            CODE_SIGN_IDENTITY="Apple Distribution" \
             COMPILER_INDEX_STORE_ENABLE=NO
 
           # Export IPA
