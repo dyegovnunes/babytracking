@@ -3,14 +3,12 @@ workflows:
     name: iOS TestFlight
     max_build_duration: 30
     instance_type: mac_mini_m2
-    # IMPORTANTE: NÃO usar `integrations: app_store_connect` no workflow.
-    # Essa opção ativa a "automatic code signing" do Codemagic, que sobrescreve
-    # as configs do pbxproj e força CODE_SIGN_IDENTITY="iOS Distribution" via
-    # profile gerado pela App Store Connect API. Isso entra em conflito com
-    # nosso setup manual (Apple Distribution + profile próprio).
-    #
-    # Para o publishing ao TestFlight, as credenciais App Store Connect API
-    # são lidas do environment group `yaya_ios` (variáveis APP_STORE_CONNECT_*).
+    # `integrations: app_store_connect: codemagic` é necessário para o
+    # publishing (auth: integration). NÃO rodamos o fetch-signing-files
+    # automático do Codemagic — o signing é manual via .p12 + profile
+    # importados na keychain + CODE_SIGN_IDENTITY forçado na CLI do xcodebuild.
+    integrations:
+      app_store_connect: codemagic
     environment:
       groups:
         - yaya_ios
@@ -77,6 +75,21 @@ workflows:
           echo "=== Versions set ==="
           grep -n "MARKETING_VERSION\|CURRENT_PROJECT_VERSION" "$PBXPROJ"
 
+      - name: Debug signing state
+        script: |
+          echo "=== Keychain list ==="
+          security list-keychains -d user
+          echo ""
+          echo "=== Code signing identities ==="
+          security find-identity -v -p codesigning
+          echo ""
+          echo "=== Provisioning profiles ==="
+          ls -la ~/Library/MobileDevice/Provisioning\ Profiles/ 2>&1 || true
+          echo ""
+          echo "=== pbxproj signing settings ==="
+          grep -n "CODE_SIGN\|DEVELOPMENT_TEAM\|PROVISIONING_PROFILE\|ProvisioningStyle" \
+            app/ios/App/App.xcodeproj/project.pbxproj || true
+
       - name: Build iOS
         script: |
           cd app/ios/App
@@ -85,14 +98,23 @@ workflows:
           printf '<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<plist version="1.0">\n<dict>\n\t<key>method</key>\n\t<string>app-store</string>\n\t<key>teamID</key>\n\t<string>8TC26XK3WP</string>\n\t<key>signingStyle</key>\n\t<string>manual</string>\n\t<key>provisioningProfiles</key>\n\t<dict>\n\t\t<key>app.yayababy</key>\n\t\t<string>Yaya Codemagic Distribution</string>\n\t</dict>\n\t<key>signingCertificate</key>\n\t<string>Apple Distribution</string>\n</dict>\n</plist>\n' > /tmp/ExportOptions.plist
           plutil -lint /tmp/ExportOptions.plist
 
-          # Archive — signing já está configurado permanentemente no pbxproj
-          # versionado (CODE_SIGN_STYLE=Manual, CODE_SIGN_IDENTITY="Apple Distribution",
+          # Archive — signing está configurado no pbxproj versionado
+          # (CODE_SIGN_STYLE=Manual, CODE_SIGN_IDENTITY="Apple Distribution",
           # DEVELOPMENT_TEAM, PROVISIONING_PROFILE_SPECIFIER, CODE_SIGN_ENTITLEMENTS).
+          #
+          # Override via CLI porque a integration `app_store_connect: codemagic`
+          # do workflow prepara a keychain com um cert rotulado "iOS Distribution"
+          # que o Xcode 26.2 tenta usar por padrão. Forçar aqui garante o uso
+          # do nosso cert "Apple Distribution" importado via script.
           xcodebuild archive \
             -project "App.xcodeproj" \
             -scheme "App" \
             -destination "generic/platform=iOS" \
             -archivePath "$CM_BUILD_DIR/App.xcarchive" \
+            CODE_SIGN_STYLE=Manual \
+            CODE_SIGN_IDENTITY="Apple Distribution" \
+            DEVELOPMENT_TEAM=8TC26XK3WP \
+            PROVISIONING_PROFILE_SPECIFIER="Yaya Codemagic Distribution" \
             COMPILER_INDEX_STORE_ENABLE=NO
 
           # Export IPA
@@ -104,11 +126,6 @@ workflows:
       - $CM_BUILD_DIR/ipa/*.ipa
       - $CM_BUILD_DIR/*.xcarchive
     publishing:
-      # Publishing via env vars (sem depender de `integrations:` no workflow).
-      # Requer no group `yaya_ios`:
-      #   - APP_STORE_CONNECT_ISSUER_ID
-      #   - APP_STORE_CONNECT_KEY_IDENTIFIER
-      #   - APP_STORE_CONNECT_PRIVATE_KEY
       app_store_connect:
-        auth: env
+        auth: integration
         submit_to_testflight: true
