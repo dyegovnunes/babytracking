@@ -1,18 +1,27 @@
-import { useRef, useCallback, useState } from 'react'
+import { useRef, useCallback, useState, useMemo } from 'react'
 import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { useAppState, useAppDispatch, switchBaby } from '../../contexts/AppContext'
 import { useMyRole } from '../../hooks/useMyRole'
+import { useBabyPremium } from '../../hooks/useBabyPremium'
 import { can } from '../../lib/roles'
 import { hapticLight, hapticMedium } from '../../lib/haptics'
 import BabySwitcher from '../ui/BabySwitcher'
 import Toast from '../ui/Toast'
 
-const tabs = [
+interface TabDef {
+  readonly to: string
+  readonly icon: string
+  readonly label: string
+}
+
+const baseTabs: readonly TabDef[] = [
   { to: '/', icon: 'track_changes', label: 'Início' },
-  { to: '/history', icon: 'history', label: 'Histórico' },
   { to: '/insights', icon: 'insights', label: 'Insights' },
   { to: '/profile', icon: 'person', label: 'Perfil' },
 ] as const
+
+const HISTORY_TAB: TabDef = { to: '/history', icon: 'history', label: 'Histórico' }
+const YAYA_PLUS_TAB: TabDef = { to: '/yaya-plus', icon: 'auto_awesome', label: 'Yaya+' }
 
 const LONG_PRESS_MS = 600
 const DOUBLE_TAP_MS = 300
@@ -23,6 +32,15 @@ export default function BottomNav() {
   const navigate = useNavigate()
   const location = useLocation()
   const myRole = useMyRole()
+  const isPremium = useBabyPremium()
+
+  // Nav adaptativa: free vê "Yaya+" (upgrade + MGM) em vez de "Histórico"
+  // (o acesso free ao histórico limitado continua via "Ver tudo →" em
+  // Últimos Registros, a rota /history funciona mas sai da nav).
+  const tabs = useMemo<readonly TabDef[]>(() => {
+    const secondary = isPremium ? HISTORY_TAB : YAYA_PLUS_TAB
+    return [baseTabs[0], secondary, baseTabs[1], baseTabs[2]]
+  }, [isPremium])
 
   const babyPhoto = baby?.photoUrl
   const babyName = baby?.name

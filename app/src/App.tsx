@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useLocation, useNavigate, Navigate } from 'react-router-dom'
 import { lazy, Suspense, useEffect, useRef } from 'react'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { AppProvider, useAppState, useAppDispatch } from './contexts/AppContext'
@@ -25,6 +25,7 @@ const MilestonesPage = lazy(() => import('./features/milestones/MilestonesPage')
 const LeapsPage = lazy(() => import('./features/milestones/LeapsPage'))
 const VaccinesPage = lazy(() => import('./features/vaccines/VaccinesPage'))
 const MedicationsPage = lazy(() => import('./features/medications/MedicationsPage'))
+const YayaPlusPage = lazy(() => import('./features/referral/YayaPlusPage'))
 const PrivacyPage = lazy(() => import('./pages/PrivacyPage'))
 const SharedReportPage = lazy(() => import('./pages/SharedReportPage'))
 
@@ -104,6 +105,7 @@ function AuthenticatedRoutes() {
           <Route path="saltos" element={<LeapsPage />} />
           <Route path="vacinas" element={<VaccinesPage />} />
           <Route path="medicamentos" element={<MedicationsPage />} />
+          <Route path="yaya-plus" element={<YayaPlusPage />} />
           <Route path="profile" element={<ProfilePage />} />
           <Route path="settings" element={<SettingsPage />} />
           {/* Catch-all: any unknown route falls back to the tracker instead of rendering blank */}
@@ -116,6 +118,23 @@ function AuthenticatedRoutes() {
 
 function AppRoutes() {
   const location = useLocation()
+
+  // Deep link de indicação: /i/:code → salva o código em localStorage
+  // e redireciona pra landing/login. Se o user logar/signup depois,
+  // AuthContext lê o código e chama accept_referral.
+  if (location.pathname.startsWith('/i/')) {
+    const code = location.pathname.split('/i/')[1]?.trim().toUpperCase()
+    if (code && /^[A-Z0-9]{5,12}$/.test(code)) {
+      try { localStorage.setItem('yaya_pending_ref', code) } catch { /* ignore */ }
+    }
+    return <Navigate to="/" replace />
+  }
+
+  // Também captura ?ref=CODE (fluxo de compartilhamento web alternativo)
+  const refParam = new URLSearchParams(location.search).get('ref')
+  if (refParam && /^[A-Z0-9]{5,12}$/.test(refParam.toUpperCase())) {
+    try { localStorage.setItem('yaya_pending_ref', refParam.toUpperCase()) } catch { /* ignore */ }
+  }
 
   // Public routes (no auth required)
   if (location.pathname === '/privacy') {

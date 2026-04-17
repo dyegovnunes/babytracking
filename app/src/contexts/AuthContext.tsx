@@ -41,12 +41,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      async (event, session) => {
         setState({
           user: session?.user ?? null,
           session,
           loading: false,
         })
+
+        // MGM: ao signup/primeiro sign-in, se há código de indicação em
+        // localStorage (capturado pela landing/login via ?ref ou /i/:code),
+        // associa ao novo profile. Idempotente — RPC retorna false se já
+        // existe referral pro user.
+        if (event === 'SIGNED_IN' && session?.user) {
+          try {
+            const pendingCode = localStorage.getItem('yaya_pending_ref')
+            if (pendingCode) {
+              await supabase.rpc('accept_referral', { p_code: pendingCode })
+              // Limpa do localStorage (evita tentar de novo em sessões futuras)
+              localStorage.removeItem('yaya_pending_ref')
+            }
+          } catch { /* silencia — não bloqueia auth */ }
+        }
       },
     )
 

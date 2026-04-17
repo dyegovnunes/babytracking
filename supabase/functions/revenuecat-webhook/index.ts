@@ -73,6 +73,16 @@ serve(async (req) => {
         billing_provider: billingProvider,
       })
       .eq('id', app_user_id);
+
+    // MGM: se plano é anual/vitalício, recompensa o indicador (free → 30d cortesia).
+    // Mensal não dispara (ainda: cheap para gerar fraude em massa).
+    const subscribedPlan = isLifetime ? 'lifetime' : plan;
+    if (subscribedPlan === 'annual' || subscribedPlan === 'lifetime') {
+      await supabase.rpc('process_referral_paid_subscription', {
+        p_user_id: app_user_id,
+        p_plan: subscribedPlan,
+      });
+    }
   }
 
   if (type === 'CANCELLATION') {
