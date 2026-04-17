@@ -33,18 +33,23 @@ workflows:
 
       - name: Fetch signing files automatically
         script: |
+          # Inicializa keychain primeiro
+          keychain initialize
+
+          # Gera uma RSA private key fresca pra ser usada na criação do
+          # signing certificate. Fornecer via --certificate-key-path
+          # sobrescreve qualquer env var residual (ex: CERTIFICATE_PRIVATE_KEY
+          # de setup antigo que estava com valor inválido).
+          CERT_KEY_PATH="/tmp/apple_distribution.key"
+          openssl genrsa -out "$CERT_KEY_PATH" 2048
+
           # Codemagic CLI tools vêm pré-instaladas nas máquinas Mac.
-          # `fetch-signing-files` cria (se não existir) ou baixa cert e
-          # provisioning profile do tipo IOS_APP_STORE via ASC API,
-          # e instala na keychain default + ~/Library/MobileDevice/...
-          # A flag --create garante que não falha se algo precisar ser criado.
+          # `fetch-signing-files --create` cria cert + provisioning profile
+          # via ASC API se não existirem. Profile é IOS_APP_STORE.
           app-store-connect fetch-signing-files "app.yayababy" \
             --type IOS_APP_STORE \
+            --certificate-key-path "$CERT_KEY_PATH" \
             --create
-
-          # Inicializa a keychain (exige por keychain initialize antes de
-          # rodar outras coisas que usem ela).
-          keychain initialize
 
           # Adiciona os certs baixados na keychain default.
           keychain add-certificates
