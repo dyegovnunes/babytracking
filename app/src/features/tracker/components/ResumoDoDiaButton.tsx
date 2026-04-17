@@ -5,7 +5,7 @@ import { useMyRole } from '../../../hooks/useMyRole'
 import { useBabyPremium } from '../../../hooks/useBabyPremium'
 import { useCaregiverSchedule, isInWorkWindow } from '../../profile/useCaregiverSchedule'
 import { useCaregiverShift } from '../useCaregiverShift'
-import { contractionDe } from '../../../lib/genderUtils'
+import { article } from '../../../lib/genderUtils'
 import { hapticLight } from '../../../lib/haptics'
 import ResumoDoDiaSheet from './ResumoDoDiaSheet'
 
@@ -57,7 +57,7 @@ export default function ResumoDoDiaButton() {
           className="w-full h-12 rounded-md border border-primary/40 text-primary bg-transparent font-label text-sm active:bg-primary/5 transition-colors flex items-center justify-center gap-2"
         >
           <span className="material-symbols-outlined text-base">assignment</span>
-          Registrar resumo do dia com {contractionDe(baby.gender)} {baby.name}
+          Registrar resumo do dia com {article(baby.gender)} {baby.name}
         </button>
       </div>
       {open && (

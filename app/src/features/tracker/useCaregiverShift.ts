@@ -8,6 +8,10 @@ export interface CaregiverShift {
   caregiverId: string
   shiftDate: string // YYYY-MM-DD
   moodScore: number | null
+  /** Comeu bem? true = joinha pra cima, false = pra baixo, null = sem resposta */
+  ateWell: boolean | null
+  /** Dormiu bem? true/false/null */
+  sleptWell: boolean | null
   note: string | null
   quickNotes: string[]
   submittedAt: string | null // ISO
@@ -16,8 +20,13 @@ export interface CaregiverShift {
 
 interface SubmitInput {
   moodScore?: number | null
+  ateWell?: boolean | null
+  sleptWell?: boolean | null
   note?: string | null
 }
+
+const SHIFT_COLUMNS =
+  'id, baby_id, caregiver_id, shift_date, mood_score, ate_well, slept_well, note, quick_notes, submitted_at, created_at'
 
 function mapRow(row: {
   id: string
@@ -25,6 +34,8 @@ function mapRow(row: {
   caregiver_id: string
   shift_date: string
   mood_score: number | null
+  ate_well: boolean | null
+  slept_well: boolean | null
   note: string | null
   quick_notes: string[] | null
   submitted_at: string | null
@@ -36,6 +47,8 @@ function mapRow(row: {
     caregiverId: row.caregiver_id,
     shiftDate: row.shift_date,
     moodScore: row.mood_score,
+    ateWell: row.ate_well,
+    sleptWell: row.slept_well,
     note: row.note,
     quickNotes: row.quick_notes ?? [],
     submittedAt: row.submitted_at,
@@ -69,7 +82,7 @@ export function useCaregiverShift(
     setLoading(true)
     supabase
       .from('caregiver_shifts')
-      .select('id, baby_id, caregiver_id, shift_date, mood_score, note, quick_notes, submitted_at, created_at')
+      .select(SHIFT_COLUMNS)
       .eq('baby_id', babyId)
       .eq('caregiver_id', caregiverId)
       .eq('shift_date', date)
@@ -100,13 +113,15 @@ export function useCaregiverShift(
         caregiver_id: caregiverId,
         shift_date: date,
         mood_score: input.moodScore ?? null,
+        ate_well: input.ateWell ?? null,
+        slept_well: input.sleptWell ?? null,
         note: input.note?.trim() ? input.note.trim() : null,
         submitted_at: new Date().toISOString(),
       }
       const { data, error } = await supabase
         .from('caregiver_shifts')
         .upsert(payload, { onConflict: 'baby_id,caregiver_id,shift_date' })
-        .select('id, baby_id, caregiver_id, shift_date, mood_score, note, quick_notes, submitted_at, created_at')
+        .select(SHIFT_COLUMNS)
       if (error || !data || data.length === 0) return null
       const row = mapRow(data[0])
       setShift(row)
@@ -130,7 +145,7 @@ export function useCaregiverShift(
       const { data, error } = await supabase
         .from('caregiver_shifts')
         .upsert(payload, { onConflict: 'baby_id,caregiver_id,shift_date' })
-        .select('id, baby_id, caregiver_id, shift_date, mood_score, note, quick_notes, submitted_at, created_at')
+        .select(SHIFT_COLUMNS)
       if (error || !data || data.length === 0) return false
       setShift(mapRow(data[0]))
       return true
@@ -159,7 +174,7 @@ export function useShiftsForBaby(babyId: string | undefined, fromDate?: string, 
     setLoading(true)
     let query = supabase
       .from('caregiver_shifts')
-      .select('id, baby_id, caregiver_id, shift_date, mood_score, note, quick_notes, submitted_at, created_at')
+      .select(SHIFT_COLUMNS)
       .eq('baby_id', babyId)
       .not('submitted_at', 'is', null)
       .order('shift_date', { ascending: false })

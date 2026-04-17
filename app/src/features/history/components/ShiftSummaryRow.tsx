@@ -34,7 +34,9 @@ export default function ShiftSummaryRow({ shift, caregiverName }: Props) {
   const preview = shift.note
     ? shift.note.slice(0, 80) + (shift.note.length > 80 ? '…' : '')
     : 'Resumo enviado sem anotações.'
-  const hasDetails = (shift.note && shift.note.length > 80) || shift.quickNotes.length > 0
+  const hasThumbsInfo = shift.ateWell !== null || shift.sleptWell !== null
+  const hasDetails =
+    (shift.note && shift.note.length > 80) || shift.quickNotes.length > 0 || hasThumbsInfo
 
   return (
     <div className="bg-primary/[0.05] border border-primary/15 rounded-md px-3 py-3 my-2">
@@ -63,6 +65,16 @@ export default function ShiftSummaryRow({ shift, caregiverName }: Props) {
             {moodEmoji && <span className="mr-1">{moodEmoji}</span>}
             {preview}
           </p>
+          {hasThumbsInfo && (
+            <div className="mt-1.5 flex items-center gap-2 flex-wrap">
+              {shift.ateWell !== null && (
+                <ThumbChip icon="restaurant" value={shift.ateWell} label="Comeu bem" />
+              )}
+              {shift.sleptWell !== null && (
+                <ThumbChip icon="bedtime" value={shift.sleptWell} label="Dormiu bem" />
+              )}
+            </div>
+          )}
         </div>
         {hasDetails && (
           <span className={`material-symbols-outlined text-on-surface-variant text-base transition-transform mt-0.5 ${expanded ? 'rotate-180' : ''}`}>
@@ -93,5 +105,25 @@ export default function ShiftSummaryRow({ shift, caregiverName }: Props) {
         </div>
       )}
     </div>
+  )
+}
+
+interface ThumbChipProps {
+  icon: string
+  value: boolean
+  label: string
+}
+
+function ThumbChip({ icon, value, label }: ThumbChipProps) {
+  const color = value
+    ? 'bg-primary/10 text-primary border-primary/20'
+    : 'bg-error/10 text-error border-error/20'
+  return (
+    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border ${color}`}>
+      <span className="material-symbols-outlined text-[13px]">{icon}</span>
+      <span className="font-label text-[11px] font-semibold">
+        {label}: {value ? 'sim' : 'não'}
+      </span>
+    </span>
   )
 }

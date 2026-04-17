@@ -32,6 +32,8 @@ export default function ResumoDoDiaSheet({ babyId, babyName, caregiverId, onClos
   const existingQuickNotes = shift?.quickNotes ?? []
 
   const [mood, setMood] = useState<number | null>(null)
+  const [ateWell, setAteWell] = useState<boolean | null>(null)
+  const [sleptWell, setSleptWell] = useState<boolean | null>(null)
   const [note, setNote] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
@@ -42,7 +44,12 @@ export default function ResumoDoDiaSheet({ babyId, babyName, caregiverId, onClos
     if (submitting) return
     setError(null)
     setSubmitting(true)
-    const row = await submitResume({ moodScore: mood, note: note || null })
+    const row = await submitResume({
+      moodScore: mood,
+      ateWell,
+      sleptWell,
+      note: note || null,
+    })
     if (!row) {
       setSubmitting(false)
       setError('Não foi possível enviar. Tente novamente.')
@@ -53,16 +60,25 @@ export default function ResumoDoDiaSheet({ babyId, babyName, caregiverId, onClos
 
     // Dispara push imediato (fire-and-forget, não bloqueia o fluxo se falhar)
     const moodEmoji = MOODS.find((m) => m.value === mood)?.emoji ?? ''
+    const chips: string[] = []
+    if (ateWell !== null) chips.push(`🍽 ${ateWell ? 'sim' : 'não'}`)
+    if (sleptWell !== null) chips.push(`😴 ${sleptWell ? 'sim' : 'não'}`)
     const preview = note.trim()
       ? note.trim().slice(0, 60) + (note.trim().length > 60 ? '…' : '')
-      : 'Veja mais no app.'
+      : chips.length > 0
+        ? ''
+        : 'Veja mais no app.'
+    const bodyParts: string[] = []
+    if (moodEmoji) bodyParts.push(moodEmoji)
+    if (chips.length > 0) bodyParts.push(chips.join(' · '))
+    if (preview) bodyParts.push(preview)
     supabase.functions
       .invoke('send-immediate-push', {
         body: {
           babyId,
           type: 'daily_summary',
           title: `📋 Resumo do dia — ${babyName}`,
-          body: `${moodEmoji} ${preview}`.trim(),
+          body: bodyParts.join(' '),
           excludeUserId: caregiverId,
         },
       })
@@ -118,6 +134,20 @@ export default function ResumoDoDiaSheet({ babyId, babyName, caregiverId, onClos
             })}
           </div>
         </div>
+
+        {/* Comeu bem? */}
+        <ThumbsQuestion
+          label={`Comeu bem?`}
+          value={ateWell}
+          onChange={setAteWell}
+        />
+
+        {/* Dormiu bem? */}
+        <ThumbsQuestion
+          label={`Dormiu bem?`}
+          value={sleptWell}
+          onChange={setSleptWell}
+        />
 
         {/* Quick notes (se houver) */}
         {existingQuickNotes.length > 0 && (
@@ -180,6 +210,63 @@ export default function ResumoDoDiaSheet({ babyId, babyName, caregiverId, onClos
       </div>
 
       {toast && <Toast message={toast} onDismiss={() => setToast(null)} />}
+    </div>
+  )
+}
+
+interface ThumbsQuestionProps {
+  label: string
+  value: boolean | null
+  onChange: (next: boolean | null) => void
+}
+
+function ThumbsQuestion({ label, value, onChange }: ThumbsQuestionProps) {
+  const pick = (v: boolean) => () => {
+    hapticLight()
+    // Tap no botão já marcado → desmarca (volta pra null)
+    onChange(value === v ? null : v)
+  }
+  return (
+    <div className="mb-5 flex items-center justify-between gap-3">
+      <span className="font-label text-sm text-on-surface">{label}</span>
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={pick(true)}
+          aria-pressed={value === true}
+          aria-label={`${label} — Sim`}
+          className={`w-11 h-11 rounded-md flex items-center justify-center transition-colors ${
+            value === true
+              ? 'bg-primary/15 ring-2 ring-primary text-primary'
+              : 'bg-surface-container text-on-surface-variant active:bg-surface-container-high'
+          }`}
+        >
+          <span
+            className="material-symbols-outlined text-xl"
+            style={{ fontVariationSettings: value === true ? "'FILL' 1" : undefined }}
+          >
+            thumb_up
+          </span>
+        </button>
+        <button
+          type="button"
+          onClick={pick(false)}
+          aria-pressed={value === false}
+          aria-label={`${label} — Não`}
+          className={`w-11 h-11 rounded-md flex items-center justify-center transition-colors ${
+            value === false
+              ? 'bg-error/15 ring-2 ring-error text-error'
+              : 'bg-surface-container text-on-surface-variant active:bg-surface-container-high'
+          }`}
+        >
+          <span
+            className="material-symbols-outlined text-xl"
+            style={{ fontVariationSettings: value === false ? "'FILL' 1" : undefined }}
+          >
+            thumb_down
+          </span>
+        </button>
+      </div>
     </div>
   )
 }

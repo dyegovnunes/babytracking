@@ -1,0 +1,3 @@
+ALTER TABLE caregiver_shifts
+  ADD COLUMN IF NOT EXISTS ate_well BOOLEAN,
+  ADD COLUMN IF NOT EXISTS slept_well BOOLEAN;
