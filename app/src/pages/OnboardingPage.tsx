@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 import { getDefaultIntervals } from '../lib/ageUtils'
+import { validateBabyBirthDate, isPrenatal } from '../lib/formatters'
 import { autoRegisterPastMilestones } from '../features/milestones/autoRegister'
 import { autoRegisterPastVaccines } from '../features/vaccines/autoRegister'
 
@@ -23,6 +24,13 @@ export default function OnboardingPage({ onComplete }: Props) {
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault()
     if (!name.trim() || !birthDate || !gender || !parentName.trim() || !user) return
+
+    // Validação de idade (≤3 anos ou até 40 semanas no futuro pro pré-natal)
+    const validationError = validateBabyBirthDate(birthDate)
+    if (validationError) {
+      setError(validationError)
+      return
+    }
 
     setLoading(true)
     setError(null)
@@ -64,11 +72,11 @@ export default function OnboardingPage({ onComplete }: Props) {
     const defaultIntervals = getDefaultIntervals(baby.id, birthDate)
     await supabase.from('interval_configs').insert(defaultIntervals)
 
-    // Auto-registrar marcos passados se o bebê tem idade > 14 dias
-    await autoRegisterPastMilestones(baby.id, birthDate).catch(() => {})
-
-    // Auto-registrar vacinas obrigatórias (PNI) até a idade atual
-    await autoRegisterPastVaccines(baby.id, birthDate).catch(() => {})
+    // Auto-registro só faz sentido se o bebê já nasceu
+    if (!isPrenatal(birthDate)) {
+      await autoRegisterPastMilestones(baby.id, birthDate).catch(() => {})
+      await autoRegisterPastVaccines(baby.id, birthDate).catch(() => {})
+    }
 
     setLoading(false)
     onComplete()

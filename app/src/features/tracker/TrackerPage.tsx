@@ -10,6 +10,8 @@ import ActivityGrid from './components/ActivityGrid'
 import PredictionCard from './components/PredictionCard'
 import MedicationProjectionCard from './components/MedicationProjectionCard'
 import RecentLogs from './components/RecentLogs'
+import PrenatalView from './components/PrenatalView'
+import { isPrenatal } from '../../lib/formatters'
 import { getMedicationProjections } from './medicationProjections'
 import ResumoDoDiaButton from './components/ResumoDoDiaButton'
 import ResumoDoDiaSheet from './components/ResumoDoDiaSheet'
@@ -284,6 +286,18 @@ export default function TrackerPage() {
 
   if (loading) {
     return <TrackerSkeleton />
+  }
+
+  // Pré-natal: bebê ainda não nasceu → mostra countdown + dicas em vez da
+  // tela normal de registros/projeções (não faz sentido registrar antes).
+  if (baby && isPrenatal(baby.birthDate)) {
+    return (
+      <PrenatalView
+        babyName={baby.name}
+        gender={baby.gender}
+        birthDate={baby.birthDate}
+      />
+    )
   }
 
   // Age-based highlights

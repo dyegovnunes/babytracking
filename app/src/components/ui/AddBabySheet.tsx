@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
 import { useAppState, useAppDispatch, switchBaby } from '../../contexts/AppContext'
 import { getDefaultIntervals } from '../../lib/ageUtils'
+import { validateBabyBirthDate, isPrenatal } from '../../lib/formatters'
 import { useSheetBackClose } from '../../hooks/useSheetBackClose'
 import { hapticLight, hapticSuccess } from '../../lib/haptics'
 import { autoRegisterPastMilestones } from '../../features/milestones/autoRegister'
@@ -58,6 +59,11 @@ export default function AddBabySheet({ onClose }: Props) {
       setShowPaywall(true)
       return
     }
+    const validationError = validateBabyBirthDate(birthDate)
+    if (validationError) {
+      setError(validationError)
+      return
+    }
     hapticLight()
     setLoading(true)
     setError(null)
@@ -98,11 +104,11 @@ export default function AddBabySheet({ onClose }: Props) {
 
     await supabase.from('interval_configs').insert(getDefaultIntervals(baby.id, birthDate))
 
-    // Auto-registrar marcos passados se o bebê tem idade > 14 dias
-    await autoRegisterPastMilestones(baby.id, birthDate).catch(() => {})
-
-    // Auto-registrar vacinas obrigatórias (PNI) até a idade atual
-    await autoRegisterPastVaccines(baby.id, birthDate).catch(() => {})
+    // Auto-registro só faz sentido se o bebê já nasceu
+    if (!isPrenatal(birthDate)) {
+      await autoRegisterPastMilestones(baby.id, birthDate).catch(() => {})
+      await autoRegisterPastVaccines(baby.id, birthDate).catch(() => {})
+    }
 
     hapticSuccess()
     // Switch to the newly created baby

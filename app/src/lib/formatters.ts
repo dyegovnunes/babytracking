@@ -50,13 +50,72 @@ export function formatAge(birthDate: string): string {
   const now = new Date()
   const diffMs = now.getTime() - birth.getTime()
   const totalDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
-  if (totalDays < 0) return 'Recém-nascido'
+
+  // Pré-natal: data futura → mostra countdown em dias/semanas
+  if (totalDays < 0) {
+    const absDays = Math.abs(totalDays)
+    if (absDays <= 7) return `Nasce em ${absDays} dia${absDays !== 1 ? 's' : ''}`
+    const weeks = Math.ceil(absDays / 7)
+    return `Nasce em ${weeks} semana${weeks !== 1 ? 's' : ''}`
+  }
   if (totalDays < 30) return `${totalDays} dia${totalDays !== 1 ? 's' : ''}`
+
   const months = Math.floor(totalDays / 30.44)
+
+  // ≥12 meses: "X anos Y meses" em vez de "N meses Z dias"
+  if (months >= 12) {
+    const years = Math.floor(months / 12)
+    const remainMonths = months - years * 12
+    const yearStr = `${years} ano${years !== 1 ? 's' : ''}`
+    if (remainMonths > 0) {
+      return `${yearStr} e ${remainMonths} ${remainMonths !== 1 ? 'meses' : 'mês'}`
+    }
+    return yearStr
+  }
+
   const remainDays = Math.floor(totalDays - months * 30.44)
   const monthStr = `${months} ${months !== 1 ? 'meses' : 'mês'}`
   if (remainDays > 0) return `${monthStr} e ${remainDays} dia${remainDays !== 1 ? 's' : ''}`
   return monthStr
+}
+
+/** True quando birthDate é no futuro (pré-natal). */
+export function isPrenatal(birthDate: string): boolean {
+  const birth = parseLocalDate(birthDate)
+  const now = new Date()
+  now.setHours(0, 0, 0, 0)
+  return birth.getTime() > now.getTime()
+}
+
+/**
+ * Valida a data de nascimento pro cadastro.
+ *
+ * Regras:
+ * - Pode ser no futuro até 40 semanas (9 meses) → pré-natal com countdown
+ * - Pode ser até 3 anos atrás (foco do Yaya é 0-3 anos)
+ * - Fora disso, retorna mensagem de erro
+ */
+export function validateBabyBirthDate(birthDate: string): string | null {
+  if (!birthDate) return 'Informe a data de nascimento'
+  const birth = parseLocalDate(birthDate)
+  if (isNaN(birth.getTime())) return 'Data inválida'
+
+  const now = new Date()
+  now.setHours(0, 0, 0, 0)
+
+  const maxFuture = new Date(now)
+  maxFuture.setDate(maxFuture.getDate() + 40 * 7) // 40 semanas no futuro
+
+  const minPast = new Date(now)
+  minPast.setFullYear(minPast.getFullYear() - 3) // 3 anos atrás
+
+  if (birth.getTime() > maxFuture.getTime()) {
+    return 'Data muito no futuro. O Yaya aceita até 40 semanas antes do nascimento.'
+  }
+  if (birth.getTime() < minPast.getTime()) {
+    return 'O Yaya atende bebês até 3 anos. Para crianças mais velhas, os recursos não se aplicam.'
+  }
+  return null
 }
 
 export function timeSince(timestamp: number): string {
