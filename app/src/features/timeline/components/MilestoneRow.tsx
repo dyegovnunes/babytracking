@@ -14,7 +14,8 @@ interface Props {
  */
 export default function MilestoneRow({ milestone, displayName }: Props) {
   const navigate = useNavigate()
-  const ts = milestone.achievedAt ? new Date(milestone.achievedAt) : null
+  // createdAt (timestamptz) em vez de achievedAt (DATE) pra mostrar hora real.
+  const ts = new Date(milestone.createdAt)
 
   const handleClick = () => {
     hapticLight()
@@ -30,7 +31,7 @@ export default function MilestoneRow({ milestone, displayName }: Props) {
     >
       <div className="flex flex-col items-center gap-1 w-10 shrink-0">
         <span className="font-label text-xs font-semibold text-on-surface-variant">
-          {ts ? formatTime(ts) : '—'}
+          {formatTime(ts)}
         </span>
         <div className="w-2.5 h-2.5 rounded-full bg-primary" />
       </div>

@@ -152,7 +152,9 @@ export default function MilestonesPage() {
 
   // Modal de boas-vindas: aparece só na primeira visita à página quando há
   // marcos auto-registrados (bebê adicionado com idade > 14 dias)
-  const welcomeKey = baby ? `yaya_milestones_welcome_seen_${baby.id}` : ''
+  // Chave global por user (não por bebê): explicação sobre auto-registro é
+  // a mesma pra qualquer bebê. Igual ao welcome de vacinas.
+  const welcomeKey = 'yaya_milestones_welcome_seen'
   const [welcomeOpen, setWelcomeOpen] = useState(false)
 
   useEffect(() => {
