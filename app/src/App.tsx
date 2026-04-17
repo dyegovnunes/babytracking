@@ -249,7 +249,8 @@ function PushNavigationHandler() {
     const isPublic =
       path === '/privacy' ||
       path.startsWith('/r/') ||
-      path.startsWith('/paineladmin')
+      path.startsWith('/paineladmin') ||
+      path.startsWith('/i/')
     if (!isPublic && path !== '/') {
       navigate('/', { replace: true })
     }

@@ -108,16 +108,22 @@ export default function TrackerPage() {
 
   // Proximas doses (janela 1h) — card com check inline. Overdues ficam no
   // alert da HighlightsStrip (complementam, não duplicam).
+  // Arredondamos `now` pro minuto pra evitar que o useTimer (que tickava a cada
+  // 30s) recalcule a projection a cada render e cause "piscar" na home.
+  const nowMinute = useMemo(() => Math.floor(now.getTime() / 60000), [now])
   const medicationProjections = useMemo(
-    () => getMedicationProjections(medicationDayStatuses, now),
-    [medicationDayStatuses, now],
+    () => getMedicationProjections(medicationDayStatuses, new Date(nowMinute * 60000)),
+    [medicationDayStatuses, nowMinute],
   )
 
   const handleMedicationConfirm = useCallback(
     async (medicationId: string, slotTime: string) => {
       await administerDose(medicationId, new Date(), user?.id, slotTime)
+      // Força refetch do useMedicationLogsRange pra o log aparecer imediatamente
+      // em "Últimos Registros" / timeline — senão só depois de recarregar a página.
+      reloadMedLogs()
     },
-    [administerDose, user],
+    [administerDose, user, reloadMedLogs],
   )
   const allMedications = useMemo(
     () => [...activeMedications, ...archivedMedications],
@@ -127,7 +133,7 @@ export default function TrackerPage() {
   // Medication logs nas últimas 24h (janela da home) — separado do useMedications
   // porque este só traz o dia local, não as últimas 24h móveis.
   const medLogsSinceMs = useMemo(() => Date.now() - 24 * 60 * 60 * 1000, [])
-  const { logs: recentMedicationLogs } = useMedicationLogsRange(
+  const { logs: recentMedicationLogs, reload: reloadMedLogs } = useMedicationLogsRange(
     baby?.id,
     medLogsSinceMs,
   )

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase'
 import type { MedicationLog } from '../medications/medicationData'
 
@@ -38,9 +38,14 @@ function mapLog(row: MedicationLogRow): MedicationLog {
 export function useMedicationLogsRange(
   babyId: string | undefined,
   sinceMs?: number,
-): { logs: MedicationLog[]; loading: boolean } {
+): { logs: MedicationLog[]; loading: boolean; reload: () => void } {
   const [logs, setLogs] = useState<MedicationLog[]>([])
   const [loading, setLoading] = useState(true)
+  // Contador incrementado por callers pra forçar refetch (ex: após administrar
+  // uma dose, TrackerPage chama reload pra a timeline atualizar na hora).
+  const [reloadTick, setReloadTick] = useState(0)
+
+  const reload = useCallback(() => setReloadTick((t) => t + 1), [])
 
   useEffect(() => {
     if (!babyId) {
@@ -74,7 +79,7 @@ export function useMedicationLogsRange(
     return () => {
       cancelled = true
     }
-  }, [babyId, sinceMs])
+  }, [babyId, sinceMs, reloadTick])
 
-  return { logs, loading }
+  return { logs, loading, reload }
 }
