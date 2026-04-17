@@ -33,9 +33,11 @@ npm-debug.log*
 
 .vercel
 
-# Android build artifacts (shouldn't be committed)
+# Mobile build artifacts (shouldn't be committed).
+# Convention: todos os builds (AAB, APK, IPA) ficam em build/ na raiz.
 *.aab
 *.apk
+*.ipa
 
 # Test-output PDFs in root (e.g. yaya-guto-2026-04-12.pdf)
 /*.pdf

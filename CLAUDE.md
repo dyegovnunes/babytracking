@@ -211,8 +211,11 @@ passam por `usePremium()` mas hoje retornam sempre `true`.
   fontes e medidas).
 - ❌ Mexer em `AppContext.tsx` sem rodar `npm run build` — o reducer é
   longo e fácil de quebrar cast de tipo.
-- ❌ Commit com `git add -A` ou `git add .` (há `.aab`, `.apk`, PDFs e
-  specs soltos na raiz que não devem entrar).
+- ❌ Commit com `git add -A` ou `git add .` (há PDFs e specs soltos na
+  raiz que não devem entrar).
+- ❌ Gerar builds (AAB/APK/IPA) em qualquer lugar fora de `build/` na raiz.
+  Convenção: `cp <src>/app-release.aab build/yaya-<versao>-build<N>.aab`.
+  A pasta `build/` é gitignored.
 - ❌ Hardcode de horário, timezone, ou texto de gênero.
 - ❌ Criar nova sheet sem `useSheetBackClose`.
 - ❌ `console.log` em código commitado (ok em debug, remova antes).
