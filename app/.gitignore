@@ -15,8 +15,21 @@ dist-ssr
 .env.*
 
 # Capacitor native builds
-ios/
+# Android mantido ignorado (build artifacts, local.properties, *.keystore, etc).
+# iOS versionado — mantém signing consistente no Codemagic e evita patching
+# de pbxproj por regex a cada build.
 android/
+
+# iOS build artifacts (o projeto Xcode em si é versionado)
+ios/App/build/
+ios/DerivedData/
+ios/App/Pods/
+ios/App/Podfile.lock
+ios/App/App/public/
+ios/.sourcery/
+**/xcuserdata/
+**/xcshareddata/
+*.pbxproj.orig
 
 # Editor directories and files
 .vscode/*

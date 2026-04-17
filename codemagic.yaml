@@ -15,41 +15,29 @@ workflows:
         script: |
           cd app
           npm ci
+
       - name: Build web assets
         script: |
           cd app
           CAPACITOR_BUILD=1 npm run build
-      - name: Add and Sync Capacitor iOS
+
+      - name: Sync Capacitor iOS (copy web assets only)
         script: |
           cd app
-          npx cap add ios || true
+          # A pasta app/ios/ é versionada — pbxproj, Info.plist, entitlements
+          # e signing ficam travados no repo. `cap sync` só copia dist/ pra
+          # dentro do ios/App/public. Nada de regenerar projeto.
           npx cap sync ios
-      - name: Configure entitlements
-        script: |
-          # Cria entitlements file com Sign In with Apple
-          printf '<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<plist version="1.0">\n<dict>\n\t<key>com.apple.developer.applesignin</key>\n\t<array>\n\t\t<string>Default</string>\n\t</array>\n</dict>\n</plist>\n' > app/ios/App/App/App.entitlements
 
-          echo "=== Validating App.entitlements ==="
-          cat app/ios/App/App/App.entitlements
-          plutil -lint app/ios/App/App/App.entitlements
-      - name: Install certificate and profile manually
+      - name: Install distribution certificate and profile
         script: |
-          # ========================================
-          # MANUAL SIGNING — bypasses Codemagic's
-          # fetch-signing-files / use-profiles entirely
-          # ========================================
-
-          # 1. Setup keychain
+          # Setup keychain
           keychain initialize
 
-          # 2. Decode and install the .p12 certificate
+          # Import .p12
           echo "$CM_CERTIFICATE" | base64 --decode > /tmp/distribution.p12
-
-          # Find the keychain created by 'keychain initialize'
           CM_KEYCHAIN=$(security list-keychains | grep codemagic | tr -d ' "' | head -1)
-          if [ -z "$CM_KEYCHAIN" ]; then
-            CM_KEYCHAIN="$HOME/Library/Keychains/codemagic.keychain-db"
-          fi
+          [ -z "$CM_KEYCHAIN" ] && CM_KEYCHAIN="$HOME/Library/Keychains/codemagic.keychain-db"
           echo "=== Using keychain: $CM_KEYCHAIN ==="
 
           security import /tmp/distribution.p12 \
@@ -62,120 +50,43 @@ workflows:
           echo "=== Certificate installed ==="
           security find-identity -v -p codesigning
 
-          # 3. Decode and install provisioning profile
+          # Install provisioning profile
           echo "$CM_PROVISIONING_PROFILE" | base64 --decode > /tmp/yaya.mobileprovision
           PROFILE_UUID=$(security cms -D -i /tmp/yaya.mobileprovision 2>/dev/null | grep -A1 UUID | grep string | sed 's/.*<string>//;s/<\/string>.*//')
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp /tmp/yaya.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/${PROFILE_UUID}.mobileprovision
-
           echo "=== Profile installed: UUID=$PROFILE_UUID ==="
 
-          # 4. Configure pbxproj with explicit signing settings
-          python3 << 'PYEOF'
-          import re
-          pbxproj = 'app/ios/App/App.xcodeproj/project.pbxproj'
-          with open(pbxproj, 'r') as f:
-              content = f.read()
-
-          # --- DEBUG: dump existing CODE_SIGN_IDENTITY lines BEFORE ---
-          print('--- CODE_SIGN_IDENTITY lines BEFORE patch ---')
-          for m in re.finditer(r'.*CODE_SIGN_IDENTITY.*', content):
-              print('  ', m.group(0).strip())
-
-          # A) Normalize ALL CODE_SIGN_IDENTITY occurrences to "Apple Distribution".
-          # Cobre: plain, [sdk=*] variant, e key inteira entre aspas.
-          # Padrão genérico: optional leading quote, "CODE_SIGN_IDENTITY",
-          # optional [sdk=...] variant, optional trailing quote, ' = "value";'.
-          content = re.sub(
-              r'"?CODE_SIGN_IDENTITY(?:\[[^\]]*\])?"?\s*=\s*"[^"]*";',
-              'CODE_SIGN_IDENTITY = "Apple Distribution";',
-              content,
-          )
-
-          # B) Fix ProvisioningStyle in TargetAttributes
-          content = content.replace(
-              'ProvisioningStyle = Automatic;',
-              'ProvisioningStyle = Manual;'
-          )
-
-          # C) Replace target-level CODE_SIGN_STYLE
-          content = content.replace(
-              'CODE_SIGN_STYLE = Automatic;',
-              'CODE_SIGN_STYLE = Manual;'
-          )
-
-          # D) Inject full signing config for App target (after CODE_SIGN_STYLE = Manual)
-          if 'DEVELOPMENT_TEAM = 8TC26XK3WP' not in content:
-              content = content.replace(
-                  'CODE_SIGN_STYLE = Manual;',
-                  'CODE_SIGN_STYLE = Manual;\n'
-                  '\t\t\t\tDEVELOPMENT_TEAM = 8TC26XK3WP;\n'
-                  '\t\t\t\tCODE_SIGN_ENTITLEMENTS = App/App.entitlements;\n'
-                  '\t\t\t\tPROVISIONING_PROFILE_SPECIFIER = "Yaya Codemagic Distribution";'
-              )
-              print('Injected manual signing settings into pbxproj')
-          else:
-              print('Signing settings already present')
-
-          with open(pbxproj, 'w') as f:
-              f.write(content)
-
-          # --- DEBUG: dump existing CODE_SIGN_IDENTITY lines AFTER ---
-          print('--- CODE_SIGN_IDENTITY lines AFTER patch ---')
-          for m in re.finditer(r'.*CODE_SIGN_IDENTITY.*', content):
-              print('  ', m.group(0).strip())
-          PYEOF
-
-          echo "=== Final pbxproj signing settings ==="
-          grep -n "CODE_SIGN_STYLE\|CODE_SIGN_ENTITLEMENTS\|PROVISIONING_PROFILE\|DEVELOPMENT_TEAM\|CODE_SIGN_IDENTITY" app/ios/App/App.xcodeproj/project.pbxproj || true
       - name: Set app icon
         script: |
           cp app/assets/app-icon-1024.png app/ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png
-      - name: Configure iOS plist
-        script: |
-          cd app/ios/App/App
-          # Encryption (App Store export compliance)
-          /usr/libexec/PlistBuddy -c "Add :ITSAppUsesNonExemptEncryption bool false" Info.plist || /usr/libexec/PlistBuddy -c "Set :ITSAppUsesNonExemptEncryption false" Info.plist
-          # AdMob
-          /usr/libexec/PlistBuddy -c "Add :GADApplicationIdentifier string ca-app-pub-5445931232409285~9773184902" Info.plist || /usr/libexec/PlistBuddy -c "Set :GADApplicationIdentifier ca-app-pub-5445931232409285~9773184902" Info.plist
-          # Photo library + camera usage descriptions
-          /usr/libexec/PlistBuddy -c "Add :NSPhotoLibraryUsageDescription string 'O Yaya precisa acessar suas fotos para você escolher a imagem do perfil do bebê.'" Info.plist || /usr/libexec/PlistBuddy -c "Set :NSPhotoLibraryUsageDescription 'O Yaya precisa acessar suas fotos para você escolher a imagem do perfil do bebê.'" Info.plist
-          /usr/libexec/PlistBuddy -c "Add :NSCameraUsageDescription string 'O Yaya precisa acessar a câmera para você tirar uma foto do bebê para o perfil.'" Info.plist || /usr/libexec/PlistBuddy -c "Set :NSCameraUsageDescription 'O Yaya precisa acessar a câmera para você tirar uma foto do bebê para o perfil.'" Info.plist
-          # URL scheme
-          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes array" Info.plist 2>/dev/null || true
-          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0 dict" Info.plist 2>/dev/null || true
-          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLName string app.yayababy" Info.plist 2>/dev/null || true
-          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLSchemes array" Info.plist 2>/dev/null || true
-          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLSchemes:0 string app.yayababy" Info.plist 2>/dev/null || true
+
       - name: Set version and build number
         script: |
-          PLIST="app/ios/App/App/Info.plist"
-          /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString 1.7.3" "$PLIST"
-          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion 38" "$PLIST"
+          # Sobrescreve MARKETING_VERSION e CURRENT_PROJECT_VERSION diretamente
+          # no pbxproj (versionado). Único local a manter versão sincronizada.
+          PBXPROJ="app/ios/App/App.xcodeproj/project.pbxproj"
+          sed -i '' 's/MARKETING_VERSION = [^;]*;/MARKETING_VERSION = 1.7.3;/g' "$PBXPROJ"
+          sed -i '' 's/CURRENT_PROJECT_VERSION = [^;]*;/CURRENT_PROJECT_VERSION = 38;/g' "$PBXPROJ"
+          echo "=== Versions set ==="
+          grep -n "MARKETING_VERSION\|CURRENT_PROJECT_VERSION" "$PBXPROJ"
+
       - name: Build iOS
         script: |
           cd app/ios/App
 
-          # Generate ExportOptions.plist for App Store (usando printf para evitar indentacao YAML)
+          # ExportOptions.plist
           printf '<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<plist version="1.0">\n<dict>\n\t<key>method</key>\n\t<string>app-store</string>\n\t<key>teamID</key>\n\t<string>8TC26XK3WP</string>\n\t<key>signingStyle</key>\n\t<string>manual</string>\n\t<key>provisioningProfiles</key>\n\t<dict>\n\t\t<key>app.yayababy</key>\n\t\t<string>Yaya Codemagic Distribution</string>\n\t</dict>\n\t<key>signingCertificate</key>\n\t<string>Apple Distribution</string>\n</dict>\n</plist>\n' > /tmp/ExportOptions.plist
-          echo "=== ExportOptions.plist ==="
-          cat /tmp/ExportOptions.plist
           plutil -lint /tmp/ExportOptions.plist
 
-          # Archive
-          # NOTE: NÃO passar CODE_SIGN_ENTITLEMENTS aqui — ele vaza para
-          # todos os targets (SPM packages). Está configurado no pbxproj
-          # apenas para o target App.
-          #
-          # CODE_SIGN_IDENTITY via CLI como "última linha de defesa" — se
-          # o pbxproj ainda tiver algum residual de "iOS Distribution",
-          # esse override manda. Safe: não vaza entitlements/profile.
+          # Archive — signing já está configurado permanentemente no pbxproj
+          # versionado (CODE_SIGN_STYLE=Manual, CODE_SIGN_IDENTITY="Apple Distribution",
+          # DEVELOPMENT_TEAM, PROVISIONING_PROFILE_SPECIFIER, CODE_SIGN_ENTITLEMENTS).
           xcodebuild archive \
             -project "App.xcodeproj" \
             -scheme "App" \
             -destination "generic/platform=iOS" \
             -archivePath "$CM_BUILD_DIR/App.xcarchive" \
-            CODE_SIGN_IDENTITY="Apple Distribution" \
             COMPILER_INDEX_STORE_ENABLE=NO
 
           # Export IPA
@@ -184,9 +95,8 @@ workflows:
             -exportOptionsPlist /tmp/ExportOptions.plist \
             -exportPath "$CM_BUILD_DIR/ipa"
     artifacts:
-      - app/ios/App/build/ios/ipa/*.ipa
-      - "*.xcarchive"
-      - /Users/builder/clone/**/*.ipa
+      - $CM_BUILD_DIR/ipa/*.ipa
+      - $CM_BUILD_DIR/*.xcarchive
     publishing:
       app_store_connect:
         auth: integration
