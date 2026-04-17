@@ -46,6 +46,37 @@ workflows:
           # Inicializa keychain
           keychain initialize
 
+          # IMPORTANTE: geramos uma RSA key nova a cada build (não temos a
+          # key persistida em env var). Isso significa que certs DISTRIBUTION
+          # já existentes na ASC são inúteis (não temos a private key pra
+          # casar). Pior: na segunda build em diante a Apple retorna 409 no
+          # --create porque já existe um Distribution cert ativo.
+          #
+          # Solução: revogar todos os certs DISTRIBUTION existentes antes
+          # de criar um novo. Seguro porque esse projeto só roda daqui —
+          # se outro sistema depender do mesmo cert, precisa persistir a
+          # key em CERTIFICATE_PRIVATE_KEY env var e remover este cleanup.
+          echo "Limpando certs DISTRIBUTION existentes na ASC..."
+          DIST_IDS=$(app-store-connect certificates list \
+            --type IOS_DISTRIBUTION --json 2>/dev/null \
+            | python3 -c "import sys,json
+try:
+    data = json.load(sys.stdin)
+    print(' '.join(c['id'] for c in data))
+except Exception:
+    pass
+" || echo "")
+
+          if [ -n "$DIST_IDS" ]; then
+            echo "Revogando: $DIST_IDS"
+            for id in $DIST_IDS; do
+              app-store-connect certificates delete "$id" \
+                --ignore-not-found || true
+            done
+          else
+            echo "Nenhum cert DISTRIBUTION pra revogar."
+          fi
+
           # Gera uma RSA private key fresca e inline como string (a flag
           # --certificate-key-path não existe nesta versão da CLI; usar
           # --certificate-key com o conteúdo).
