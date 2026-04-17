@@ -11,7 +11,12 @@ import { HistorySkeleton } from '../../components/ui/Skeleton'
 import { hapticMedium } from '../../lib/haptics'
 import { useBabyPremium } from '../../hooks/useBabyPremium'
 import { PaywallModal } from '../../components/ui/PaywallModal'
-import { useShiftsForBaby } from '../tracker/useCaregiverShift'
+import { useShiftsForBaby, type CaregiverShift } from '../tracker/useCaregiverShift'
+import ShiftDetailModal from '../tracker/components/ShiftDetailModal'
+import ResumoDoDiaSheet from '../tracker/components/ResumoDoDiaSheet'
+import { useAuth } from '../../contexts/AuthContext'
+import { useMyRole } from '../../hooks/useMyRole'
+import { useCaregiverSchedule, isInWorkWindow } from '../profile/useCaregiverSchedule'
 
 // Free: hoje e ontem apenas (2 dias = HOJE + DIA ANTERIOR)
 const HISTORY_LIMIT_DAYS = 2
@@ -95,8 +100,24 @@ function groupByDay(logs: LogEntry[]): { dayKey: string; label: string; logs: Lo
 export default function HistoryPage() {
   const { logs, members, loading, baby } = useAppState()
   const dispatch = useAppDispatch()
+  const { user } = useAuth()
+  const myRole = useMyRole()
   const isPremium = useBabyPremium()
   const { shifts } = useShiftsForBaby(baby?.id)
+  const [detailShift, setDetailShift] = useState<CaregiverShift | null>(null)
+  const [editingShift, setEditingShift] = useState<CaregiverShift | null>(null)
+
+  // Schedule do próprio usuário (pra saber se pode editar o próprio shift)
+  const { schedule: myCaregiverSchedule } = useCaregiverSchedule(
+    myRole === 'caregiver' ? baby?.id : undefined,
+    myRole === 'caregiver' ? user?.id : undefined,
+  )
+
+  const canEditShift = (shift: CaregiverShift): boolean => {
+    if (!user || user.id !== shift.caregiverId) return false
+    if (!myCaregiverSchedule) return false
+    return isInWorkWindow(myCaregiverSchedule, { startOffsetMin: -45, endOffsetMin: 60 })
+  }
 
   // Agrupa shifts por shift_date (YYYY-MM-DD) para render intercalado com logs
   const shiftsByDay = useMemo(() => {
@@ -212,6 +233,7 @@ export default function HistoryPage() {
                     key={s.id}
                     shift={s}
                     caregiverName={members[s.caregiverId]?.displayName || 'Cuidador(a)'}
+                    onClick={() => setDetailShift(s)}
                   />
                 ))}
                 {group.logs.map((log) => (
@@ -231,7 +253,7 @@ export default function HistoryPage() {
         {hasOlderLogs && (
           <button
             onClick={() => setShowPaywall(true)}
-            className="w-full py-4 mt-2 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center gap-2 active:bg-primary/20 transition-colors"
+            className="w-full py-4 mt-2 rounded-md bg-primary/10 border border-primary/20 flex items-center justify-center gap-2 active:bg-primary/20 transition-colors"
           >
             <span className="material-symbols-outlined text-primary text-xl">lock</span>
             <span className="text-primary font-label font-semibold text-sm">
@@ -257,6 +279,32 @@ export default function HistoryPage() {
         onClose={() => setShowPaywall(false)}
         trigger="history"
       />
+
+      {detailShift && (
+        <ShiftDetailModal
+          shift={detailShift}
+          caregiverName={members[detailShift.caregiverId]?.displayName || 'Cuidador(a)'}
+          onClose={() => setDetailShift(null)}
+          onEdit={
+            canEditShift(detailShift)
+              ? () => {
+                  const s = detailShift
+                  setDetailShift(null)
+                  setTimeout(() => setEditingShift(s), 0)
+                }
+              : undefined
+          }
+        />
+      )}
+
+      {editingShift && baby && (
+        <ResumoDoDiaSheet
+          babyId={baby.id}
+          babyName={baby.name}
+          caregiverId={editingShift.caregiverId}
+          onClose={() => setEditingShift(null)}
+        />
+      )}
     </div>
   )
 }

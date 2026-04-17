@@ -43,7 +43,7 @@ export default function TimelineEntry({ log, members, onEdit, pairedLog }: Props
   return (
     <button
       onClick={() => onEdit(log)}
-      className="flex items-center gap-3 w-full text-left py-3 px-4 rounded-lg bg-surface-container active:bg-surface-container-high transition-colors"
+      className="flex items-center gap-3 w-full text-left py-3 px-4 rounded-md bg-surface-container active:bg-surface-container-high transition-colors"
     >
       <div className="flex flex-col items-center gap-1 w-10 shrink-0">
         <span className="font-label text-xs font-semibold text-on-surface-variant">

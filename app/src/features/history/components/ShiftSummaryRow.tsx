@@ -1,16 +1,11 @@
-import { useState } from 'react'
 import { hapticLight } from '../../../lib/haptics'
 import type { CaregiverShift } from '../../tracker/useCaregiverShift'
 
 interface Props {
   shift: CaregiverShift
   caregiverName: string
-  /**
-   * Quando fornecido, a linha inteira vira um botão clicável que abre o modo edição.
-   * Usado pela Home quando o próprio caregiver está dentro da janela de trabalho
-   * (+/- tolerância). Sem onEdit o comportamento padrão é expandir os detalhes.
-   */
-  onEdit?: () => void
+  /** Callback de clique. Abre o ShiftDetailModal no parent. */
+  onClick?: () => void
 }
 
 const MOOD_EMOJIS: Record<number, string> = {
@@ -19,6 +14,12 @@ const MOOD_EMOJIS: Record<number, string> = {
   3: '😐',
   4: '🙂',
   5: '😊',
+}
+
+const SCORE_CHIP_STYLE: Record<1 | 2 | 3, { tone: string; text: string }> = {
+  1: { tone: 'bg-error/10 text-error border-error/20', text: 'ruim' },
+  2: { tone: 'bg-amber-500/10 text-amber-700 border-amber-500/25', text: 'médio' },
+  3: { tone: 'bg-primary/10 text-primary border-primary/20', text: 'bom' },
 }
 
 function formatSubmittedTime(iso: string | null): string | null {
@@ -31,104 +32,65 @@ function formatSubmittedTime(iso: string | null): string | null {
 
 /**
  * Linha destacada no HistoryPage representando um resumo de shift de caregiver
- * no dia correspondente. Clique expande para mostrar nota completa + quick notes.
+ * no dia correspondente. Clique chama `onClick` — o parent abre o ShiftDetailModal.
  */
-export default function ShiftSummaryRow({ shift, caregiverName, onEdit }: Props) {
-  const [expanded, setExpanded] = useState(false)
-  const editable = !!onEdit
+export default function ShiftSummaryRow({ shift, caregiverName, onClick }: Props) {
   const moodEmoji = shift.moodScore ? MOOD_EMOJIS[shift.moodScore] : ''
   const submittedTime = formatSubmittedTime(shift.submittedAt)
   const preview = shift.note
     ? shift.note.slice(0, 80) + (shift.note.length > 80 ? '…' : '')
     : 'Resumo enviado sem anotações.'
   const hasScoreInfo = shift.ateScore !== null || shift.sleptScore !== null
-  const hasDetails =
-    (shift.note && shift.note.length > 80) || shift.quickNotes.length > 0 || hasScoreInfo
-  const buttonDisabled = !editable && !hasDetails
 
-  const handleHeaderClick = () => {
-    if (editable) {
-      hapticLight()
-      onEdit!()
-      return
-    }
-    if (hasDetails) {
-      hapticLight()
-      setExpanded((v) => !v)
-    }
+  const handleClick = () => {
+    if (!onClick) return
+    hapticLight()
+    onClick()
   }
 
   return (
-    <div className="bg-primary/[0.05] border border-primary/15 rounded-md px-3 py-3 my-2">
-      <button
-        type="button"
-        onClick={handleHeaderClick}
-        className="w-full flex items-start gap-3 text-left"
-        disabled={buttonDisabled}
-      >
-        <span className="material-symbols-outlined text-primary text-xl mt-0.5">assignment</span>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-headline text-xs font-bold text-on-surface">
-              Resumo do dia
+    <button
+      type="button"
+      onClick={handleClick}
+      disabled={!onClick}
+      className="w-full text-left bg-primary/[0.05] border border-primary/15 rounded-md px-3 py-3 my-2 flex items-start gap-3 active:bg-primary/10 transition-colors disabled:active:bg-primary/[0.05]"
+    >
+      <span className="material-symbols-outlined text-primary text-xl mt-0.5">assignment</span>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="font-headline text-xs font-bold text-on-surface">
+            Resumo do dia
+          </span>
+          <span className="font-label text-xs text-on-surface-variant">
+            · {caregiverName}
+          </span>
+          {submittedTime && (
+            <span className="font-label text-[10px] text-on-surface-variant/70 ml-auto">
+              {submittedTime}
             </span>
-            <span className="font-label text-xs text-on-surface-variant">
-              · {caregiverName}
-            </span>
-            {submittedTime && (
-              <span className="font-label text-[10px] text-on-surface-variant/70 ml-auto">
-                {submittedTime}
-              </span>
+          )}
+        </div>
+        <p className="font-body text-sm text-on-surface mt-1">
+          {moodEmoji && <span className="mr-1">{moodEmoji}</span>}
+          {preview}
+        </p>
+        {hasScoreInfo && (
+          <div className="mt-1.5 flex items-center gap-2 flex-wrap">
+            {shift.ateScore !== null && (
+              <ScoreChip icon="restaurant" score={shift.ateScore} label="Comeu" />
+            )}
+            {shift.sleptScore !== null && (
+              <ScoreChip icon="bedtime" score={shift.sleptScore} label="Dormiu" />
             )}
           </div>
-          <p className="font-body text-sm text-on-surface mt-1">
-            {moodEmoji && <span className="mr-1">{moodEmoji}</span>}
-            {preview}
-          </p>
-          {hasScoreInfo && (
-            <div className="mt-1.5 flex items-center gap-2 flex-wrap">
-              {shift.ateScore !== null && (
-                <ScoreChip icon="restaurant" score={shift.ateScore} label="Comeu" />
-              )}
-              {shift.sleptScore !== null && (
-                <ScoreChip icon="bedtime" score={shift.sleptScore} label="Dormiu" />
-              )}
-            </div>
-          )}
-        </div>
-        {editable ? (
-          <span className="material-symbols-outlined text-primary text-base mt-0.5">
-            edit
-          </span>
-        ) : hasDetails ? (
-          <span className={`material-symbols-outlined text-on-surface-variant text-base transition-transform mt-0.5 ${expanded ? 'rotate-180' : ''}`}>
-            expand_more
-          </span>
-        ) : null}
-      </button>
-
-      {expanded && hasDetails && (
-        <div className="mt-3 pl-8 space-y-3">
-          {shift.note && shift.note.length > 80 && (
-            <p className="font-body text-sm text-on-surface whitespace-pre-wrap">{shift.note}</p>
-          )}
-          {shift.quickNotes.length > 0 && (
-            <div>
-              <p className="font-label text-[10px] uppercase tracking-wider text-on-surface-variant mb-1">
-                Notas rápidas do dia
-              </p>
-              <ul className="space-y-1">
-                {shift.quickNotes.map((qn, i) => (
-                  <li key={i} className="font-body text-xs text-on-surface-variant pl-3 border-l border-outline-variant">
-                    {qn}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
+        )}
+      </div>
+      {onClick && (
+        <span className="material-symbols-outlined text-on-surface-variant/60 text-base mt-0.5">
+          chevron_right
+        </span>
       )}
-    </div>
+    </button>
   )
 }
 
@@ -136,12 +98,6 @@ interface ScoreChipProps {
   icon: string
   score: 1 | 2 | 3
   label: string
-}
-
-const SCORE_CHIP_STYLE: Record<1 | 2 | 3, { tone: string; text: string }> = {
-  1: { tone: 'bg-error/10 text-error border-error/20', text: 'ruim' },
-  2: { tone: 'bg-amber-500/10 text-amber-700 border-amber-500/25', text: 'médio' },
-  3: { tone: 'bg-primary/10 text-primary border-primary/20', text: 'bom' },
 }
 
 function ScoreChip({ icon, score, label }: ScoreChipProps) {

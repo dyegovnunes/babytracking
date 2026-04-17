@@ -23,7 +23,7 @@ export default function CategoryFilter({ selected, onChange }: Props) {
           className={`shrink-0 px-4 py-2 rounded-full font-label text-sm font-medium transition-colors ${
             selected === cat.id
               ? 'bg-primary text-on-primary'
-              : 'bg-surface-variant text-on-surface-variant'
+              : 'bg-surface-container text-on-surface-variant'
           }`}
         >
           {cat.label}

@@ -10,8 +10,12 @@ import ActivityGrid from './components/ActivityGrid'
 import PredictionCard from './components/PredictionCard'
 import RecentLogs from './components/RecentLogs'
 import ResumoDoDiaButton from './components/ResumoDoDiaButton'
+import ResumoDoDiaSheet from './components/ResumoDoDiaSheet'
+import ShiftDetailModal from './components/ShiftDetailModal'
 import OutOfHoursBanner from './components/OutOfHoursBanner'
-import TodayShiftsOnHome from './components/TodayShiftsOnHome'
+import { useShiftsForBaby, type CaregiverShift } from './useCaregiverShift'
+import { useCaregiverSchedule, isInWorkWindow } from '../profile/useCaregiverSchedule'
+import { getLocalDateString } from '../../lib/formatters'
 import BottleModal from '../../components/ui/BottleModal'
 import EditModal from '../../components/ui/EditModal'
 import Toast from '../../components/ui/Toast'
@@ -38,6 +42,27 @@ export default function TrackerPage() {
   const { user } = useAuth()
   const myRole = useMyRole()
   const now = useTimer()
+
+  // Shifts de hoje (resumo do dia da babá) — aparecem mesclados no RecentLogs
+  const today = getLocalDateString()
+  const { shifts: todayShifts } = useShiftsForBaby(baby?.id, today, today)
+  // Schedule do próprio usuário (só existe quando ele é caregiver desse bebê)
+  const { schedule: myCaregiverSchedule } = useCaregiverSchedule(
+    myRole === 'caregiver' ? baby?.id : undefined,
+    myRole === 'caregiver' ? user?.id : undefined,
+  )
+
+  const [detailShift, setDetailShift] = useState<CaregiverShift | null>(null)
+  const [editingShift, setEditingShift] = useState<CaregiverShift | null>(null)
+
+  const canEditShift = useCallback(
+    (shift: CaregiverShift): boolean => {
+      if (!user || user.id !== shift.caregiverId) return false
+      if (!myCaregiverSchedule) return false
+      return isInWorkWindow(myCaregiverSchedule, { startOffsetMin: -45, endOffsetMin: 60 })
+    },
+    [user, myCaregiverSchedule],
+  )
 
   // Milestones (home card)
   const { achievedCodes, ageDays } = useMilestones(baby?.id, baby?.birthDate)
@@ -194,8 +219,6 @@ export default function TrackerPage() {
         <ResumoDoDiaButton />
       </div>
 
-      <TodayShiftsOnHome />
-
       {projections.length > 0 && (
         <section className="px-5 mt-6">
           <h2 className="font-headline text-base font-bold text-on-surface mb-3">
@@ -220,7 +243,13 @@ export default function TrackerPage() {
         />
       )}
 
-      <RecentLogs logs={logs} members={members} onEdit={handleEditLog} />
+      <RecentLogs
+        logs={logs}
+        members={members}
+        onEdit={handleEditLog}
+        shifts={todayShifts}
+        onShiftClick={(s) => setDetailShift(s)}
+      />
 
       {bottleModalOpen && (
         <BottleModal
@@ -255,6 +284,34 @@ export default function TrackerPage() {
       />
 
       {toast && <Toast message={toast} onDismiss={() => setToast(null)} />}
+
+      {detailShift && (
+        <ShiftDetailModal
+          shift={detailShift}
+          caregiverName={members[detailShift.caregiverId]?.displayName || 'Cuidador(a)'}
+          onClose={() => setDetailShift(null)}
+          onEdit={
+            canEditShift(detailShift)
+              ? () => {
+                  const s = detailShift
+                  setDetailShift(null)
+                  // Abre o sheet de edição em um novo tick para evitar choque
+                  // entre os dois useSheetBackClose (mesma técnica do VaccinesPage)
+                  setTimeout(() => setEditingShift(s), 0)
+                }
+              : undefined
+          }
+        />
+      )}
+
+      {editingShift && baby && (
+        <ResumoDoDiaSheet
+          babyId={baby.id}
+          babyName={baby.name}
+          caregiverId={editingShift.caregiverId}
+          onClose={() => setEditingShift(null)}
+        />
+      )}
     </div>
   )
 }
