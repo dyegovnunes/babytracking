@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom'
 import type { BabyVaccine } from '../../vaccines/vaccineData'
 import { formatTime } from '../../../lib/formatters'
 import { hapticLight } from '../../../lib/haptics'
@@ -6,24 +5,23 @@ import { hapticLight } from '../../../lib/haptics'
 interface Props {
   vaccine: BabyVaccine
   displayName: string
+  /** Click handler — parent monta a sheet leve (VaccineTimelineSheet). */
+  onClick?: (vaccine: BabyVaccine) => void
 }
 
 /**
  * Row de vacina aplicada. Borda lateral azul sinaliza a categoria "saúde".
- * Tap navega pra `/vacinas` (vacinas são geridas na feature, não inline).
+ * Tap chama callback que abre a sheet leve (info + ações rápidas) sem navegar.
  */
-export default function VaccineRow({ vaccine, displayName }: Props) {
-  const navigate = useNavigate()
+export default function VaccineRow({ vaccine, displayName, onClick }: Props) {
   // Horário real do registro vem de createdAt (timestamptz). appliedAt é DATE
   // puro (sem hora) e quando convertido pra Date cai em 00:00 UTC = 21:00 local.
   const ts = new Date(vaccine.createdAt)
 
   const handleClick = () => {
+    if (!onClick) return
     hapticLight()
-    // Navega pra /vacinas com queryparam pra a página abrir o detail sheet
-    // da vacina específica direto. Edição acontece na feature (preserva a
-    // lógica existente — sem duplicar editor aqui).
-    navigate(`/vacinas?edit=${encodeURIComponent(vaccine.vaccineCode)}`)
+    onClick(vaccine)
   }
 
   return (

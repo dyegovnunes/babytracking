@@ -1,5 +1,7 @@
 import type { LogEntry, Member } from '../../../types'
 import type { CaregiverShift } from '../../tracker/useCaregiverShift'
+import type { BabyVaccine } from '../../vaccines/vaccineData'
+import type { BabyMilestone } from '../../milestones/milestoneData'
 import type { TimelineItem } from '../types'
 import LogRow from './LogRow'
 import ShiftRow from './ShiftRow'
@@ -12,14 +14,23 @@ interface Props {
   members: Record<string, Member>
   onEditLog: (log: LogEntry) => void
   onShiftClick?: (shift: CaregiverShift) => void
+  onVaccineClick?: (vaccine: BabyVaccine) => void
+  onMilestoneClick?: (milestone: BabyMilestone) => void
 }
 
 /**
  * Dispatcher: dado um TimelineItem, renderiza a row apropriada.
  * Callbacks são passados pra quem precisa; cada row implementa seu
- * próprio comportamento (tap edit, navegar, abrir sheet).
+ * próprio comportamento (tap edit, abrir sheet, navegar).
  */
-export default function TimelineRow({ item, members, onEditLog, onShiftClick }: Props) {
+export default function TimelineRow({
+  item,
+  members,
+  onEditLog,
+  onShiftClick,
+  onVaccineClick,
+  onMilestoneClick,
+}: Props) {
   switch (item.kind) {
     case 'log':
       return (
@@ -41,9 +52,21 @@ export default function TimelineRow({ item, members, onEditLog, onShiftClick }: 
       )
     }
     case 'vaccine':
-      return <VaccineRow vaccine={item.data} displayName={item.displayName} />
+      return (
+        <VaccineRow
+          vaccine={item.data}
+          displayName={item.displayName}
+          onClick={onVaccineClick}
+        />
+      )
     case 'milestone':
-      return <MilestoneRow milestone={item.data} displayName={item.displayName} />
+      return (
+        <MilestoneRow
+          milestone={item.data}
+          displayName={item.displayName}
+          onClick={onMilestoneClick}
+        />
+      )
     case 'medication':
       return <MedicationRow log={item.data} medication={item.medication} />
   }

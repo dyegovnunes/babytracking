@@ -32,6 +32,10 @@ import { useMedications } from '../medications'
 import { useMyRole } from '../../hooks/useMyRole'
 import { can } from '../../lib/roles'
 import { useTimeline, useMedicationLogsRange } from '../timeline'
+import VaccineTimelineSheet from '../timeline/components/VaccineTimelineSheet'
+import MilestoneTimelineSheet from '../timeline/components/MilestoneTimelineSheet'
+import type { BabyVaccine } from '../vaccines/vaccineData'
+import type { BabyMilestone } from '../milestones/milestoneData'
 
 import { TrackerSkeleton } from '../../components/ui/Skeleton'
 import type { LogEntry } from '../../types'
@@ -57,6 +61,8 @@ export default function TrackerPage() {
 
   const [detailShift, setDetailShift] = useState<CaregiverShift | null>(null)
   const [editingShift, setEditingShift] = useState<CaregiverShift | null>(null)
+  const [timelineVaccine, setTimelineVaccine] = useState<BabyVaccine | null>(null)
+  const [timelineMilestone, setTimelineMilestone] = useState<BabyMilestone | null>(null)
 
   const canEditShift = useCallback(
     (shift: CaregiverShift): boolean => {
@@ -68,16 +74,19 @@ export default function TrackerPage() {
   )
 
   // Milestones (home card + timeline)
-  const { achievedCodes, ageDays, achieved: milestoneRecords } = useMilestones(
-    baby?.id,
-    baby?.birthDate,
-  )
+  const {
+    achievedCodes,
+    ageDays,
+    achieved: milestoneRecords,
+    quickToggle: milestoneQuickToggle,
+  } = useMilestones(baby?.id, baby?.birthDate)
 
   // Vacinas — alimenta highlights + timeline
-  const { statusByCode: vaccineStatusByCode, records: vaccineRecords } = useVaccines(
-    baby?.id,
-    baby?.birthDate,
-  )
+  const {
+    statusByCode: vaccineStatusByCode,
+    records: vaccineRecords,
+    quickToggle: vaccineQuickToggle,
+  } = useVaccines(baby?.id, baby?.birthDate)
 
   // Medicamentos — alimenta o chip no HighlightsStrip e a timeline
   const medicationMembersById = useMemo(() => {
@@ -253,13 +262,17 @@ export default function TrackerPage() {
     setDismissedProjections(prev => new Set(prev).add(label))
   }, [])
 
-  // Force re-render of projections with timer
-  void now
-
-  const projections = PROJECTION_CATEGORIES
-    .map((cat) => getNextProjection(logs, cat, intervals, DEFAULT_EVENTS, { pauseDuringSleep, quietHours }))
-    .filter(Boolean)
-    .filter(p => !dismissedProjections.has(p!.label))
+  // Memoizamos projections pra evitar o "piscar" durante renders sucessivos
+  // (useTimer tickava a cada ~30s e recalculava sem cache, alternando com
+  // o loading do useMedications).
+  const projections = useMemo(() => {
+    // Força recálculo quando o minuto muda (useTimer)
+    void now
+    return PROJECTION_CATEGORIES
+      .map((cat) => getNextProjection(logs, cat, intervals, DEFAULT_EVENTS, { pauseDuringSleep, quietHours }))
+      .filter(Boolean)
+      .filter((p) => !dismissedProjections.has(p!.label))
+  }, [logs, intervals, pauseDuringSleep, quietHours, dismissedProjections, now])
 
   if (loading) {
     return <TrackerSkeleton />
@@ -317,6 +330,8 @@ export default function TrackerPage() {
         members={members}
         onEditLog={handleEditLog}
         onShiftClick={(s) => setDetailShift(s)}
+        onVaccineClick={(v) => setTimelineVaccine(v)}
+        onMilestoneClick={(m) => setTimelineMilestone(m)}
       />
 
       {bottleModalOpen && (
@@ -378,6 +393,26 @@ export default function TrackerPage() {
           babyName={baby.name}
           caregiverId={editingShift.caregiverId}
           onClose={() => setEditingShift(null)}
+        />
+      )}
+
+      {timelineVaccine && (
+        <VaccineTimelineSheet
+          vaccine={timelineVaccine}
+          onClose={() => setTimelineVaccine(null)}
+          onRemove={async () => {
+            await vaccineQuickToggle(timelineVaccine.vaccineCode, user?.id)
+          }}
+        />
+      )}
+
+      {timelineMilestone && (
+        <MilestoneTimelineSheet
+          milestone={timelineMilestone}
+          onClose={() => setTimelineMilestone(null)}
+          onRemove={async () => {
+            await milestoneQuickToggle(timelineMilestone.milestoneCode, user?.id)
+          }}
         />
       )}
     </div>

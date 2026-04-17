@@ -2,6 +2,8 @@ import { Link } from 'react-router-dom'
 import type { LogEntry, Member } from '../../../types'
 import type { CaregiverShift } from '../useCaregiverShift'
 import type { TimelineItem } from '../../timeline/types'
+import type { BabyVaccine } from '../../vaccines/vaccineData'
+import type { BabyMilestone } from '../../milestones/milestoneData'
 import { TimelineRow } from '../../timeline'
 
 interface Props {
@@ -10,6 +12,8 @@ interface Props {
   members: Record<string, Member>
   onEditLog: (log: LogEntry) => void
   onShiftClick: (shift: CaregiverShift) => void
+  onVaccineClick?: (vaccine: BabyVaccine) => void
+  onMilestoneClick?: (milestone: BabyMilestone) => void
 }
 
 /**
@@ -18,7 +22,14 @@ interface Props {
  * (TrackerPage) aplica a regra de janela: últimas 4h OU últimos 5 itens,
  * o que der mais — aqui só renderizamos.
  */
-export default function RecentLogs({ items, members, onEditLog, onShiftClick }: Props) {
+export default function RecentLogs({
+  items,
+  members,
+  onEditLog,
+  onShiftClick,
+  onVaccineClick,
+  onMilestoneClick,
+}: Props) {
   if (items.length === 0) {
     return (
       <section className="px-5 mt-6">
@@ -51,6 +62,8 @@ export default function RecentLogs({ items, members, onEditLog, onShiftClick }: 
             members={members}
             onEditLog={onEditLog}
             onShiftClick={onShiftClick}
+            onVaccineClick={onVaccineClick}
+            onMilestoneClick={onMilestoneClick}
           />
         ))}
       </div>

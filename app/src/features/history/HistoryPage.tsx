@@ -24,6 +24,10 @@ import { useCaregiverSchedule, isInWorkWindow } from '../profile/useCaregiverSch
 import { useVaccines } from '../vaccines'
 import { useMilestones } from '../milestones'
 import { useMedications } from '../medications'
+import VaccineTimelineSheet from '../timeline/components/VaccineTimelineSheet'
+import MilestoneTimelineSheet from '../timeline/components/MilestoneTimelineSheet'
+import type { BabyVaccine } from '../vaccines/vaccineData'
+import type { BabyMilestone } from '../milestones/milestoneData'
 
 // Free: hoje e ontem apenas (2 dias)
 const HISTORY_LIMIT_DAYS = 2
@@ -90,8 +94,14 @@ export default function HistoryPage() {
   }
 
   // Data sources extras pra timeline unificada
-  const { records: vaccineRecords } = useVaccines(baby?.id, baby?.birthDate)
-  const { achieved: milestoneRecords } = useMilestones(baby?.id, baby?.birthDate)
+  const { records: vaccineRecords, quickToggle: vaccineQuickToggle } = useVaccines(
+    baby?.id,
+    baby?.birthDate,
+  )
+  const { achieved: milestoneRecords, quickToggle: milestoneQuickToggle } = useMilestones(
+    baby?.id,
+    baby?.birthDate,
+  )
   const memberMapForMeds = useMemo(() => {
     const map: Record<string, string> = {}
     for (const [uid, m] of Object.entries(members)) map[uid] = m.displayName
@@ -117,6 +127,8 @@ export default function HistoryPage() {
   const [editingLog, setEditingLog] = useState<LogEntry | null>(null)
   const [toast, setToast] = useState<string | null>(null)
   const [showPaywall, setShowPaywall] = useState(false)
+  const [timelineVaccine, setTimelineVaccine] = useState<BabyVaccine | null>(null)
+  const [timelineMilestone, setTimelineMilestone] = useState<BabyMilestone | null>(null)
 
   const cutoffDate = useMemo(
     () => isPremium ? null : Date.now() - HISTORY_LIMIT_DAYS * 24 * 60 * 60 * 1000,
@@ -214,6 +226,8 @@ export default function HistoryPage() {
                   members={members}
                   onEditLog={handleEditLog}
                   onShiftClick={(s) => setDetailShift(s)}
+                  onVaccineClick={(v) => setTimelineVaccine(v)}
+                  onMilestoneClick={(m) => setTimelineMilestone(m)}
                 />
               ))}
             </Fragment>
@@ -273,6 +287,26 @@ export default function HistoryPage() {
           babyName={baby.name}
           caregiverId={editingShift.caregiverId}
           onClose={() => setEditingShift(null)}
+        />
+      )}
+
+      {timelineVaccine && (
+        <VaccineTimelineSheet
+          vaccine={timelineVaccine}
+          onClose={() => setTimelineVaccine(null)}
+          onRemove={async () => {
+            await vaccineQuickToggle(timelineVaccine.vaccineCode, user?.id)
+          }}
+        />
+      )}
+
+      {timelineMilestone && (
+        <MilestoneTimelineSheet
+          milestone={timelineMilestone}
+          onClose={() => setTimelineMilestone(null)}
+          onRemove={async () => {
+            await milestoneQuickToggle(timelineMilestone.milestoneCode, user?.id)
+          }}
         />
       )}
     </div>

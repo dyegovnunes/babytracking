@@ -12,8 +12,9 @@ import Toast from '../../components/ui/Toast'
 import MedicationCard from './components/MedicationCard'
 import MedicationForm from './components/MedicationForm'
 import MedicationAdminSheet from './components/MedicationAdminSheet'
+import MedicationLogEditModal from './components/MedicationLogEditModal'
 import MedicationSlotPickerSheet from './components/MedicationSlotPickerSheet'
-import type { Medication, MedicationDayStatus } from './medicationData'
+import type { Medication, MedicationDayStatus, MedicationLog } from './medicationData'
 
 const DISCLAIMER =
   'O Yaya ajuda a organizar a rotina de medicamentos. Sempre siga as orientações do pediatra — dosagens, horários e duração devem ser prescritos por um profissional.'
@@ -60,6 +61,8 @@ export default function MedicationsPage() {
   const [formOpen, setFormOpen] = useState(false)
   const [editingMed, setEditingMed] = useState<Medication | null>(null)
   const [adminFor, setAdminFor] = useState<Medication | null>(null)
+  // Modal padrão de edição de log (alinhado com EditModal do histórico)
+  const [editingLog, setEditingLog] = useState<{ log: MedicationLog; medication: Medication } | null>(null)
   const [slotPickerFor, setSlotPickerFor] = useState<{
     medication: Medication
     pendingTimes: string[]
@@ -158,17 +161,26 @@ export default function MedicationsPage() {
     return false
   }
 
-  const handleEditLog = async (
+  const handleSaveLog = async (
     logId: string,
     newAdministeredAt: Date,
+    newNotes: string | null,
   ): Promise<boolean> => {
-    const result = await updateLog(logId, { administeredAt: newAdministeredAt })
+    const result = await updateLog(logId, {
+      administeredAt: newAdministeredAt,
+      notes: newNotes,
+    })
     if (result.ok) {
-      setToast('Horário atualizado')
+      setToast('Registro atualizado')
       return true
     }
     setToast('Não foi possível atualizar (horário duplicado?)')
     return false
+  }
+
+  const handleOpenLogEditor = (log: MedicationLog) => {
+    if (!adminFor) return
+    setEditingLog({ log, medication: adminFor })
   }
 
   const handleDeactivate = async (): Promise<boolean> => {
@@ -394,8 +406,7 @@ export default function MedicationsPage() {
           onClose={() => setAdminFor(null)}
           onGiveNow={handleGiveNow}
           onGiveAt={handleGiveAt}
-          onEditLog={handleEditLog}
-          onDeleteLog={handleDeleteLog}
+          onOpenLogEditor={handleOpenLogEditor}
           onEdit={() => {
             const m = adminFor
             setAdminFor(null)
@@ -421,6 +432,16 @@ export default function MedicationsPage() {
         onClose={() => setShowPaywall(false)}
         trigger="medications"
       />
+
+      {editingLog && (
+        <MedicationLogEditModal
+          log={editingLog.log}
+          medication={editingLog.medication}
+          onSave={handleSaveLog}
+          onDelete={handleDeleteLog}
+          onClose={() => setEditingLog(null)}
+        />
+      )}
 
       {toast && <Toast message={toast} onDismiss={() => setToast(null)} />}
     </div>

@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom'
 import type { BabyMilestone } from '../../milestones/milestoneData'
 import { formatTime } from '../../../lib/formatters'
 import { hapticLight } from '../../../lib/haptics'
@@ -6,22 +5,22 @@ import { hapticLight } from '../../../lib/haptics'
 interface Props {
   milestone: BabyMilestone
   displayName: string
+  /** Click handler — parent monta a sheet leve (MilestoneTimelineSheet). */
+  onClick?: (milestone: BabyMilestone) => void
 }
 
 /**
  * Row de marco atingido. Borda lateral roxa (primary) sinaliza a categoria.
- * Tap navega pra `/marcos`.
+ * Tap chama callback que abre a sheet leve (info + ações rápidas) sem navegar.
  */
-export default function MilestoneRow({ milestone, displayName }: Props) {
-  const navigate = useNavigate()
+export default function MilestoneRow({ milestone, displayName, onClick }: Props) {
   // createdAt (timestamptz) em vez de achievedAt (DATE) pra mostrar hora real.
   const ts = new Date(milestone.createdAt)
 
   const handleClick = () => {
+    if (!onClick) return
     hapticLight()
-    // Navega pra /marcos com queryparam pra a página abrir o detail modal
-    // do marco específico direto.
-    navigate(`/marcos?edit=${encodeURIComponent(milestone.milestoneCode)}`)
+    onClick(milestone)
   }
 
   return (

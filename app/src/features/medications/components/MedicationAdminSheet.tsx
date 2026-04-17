@@ -13,10 +13,8 @@ interface Props {
   onGiveNow: () => Promise<boolean>
   /** Dar em outro horário: recebe uma Date custom */
   onGiveAt: (when: Date) => Promise<boolean>
-  /** Editar horário de um log existente (pai dá às 8h mas só marca às 16h). */
-  onEditLog: (logId: string, newAdministeredAt: Date) => Promise<boolean>
-  /** Apagar um log (corrigir engano) */
-  onDeleteLog: (logId: string) => Promise<boolean>
+  /** Abrir editor de um log específico (modal padrão, igual ao histórico). */
+  onOpenLogEditor: (log: MedicationLog) => void
   /** Editar este medicamento (abre o form em modo edit) */
   onEdit: () => void
   /** Excluir medicamento (soft delete via is_active=false — o histórico fica preservado e pode ser reativado). */
@@ -38,8 +36,7 @@ export default function MedicationAdminSheet({
   onClose,
   onGiveNow,
   onGiveAt,
-  onEditLog,
-  onDeleteLog,
+  onOpenLogEditor,
   onEdit,
   onDeactivate,
 }: Props) {
@@ -47,9 +44,6 @@ export default function MedicationAdminSheet({
   const [customTime, setCustomTime] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [confirmDeactivate, setConfirmDeactivate] = useState(false)
-  // Edit mode inline pra logs do dia: guarda o id sendo editado + o tempo provisório
-  const [editingLogId, setEditingLogId] = useState<string | null>(null)
-  const [editingTime, setEditingTime] = useState('')
 
   // Quando todas as doses do dia já foram dadas, bloquear o add pra evitar
   // registro duplicado ou sobreposição com a UNIQUE constraint do banco.
@@ -99,11 +93,6 @@ export default function MedicationAdminSheet({
       hapticSuccess()
       onClose()
     }
-  }
-
-  const handleDelete = async (logId: string) => {
-    hapticMedium()
-    await onDeleteLog(logId)
   }
 
   const handleDeactivate = async () => {
@@ -262,75 +251,18 @@ export default function MedicationAdminSheet({
                 const by = log.administeredBy
                   ? membersById[log.administeredBy] ?? 'cuidador'
                   : 'anônimo'
-                const isEditing = editingLogId === log.id
 
-                const handleStartEdit = () => {
+                const handleRowClick = () => {
                   hapticLight()
-                  setEditingTime(time)
-                  setEditingLogId(log.id)
-                }
-
-                const handleSaveEdit = async () => {
-                  if (!editingTime.match(/^\d{2}:\d{2}$/)) return
-                  const [nh, nm] = editingTime.split(':').map((v) => parseInt(v, 10))
-                  const newDate = new Date(log.administeredAt)
-                  newDate.setHours(nh, nm, 0, 0)
-                  setSaving(true)
-                  const ok = await onEditLog(log.id, newDate)
-                  setSaving(false)
-                  if (ok) {
-                    hapticSuccess()
-                    setEditingLogId(null)
-                  }
-                }
-
-                if (isEditing) {
-                  return (
-                    <li
-                      key={log.id}
-                      className="px-3 py-2 rounded-md bg-surface-container-highest"
-                    >
-                      <p className="font-label text-[10px] font-bold uppercase tracking-wider text-on-surface-variant mb-1.5">
-                        Editar horário
-                      </p>
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="time"
-                          value={editingTime}
-                          onChange={(e) => setEditingTime(e.target.value)}
-                          className="flex-1 px-3 py-2 rounded-md bg-surface-container border border-white/5 text-on-surface font-body text-sm focus:outline-none focus:border-primary/40"
-                        />
-                        <button
-                          type="button"
-                          onClick={handleSaveEdit}
-                          disabled={saving}
-                          className="px-3 py-2 rounded-md bg-primary text-on-primary font-label text-xs font-bold active:opacity-90 disabled:opacity-50"
-                        >
-                          Salvar
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setEditingLogId(null)}
-                          className="px-3 py-2 rounded-md bg-surface-variant/50 text-on-surface-variant font-label text-xs font-semibold active:bg-surface-variant"
-                        >
-                          Cancelar
-                        </button>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => handleDelete(log.id)}
-                        className="w-full mt-2 py-1.5 rounded-md text-red-400 font-label text-[11px] font-semibold active:text-red-500"
-                      >
-                        Excluir este registro
-                      </button>
-                    </li>
-                  )
+                  // Abre modal padrão de edição — mesma experiência do EditModal
+                  // usado pelos logs normais do histórico.
+                  onOpenLogEditor(log)
                 }
 
                 return (
                   <li
                     key={log.id}
-                    onClick={handleStartEdit}
+                    onClick={handleRowClick}
                     className="flex items-center justify-between gap-2 px-3 py-2 rounded-md bg-surface-container cursor-pointer active:bg-surface-container-high transition-colors"
                   >
                     <div className="flex items-center gap-2 min-w-0">
