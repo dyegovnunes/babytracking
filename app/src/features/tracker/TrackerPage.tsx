@@ -120,15 +120,6 @@ export default function TrackerPage() {
     [medicationDayStatuses, nowMinute],
   )
 
-  const handleMedicationConfirm = useCallback(
-    async (medicationId: string, slotTime: string) => {
-      await administerDose(medicationId, new Date(), user?.id, slotTime)
-      // Força refetch do useMedicationLogsRange pra o log aparecer imediatamente
-      // em "Últimos Registros" / timeline — senão só depois de recarregar a página.
-      reloadMedLogs()
-    },
-    [administerDose, user, reloadMedLogs],
-  )
   const allMedications = useMemo(
     () => [...activeMedications, ...archivedMedications],
     [activeMedications, archivedMedications],
@@ -140,6 +131,16 @@ export default function TrackerPage() {
   const { logs: recentMedicationLogs, reload: reloadMedLogs } = useMedicationLogsRange(
     baby?.id,
     medLogsSinceMs,
+  )
+
+  const handleMedicationConfirm = useCallback(
+    async (medicationId: string, slotTime: string) => {
+      await administerDose(medicationId, new Date(), user?.id, slotTime)
+      // Força refetch do useMedicationLogsRange pra o log aparecer imediatamente
+      // em "Últimos Registros" / timeline — senão só depois de recarregar a página.
+      reloadMedLogs()
+    },
+    [administerDose, user, reloadMedLogs],
   )
 
   // Timeline unificada pra "Últimos registros"
