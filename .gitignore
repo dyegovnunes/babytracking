@@ -39,6 +39,10 @@ npm-debug.log*
 *.apk
 *.ipa
 
+# Asset backups (PNGs originais etc.) — mantemos só os otimizados
+# versionados. Originais ficam em pastas /backup/ locais.
+**/backup/
+
 # Test-output PDFs in root (e.g. yaya-guto-2026-04-12.pdf)
 /*.pdf
 
