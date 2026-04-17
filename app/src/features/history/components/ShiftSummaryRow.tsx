@@ -1,5 +1,7 @@
+import type { ReactNode } from 'react'
 import { hapticLight } from '../../../lib/haptics'
-import type { CaregiverShift } from '../../tracker/useCaregiverShift'
+import { formatTime } from '../../../lib/formatters'
+import type { CaregiverShift, ShiftScore } from '../../tracker/useCaregiverShift'
 
 interface Props {
   shift: CaregiverShift
@@ -16,31 +18,33 @@ const MOOD_EMOJIS: Record<number, string> = {
   5: '😊',
 }
 
-const SCORE_CHIP_STYLE: Record<1 | 2 | 3, { tone: string; text: string }> = {
-  1: { tone: 'bg-error/10 text-error border-error/20', text: 'ruim' },
-  2: { tone: 'bg-amber-500/10 text-amber-700 border-amber-500/25', text: 'médio' },
-  3: { tone: 'bg-primary/10 text-primary border-primary/20', text: 'bom' },
+const SCORE_DOT_TONE: Record<1 | 2 | 3, string> = {
+  1: 'text-error',
+  2: 'text-amber-600',
+  3: 'text-primary',
 }
 
-function formatSubmittedTime(iso: string | null): string | null {
-  if (!iso) return null
-  const d = new Date(iso)
-  const h = String(d.getHours()).padStart(2, '0')
-  const m = String(d.getMinutes()).padStart(2, '0')
-  return `${h}:${m}`
+function scoreIcon(score: ShiftScore, icon: string): ReactNode {
+  if (score === null) return null
+  return (
+    <span
+      className={`material-symbols-outlined text-[13px] ${SCORE_DOT_TONE[score]}`}
+      aria-label={`score ${score}`}
+    >
+      {icon}
+    </span>
+  )
 }
 
 /**
- * Linha destacada no HistoryPage representando um resumo de shift de caregiver
- * no dia correspondente. Clique chama `onClick` — o parent abre o ShiftDetailModal.
+ * Row compacta do resumo de shift no Histórico — visual alinhado com o
+ * ShiftLogRow de `Últimos registros` na Home (ícone, nome da babá, micro-ícones
+ * coloridos de comeu/dormiu, horário). Clique delega pro parent abrir o
+ * ShiftDetailModal.
  */
 export default function ShiftSummaryRow({ shift, caregiverName, onClick }: Props) {
+  const ts = shift.submittedAt ? new Date(shift.submittedAt) : null
   const moodEmoji = shift.moodScore ? MOOD_EMOJIS[shift.moodScore] : ''
-  const submittedTime = formatSubmittedTime(shift.submittedAt)
-  const preview = shift.note
-    ? shift.note.slice(0, 80) + (shift.note.length > 80 ? '…' : '')
-    : 'Resumo enviado sem anotações.'
-  const hasScoreInfo = shift.ateScore !== null || shift.sleptScore !== null
 
   const handleClick = () => {
     if (!onClick) return
@@ -49,65 +53,28 @@ export default function ShiftSummaryRow({ shift, caregiverName, onClick }: Props
   }
 
   return (
-    <button
-      type="button"
+    <div
       onClick={handleClick}
-      disabled={!onClick}
-      className="w-full text-left bg-primary/[0.05] border border-primary/15 rounded-md px-3 py-3 my-2 flex items-start gap-3 active:bg-primary/10 transition-colors disabled:active:bg-primary/[0.05]"
+      className={`flex items-center gap-3 py-2.5 px-3 rounded-md bg-surface-container${onClick ? ' cursor-pointer active:bg-surface-container-high transition-colors' : ''}`}
     >
-      <span className="material-symbols-outlined text-primary text-xl mt-0.5">assignment</span>
+      <div className="w-2 h-2 rounded-full shrink-0 bg-primary" />
+      <span className="material-symbols-outlined text-primary text-base">assignment</span>
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className="font-headline text-xs font-bold text-on-surface">
-            Resumo do dia
-          </span>
-          <span className="font-label text-xs text-on-surface-variant">
-            · {caregiverName}
-          </span>
-          {submittedTime && (
-            <span className="font-label text-[10px] text-on-surface-variant/70 ml-auto">
-              {submittedTime}
-            </span>
-          )}
+        <div className="flex items-center gap-1.5">
+          <span className="font-body text-sm text-on-surface truncate">Resumo do dia</span>
+          {moodEmoji && <span className="text-sm leading-none">{moodEmoji}</span>}
+          {scoreIcon(shift.ateScore, 'restaurant')}
+          {scoreIcon(shift.sleptScore, 'bedtime')}
         </div>
-        <p className="font-body text-sm text-on-surface mt-1">
-          {moodEmoji && <span className="mr-1">{moodEmoji}</span>}
-          {preview}
+        <p className="font-label text-[10px] text-on-surface-variant truncate">
+          por {caregiverName}
         </p>
-        {hasScoreInfo && (
-          <div className="mt-1.5 flex items-center gap-2 flex-wrap">
-            {shift.ateScore !== null && (
-              <ScoreChip icon="restaurant" score={shift.ateScore} label="Comeu" />
-            )}
-            {shift.sleptScore !== null && (
-              <ScoreChip icon="bedtime" score={shift.sleptScore} label="Dormiu" />
-            )}
-          </div>
-        )}
       </div>
-      {onClick && (
-        <span className="material-symbols-outlined text-on-surface-variant/60 text-base mt-0.5">
-          chevron_right
+      {ts && (
+        <span className="font-label text-xs text-on-surface-variant">
+          {formatTime(ts)}
         </span>
       )}
-    </button>
-  )
-}
-
-interface ScoreChipProps {
-  icon: string
-  score: 1 | 2 | 3
-  label: string
-}
-
-function ScoreChip({ icon, score, label }: ScoreChipProps) {
-  const style = SCORE_CHIP_STYLE[score]
-  return (
-    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border ${style.tone}`}>
-      <span className="material-symbols-outlined text-[13px]">{icon}</span>
-      <span className="font-label text-[11px] font-semibold">
-        {label}: {style.text}
-      </span>
-    </span>
+    </div>
   )
 }
