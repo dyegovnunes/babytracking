@@ -1,25 +1,24 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAppState } from '../../contexts/AppContext'
 import { useBabyPremium } from '../../hooks/useBabyPremium'
 import { PaywallModal } from '../../components/ui/PaywallModal'
 import { hapticLight } from '../../lib/haptics'
+import { contractionDe } from '../../lib/genderUtils'
 import ReferralPanel from './components/ReferralPanel'
 
 /**
- * Tela "Yaya+": acessível via aba da bottom nav (só pra free). Mostra:
- * 1. Comparativo de planos (free × Yaya+) + CTA assinar
- * 2. Painel MGM (código, progresso, indicações)
- *
- * Premium que acessar essa rota direto é redirecionado pra home (a aba
- * dele é Histórico, não Yaya+).
+ * Tela "Yaya+": visível só pra free (aba da bottom nav). Premium que chega
+ * aqui é redirecionado pra home. Hero vertical + tabela comparativa +
+ * ReferralPanel (MGM).
  */
 export default function YayaPlusPage() {
   const navigate = useNavigate()
   const isPremium = useBabyPremium()
+  const { baby } = useAppState()
   const [showPaywall, setShowPaywall] = useState(false)
 
   if (isPremium) {
-    // Premium não deveria chegar aqui pela nav; se digitou URL, redireciona.
     navigate('/', { replace: true })
     return null
   }
@@ -29,49 +28,118 @@ export default function YayaPlusPage() {
     setShowPaywall(true)
   }
 
+  const babyContextText = baby
+    ? `rotina ${contractionDe(baby.gender ?? 'boy')} ${baby.name}`
+    : 'rotina do seu bebê'
+
   return (
     <div className="pb-4 page-enter">
-      {/* Header */}
-      <section className="px-5 pt-6 pb-2">
-        <h1 className="font-headline text-2xl font-bold text-on-surface mb-1">
-          Yaya+
-        </h1>
-        <p className="font-label text-sm text-on-surface-variant">
-          Tudo do Yaya, sem limites.
+      {/* Hero */}
+      <section className="px-5 pt-6 pb-4">
+        <div className="flex items-center gap-2 mb-2">
+          <span
+            className="material-symbols-outlined text-primary text-2xl"
+            style={{ fontVariationSettings: "'FILL' 1" }}
+          >
+            auto_awesome
+          </span>
+          <h1 className="font-headline text-2xl font-bold text-on-surface">
+            Yaya+
+          </h1>
+        </div>
+        <p className="font-headline text-lg font-bold text-on-surface leading-snug mb-1">
+          Organize a {babyContextText} sem limites.
+        </p>
+        <p className="font-label text-sm text-on-surface-variant leading-relaxed">
+          Registros ilimitados, histórico completo, insights inteligentes e
+          zero anúncios.
         </p>
       </section>
 
-      {/* Benefícios / comparativo */}
-      <section className="px-5 mt-4">
-        <div className="rounded-md bg-gradient-to-br from-primary/15 to-tertiary/10 border border-primary/20 p-5">
-          <div className="flex items-center gap-2 mb-3">
-            <span className="material-symbols-outlined text-primary text-2xl">
-              auto_awesome
-            </span>
-            <h2 className="font-headline text-base font-bold text-on-surface">
-              Yaya+ liberado
-            </h2>
-          </div>
-          <ul className="space-y-2.5 mb-4">
-            <BenefitRow text="Registros ilimitados por dia" />
-            <BenefitRow text="Histórico completo (sem limite de 2 dias)" />
-            <BenefitRow text="Até 2 bebês no mesmo plano" />
-            <BenefitRow text="Compartilhamento com babá e familiares" />
-            <BenefitRow text="Caderneta de vacinas, marcos e medicamentos sem travas" />
-            <BenefitRow text="Insights + projeções em tempo real" />
-            <BenefitRow text="Sem anúncios" />
-          </ul>
+      {/* CTA principal */}
+      <section className="px-5 mt-2">
+        <button
+          onClick={handleSubscribe}
+          className="w-full py-4 rounded-md bg-gradient-to-br from-primary to-primary-container text-on-primary font-headline text-base font-bold active:opacity-90 shadow-[0_8px_28px_rgba(91,61,181,0.35)]"
+        >
+          Assinar Yaya+
+        </button>
+        <p className="text-center font-label text-[11px] text-on-surface-variant mt-2">
+          Mensal, anual ou vitalício. Cancele quando quiser.
+        </p>
+      </section>
 
-          <button
-            onClick={handleSubscribe}
-            className="w-full py-4 rounded-md bg-primary text-on-primary font-headline text-base font-bold active:opacity-90 shadow-[0_8px_24px_rgba(91,61,181,0.3)]"
-          >
-            Assinar Yaya+
-          </button>
-          <p className="text-center font-label text-[11px] text-on-surface-variant mt-3">
-            Mensal, anual ou vitalício. Cancele quando quiser.
-          </p>
+      {/* Tabela comparativa */}
+      <section className="px-5 mt-8">
+        <h2 className="font-headline text-base font-bold text-on-surface mb-3">
+          Grátis × Yaya+
+        </h2>
+        <div className="rounded-md bg-surface-container overflow-hidden">
+          {/* Cabeçalho */}
+          <div className="grid grid-cols-[1.3fr_1fr_1fr] border-b border-outline-variant/20">
+            <div />
+            <div className="py-3 text-center font-label text-[11px] font-bold uppercase tracking-wider text-on-surface-variant border-l border-outline-variant/20">
+              Grátis
+            </div>
+            <div className="py-3 text-center font-label text-[11px] font-bold uppercase tracking-wider text-primary border-l border-outline-variant/20 bg-primary/5">
+              Yaya+
+            </div>
+          </div>
+          <ComparisonRow feature="Registros/dia" free="5" premium="Ilimitados" />
+          <ComparisonRow feature="Bebês" free="1" premium="2" />
+          <ComparisonRow feature="Histórico" free="Hoje + ontem" premium="Completo" />
+          <ComparisonRow
+            feature="Compartilhar com babá e família"
+            free="—"
+            premium={<Check />}
+          />
+          <ComparisonRow
+            feature="Caderneta de vacinas"
+            free="Com anúncio"
+            premium="Sem anúncio"
+          />
+          <ComparisonRow
+            feature="Marcos do bebê"
+            free="Com anúncio"
+            premium="Sem anúncio"
+          />
+          <ComparisonRow
+            feature="Medicamentos"
+            free="Com anúncio"
+            premium="Sem anúncio"
+          />
+          <ComparisonRow
+            feature="Saltos de desenvolvimento"
+            free="Com anúncio"
+            premium="Sem anúncio"
+          />
+          <ComparisonRow
+            feature="Insights inteligentes"
+            free="Básicos"
+            premium="Completos"
+          />
+          <ComparisonRow
+            feature="Super relatório do bebê"
+            free="—"
+            premium={<Check />}
+          />
+          <ComparisonRow
+            feature="Banner de anúncios"
+            free="Ativo"
+            premium="Sem anúncios"
+            last
+          />
         </div>
+      </section>
+
+      {/* CTA secundário depois da tabela (evita ter que voltar pra cima) */}
+      <section className="px-5 mt-5">
+        <button
+          onClick={handleSubscribe}
+          className="w-full py-3.5 rounded-md bg-primary text-on-primary font-label font-bold text-sm active:opacity-90"
+        >
+          Assinar Yaya+
+        </button>
       </section>
 
       {/* MGM */}
@@ -86,16 +154,41 @@ export default function YayaPlusPage() {
   )
 }
 
-function BenefitRow({ text }: { text: string }) {
+function ComparisonRow({
+  feature,
+  free,
+  premium,
+  last = false,
+}: {
+  feature: string
+  free: React.ReactNode
+  premium: React.ReactNode
+  last?: boolean
+}) {
   return (
-    <li className="flex items-start gap-2.5">
-      <span
-        className="material-symbols-outlined text-primary text-base shrink-0 mt-0.5"
-        style={{ fontVariationSettings: "'FILL' 1" }}
-      >
-        check_circle
-      </span>
-      <span className="font-body text-sm text-on-surface leading-snug">{text}</span>
-    </li>
+    <div
+      className={`grid grid-cols-[1.3fr_1fr_1fr] items-center ${last ? '' : 'border-b border-outline-variant/15'}`}
+    >
+      <div className="px-3 py-2.5 font-label text-[13px] text-on-surface">
+        {feature}
+      </div>
+      <div className="px-3 py-2.5 text-center font-label text-[12px] text-on-surface-variant border-l border-outline-variant/15">
+        {free}
+      </div>
+      <div className="px-3 py-2.5 text-center font-label text-[12px] text-primary border-l border-outline-variant/15 bg-primary/5 font-semibold">
+        {premium}
+      </div>
+    </div>
+  )
+}
+
+function Check() {
+  return (
+    <span
+      className="material-symbols-outlined text-primary text-base"
+      style={{ fontVariationSettings: "'FILL' 1" }}
+    >
+      check_circle
+    </span>
   )
 }

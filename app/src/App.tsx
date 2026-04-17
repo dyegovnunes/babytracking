@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, useLocation, useNavigate, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom'
 import { lazy, Suspense, useEffect, useRef } from 'react'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { AppProvider, useAppState, useAppDispatch } from './contexts/AppContext'
@@ -26,6 +26,7 @@ const LeapsPage = lazy(() => import('./features/milestones/LeapsPage'))
 const VaccinesPage = lazy(() => import('./features/vaccines/VaccinesPage'))
 const MedicationsPage = lazy(() => import('./features/medications/MedicationsPage'))
 const YayaPlusPage = lazy(() => import('./features/referral/YayaPlusPage'))
+const InviteLandingPage = lazy(() => import('./pages/InviteLandingPage'))
 const PrivacyPage = lazy(() => import('./pages/PrivacyPage'))
 const SharedReportPage = lazy(() => import('./pages/SharedReportPage'))
 
@@ -119,15 +120,19 @@ function AuthenticatedRoutes() {
 function AppRoutes() {
   const location = useLocation()
 
-  // Deep link de indicação: /i/:code → salva o código em localStorage
-  // e redireciona pra landing/login. Se o user logar/signup depois,
-  // AuthContext lê o código e chama accept_referral.
+  // Deep link de indicação: /i/:code → salva código + mostra landing do
+  // convite (direciona pro app nativo). Experiência canônica é no app;
+  // continuar pelo navegador fica como fallback discreto.
   if (location.pathname.startsWith('/i/')) {
     const code = location.pathname.split('/i/')[1]?.trim().toUpperCase()
     if (code && /^[A-Z0-9]{5,12}$/.test(code)) {
       try { localStorage.setItem('yaya_pending_ref', code) } catch { /* ignore */ }
     }
-    return <Navigate to="/" replace />
+    return (
+      <Suspense fallback={<RouteFallback />}>
+        <InviteLandingPage />
+      </Suspense>
+    )
   }
 
   // Também captura ?ref=CODE (fluxo de compartilhamento web alternativo)

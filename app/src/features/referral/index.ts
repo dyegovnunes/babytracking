@@ -1,9 +1,9 @@
 export { default as ReferralPanel } from './components/ReferralPanel'
 export {
   useReferral,
-  consumeActivityCredit,
+  fetchDailyBonusRecords,
   acceptReferral,
   buildReferralLink,
   buildShareMessage,
 } from './useReferral'
-export type { ReferralStatus, ReferralEntry } from './useReferral'
+export type { ReferralRewards, ReferralEntry } from './useReferral'
