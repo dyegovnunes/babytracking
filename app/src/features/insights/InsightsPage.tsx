@@ -82,7 +82,7 @@ export default function InsightsPage() {
         <EmptyState
           emoji="📊"
           title="Os padrões vão aparecer aqui"
-          description="Registre alguns dias de mamadas, sono e trocas — o Yaya começa a identificar tendências em poucas rotinas."
+          description="Registre alguns dias de amamentação, sono e trocas — o Yaya começa a identificar tendências em poucas rotinas."
         />
       </div>
     )
@@ -155,7 +155,7 @@ export default function InsightsPage() {
                   Gráfico semanal dos padrões
                 </p>
                 <p className="font-label text-xs text-on-surface-variant/70 mb-3">
-                  Veja a evolução de sono, fraldas e mamadas dia a dia
+                  Veja a evolução de sono, fraldas e amamentação dia a dia
                 </p>
                 <button
                   type="button"

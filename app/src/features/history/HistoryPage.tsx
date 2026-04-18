@@ -212,7 +212,7 @@ export default function HistoryPage() {
             <EmptyState
               emoji="📒"
               title="Sua linha do tempo vai começar aqui"
-              description="Registre uma mamada, troca ou soneca e acompanhe tudo junto — marcos, vacinas e medicamentos aparecem nesta mesma timeline."
+              description="Registre uma amamentação, troca ou soneca e acompanhe tudo junto — marcos, vacinas e medicamentos aparecem nesta mesma timeline."
             />
           ) : (
             <EmptyState

@@ -27,7 +27,7 @@ interface Props {
  *   <EmptyState
  *     emoji="📝"
  *     title="Ainda sem registros"
- *     description="Comece registrando a primeira mamada ou troca."
+ *     description="Comece registrando a primeira amamentação ou troca."
  *   />
  */
 export default function EmptyState({

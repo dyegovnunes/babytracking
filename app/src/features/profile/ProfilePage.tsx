@@ -662,7 +662,7 @@ export default function ProfilePage() {
               Essa ação é <strong>permanente</strong> e remove tudo:
             </p>
             <ul className="font-body text-xs text-on-surface-variant space-y-0.5 mb-4 pl-1">
-              <li>· Todos os registros (sono, mamadas, fraldas, etc.)</li>
+              <li>· Todos os registros (sono, amamentação, fraldas, etc.)</li>
               <li>· Marcos, saltos, vacinas e medicamentos</li>
               <li>· Fotos e notas</li>
               <li>· Acesso de todos os cuidadores</li>

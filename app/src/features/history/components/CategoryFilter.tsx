@@ -15,7 +15,7 @@ const categories: { id: TimelineFilter; label: string }[] = [
 /**
  * Filtro da timeline unificada. Inclui 4 categorias:
  * - Tudo: sem filtro
- * - Atividades: logs (mamada, fralda, sono, banho) + resumos da babá
+ * - Atividades: logs (amamentação, fralda, sono, banho) + resumos da babá
  * - Saúde: vacinas + medicamentos
  * - Marcos: só marcos atingidos
  */

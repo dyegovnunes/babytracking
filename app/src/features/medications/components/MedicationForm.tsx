@@ -338,7 +338,7 @@ export default function MedicationForm({ isOpen, onClose, onSave, initialData }:
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            placeholder='ex: "dar antes da mamada", "com suco"'
+            placeholder='ex: "dar antes da amamentação", "com suco"'
             rows={2}
             className="w-full px-3 py-2.5 rounded-md bg-surface-container border border-white/5 text-on-surface font-body text-sm focus:outline-none focus:border-primary/40 resize-none"
           />

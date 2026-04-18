@@ -7,7 +7,7 @@ import type { LogEntry } from '../types'
  *
  * Design: micro-momento (toast success, não modal fullscreen). Mensagens
  * são específicas por tipo pra reconhecer a entrada em cada "clube"
- * (primeira mamada, primeira fralda, etc). Zero fanfare — só acolher e
+ * (primeira amamentação, primeira fralda, etc). Zero fanfare — só acolher e
  * marcar o momento.
  *
  * Base da detecção: state.logs local. Como o AppContext já carrega todos
@@ -18,9 +18,9 @@ import type { LogEntry } from '../types'
 // IDs reais em lib/constants.ts: breast_left/right/both, bottle,
 // diaper_wet, diaper_dirty, bath, sleep, wake.
 const FIRST_MESSAGES: Record<string, string> = {
-  breast_left: 'Primeira mamada registrada ✨',
-  breast_right: 'Primeira mamada registrada ✨',
-  breast_both: 'Primeira mamada registrada ✨',
+  breast_left: 'Primeira amamentação registrada ✨',
+  breast_right: 'Primeira amamentação registrada ✨',
+  breast_both: 'Primeira amamentação registrada ✨',
   bottle: 'Primeira mamadeira registrada 🍼',
   diaper_wet: 'Primeira troca registrada 💧',
   diaper_dirty: 'Primeiro cocô registrado 💩',
@@ -36,7 +36,7 @@ const FIRST_MESSAGES: Record<string, string> = {
  * do addLog).
  */
 export function isFirstOfType(logs: LogEntry[], eventId: string): boolean {
-  // Breast variants (left/right/both) contam como "mamada" genérica —
+  // Breast variants (left/right/both) contam como amamentação genérica —
   // a primeira em qualquer lado desbloqueia a mensagem celebrativa,
   // as outras variantes seguintes viram toast normal.
   if (eventId.startsWith('breast_')) {
@@ -54,7 +54,7 @@ export function isFirstOfType(logs: LogEntry[], eventId: string): boolean {
  * null (provavelmente cai na mensagem padrão).
  */
 export function getFirstRecordMessage(eventId: string): string | null {
-  // Breast variants → mamada
+  // Breast variants → amamentação
   if (eventId.startsWith('breast_')) return FIRST_MESSAGES.breast_left
   return FIRST_MESSAGES[eventId] ?? null
 }
