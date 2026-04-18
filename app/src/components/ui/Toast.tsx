@@ -11,31 +11,21 @@ interface Props {
 
 const SWIPE_THRESHOLD = 80
 
-const VARIANT_STYLES: Record<ToastVariant, { bg: string; text: string; icon: string }> = {
-  info: {
-    bg: 'bg-primary',
-    text: 'text-on-primary',
-    icon: 'info',
-  },
-  success: {
-    bg: 'bg-emerald-600',
-    text: 'text-white',
-    icon: 'check_circle',
-  },
-  error: {
-    bg: 'bg-error',
-    text: 'text-on-error',
-    icon: 'warning',
-  },
+const VARIANT_STYLES: Record<ToastVariant, string> = {
+  // Usa bg escuro quase opaco com borda colorida fina — não se confunde
+  // com botões primários roxos do app. Notificação, não CTA.
+  info: 'bg-surface-container-highest text-on-surface border border-primary/50',
+  success: 'bg-surface-container-highest text-on-surface border border-emerald-500/50',
+  error: 'bg-surface-container-highest text-on-surface border border-error/60',
 }
 
 /**
- * Toast não-obstrutivo. Aparece fixed próximo ao bottom (acima da nav),
- * auto-some depois de `duration` ms, e aceita swipe horizontal pra dismissar
- * manualmente. Suporta 3 variantes (info / success / error) com cores
- * distintas + ícone.
+ * Toast/snackbar não-obstrutivo. Aparece perto do bottom (acima da nav),
+ * auto-some em `duration` ms, e aceita swipe horizontal pra dismiss.
  *
- * Formato retangular (rounded-md, seguindo padrão do app) e texto centralizado.
+ * Design: chip compacto com fundo dark + borda colorida sutil por variant.
+ * **Não** parece botão (sem cor sólida CTA, sem ícone clicável). Largura
+ * acompanha o conteúdo (inline-flex), não toma full-width.
  */
 export default function Toast({ message, onDismiss, duration = 3500, variant = 'info' }: Props) {
   const [offsetX, setOffsetX] = useState(0)
@@ -43,8 +33,6 @@ export default function Toast({ message, onDismiss, duration = 3500, variant = '
   const startX = useRef(0)
   const startY = useRef(0)
   const isHorizontal = useRef<boolean | null>(null)
-
-  const style = VARIANT_STYLES[variant]
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -88,14 +76,13 @@ export default function Toast({ message, onDismiss, duration = 3500, variant = '
 
   return (
     <div
-      className="fixed left-0 right-0 z-50 px-4 pointer-events-none"
+      className="fixed left-0 right-0 z-50 flex justify-center px-5 pointer-events-none"
       style={{
-        // Acima da bottom nav (inclui banner AdMob offset se ativo)
         bottom: 'calc(5.5rem + env(safe-area-inset-bottom) + var(--yaya-ad-offset, 0px))',
       }}
     >
       <div
-        className="max-w-md mx-auto animate-slide-up pointer-events-auto"
+        className="animate-slide-up pointer-events-auto max-w-[90%]"
         style={{
           transform: `translateX(${offsetX}px)`,
           opacity,
@@ -106,12 +93,9 @@ export default function Toast({ message, onDismiss, duration = 3500, variant = '
         onTouchEnd={handleTouchEnd}
       >
         <div
-          className={`${style.bg} ${style.text} rounded-md shadow-[0_8px_24px_rgba(0,0,0,0.3)] px-4 py-3 flex items-center gap-3`}
+          className={`inline-flex items-center rounded-full backdrop-blur-md shadow-[0_4px_16px_rgba(0,0,0,0.25)] px-4 py-2 ${VARIANT_STYLES[variant]}`}
         >
-          <span className="material-symbols-outlined text-xl shrink-0">
-            {style.icon}
-          </span>
-          <p className="flex-1 text-center font-label text-sm font-semibold leading-snug">
+          <p className="font-label text-xs text-center leading-snug">
             {message}
           </p>
         </div>
