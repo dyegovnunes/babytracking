@@ -119,15 +119,20 @@ export default function TrackerPage() {
     archivedMedications,
     dayStatuses: medicationDayStatuses,
     administerDose,
+    loading: medicationsLoading,
   } = useMedications(baby?.id, medicationMembersById, now)
 
   // Proximas doses (janela 1h) — card com check inline. Overdues ficam no
-  // alert da HighlightsStrip (complementam, não duplicam). `now` já é
-  // arredondado pro minuto (vide declaração), então o useMemo é estável
-  // entre ticks do useTimer.
+  // alert da HighlightsStrip (complementam, não duplicam).
+  //
+  // GATE DE LOADING: useMedications faz 2 fetches em sequência (medications,
+  // depois medication_logs). Entre os setters, o estado vê activeMedications
+  // preenchido mas todayLogs ainda vazio — projection mostrava dose
+  // "pendente" por ~100ms e sumia quando logs chegavam (dose dada).
+  // Isso era o "piscar". Agora só renderiza projection pós-loading.
   const medicationProjections = useMemo(
-    () => getMedicationProjections(medicationDayStatuses, now),
-    [medicationDayStatuses, now],
+    () => medicationsLoading ? [] : getMedicationProjections(medicationDayStatuses, now),
+    [medicationDayStatuses, now, medicationsLoading],
   )
 
   const allMedications = useMemo(
