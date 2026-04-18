@@ -15,27 +15,18 @@ import type { LogEntry } from '../types'
  * extra ao Supabase).
  */
 
+// IDs reais em lib/constants.ts: breast_left/right/both, bottle,
+// diaper_wet, diaper_dirty, bath, sleep, wake.
 const FIRST_MESSAGES: Record<string, string> = {
-  // Alimentação
   breast_left: 'Primeira mamada registrada ✨',
   breast_right: 'Primeira mamada registrada ✨',
   breast_both: 'Primeira mamada registrada ✨',
   bottle: 'Primeira mamadeira registrada 🍼',
-  solids: 'Primeira comidinha! 🥄',
-  // Higiene
-  diaper: 'Primeira troca registrada 💧',
-  pee: 'Primeira troca registrada 💧',
-  poop: 'Primeiro cocô registrado 💩',
+  diaper_wet: 'Primeira troca registrada 💧',
+  diaper_dirty: 'Primeiro cocô registrado 💩',
   bath: 'Primeiro banho registrado 🫧',
-  // Sono
-  sleep_start: 'Primeiro sono registrado 🌙',
-  sleep_end: 'Primeiro sono registrado 🌙',
   sleep: 'Primeiro sono registrado 🌙',
   wake: 'Primeiro despertar registrado ☀️',
-  // Outros
-  medicine: 'Primeiro medicamento registrado 💊',
-  vomit: 'Registrado. Esperamos que passe rápido 💜',
-  burp: 'Primeira arrotada registrada ✨',
 }
 
 /**
@@ -45,36 +36,15 @@ const FIRST_MESSAGES: Record<string, string> = {
  * do addLog).
  */
 export function isFirstOfType(logs: LogEntry[], eventId: string): boolean {
-  // Breast variants contam como "mamada" genérica — primeira mamada em
-  // qualquer lado desbloqueia a mensagem, outras variantes depois não.
-  const breastLike = eventId.startsWith('breast_')
-  if (breastLike) {
+  // Breast variants (left/right/both) contam como "mamada" genérica —
+  // a primeira em qualquer lado desbloqueia a mensagem celebrativa,
+  // as outras variantes seguintes viram toast normal.
+  if (eventId.startsWith('breast_')) {
     return !logs.some((l) => l.eventId.startsWith('breast_'))
   }
-  // Sono: sleep_start / sleep_end / sleep / wake agrupam — primeiro
-  // qualquer deles conta.
-  const sleepLike =
-    eventId === 'sleep' ||
-    eventId === 'sleep_start' ||
-    eventId === 'sleep_end' ||
-    eventId === 'wake'
-  if (sleepLike) {
-    return !logs.some(
-      (l) =>
-        l.eventId === 'sleep' ||
-        l.eventId === 'sleep_start' ||
-        l.eventId === 'sleep_end' ||
-        l.eventId === 'wake',
-    )
-  }
-  // Diaper variants (pee/poop/diaper genérico)
-  const diaperLike =
-    eventId === 'diaper' || eventId === 'pee' || eventId === 'poop'
-  if (diaperLike) {
-    return !logs.some(
-      (l) => l.eventId === 'diaper' || l.eventId === 'pee' || l.eventId === 'poop',
-    )
-  }
+  // Diaper variants (wet/dirty) são eventos distintos no app — primeira
+  // xixi e primeiro cocô celebrados separadamente (cada um tem mensagem
+  // específica). Então checamos exatamente o mesmo eventId.
   return !logs.some((l) => l.eventId === eventId)
 }
 
