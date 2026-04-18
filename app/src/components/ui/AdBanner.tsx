@@ -1,11 +1,22 @@
 import { useEffect } from 'react';
+import { Capacitor } from '@capacitor/core';
 import { useBabyPremium } from '../../hooks/useBabyPremium';
 import { showBanner, hideBanner } from '../../lib/admob';
 
 /**
- * Banner AdMob. Segue a regra "premium por bebê":
- * se o bebê ativo é premium (qualquer parent paga), o banner é escondido
- * mesmo para cuidadores free do grupo.
+ * Altura estimada do banner adaptive. Real varia 50-60dp mas usamos 60 como
+ * conservador — melhor banner com respiro do que cortado.
+ */
+const AD_BANNER_HEIGHT_PX = 60;
+
+/**
+ * Banner AdMob. Premium escondido; free vê.
+ *
+ * IMPORTANTE: o plugin tem bug em Android 15+ que ignora a option `margin`
+ * (vide src/lib/admob.ts). Pra bottom nav do app não ficar tampada, esse
+ * componente seta uma CSS custom property `--yaya-ad-offset` no root que
+ * a BottomNav e o AppShell leem pra somar ao seu próprio `bottom` /
+ * `padding-bottom`.
  *
  * Montado UMA VEZ no AppShell. Não deve ser colocado em páginas individuais
  * (navegação causava crash por race show/hide no plugin AdMob).
@@ -14,15 +25,18 @@ export function AdBanner() {
   const isPremium = useBabyPremium();
 
   useEffect(() => {
-    if (isPremium) {
+    const root = document.documentElement;
+
+    if (isPremium || !Capacitor.isNativePlatform()) {
       hideBanner();
-    } else {
-      showBanner();
+      root.style.removeProperty('--yaya-ad-offset');
+      return;
     }
-    // Sem cleanup: o banner vive com o AppShell. Cleanup só no unmount final
-    // (logout), onde a tela já muda de qualquer forma.
+
+    showBanner();
+    root.style.setProperty('--yaya-ad-offset', `${AD_BANNER_HEIGHT_PX}px`);
+    // Sem cleanup: o banner vive com o AppShell até premium mudar/logout.
   }, [isPremium]);
 
-  // Banner é nativo (overlay). Sem elemento DOM.
   return null;
 }

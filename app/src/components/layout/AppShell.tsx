@@ -11,7 +11,10 @@ export default function AppShell() {
         className="flex-1 overflow-y-auto overscroll-contain"
         style={{
           paddingTop: 'calc(3.5rem + env(safe-area-inset-top))',
-          paddingBottom: 'calc(5rem + env(safe-area-inset-bottom))',
+          // Inclui --yaya-ad-offset (setado pelo AdBanner quando banner ativo)
+          // pra o conteúdo não ficar atrás da bottom nav que subiu pra acomodar
+          // o banner. Quando premium, a var = 0 e voltamos ao padding normal.
+          paddingBottom: 'calc(5rem + env(safe-area-inset-bottom) + var(--yaya-ad-offset, 0px))',
         }}
       >
         <Outlet />

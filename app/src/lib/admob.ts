@@ -35,27 +35,24 @@ export async function showBanner(): Promise<void> {
   if (bannerCall) await bannerCall.catch(() => {});
   if (bannerVisible) return;
 
-  // CORREÇÃO DEFINITIVA do banner tampando a bottom nav:
+  // BUG DESCOBERTO no plugin @capacitor-community/admob (Android 15+):
   //
-  // O plugin @capacitor-community/admob (Android) JÁ multiplica margin
-  // pela density internamente (BannerExecutor.java:126:
-  //    int densityMargin = (int) (adOptions.margin * density);
-  // ). O `margin` aqui deve ser passado em **dp simples**, sem conversão.
-  // Commits anteriores (110, 130 × ratio) erraram a interpretação.
+  // O plugin registra um setOnApplyWindowInsetsListener em
+  // BannerExecutor.java:109 que SOBRESCREVE o `margin` pra apenas o
+  // bottomInset do sistema (barra de navegação do Android), ignorando
+  // o valor que passamos. Por isso nenhum valor de margin (110, 200,
+  // 300, 500) consegue empurrar o banner acima da bottom nav do app —
+  // o plugin reseta a cada rendering insets.
   //
-  // Valor seguro (200dp) pra cobrir qualquer Android:
-  //   - Bottom nav do AppShell: 80dp (h-16 + safe-area variável)
-  //   - Android 3-button nav bar (Samsung antigos/atuais): até 48dp
-  //   - Gesture bar (Samsung/Pixel novos): até 40dp
-  //   - Margem extra de respiro: ~30dp
-  //
-  // Em iPhones o margin também fica acima (home indicator ~34pt) —
-  // banner fica um pouco mais alto que ideal mas nunca tampa a nav.
+  // Solução arquitetural: deixamos o banner onde o plugin quiser
+  // (margin=0, encostado no system bar) e subimos a BottomNav do app
+  // via CSS usando a variável --yaya-ad-offset. Veja BottomNav.tsx +
+  // AdBanner.tsx.
   const options: BannerAdOptions = {
     adId: AD_IDS.banner,
     adSize: BannerAdSize.ADAPTIVE_BANNER,
     position: BannerAdPosition.BOTTOM_CENTER,
-    margin: 200,
+    margin: 0,
   };
 
   bannerCall = (async () => {

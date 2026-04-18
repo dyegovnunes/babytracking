@@ -112,7 +112,16 @@ export default function BottomNav() {
 
   return (
     <>
-      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-surface-container/60 backdrop-blur-xl border-t border-outline-variant/15 pb-safe">
+      <nav
+        className="fixed left-0 right-0 z-40 bg-surface-container/60 backdrop-blur-xl border-t border-outline-variant/15 pb-safe"
+        style={{
+          // --yaya-ad-offset é setado pelo AdBanner quando o banner AdMob está
+          // visível (60px). Quando premium, a var não existe e fallback = 0.
+          // Esse deslocamento garante que a nav fica acima do banner, já que o
+          // plugin @capacitor-community/admob ignora nosso margin em Android 15+.
+          bottom: 'var(--yaya-ad-offset, 0px)',
+        }}
+      >
         <div className="flex items-center justify-around h-16 max-w-lg mx-auto">
           {tabs
             .filter((tab) => tab.to !== '/insights' || can.viewInsights(myRole))
