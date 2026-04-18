@@ -36,6 +36,11 @@ export default function BottomNav() {
   const myRole = useMyRole()
   const isPremium = useBabyPremium()
 
+  // Cor da tab ativa por gênero do bebê — menina rosa (tertiary), menino
+  // roxo claro (primary). Fallback: primary (neutro da marca).
+  const activeColorClass = baby?.gender === 'girl' ? 'text-tertiary' : 'text-primary'
+  const activeRingClass = baby?.gender === 'girl' ? 'ring-tertiary' : 'ring-primary'
+
   // Nav adaptativa: free vê "Yaya+" (upgrade + MGM) em vez de "Histórico"
   // (o acesso free ao histórico limitado continua via "Ver tudo →" em
   // Últimos Registros, a rota /history funciona mas sai da nav).
@@ -147,7 +152,7 @@ export default function BottomNav() {
                         src={babyPhoto}
                         alt={babyName}
                         className={`w-6 h-6 rounded-full object-cover transition-all ${
-                          isProfileActive ? 'ring-2 ring-tertiary scale-110' : 'opacity-70'
+                          isProfileActive ? `ring-2 ${activeRingClass} scale-110` : 'opacity-70'
                         }`}
                       />
                     ) : (
@@ -175,7 +180,7 @@ export default function BottomNav() {
                   to={tab.to}
                   className={({ isActive }) =>
                     `relative flex flex-col items-center gap-0.5 min-w-[64px] py-1 transition-colors ${
-                      isActive ? 'text-tertiary' : 'text-on-surface-variant'
+                      isActive ? activeColorClass : 'text-on-surface-variant'
                     }`
                   }
                 >
@@ -210,14 +215,13 @@ export default function BottomNav() {
 }
 
 /**
- * Glow radial centralizado atrás do ícone ativo — uma luz rosa difusa
- * que vaza a partir do centro e some nas bordas, sem retângulo/pill
- * visível. `layoutId="nav-active-glow"` faz Framer Motion deslizar o
- * glow da tab antiga pra nova com spring (shared-element).
+ * Glow radial roxo claro centralizado atrás do ícone ativo — uma luz
+ * difusa que vaza do centro e some nas bordas, sem forma definida.
+ * Cor do glow é fixa (roxo claro #6b4ec9) — não muda por gênero; a cor
+ * que muda é a do ícone. O glow é o "chão luminoso" onde o ícone pousa.
  *
- * Construção: radial-gradient rosa (tertiary) → transparente, aplicado
- * num quadrado maior que a tab, com blur adicional pra suavizar bordas.
- * Nenhum background plano, nenhuma borda — só luz.
+ * `layoutId="nav-active-glow"` faz Framer Motion deslizar o glow da
+ * tab antiga pra nova com spring (shared-element transition).
  */
 function NavActiveGlow() {
   return (
@@ -231,8 +235,8 @@ function NavActiveGlow() {
         className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full"
         style={{
           background:
-            'radial-gradient(circle, rgba(255,150,185,0.45) 0%, rgba(255,150,185,0.18) 35%, rgba(255,150,185,0) 70%)',
-          filter: 'blur(4px)',
+            'radial-gradient(circle, rgba(107,78,201,0.55) 0%, rgba(107,78,201,0.22) 40%, rgba(107,78,201,0) 75%)',
+          filter: 'blur(6px)',
         }}
       />
     </motion.div>

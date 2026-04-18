@@ -227,24 +227,44 @@ export function useVaccines(
 
       const existing = records.find((r) => r.vaccineCode === code)
       if (existing) {
-        // Desmarca (deleta)
+        // Desmarca otimista — remove do state local antes do roundtrip
+        setRecords((prev) => prev.filter((r) => r.vaccineCode !== code))
         const { error } = await supabase
           .from('baby_vaccines')
           .delete()
           .eq('id', existing.id)
-        if (error) return false
-        setRecords((prev) => prev.filter((r) => r.vaccineCode !== code))
+        if (error) {
+          // Reverte
+          setRecords((prev) => [...prev, existing])
+          return false
+        }
         return true
       }
 
-      // Marca com timestamp atual (pai clicou o checkbox agora). Schema agora
-      // é TIMESTAMPTZ, então gravamos ISO completo com hora. auto_registered=true
-      // indica que foi via quickToggle. Auto-registro retroativo do sistema
-      // (na criação do bebê) continua gravando applied_at=null.
-      const vaccineId = await resolveVaccineId(code)
-      if (!vaccineId) return false
-
+      // Marca otimista. Temp id até chegar o real. Schema TIMESTAMPTZ:
+      // gravamos ISO completo. auto_registered=true = veio via quickToggle.
+      const tempId = `temp-${code}-${Date.now()}`
       const todayIso = new Date().toISOString()
+      const optimistic: BabyVaccine = {
+        id: tempId,
+        babyId,
+        vaccineId: '',
+        vaccineCode: code,
+        appliedAt: todayIso,
+        status: 'applied',
+        location: null,
+        batchNumber: null,
+        recordedBy: userId || null,
+        createdAt: todayIso,
+        autoRegistered: true,
+      }
+      setRecords((prev) => [...prev, optimistic])
+
+      const vaccineId = await resolveVaccineId(code)
+      if (!vaccineId) {
+        setRecords((prev) => prev.filter((r) => r.id !== tempId))
+        return false
+      }
 
       const { data, error } = await supabase
         .from('baby_vaccines')
@@ -266,9 +286,12 @@ export function useVaccines(
         )
         .single()
 
-      if (error || !data) return false
+      if (error || !data) {
+        setRecords((prev) => prev.filter((r) => r.id !== tempId))
+        return false
+      }
 
-      const newEntry: BabyVaccine = {
+      const realEntry: BabyVaccine = {
         id: data.id,
         babyId: data.baby_id,
         vaccineId: data.vaccine_id,
@@ -281,8 +304,7 @@ export function useVaccines(
         createdAt: data.created_at,
         autoRegistered: data.auto_registered ?? true,
       }
-
-      setRecords((prev) => [...prev, newEntry])
+      setRecords((prev) => prev.map((r) => (r.id === tempId ? realEntry : r)))
       return true
     },
     [babyId, isPremium, records, resolveVaccineId],
