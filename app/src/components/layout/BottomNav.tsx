@@ -147,7 +147,7 @@ export default function BottomNav() {
                         src={babyPhoto}
                         alt={babyName}
                         className={`w-6 h-6 rounded-full object-cover transition-all ${
-                          isProfileActive ? 'ring-2 ring-primary scale-110' : 'opacity-70'
+                          isProfileActive ? 'ring-2 ring-tertiary scale-110' : 'opacity-70'
                         }`}
                       />
                     ) : (
@@ -175,7 +175,7 @@ export default function BottomNav() {
                   to={tab.to}
                   className={({ isActive }) =>
                     `relative flex flex-col items-center gap-0.5 min-w-[64px] py-1 transition-colors ${
-                      isActive ? 'text-primary' : 'text-on-surface-variant'
+                      isActive ? 'text-tertiary' : 'text-on-surface-variant'
                     }`
                   }
                 >
@@ -210,20 +210,20 @@ export default function BottomNav() {
 }
 
 /**
- * Glow rosa aerado que indica a tab ativa e desliza entre as tabs
- * quando o usuário troca. `layoutId="nav-active-glow"` faz Framer Motion
- * tratar como mesmo elemento entre renders diferentes — quando ele some
- * de uma tab e aparece em outra, o movimento é interpolado com spring.
+ * Pill sutil que indica a tab ativa e desliza entre as tabs quando o
+ * usuário troca. `layoutId="nav-active-glow"` faz Framer Motion tratar
+ * como mesmo elemento entre renders diferentes — quando ele some de
+ * uma tab e aparece em outra, o movimento é interpolado com spring.
  *
- * Design: pill rosa (tertiary) com blur suave + gradiente radial discreto.
- * Fica atrás do ícone (z-[-1] via absolute + negative inset) pra não
- * competir visualmente com o conteúdo da tab.
+ * Design: fundo quase imperceptível (white/5 dark, primary/5 light) —
+ * a cor vem do ícone (text-tertiary rosa), o fundo só dá uma "elevação"
+ * discreta. Não compete visualmente, só localiza a tab ativa.
  */
 function NavActiveGlow() {
   return (
     <motion.div
       layoutId="nav-active-glow"
-      className="absolute inset-x-1 inset-y-0 rounded-2xl bg-tertiary/20 blur-[6px] pointer-events-none"
+      className="absolute inset-x-1 inset-y-0 rounded-2xl bg-on-surface/[0.08] pointer-events-none"
       transition={spring.delight}
       aria-hidden
     />
