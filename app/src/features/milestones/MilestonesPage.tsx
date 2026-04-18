@@ -13,6 +13,7 @@ import {
   CATEGORY_LABEL,
   CATEGORY_CHIP_CLASS,
   formatAgeAtDate,
+  extractDateOnly,
   type Milestone,
   type BabyMilestone,
 } from './milestoneData'
@@ -43,7 +44,9 @@ function getLeapAtDate(
 ): string | null {
   if (!achievedAt) return null
   const birth = new Date(birthDate)
-  const achieved = new Date(achievedAt + 'T12:00:00')
+  // achievedAt pode ser YYYY-MM-DD (legado) ou ISO full (após migration
+  // timestamptz); extractDateOnly normaliza.
+  const achieved = new Date(extractDateOnly(achievedAt) + 'T12:00:00')
   const ageWeeks = Math.floor(
     (achieved.getTime() - birth.getTime()) / (7 * 86400000),
   )
@@ -592,7 +595,7 @@ function MilestoneRow({
         {isAchieved && entry ? (
           entry.achievedAt ? (
             <p className="font-label text-xs text-on-surface-variant mt-0.5">
-              {new Date(entry.achievedAt + 'T12:00:00').toLocaleDateString(
+              {new Date(extractDateOnly(entry.achievedAt) + 'T12:00:00').toLocaleDateString(
                 'pt-BR',
                 { day: '2-digit', month: '2-digit', year: '2-digit' },
               )}
@@ -667,7 +670,7 @@ function MilestoneDetailModal({
   useSheetBackClose(true, onClose)
   const leapInfo = getLeapAtDate(birthDate, entry.achievedAt)
   const dateLabel = entry.achievedAt
-    ? new Date(entry.achievedAt + 'T12:00:00').toLocaleDateString(
+    ? new Date(extractDateOnly(entry.achievedAt) + 'T12:00:00').toLocaleDateString(
         'pt-BR',
         { day: '2-digit', month: 'long', year: 'numeric' },
       )

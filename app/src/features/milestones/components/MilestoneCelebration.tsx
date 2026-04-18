@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import type { Milestone } from '../milestoneData'
-import { formatAgeAtDate } from '../milestoneData'
+import { formatAgeAtDate, extractDateOnly } from '../milestoneData'
 import { hapticHeavy, hapticSuccess } from '../../../lib/haptics'
 import { useSheetBackClose } from '../../../hooks/useSheetBackClose'
 import { spring } from '../../../lib/motion'
@@ -69,7 +69,7 @@ export default function MilestoneCelebration({
   }, [])
 
   const ageLabel = formatAgeAtDate(birthDate, achievedAt)
-  const dateLabel = new Date(achievedAt + 'T12:00:00').toLocaleDateString(
+  const dateLabel = new Date(extractDateOnly(achievedAt) + 'T12:00:00').toLocaleDateString(
     'pt-BR',
     { day: '2-digit', month: 'long', year: 'numeric' },
   )

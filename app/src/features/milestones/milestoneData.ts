@@ -175,10 +175,19 @@ export const BAND_INTRO_TEXT: Record<string, string> = {
   beyond: 'Cada descoberta vira memória.',
 }
 
+/**
+ * Normaliza "achievedAt" / "birthDate" pra "YYYY-MM-DD" — a coluna migrou
+ * de DATE pra TIMESTAMPTZ em 20260418e mas muitos formatters esperam só
+ * a data pura. Aceita ambos os formatos (YYYY-MM-DD ou ISO full).
+ */
+export function extractDateOnly(isoOrDate: string): string {
+  return isoOrDate.slice(0, 10)
+}
+
 /** Calcula idade em dias, meses e dias para exibição ("4 meses e 12 dias") */
 export function formatAgeAtDate(birthDate: string, achievedAt: string): string {
-  const [by, bm, bd] = birthDate.split('-').map(Number)
-  const [ay, am, ad] = achievedAt.split('-').map(Number)
+  const [by, bm, bd] = extractDateOnly(birthDate).split('-').map(Number)
+  const [ay, am, ad] = extractDateOnly(achievedAt).split('-').map(Number)
   const birth = new Date(by, bm - 1, bd)
   const achieved = new Date(ay, am - 1, ad)
   const totalDays = Math.max(

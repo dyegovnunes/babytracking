@@ -3,7 +3,7 @@ import { Share } from '@capacitor/share'
 import { Filesystem, Directory } from '@capacitor/filesystem'
 import { Capacitor } from '@capacitor/core'
 import type { Milestone } from '../milestoneData'
-import { formatAgeAtDate } from '../milestoneData'
+import { formatAgeAtDate, extractDateOnly } from '../milestoneData'
 import { useSheetBackClose } from '../../../hooks/useSheetBackClose'
 
 interface Props {
@@ -169,7 +169,7 @@ async function buildShareCanvas(
   ctx.fillText(`${babyName} · ${ageLabel}`, size / 2, subY)
 
   // Date
-  const dateLabel = new Date(achievedAt + 'T12:00:00').toLocaleDateString(
+  const dateLabel = new Date(extractDateOnly(achievedAt) + 'T12:00:00').toLocaleDateString(
     'pt-BR',
     { day: '2-digit', month: 'long', year: 'numeric' },
   )
