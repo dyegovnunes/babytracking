@@ -26,7 +26,7 @@ export async function initAdMob(): Promise<void> {
 }
 
 /**
- * Mostra o banner nativo. Idempotente: se já está mostrando, não faz nada.
+ * Mostra o banner nativo. Idempotente via bannerCall + bannerVisible.
  * Serializa chamadas (show/hide) para evitar race no plugin.
  */
 export async function showBanner(): Promise<void> {
@@ -35,24 +35,34 @@ export async function showBanner(): Promise<void> {
   if (bannerCall) await bannerCall.catch(() => {});
   if (bannerVisible) return;
 
-  // O plugin @capacitor-community/admob interpreta `margin` em **pixels
-  // físicos**, não dp. Em Android @3x (HiDPI), 110px físicos ≈ 37dp —
-  // mal chega na gesture bar. Fix: calcular dinamicamente baseado no
-  // devicePixelRatio pra garantir que cobrimos a bottom nav (5rem = 80px
-  // CSS = 80dp) + safe-area típica Android com gesture bar (~40dp) = 130dp.
-  const marginDp = 130;
-  const ratio = typeof window !== 'undefined' ? (window.devicePixelRatio || 2) : 2;
-  const marginPx = Math.round(marginDp * ratio);
-
+  // CORREÇÃO DEFINITIVA do banner tampando a bottom nav:
+  //
+  // O plugin @capacitor-community/admob (Android) JÁ multiplica margin
+  // pela density internamente (BannerExecutor.java:126:
+  //    int densityMargin = (int) (adOptions.margin * density);
+  // ). O `margin` aqui deve ser passado em **dp simples**, sem conversão.
+  // Commits anteriores (110, 130 × ratio) erraram a interpretação.
+  //
+  // Valor seguro (200dp) pra cobrir qualquer Android:
+  //   - Bottom nav do AppShell: 80dp (h-16 + safe-area variável)
+  //   - Android 3-button nav bar (Samsung antigos/atuais): até 48dp
+  //   - Gesture bar (Samsung/Pixel novos): até 40dp
+  //   - Margem extra de respiro: ~30dp
+  //
+  // Em iPhones o margin também fica acima (home indicator ~34pt) —
+  // banner fica um pouco mais alto que ideal mas nunca tampa a nav.
   const options: BannerAdOptions = {
     adId: AD_IDS.banner,
     adSize: BannerAdSize.ADAPTIVE_BANNER,
     position: BannerAdPosition.BOTTOM_CENTER,
-    margin: marginPx,
+    margin: 200,
   };
 
   bannerCall = (async () => {
     try {
+      // Defensivo: tenta remover qualquer banner pré-existente (ex: AAB antigo
+      // que setou margin diferente). Ignora erro se não havia nada.
+      try { await AdMob.removeBanner(); } catch { /* no-op */ }
       await AdMob.showBanner(options);
       bannerVisible = true;
     } catch {
