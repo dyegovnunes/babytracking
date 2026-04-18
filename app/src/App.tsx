@@ -82,11 +82,17 @@ function AuthenticatedRoutes() {
         <WelcomePage
           baby={baby}
           onComplete={async () => {
-            await supabase
-              .from('baby_members')
-              .update({ welcome_shown_at: new Date().toISOString() })
-              .eq('user_id', user!.id)
-              .eq('baby_id', baby.id)
+            // UPDATE direto batia no RLS (policy de UPDATE só permite mexer
+            // em OUTROS users). Função SECURITY DEFINER mark_welcome_shown
+            // mexe cirurgicamente só no welcome_shown_at da própria linha.
+            // Ver migration 20260418f_mark_welcome_shown.sql.
+            const { error } = await supabase.rpc('mark_welcome_shown', {
+              p_baby_id: baby.id,
+            })
+            if (error) {
+              console.error('Failed to mark welcome shown', error)
+              return
+            }
             dispatch({ type: 'SET_WELCOME_SHOWN' })
           }}
         />
