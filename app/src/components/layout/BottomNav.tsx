@@ -210,22 +210,31 @@ export default function BottomNav() {
 }
 
 /**
- * Pill sutil que indica a tab ativa e desliza entre as tabs quando o
- * usuário troca. `layoutId="nav-active-glow"` faz Framer Motion tratar
- * como mesmo elemento entre renders diferentes — quando ele some de
- * uma tab e aparece em outra, o movimento é interpolado com spring.
+ * Glow radial centralizado atrás do ícone ativo — uma luz rosa difusa
+ * que vaza a partir do centro e some nas bordas, sem retângulo/pill
+ * visível. `layoutId="nav-active-glow"` faz Framer Motion deslizar o
+ * glow da tab antiga pra nova com spring (shared-element).
  *
- * Design: fundo quase imperceptível (white/5 dark, primary/5 light) —
- * a cor vem do ícone (text-tertiary rosa), o fundo só dá uma "elevação"
- * discreta. Não compete visualmente, só localiza a tab ativa.
+ * Construção: radial-gradient rosa (tertiary) → transparente, aplicado
+ * num quadrado maior que a tab, com blur adicional pra suavizar bordas.
+ * Nenhum background plano, nenhuma borda — só luz.
  */
 function NavActiveGlow() {
   return (
     <motion.div
       layoutId="nav-active-glow"
-      className="absolute inset-x-1 inset-y-0 rounded-2xl bg-on-surface/[0.08] pointer-events-none"
+      className="absolute inset-0 pointer-events-none"
       transition={spring.delight}
       aria-hidden
-    />
+    >
+      <div
+        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full"
+        style={{
+          background:
+            'radial-gradient(circle, rgba(255,150,185,0.45) 0%, rgba(255,150,185,0.18) 35%, rgba(255,150,185,0) 70%)',
+          filter: 'blur(4px)',
+        }}
+      />
+    </motion.div>
   )
 }
