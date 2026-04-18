@@ -122,14 +122,21 @@ Alternativa: `react-spring` (13kB) — mais leve, mas API imperativa, mais verbo
 
 ---
 
-### A8. Empty states — emoji+texto, não ilustração
+### A8. Empty states — emoji + copy OU ilustrações/imagens por IA
 
-**Estado:** ⏳ Pendente
+**Estado:** 🔧 Ajustado pela discussão
 
-**Proposta:** template emoji grande + copy conversacional pra todos os empty states. Não investir em ilustrações custom enquanto não tiver ilustrador contratado.
+**Proposta revisada:** User trouxe alternativa válida — IA gera ilustração ou imagem realista. Humaniza mais que emoji frio, sem custo de ilustrador contratado.
+
+**Processo de curadoria obrigatório:**
+- Prompt fixo definido (ex: "soft illustration, lavender + dusty pink palette, editorial line, minimalist warmth")
+- Gerar múltiplas variações → descartar as fora do tom
+- Edição de cor/crop uniformizando o lote antes de subir
+- Empty states **frequentes** (history vazio, marcos sem registro, insights sem dados) ganham imagem curada
+- Empty states **secundários** ficam emoji + copy como fallback
 
 **Seu feedback:**
-> _(preencher — OK ou quer explorar stock ilustração alternativa?)_
+> _(preencher — OK com o processo de curadoria? quer definir já a paleta/tom de prompt?)_
 
 ---
 
@@ -140,6 +147,8 @@ Depois que Parte A for aprovada, começo daqui. Cada item = um commit/PR no bran
 ### B1. Skeleton screens em todas as páginas principais
 
 **Estado:** ⏳ Pendente
+
+**O que é skeleton screen:** placeholder animado com a forma do conteúdo real, em vez de spinner (bolinha girando). Ex: em vez de `⟳ carregando...`, aparece silhueta cinza dos cards (linhas simulando cada log). Cérebro "preenche" mentalmente → percepção de velocidade maior. Usado por Facebook, LinkedIn, YouTube.
 
 **Escopo:**
 - [ ] `HistoryPage` — se já tem `HistorySkeleton`, revisar e melhorar fidelidade
@@ -266,22 +275,26 @@ Swap em `globals.css` seção `html.theme-light`. Testar em todas as páginas (�
 
 ---
 
-### C4. Breathing animation em timer ativo (mamada, sono)
+### C4. ~~Breathing animation em timer ativo~~ — REMOVIDO
 
-**Estado:** ⏳ Pendente
+**Estado:** ❌ Rejeitado (discutido com user)
 
-Se houver timer ativo (mamada em curso), ícone da atividade tem opacity 1.0 → 0.7 → 1.0 em loop infinito 2000ms linear.
+**Motivo:** app atual só registra momento (timestamp), não duração. Não existe "mamada em curso" — cada evento é pontual. Sem modelo de duração, a animação não tem gatilho semântico real.
 
-**Seu feedback:**
-> _(preencher)_
+Se futuramente for introduzido timer com início + fim de atividade, reabrir.
 
 ---
 
-### C5. Transições entre abas da bottom nav
+### C5. Transições entre abas + animações na bottom nav
 
-**Estado:** ⏳ Pendente
+**Estado:** ⏳ Pendente (ampliado após discussão)
 
-Slide horizontal 200ms ease-out ao trocar `/` ↔ `/history` ↔ `/insights` ↔ `/profile`. Hoje é corte seco.
+**Escopo:**
+- [ ] **Transição de página**: slide horizontal 200ms ease-out em `/` ↔ `/history` ↔ `/insights` ↔ `/profile`. Hoje é corte seco.
+- [ ] **Tap no tab ativo**: ícone pulsa levemente (scale 1 → 1.15 → 1, spring `subtle` ~200ms) + `hapticLight()` sincronizado
+- [ ] **Transição de cor do label**: smooth entre inativo (`on-surface-variant`) → ativo (`primary`), sem corte seco
+
+Respeitar `prefers-reduced-motion`.
 
 **Seu feedback:**
 > _(preencher)_
@@ -327,13 +340,40 @@ Ao completar ciclo de streak (7/14/30 dias), a chama ganha pulso dourado radial 
 
 **Estado:** ⏳ Pendente
 
-Passar por todos os componentes interativos e:
-- Garantir focus visible em tab navigation
-- Adicionar aria-label em botões só-ícone (chevron, close, etc)
-- Touch targets ≥44×44pt / 48×48dp
+**O que é:** acessibilidade pra teclado externo (tablet + keyboard), VoiceOver (iPhone), TalkBack (Android), switch control (acessibilidade motora).
+
+- **Focus state**: quando user navega com Tab ou tecnologia assistiva, o elemento "selecionado" precisa ter indicador visual claro (contorno/halo). Hoje alguns botões somem do foco.
+
+- **aria-label**: atributo HTML que dá nome ao elemento pra leitor de tela ler em voz alta. Botão só-ícone (ex: ✕ pra fechar) sem aria-label é anunciado como "botão, sem rótulo" — péssima experiência.
+
+  ```tsx
+  // ❌ ruim
+  <button onClick={onClose}>✕</button>
+  // Leitor de tela: "botão"
+
+  // ✅ bom
+  <button onClick={onClose} aria-label="Fechar modal">✕</button>
+  // Leitor de tela: "fechar modal, botão"
+  ```
+
+- **Touch targets ≥44×44pt (iOS) / 48×48dp (Android)** — pra mãos trêmulas/dedões grandes acertarem.
+
+**Por que obrigatório:** compliance de acessibilidade é requisito pra aprovação em Play Store + App Store. Não é opcional.
 
 **Seu feedback:**
 > _(preencher)_
+
+---
+
+## Próximo papo combinado
+
+**"Jornada do usuário"** — depois desse redesign, abrir sessão separada pra conversar sobre:
+- Marcos do app / conquistas secundárias ("100º banho", "1 ano de Yaya")
+- Cards de resumo compartilháveis (screenshot-ready)
+- Onboarding emocional
+- Celebrações contextuais por momento da jornada (1ª semana, 1º mês, etc)
+
+Registrado pra não perder.
 
 ---
 
