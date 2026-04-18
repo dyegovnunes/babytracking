@@ -28,6 +28,8 @@ import { contractionDe } from '../../lib/genderUtils'
 import { maybeShowInterstitialOncePerDay } from '../../lib/admob'
 import { useSheetBackClose } from '../../hooks/useSheetBackClose'
 import { MilestonesSkeleton } from '../../components/ui/Skeleton'
+import SparkleBurst from '../../components/ui/SparkleBurst'
+import EmptyState from '../../components/ui/EmptyState'
 import { motion } from 'framer-motion'
 import { spring as motionSpring, triggerPreset } from '../../lib/motion'
 
@@ -351,6 +353,22 @@ export default function MilestonesPage() {
 
       {/* Timeline */}
       <div className="px-5 space-y-5">
+        {AGE_BAND_ORDER.every((b) => grouped[b].length === 0) && (
+          <EmptyState
+            emoji={filter === 'achieved' ? '🌱' : '🎯'}
+            title={
+              filter === 'achieved'
+                ? 'Ainda sem marcos alcançados'
+                : 'Nenhum marco pendente nesta fase'
+            }
+            description={
+              filter === 'achieved'
+                ? `Marque o primeiro marco ${contractionDe(baby.gender)} ${baby.name} pra começar a coleção.`
+                : 'Explore as outras faixas etárias ou mude o filtro pra "Todos".'
+            }
+            size="compact"
+          />
+        )}
         {AGE_BAND_ORDER.map((band) => {
           const items = grouped[band]
           if (items.length === 0) return null
@@ -525,6 +543,18 @@ function MilestoneRow({
   onCheckboxClick: () => void
 }) {
   const isAutoRegistered = isAchieved && entry?.autoRegistered === true
+  const [burst, setBurst] = useState(false)
+
+  const handleCheckTap = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    // Sparkle burst só quando VAI marcar (not desmarcar) — celebração
+    // acontece uma vez por conquista, não ao desmarcar por engano.
+    if (!isAchieved) {
+      setBurst(true)
+      setTimeout(() => setBurst(false), 900)
+    }
+    onCheckboxClick()
+  }
 
   return (
     <div
@@ -585,17 +615,18 @@ function MilestoneRow({
           className="w-10 h-10 rounded-md object-cover flex-shrink-0"
         />
       )}
-      {/* Checkbox à direita — spring delight ao alternar, hapticMedium */}
+      {/* Checkbox à direita — spring delight + sparkle burst ao marcar */}
       <motion.button
         type="button"
-        onClick={(e) => { e.stopPropagation(); onCheckboxClick() }}
+        onClick={handleCheckTap}
         aria-label={isAchieved ? 'Desmarcar' : 'Marcar como alcançado'}
         whileTap={{ scale: 0.85 }}
         transition={springDelight}
-        className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 ${
+        className={`relative w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 ${
           isFuture ? 'opacity-40 pointer-events-none' : ''
         }`}
       >
+        <SparkleBurst active={burst} radius={26} count={6} />
         <motion.span
           key={isAchieved ? 'on' : 'off'}
           initial={{ scale: 0.7 }}

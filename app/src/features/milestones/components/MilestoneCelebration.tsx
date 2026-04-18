@@ -68,22 +68,6 @@ export default function MilestoneCelebration({
     }
   }, [])
 
-  // 8 estrelas pequenas distribuídas em círculo ao redor do ícone.
-  // Saem simultâneas, fade em 500ms.
-  const sparkles = useMemo(
-    () =>
-      Array.from({ length: 8 }).map((_, i) => {
-        const angle = (i / 8) * Math.PI * 2
-        return {
-          id: i,
-          x: Math.cos(angle) * 120,
-          y: Math.sin(angle) * 120,
-          delay: 0.1 + i * 0.03,
-        }
-      }),
-    [],
-  )
-
   const ageLabel = formatAgeAtDate(birthDate, achievedAt)
   const dateLabel = new Date(achievedAt + 'T12:00:00').toLocaleDateString(
     'pt-BR',
@@ -149,26 +133,12 @@ export default function MilestoneCelebration({
               <div className="text-8xl">{milestone.emoji}</div>
             )}
           </motion.div>
-          {/* Estrelinhas emergindo radialmente */}
-          <div className="absolute inset-0 pointer-events-none">
-            {sparkles.map((s) => (
-              <motion.span
-                key={s.id}
-                aria-hidden
-                className="absolute top-1/2 left-1/2 text-lg"
-                initial={{ x: 0, y: 0, opacity: 0, scale: 0.3 }}
-                animate={{
-                  x: s.x,
-                  y: s.y,
-                  opacity: [0, 1, 0],
-                  scale: [0.3, 1, 0.6],
-                }}
-                transition={{ duration: 0.9, delay: s.delay, ease: 'easeOut' }}
-              >
-                ✨
-              </motion.span>
-            ))}
-          </div>
+          {/*
+           * Estrelinhas fullscreen foram movidas pro checkbox simples de
+           * marco (components/ui/SparkleBurst, em MilestonesPage.tsx).
+           * Aqui o confetti + spring bouncy já dão o momento de celebração
+           * sem sobreposição visual com as sparkles.
+           */}
         </div>
 
         <h3 className="font-headline text-xl font-extrabold text-primary mb-1 leading-tight">

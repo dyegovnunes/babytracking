@@ -1,24 +1,41 @@
 import { useState } from 'react'
 import { useTimer } from '../../../hooks/useTimer'
 import { useAppState } from '../../../contexts/AppContext'
+import { useAuth } from '../../../contexts/AuthContext'
 import { formatTime, formatAge } from '../../../lib/formatters'
 import BabySwitcher from '../../../components/ui/BabySwitcher'
 import StreakBadge from './StreakBadge'
 import { hapticLight } from '../../../lib/haptics'
 import type { StreakData } from '../../../lib/streak'
+import { getGreeting, type GreetingTone } from '../../../lib/greeting'
 
 interface HeroIdentityProps {
   streak?: StreakData | null;
 }
 
+// Cores do eyebrow por tom — night usa índigo claro pra sinalizar
+// madrugada sem competir com primary/tertiary. Demais tons seguem
+// a paleta lavender-muted já definida (metadata neutra).
+const TONE_CLASSES: Record<GreetingTone, string> = {
+  morning: 'text-on-surface-variant',
+  day: 'text-on-surface-variant',
+  dusk: 'text-on-surface-variant',
+  night: 'text-indigo-300 dark:text-indigo-300',
+}
+
 export default function HeroIdentity({ streak }: HeroIdentityProps) {
   const now = useTimer()
-  const { baby, babies } = useAppState()
+  const { baby, babies, members, quietHours } = useAppState()
+  const { user } = useAuth()
   const [switcherOpen, setSwitcherOpen] = useState(false)
 
   if (!baby) return null
 
   const hasMultiple = babies.length > 1
+
+  // Parent name: busca pelo user_id atual em members; fallback vazio.
+  const parentFirstName = user ? members[user.id]?.displayName : undefined
+  const greeting = getGreeting(now, parentFirstName, baby.name, quietHours)
 
   const avatar = baby.photoUrl ? (
     <img
@@ -41,7 +58,14 @@ export default function HeroIdentity({ streak }: HeroIdentityProps) {
 
   return (
     <>
-      <section className="px-5 pt-4 pb-2">
+      <section className="px-5 pt-4 pb-2" data-tone={greeting.tone}>
+        {greeting.salutation && (
+          <p
+            className={`font-label text-[10px] font-semibold uppercase tracking-[0.12em] mb-1.5 ${TONE_CLASSES[greeting.tone]}`}
+          >
+            {greeting.salutation}
+          </p>
+        )}
         <div className="flex items-center gap-3">
           <button
             type="button"

@@ -4,6 +4,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { useBabyPremium } from '../../../hooks/useBabyPremium';
 import { useSheetBackClose } from '../../../hooks/useSheetBackClose';
 import { PaywallModal } from '../../../components/ui/PaywallModal';
+import EmptyState from '../../../components/ui/EmptyState';
 import {
   createSharedReport,
   listSharedReports,
@@ -255,7 +256,14 @@ export default function SharedReports() {
               );
             })}
           </div>
-        ) : null}
+        ) : (
+          <EmptyState
+            emoji="📋"
+            title="Nenhum relatório criado"
+            description="Gere um link seguro pra compartilhar a rotina do bebê com o pediatra, babá ou família."
+            size="compact"
+          />
+        )}
 
         {/* Create button */}
         <button

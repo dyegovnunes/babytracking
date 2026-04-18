@@ -8,6 +8,7 @@ import {
   buildReferralLink,
   buildShareMessage,
 } from '../useReferral'
+import EmptyState from '../../../components/ui/EmptyState'
 
 /**
  * Painel MGM repaginado (v2):
@@ -196,8 +197,15 @@ export default function ReferralPanel() {
         </div>
       )}
 
-      {/* Lista de indicações */}
-      {referrals.length > 0 && (
+      {/* Lista de indicações (com empty state quando ainda não indicou) */}
+      {referrals.length === 0 ? (
+        <EmptyState
+          emoji="💌"
+          title="Nenhuma indicação ainda"
+          description="Compartilhe seu link com uma amiga que também está nesse universo de bebê. Vocês ganham juntas."
+          size="compact"
+        />
+      ) : (
         <div className="mb-4">
           <p className="font-label text-[10px] font-bold uppercase tracking-wider text-on-surface-variant mb-2">
             Suas indicações

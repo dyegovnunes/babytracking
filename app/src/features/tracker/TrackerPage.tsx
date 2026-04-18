@@ -41,6 +41,7 @@ import type { BabyMilestone } from '../milestones/milestoneData'
 
 import { TrackerSkeleton } from '../../components/ui/Skeleton'
 import type { LogEntry } from '../../types'
+import { isFirstOfType, getFirstRecordMessage } from '../../lib/firstRecord'
 
 const PROJECTION_CATEGORIES: string[] = ['feed', 'diaper', 'sleep_nap', 'sleep_awake', 'bath']
 
@@ -211,7 +212,7 @@ export default function TrackerPage() {
 
   const [bottleModalOpen, setBottleModalOpen] = useState(false)
   const [editingLog, setEditingLog] = useState<LogEntry | null>(null)
-  const [toast, setToast] = useState<string | null>(null)
+  const [toast, setToast] = useState<{ message: string; variant?: 'info' | 'success' } | null>(null)
   const [showAdModal, setShowAdModal] = useState(false)
   const [showPaywall, setShowPaywall] = useState(false)
   const { checkAndRecord, recordsToday, dailyLimit, grantBonusRecords } = useDailyLimit()
@@ -236,26 +237,41 @@ export default function TrackerPage() {
         return
       }
 
+      // Detecta "primeiro do tipo" ANTES do insert (logs local ainda
+      // não tem o novo registro). Se for primeiro, usa mensagem
+      // celebrativa específica no toast.
+      const wasFirst = isFirstOfType(logs, eventId)
       const log = await addLog(dispatch, eventId, baby.id, undefined, user?.id)
       if (log) {
         hapticSuccess()
-        setToast(`${event.label} registrado!`)
+        const firstMsg = wasFirst ? getFirstRecordMessage(eventId) : null
+        if (firstMsg) {
+          setToast({ message: firstMsg, variant: 'success' })
+        } else {
+          setToast({ message: `${event.label} registrado!` })
+        }
       }
     },
-    [baby, dispatch, user, checkAndRecord],
+    [baby, dispatch, user, checkAndRecord, logs],
   )
 
   const handleBottleConfirm = useCallback(
     async (ml: number) => {
       if (!baby) return
       setBottleModalOpen(false)
+      const wasFirst = isFirstOfType(logs, 'bottle')
       const log = await addLog(dispatch, 'bottle', baby.id, ml, user?.id)
       if (log) {
         hapticSuccess()
-        setToast(`Mamadeira ${ml}ml registrada!`)
+        const firstMsg = wasFirst ? getFirstRecordMessage('bottle') : null
+        setToast(
+          firstMsg
+            ? { message: firstMsg, variant: 'success' }
+            : { message: `Mamadeira ${ml}ml registrada!` },
+        )
       }
     },
-    [baby, dispatch, user],
+    [baby, dispatch, user, logs],
   )
 
   const handleEditLog = useCallback((log: LogEntry) => {
@@ -267,7 +283,7 @@ export default function TrackerPage() {
     async (log: LogEntry) => {
       const ok = await updateLog(dispatch, log)
       setEditingLog(null)
-      if (ok) setToast('Registro atualizado!')
+      if (ok) setToast({ message: 'Registro atualizado!' })
     },
     [dispatch],
   )
@@ -276,7 +292,7 @@ export default function TrackerPage() {
     async (id: string) => {
       const ok = await deleteLog(dispatch, id)
       setEditingLog(null)
-      if (ok) setToast('Registro excluído!')
+      if (ok) setToast({ message: 'Registro excluído!' })
     },
     [dispatch],
   )
@@ -404,7 +420,13 @@ export default function TrackerPage() {
         trigger="daily_limit"
       />
 
-      {toast && <Toast message={toast} onDismiss={() => setToast(null)} />}
+      {toast && (
+        <Toast
+          message={toast.message}
+          variant={toast.variant}
+          onDismiss={() => setToast(null)}
+        />
+      )}
 
       {detailShift && (
         <ShiftDetailModal
