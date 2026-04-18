@@ -1,7 +1,13 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { getCurrentBadge, STREAK_BADGES, type StreakData } from '../../../lib/streak';
 import { getLocalDateString } from '../../../lib/formatters';
 import { useSheetBackClose } from '../../../hooks/useSheetBackClose';
+import { hapticSuccess } from '../../../lib/haptics';
+
+/** Milestones em que o streak dispara brilho radial dourado. */
+const STREAK_GLOW_MILESTONES = [7, 14, 30, 60, 100];
+const GLOW_STORAGE_KEY = 'yaya_streak_glow_last_shown';
 
 interface StreakBadgeProps {
   streak: StreakData;
@@ -9,7 +15,32 @@ interface StreakBadgeProps {
 
 export default function StreakBadge({ streak }: StreakBadgeProps) {
   const [showDetail, setShowDetail] = useState(false);
+  const [glowing, setGlowing] = useState(false);
   useSheetBackClose(showDetail, () => setShowDetail(false));
+
+  // Brilho radial uma única vez quando o streak cruza um milestone
+  // (7/14/30/60/100). localStorage evita re-trigger em re-montagens no
+  // mesmo dia. Haptic success sincronizado com o brilho.
+  useEffect(() => {
+    const current = streak.currentStreak;
+    if (!STREAK_GLOW_MILESTONES.includes(current)) return;
+    let lastShown = 0;
+    try {
+      lastShown = parseInt(localStorage.getItem(GLOW_STORAGE_KEY) || '0', 10);
+    } catch {
+      /* ignore */
+    }
+    if (lastShown >= current) return;
+    setGlowing(true);
+    hapticSuccess();
+    try {
+      localStorage.setItem(GLOW_STORAGE_KEY, String(current));
+    } catch {
+      /* ignore */
+    }
+    const t = setTimeout(() => setGlowing(false), 1400);
+    return () => clearTimeout(t);
+  }, [streak.currentStreak]);
 
   if (streak.currentStreak === 0) return null;
 
@@ -25,13 +56,37 @@ export default function StreakBadge({ streak }: StreakBadgeProps) {
     <>
       <button
         onClick={() => setShowDetail(true)}
-        className={`flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/[0.06] text-sm font-bold ${
+        className={`relative flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/[0.06] text-sm font-bold ${
           isAtRisk ? 'animate-pulse text-amber-400' : 'text-on-surface'
         }`}
       >
-        <span className="text-base">🔥</span>
-        <span>{streak.currentStreak}</span>
-        {badge && <span className="text-xs">{badge.emoji}</span>}
+        {/* Brilho radial dourado — pulso único quando cruza milestone */}
+        <AnimatePresence>
+          {glowing && (
+            <motion.span
+              aria-hidden
+              initial={{ opacity: 0, scale: 0.6 }}
+              animate={{ opacity: [0, 0.9, 0], scale: [0.6, 2.2, 2.8] }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1.2, ease: 'easeOut' }}
+              className="absolute inset-0 rounded-full pointer-events-none"
+              style={{
+                background:
+                  'radial-gradient(circle, rgba(255,214,102,0.75) 0%, rgba(255,180,60,0.35) 40%, transparent 70%)',
+                filter: 'blur(6px)',
+              }}
+            />
+          )}
+        </AnimatePresence>
+        <motion.span
+          className="text-base relative"
+          animate={glowing ? { scale: [1, 1.3, 1] } : { scale: 1 }}
+          transition={{ duration: 0.6 }}
+        >
+          🔥
+        </motion.span>
+        <span className="relative">{streak.currentStreak}</span>
+        {badge && <span className="text-xs relative">{badge.emoji}</span>}
       </button>
 
       {showDetail && (

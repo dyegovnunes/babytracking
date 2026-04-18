@@ -1,10 +1,12 @@
 import { useRef, useCallback, useState, useMemo } from 'react'
 import { NavLink, useNavigate, useLocation } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { useAppState, useAppDispatch, switchBaby } from '../../contexts/AppContext'
 import { useMyRole } from '../../hooks/useMyRole'
 import { useBabyPremium } from '../../hooks/useBabyPremium'
 import { can } from '../../lib/roles'
 import { hapticLight, hapticMedium } from '../../lib/haptics'
+import { spring } from '../../lib/motion'
 import BabySwitcher from '../ui/BabySwitcher'
 import Toast from '../ui/Toast'
 
@@ -33,6 +35,11 @@ export default function BottomNav() {
   const location = useLocation()
   const myRole = useMyRole()
   const isPremium = useBabyPremium()
+
+  // Cor da tab ativa por gênero do bebê — menina rosa (tertiary), menino
+  // roxo claro (primary). Fallback: primary (neutro da marca).
+  const activeColorClass = baby?.gender === 'girl' ? 'text-tertiary' : 'text-primary'
+  const activeRingClass = baby?.gender === 'girl' ? 'ring-tertiary' : 'ring-primary'
 
   // Nav adaptativa: free vê "Yaya+" (upgrade + MGM) em vez de "Histórico"
   // (o acesso free ao histórico limitado continua via "Ver tudo →" em
@@ -131,7 +138,7 @@ export default function BottomNav() {
                 return (
                   <div
                     key={tab.to}
-                    className={`flex flex-col items-center gap-0.5 min-w-[64px] py-1 transition-colors cursor-pointer select-none ${
+                    className={`relative flex flex-col items-center gap-0.5 min-w-[64px] py-1 transition-colors cursor-pointer select-none ${
                       isProfileActive ? 'text-primary' : 'text-on-surface-variant'
                     }`}
                     onPointerDown={handleProfileTouchStart}
@@ -139,23 +146,25 @@ export default function BottomNav() {
                     onPointerCancel={handleProfileTouchCancel}
                     onPointerLeave={handleProfileTouchCancel}
                   >
+                    {isProfileActive && <NavActiveGlow />}
                     {usePhoto ? (
                       <img
                         src={babyPhoto}
                         alt={babyName}
                         className={`w-6 h-6 rounded-full object-cover transition-all ${
-                          isProfileActive ? 'ring-2 ring-primary scale-110' : 'opacity-70'
+                          isProfileActive ? `ring-2 ${activeRingClass} scale-110` : 'opacity-70'
                         }`}
                       />
                     ) : (
-                      <span
-                        className={`material-symbols-outlined text-2xl transition-all ${
-                          isProfileActive ? 'scale-110' : ''
-                        }`}
+                      <motion.span
+                        className="material-symbols-outlined text-2xl"
+                        animate={{ scale: isProfileActive ? 1.1 : 1 }}
+                        whileTap={{ scale: 1.2 }}
+                        transition={spring.subtle}
                         style={isProfileActive ? { fontVariationSettings: "'FILL' 1" } : undefined}
                       >
                         {tab.icon}
-                      </span>
+                      </motion.span>
                     )}
                     <span className="font-label text-[10px] font-medium">
                       {shortName ?? tab.label}
@@ -170,21 +179,24 @@ export default function BottomNav() {
                   key={tab.to}
                   to={tab.to}
                   className={({ isActive }) =>
-                    `flex flex-col items-center gap-0.5 min-w-[64px] py-1 transition-colors ${
-                      isActive ? 'text-primary' : 'text-on-surface-variant'
+                    `relative flex flex-col items-center gap-0.5 min-w-[64px] py-1 transition-colors ${
+                      isActive ? activeColorClass : 'text-on-surface-variant'
                     }`
                   }
                 >
                   {({ isActive }) => (
                     <>
-                      <span
-                        className={`material-symbols-outlined text-2xl transition-all ${
-                          isActive ? 'scale-110' : ''
-                        }`}
+                      {isActive && <NavActiveGlow />}
+                      <motion.span
+                        className="material-symbols-outlined text-2xl"
+                        animate={{ scale: isActive ? 1.1 : 1 }}
+                        whileTap={{ scale: 1.2 }}
+                        transition={spring.subtle}
                         style={isActive ? { fontVariationSettings: "'FILL' 1" } : undefined}
+                        onClick={() => { if (!isActive) hapticLight() }}
                       >
                         {tab.icon}
-                      </span>
+                      </motion.span>
                       <span className="font-label text-[10px] font-medium">
                         {tab.label}
                       </span>
@@ -199,5 +211,34 @@ export default function BottomNav() {
       {showBabySheet && <BabySwitcher onClose={() => setShowBabySheet(false)} />}
       {switchToast && <Toast message={switchToast} onDismiss={() => setSwitchToast(null)} />}
     </>
+  )
+}
+
+/**
+ * Glow radial roxo claro centralizado atrás do ícone ativo — uma luz
+ * difusa que vaza do centro e some nas bordas, sem forma definida.
+ * Cor do glow é fixa (roxo claro #6b4ec9) — não muda por gênero; a cor
+ * que muda é a do ícone. O glow é o "chão luminoso" onde o ícone pousa.
+ *
+ * `layoutId="nav-active-glow"` faz Framer Motion deslizar o glow da
+ * tab antiga pra nova com spring (shared-element transition).
+ */
+function NavActiveGlow() {
+  return (
+    <motion.div
+      layoutId="nav-active-glow"
+      className="absolute inset-0 pointer-events-none"
+      transition={spring.delight}
+      aria-hidden
+    >
+      <div
+        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full"
+        style={{
+          background:
+            'radial-gradient(circle, rgba(107,78,201,0.28) 0%, rgba(107,78,201,0.11) 40%, rgba(107,78,201,0) 75%)',
+          filter: 'blur(6px)',
+        }}
+      />
+    </motion.div>
   )
 }

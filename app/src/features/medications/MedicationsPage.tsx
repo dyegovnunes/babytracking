@@ -14,6 +14,8 @@ import MedicationForm from './components/MedicationForm'
 import MedicationAdminSheet from './components/MedicationAdminSheet'
 import MedicationLogEditModal from './components/MedicationLogEditModal'
 import MedicationSlotPickerSheet from './components/MedicationSlotPickerSheet'
+import { MedicationsSkeleton } from '../../components/ui/Skeleton'
+import EmptyState from '../../components/ui/EmptyState'
 import type { Medication, MedicationDayStatus, MedicationLog } from './medicationData'
 
 const DISCLAIMER =
@@ -81,24 +83,8 @@ export default function MedicationsPage() {
     [adminFor, dayStatuses],
   )
 
-  if (!baby) {
-    return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <span className="material-symbols-outlined text-primary text-4xl animate-spin">
-          progress_activity
-        </span>
-      </div>
-    )
-  }
-
-  if (loading) {
-    return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <span className="material-symbols-outlined text-primary text-4xl animate-spin">
-          progress_activity
-        </span>
-      </div>
-    )
+  if (!baby || loading) {
+    return <MedicationsSkeleton />
   }
 
   const handleAddPress = () => {
@@ -284,17 +270,12 @@ export default function MedicationsPage() {
           Ativos agora
         </h2>
         {activeMedications.length === 0 ? (
-          <div className="py-8 text-center">
-            <div className="w-16 h-16 rounded-full bg-surface-container mx-auto mb-3 flex items-center justify-center">
-              <span className="text-3xl">💊</span>
-            </div>
-            <p className="font-body text-sm text-on-surface-variant mb-1">
-              Nenhum medicamento ativo
-            </p>
-            <p className="font-label text-xs text-on-surface-variant/70">
-              Cadastre remédios, vitaminas e suplementos
-            </p>
-          </div>
+          <EmptyState
+            emoji="💊"
+            title="Sem medicamentos ativos"
+            description="Cadastre remédios, vitaminas e suplementos pra acompanhar horários e doses."
+            size="compact"
+          />
         ) : (
           <div className="space-y-2">
             {dayStatuses.map((status) => (

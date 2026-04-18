@@ -21,6 +21,8 @@ import { useVaccineUnlock } from './useVaccineUnlock'
 import VaccineRow from './components/VaccineRow'
 import VaccineDetailSheet from './components/VaccineDetailSheet'
 import VaccineApplySheet from './components/VaccineApplySheet'
+import { VaccinesSkeleton } from '../../components/ui/Skeleton'
+import EmptyState from '../../components/ui/EmptyState'
 
 type FilterMode = 'all' | 'can_take' | 'overdue' | 'applied'
 
@@ -122,24 +124,8 @@ export default function VaccinesPage() {
     return map
   }, [records])
 
-  if (!baby) {
-    return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <span className="material-symbols-outlined text-primary text-4xl animate-spin">
-          progress_activity
-        </span>
-      </div>
-    )
-  }
-
-  if (loading) {
-    return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <span className="material-symbols-outlined text-primary text-4xl animate-spin">
-          progress_activity
-        </span>
-      </div>
-    )
+  if (!baby || loading) {
+    return <VaccinesSkeleton />
   }
 
   const handleRowTap = (v: Vaccine) => {
@@ -302,11 +288,12 @@ export default function VaccinesPage() {
       {/* Lista agrupada */}
       <section className="px-5 space-y-5">
         {grouped.length === 0 && (
-          <div className="py-10 text-center">
-            <p className="font-body text-sm text-on-surface-variant">
-              Nenhuma vacina nesta categoria.
-            </p>
-          </div>
+          <EmptyState
+            emoji="💉"
+            title="Nada nesta categoria"
+            description="Tente outro filtro pra ver vacinas aplicadas, pendentes ou ainda futuras."
+            size="compact"
+          />
         )}
         {grouped.map((group) => (
           <div key={group.ageDays}>

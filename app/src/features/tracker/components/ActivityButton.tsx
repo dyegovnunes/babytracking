@@ -1,5 +1,7 @@
+import { motion } from 'framer-motion'
 import type { EventType, LogEntry } from '../../../types'
 import { timeSinceIfRecent, formatTimeBR } from '../../../lib/formatters'
+import { getTransition, triggerPreset } from '../../../lib/motion'
 
 interface Props {
   event: EventType
@@ -51,10 +53,17 @@ export default function ActivityButton({ event, lastLog, onPress, isMostRecent, 
     }
   }
 
+  const handlePress = () => {
+    triggerPreset('subtle')
+    onPress()
+  }
+
   return (
-    <button
-      onClick={onPress}
-      className={`flex flex-col items-center gap-1.5 p-3 rounded-lg active:scale-95 active:bg-primary-dim/20 transition-all aspect-square justify-center ${isMostRecent ? 'ring-2 ring-primary/40' : ''} ${highlighted && !isMostRecent ? 'bg-primary/8 border border-primary/[0.38]' : 'bg-surface-container-high'}`}
+    <motion.button
+      onClick={handlePress}
+      whileTap={{ scale: 0.94 }}
+      transition={getTransition('subtle')}
+      className={`flex flex-col items-center gap-1.5 p-3 rounded-lg active:bg-primary-dim/20 aspect-square justify-center shadow-soft ${isMostRecent ? 'ring-2 ring-primary/40' : ''} ${highlighted && !isMostRecent ? 'bg-primary/8 border border-primary/[0.38]' : 'bg-surface-container-high'}`}
     >
       <div className="relative">
         <div className={`w-12 h-12 rounded-full flex items-center justify-center ${iconClasses}`}>
@@ -88,6 +97,6 @@ export default function ActivityButton({ event, lastLog, onPress, isMostRecent, 
           {subtitle}
         </span>
       )}
-    </button>
+    </motion.button>
   )
 }

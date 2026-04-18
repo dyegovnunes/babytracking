@@ -12,6 +12,7 @@ import type { TimelineFilter, TimelineItem } from '../timeline/types'
 import EditModal from '../../components/ui/EditModal'
 import Toast from '../../components/ui/Toast'
 import { HistorySkeleton } from '../../components/ui/Skeleton'
+import EmptyState from '../../components/ui/EmptyState'
 import { hapticMedium } from '../../lib/haptics'
 import { useBabyPremium } from '../../hooks/useBabyPremium'
 import { PaywallModal } from '../../components/ui/PaywallModal'
@@ -207,11 +208,20 @@ export default function HistoryPage() {
 
       <section className="px-5 mt-4 space-y-2 flex-1 overflow-y-auto">
         {filteredItems.length === 0 ? (
-          <p className="text-center text-on-surface-variant font-label text-sm py-12">
-            {filter === 'all'
-              ? 'Nenhum registro ainda.'
-              : 'Nenhum registro nesta categoria.'}
-          </p>
+          filter === 'all' ? (
+            <EmptyState
+              emoji="📒"
+              title="Sua linha do tempo vai começar aqui"
+              description="Registre uma mamada, troca ou soneca e acompanhe tudo junto — marcos, vacinas e medicamentos aparecem nesta mesma timeline."
+            />
+          ) : (
+            <EmptyState
+              emoji="🔍"
+              title="Nada nesta categoria ainda"
+              description="Tente outro filtro ou registre algo novo."
+              size="compact"
+            />
+          )
         ) : (
           grouped.map((group) => (
             <Fragment key={group.dayKey}>

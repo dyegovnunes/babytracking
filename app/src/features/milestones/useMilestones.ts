@@ -178,6 +178,10 @@ export function useMilestones(
   /**
    * Toggle rápido via checkbox — sem modal, sem data.
    * Marca como auto_registered (sem data) se não existe; deleta se existe.
+   *
+   * Otimista: aplica a mudança no state local ANTES de chamar o Supabase.
+   * Se o backend falhar, reverte. Isso tira o delay de ~300-800ms (round
+   * trip) entre tap e feedback visual — o checkbox "anda" imediato.
    */
   const quickToggle = useCallback(
     async (milestoneCode: string, userId?: string): Promise<boolean> => {
@@ -185,28 +189,52 @@ export function useMilestones(
 
       const existing = achieved.find((a) => a.milestoneCode === milestoneCode)
       if (existing) {
-        // Desmarca (deleta)
+        // Desmarca otimista
+        setAchieved((prev) => prev.filter((a) => a.milestoneCode !== milestoneCode))
         const { error } = await supabase
           .from('baby_milestones')
           .delete()
           .eq('id', existing.id)
-        if (error) return false
-        setAchieved((prev) => prev.filter((a) => a.milestoneCode !== milestoneCode))
+        if (error) {
+          // Reverte: reinsere o registro anterior
+          setAchieved((prev) => [...prev, existing])
+          return false
+        }
         return true
       }
 
-      // Marca com timestamp atual (pai clicou o checkbox agora). Schema agora
-      // é TIMESTAMPTZ, então gravamos ISO completo com hora. auto_registered=true
-      // indica que foi via quickToggle. Auto-registro retroativo do sistema
-      // (na criação do bebê) continua gravando achieved_at=null.
+      // Marca otimista com entry temporário. O id real vem do Supabase;
+      // até lá usamos um temp id pra permitir a renderização do checkbox
+      // "marcado". A sincronização real sobrescreve depois.
+      const tempId = `temp-${milestoneCode}-${Date.now()}`
+      const todayIso = new Date().toISOString()
+      const optimisticEntry: BabyMilestone = {
+        id: tempId,
+        babyId,
+        milestoneId: '',
+        milestoneCode,
+        achievedAt: todayIso,
+        photoUrl: null,
+        note: null,
+        recordedBy: userId || null,
+        createdAt: todayIso,
+        autoRegistered: true,
+      }
+      setAchieved((prev) => [...prev, optimisticEntry])
+
+      // Schema agora é TIMESTAMPTZ, gravamos ISO completo com hora.
+      // auto_registered=true indica que foi via quickToggle. Auto-registro
+      // retroativo do sistema (na criação do bebê) continua com achieved_at=null.
       const { data: mData, error: mErr } = await supabase
         .from('milestones')
         .select('id')
         .eq('code', milestoneCode)
         .single()
-      if (mErr || !mData) return false
-
-      const todayIso = new Date().toISOString()
+      if (mErr || !mData) {
+        // Reverte: remove otimista
+        setAchieved((prev) => prev.filter((a) => a.id !== tempId))
+        return false
+      }
 
       const { data, error } = await supabase
         .from('baby_milestones')
@@ -225,9 +253,13 @@ export function useMilestones(
         )
         .single()
 
-      if (error || !data) return false
+      if (error || !data) {
+        setAchieved((prev) => prev.filter((a) => a.id !== tempId))
+        return false
+      }
 
-      const newEntry: BabyMilestone = {
+      // Sobrescreve o temp pelo entry real (mantém posição no array)
+      const realEntry: BabyMilestone = {
         id: data.id,
         babyId: data.baby_id,
         milestoneId: data.milestone_id,
@@ -239,8 +271,7 @@ export function useMilestones(
         createdAt: data.created_at,
         autoRegistered: data.auto_registered ?? true,
       }
-
-      setAchieved((prev) => [...prev, newEntry])
+      setAchieved((prev) => prev.map((a) => (a.id === tempId ? realEntry : a)))
       return true
     },
     [babyId, achieved],

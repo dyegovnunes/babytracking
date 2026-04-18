@@ -50,6 +50,9 @@ export default function EditModal({ log, onSave, onDelete, onClose, onAddBottle 
 
   return (
     <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Editar registro"
       className="fixed inset-0 z-50 flex items-end justify-center bg-black/75 backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >

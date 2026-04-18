@@ -164,7 +164,7 @@ export function PaywallModal({ isOpen, onClose, trigger = 'generic' }: PaywallMo
     : `Assinar Yaya+ — ${selected.price}`;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-sm" style={{ zIndex: 60 }}>
+    <div role="dialog" aria-modal="true" aria-label="Upgrade Yaya Plus" className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-sm" style={{ zIndex: 60 }}>
       <div className="w-full max-w-md rounded-t-md bg-[#0d0a27] border border-[#b79fff]/20 animate-slide-up max-h-[92vh] flex flex-col">
         {/* Scrollable content */}
         <div className="flex-1 overflow-y-auto px-5 pt-5 pb-3">

@@ -15,3 +15,9 @@ export function hapticSuccess() {
     navigator.vibrate([10, 50, 10])
   }
 }
+
+export function hapticHeavy() {
+  if ('vibrate' in navigator) {
+    navigator.vibrate(40)
+  }
+}

@@ -11,6 +11,7 @@ import { supabase } from './lib/supabase'
 import AppShell from './components/layout/AppShell'
 import TrackerPage from './features/tracker/TrackerPage'
 import LoginPage from './pages/LoginPage'
+import { RouteFallbackSkeleton } from './components/ui/Skeleton'
 
 // Heavy/secondary routes — lazy-loaded to shrink the initial bundle
 const AdminApp = lazy(() => import('./admin/AdminApp'))
@@ -31,13 +32,10 @@ const PrivacyPage = lazy(() => import('./pages/PrivacyPage'))
 const SharedReportPage = lazy(() => import('./pages/SharedReportPage'))
 
 function RouteFallback() {
-  return (
-    <div className="min-h-screen bg-surface flex items-center justify-center">
-      <span className="material-symbols-outlined text-primary text-4xl animate-spin">
-        progress_activity
-      </span>
-    </div>
-  )
+  // Skeleton genérico — aparece enquanto o chunk JS da rota baixa.
+  // Evita o flash de spinner girando antes do skeleton específico da página
+  // montar. Ver components/ui/Skeleton.tsx.
+  return <RouteFallbackSkeleton />
 }
 
 const isNative = Capacitor.isNativePlatform()
@@ -49,15 +47,10 @@ function AuthenticatedRoutes() {
 
   // Auth loading or data loading — show logo splash
   if (authLoading || (!user ? false : dataLoading)) {
-    return (
-      <div className="min-h-screen bg-surface flex flex-col items-center justify-center gap-4">
-        <img
-          src="./landing/symbol-light.png"
-          alt="Yaya"
-          className="w-40 h-40 animate-pulse-soft"
-        />
-      </div>
-    )
+    // Skeleton full-screen em vez do logo pulsando (que aparece como
+    // "bolinha roxa carregando"). Segue o padrão da Fase 1: forma de
+    // conteúdo, não indicador abstrato.
+    return <RouteFallbackSkeleton />
   }
 
   // Not logged in
@@ -82,11 +75,17 @@ function AuthenticatedRoutes() {
         <WelcomePage
           baby={baby}
           onComplete={async () => {
-            await supabase
-              .from('baby_members')
-              .update({ welcome_shown_at: new Date().toISOString() })
-              .eq('user_id', user!.id)
-              .eq('baby_id', baby.id)
+            // UPDATE direto batia no RLS (policy de UPDATE só permite mexer
+            // em OUTROS users). Função SECURITY DEFINER mark_welcome_shown
+            // mexe cirurgicamente só no welcome_shown_at da própria linha.
+            // Ver migration 20260418f_mark_welcome_shown.sql.
+            const { error } = await supabase.rpc('mark_welcome_shown', {
+              p_baby_id: baby.id,
+            })
+            if (error) {
+              console.error('Failed to mark welcome shown', error)
+              return
+            }
             dispatch({ type: 'SET_WELCOME_SHOWN' })
           }}
         />
