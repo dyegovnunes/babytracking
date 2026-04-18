@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
+import { motion } from 'framer-motion'
 import type { Milestone } from '../milestoneData'
 import { formatAgeAtDate } from '../milestoneData'
-import { hapticSuccess } from '../../../lib/haptics'
+import { hapticHeavy, hapticSuccess } from '../../../lib/haptics'
 import { useSheetBackClose } from '../../../hooks/useSheetBackClose'
+import { spring } from '../../../lib/motion'
 
 interface Props {
   milestone: Milestone
@@ -54,10 +56,33 @@ export default function MilestoneCelebration({
   useSheetBackClose(true, onClose)
 
   useEffect(() => {
-    hapticSuccess()
+    // Haptic em 2 camadas — pulso inicial forte (heavy) sincronizado com
+    // o spring de entrada do ícone, depois success pattern pra marcar
+    // "completou". Dá sensação de "peso" no momento + confirmação.
+    hapticHeavy()
+    const t2 = setTimeout(() => hapticSuccess(), 180)
     const t = setTimeout(() => setShowConfetti(false), 3000)
-    return () => clearTimeout(t)
+    return () => {
+      clearTimeout(t)
+      clearTimeout(t2)
+    }
   }, [])
+
+  // 8 estrelas pequenas distribuídas em círculo ao redor do ícone.
+  // Saem simultâneas, fade em 500ms.
+  const sparkles = useMemo(
+    () =>
+      Array.from({ length: 8 }).map((_, i) => {
+        const angle = (i / 8) * Math.PI * 2
+        return {
+          id: i,
+          x: Math.cos(angle) * 120,
+          y: Math.sin(angle) * 120,
+          delay: 0.1 + i * 0.03,
+        }
+      }),
+    [],
+  )
 
   const ageLabel = formatAgeAtDate(birthDate, achievedAt)
   const dateLabel = new Date(achievedAt + 'T12:00:00').toLocaleDateString(
@@ -105,17 +130,46 @@ export default function MilestoneCelebration({
           {babyName} alcançou
         </h2>
 
-        {photoUrl ? (
-          <div className="my-5 w-40 h-40 rounded-full overflow-hidden border-4 border-tertiary/40 shadow-xl">
-            <img
-              src={photoUrl}
-              alt={milestone.name}
-              className="w-full h-full object-cover"
-            />
+        {/* Ícone com spring milestone (bouncy) + estrelas emergindo */}
+        <div className="relative my-5">
+          <motion.div
+            initial={{ scale: 0.2, rotate: -8 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={spring.milestone}
+          >
+            {photoUrl ? (
+              <div className="w-40 h-40 rounded-full overflow-hidden border-4 border-tertiary/40 shadow-xl">
+                <img
+                  src={photoUrl}
+                  alt={milestone.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            ) : (
+              <div className="text-8xl">{milestone.emoji}</div>
+            )}
+          </motion.div>
+          {/* Estrelinhas emergindo radialmente */}
+          <div className="absolute inset-0 pointer-events-none">
+            {sparkles.map((s) => (
+              <motion.span
+                key={s.id}
+                aria-hidden
+                className="absolute top-1/2 left-1/2 text-lg"
+                initial={{ x: 0, y: 0, opacity: 0, scale: 0.3 }}
+                animate={{
+                  x: s.x,
+                  y: s.y,
+                  opacity: [0, 1, 0],
+                  scale: [0.3, 1, 0.6],
+                }}
+                transition={{ duration: 0.9, delay: s.delay, ease: 'easeOut' }}
+              >
+                ✨
+              </motion.span>
+            ))}
           </div>
-        ) : (
-          <div className="my-5 text-8xl">{milestone.emoji}</div>
-        )}
+        </div>
 
         <h3 className="font-headline text-xl font-extrabold text-primary mb-1 leading-tight">
           {milestone.name}
