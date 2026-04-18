@@ -1,5 +1,7 @@
+import { motion } from 'framer-motion'
 import type { Vaccine, VaccineStatus } from '../vaccineData'
 import { hapticLight } from '../../../lib/haptics'
+import { spring, triggerPreset } from '../../../lib/motion'
 
 interface Props {
   vaccine: Vaccine
@@ -44,6 +46,7 @@ export default function VaccineRow({
 
   const handleCheck = (e: React.MouseEvent) => {
     e.stopPropagation()
+    triggerPreset('delight')
     onCheckboxTap()
   }
 
@@ -119,23 +122,29 @@ export default function VaccineRow({
         </span>
       </div>
 
-      {/* Checkbox: toggle simples sem modal */}
+      {/* Checkbox: toggle simples sem modal — spring delight + haptic medium */}
       {canToggle && (
-        <button
+        <motion.button
           type="button"
           onClick={handleCheck}
+          whileTap={{ scale: 0.85 }}
+          transition={spring.delight}
           aria-label={isApplied ? `Desmarcar ${vaccine.name}` : `Marcar ${vaccine.name} como aplicada`}
-          className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 active:scale-90 transition-transform"
+          className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
         >
-          <span
+          <motion.span
+            key={isApplied ? 'on' : 'off'}
+            initial={{ scale: 0.7 }}
+            animate={{ scale: 1 }}
+            transition={spring.delight}
             className={`material-symbols-outlined text-[28px] ${
               isApplied ? 'text-primary' : 'text-on-surface-variant/40'
             }`}
             style={isApplied ? { fontVariationSettings: "'FILL' 1" } : undefined}
           >
             {isApplied ? 'check_circle' : 'radio_button_unchecked'}
-          </span>
-        </button>
+          </motion.span>
+        </motion.button>
       )}
     </div>
   )

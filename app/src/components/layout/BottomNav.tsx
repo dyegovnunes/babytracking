@@ -1,10 +1,12 @@
 import { useRef, useCallback, useState, useMemo } from 'react'
 import { NavLink, useNavigate, useLocation } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { useAppState, useAppDispatch, switchBaby } from '../../contexts/AppContext'
 import { useMyRole } from '../../hooks/useMyRole'
 import { useBabyPremium } from '../../hooks/useBabyPremium'
 import { can } from '../../lib/roles'
 import { hapticLight, hapticMedium } from '../../lib/haptics'
+import { spring } from '../../lib/motion'
 import BabySwitcher from '../ui/BabySwitcher'
 import Toast from '../ui/Toast'
 
@@ -148,14 +150,15 @@ export default function BottomNav() {
                         }`}
                       />
                     ) : (
-                      <span
-                        className={`material-symbols-outlined text-2xl transition-all ${
-                          isProfileActive ? 'scale-110' : ''
-                        }`}
+                      <motion.span
+                        className="material-symbols-outlined text-2xl"
+                        animate={{ scale: isProfileActive ? 1.1 : 1 }}
+                        whileTap={{ scale: 1.2 }}
+                        transition={spring.subtle}
                         style={isProfileActive ? { fontVariationSettings: "'FILL' 1" } : undefined}
                       >
                         {tab.icon}
-                      </span>
+                      </motion.span>
                     )}
                     <span className="font-label text-[10px] font-medium">
                       {shortName ?? tab.label}
@@ -177,14 +180,16 @@ export default function BottomNav() {
                 >
                   {({ isActive }) => (
                     <>
-                      <span
-                        className={`material-symbols-outlined text-2xl transition-all ${
-                          isActive ? 'scale-110' : ''
-                        }`}
+                      <motion.span
+                        className="material-symbols-outlined text-2xl"
+                        animate={{ scale: isActive ? 1.1 : 1 }}
+                        whileTap={{ scale: 1.2 }}
+                        transition={spring.subtle}
                         style={isActive ? { fontVariationSettings: "'FILL' 1" } : undefined}
+                        onClick={() => { if (!isActive) hapticLight() }}
                       >
                         {tab.icon}
-                      </span>
+                      </motion.span>
                       <span className="font-label text-[10px] font-medium">
                         {tab.label}
                       </span>

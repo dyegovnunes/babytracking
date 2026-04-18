@@ -28,6 +28,10 @@ import { contractionDe } from '../../lib/genderUtils'
 import { maybeShowInterstitialOncePerDay } from '../../lib/admob'
 import { useSheetBackClose } from '../../hooks/useSheetBackClose'
 import { MilestonesSkeleton } from '../../components/ui/Skeleton'
+import { motion } from 'framer-motion'
+import { spring as motionSpring, triggerPreset } from '../../lib/motion'
+
+const springDelight = motionSpring.delight
 
 type FilterMode = 'all' | 'achieved' | 'pending'
 
@@ -237,8 +241,9 @@ export default function MilestonesPage() {
   }
 
   // Toggle simples do checkbox — marca sem data ou desmarca
+  // hapticMedium sincronizado com o spring delight do checkbox.
   const handleCheckboxTap = async (code: string, isAchieved: boolean) => {
-    hapticLight()
+    triggerPreset('delight')
     const ok = await quickToggle(code, user?.id)
     if (ok) setToast(isAchieved ? 'Marco desmarcado' : 'Marco registrado')
   }
@@ -580,24 +585,30 @@ function MilestoneRow({
           className="w-10 h-10 rounded-md object-cover flex-shrink-0"
         />
       )}
-      {/* Checkbox à direita */}
-      <button
+      {/* Checkbox à direita — spring delight ao alternar, hapticMedium */}
+      <motion.button
         type="button"
         onClick={(e) => { e.stopPropagation(); onCheckboxClick() }}
         aria-label={isAchieved ? 'Desmarcar' : 'Marcar como alcançado'}
-        className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 active:scale-90 transition-transform ${
+        whileTap={{ scale: 0.85 }}
+        transition={springDelight}
+        className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 ${
           isFuture ? 'opacity-40 pointer-events-none' : ''
         }`}
       >
-        <span
+        <motion.span
+          key={isAchieved ? 'on' : 'off'}
+          initial={{ scale: 0.7 }}
+          animate={{ scale: 1 }}
+          transition={springDelight}
           className={`material-symbols-outlined text-[28px] ${
             isAchieved ? 'text-primary' : 'text-on-surface-variant/40'
           }`}
           style={isAchieved ? { fontVariationSettings: "'FILL' 1" } : undefined}
         >
           {isAchieved ? 'check_circle' : 'radio_button_unchecked'}
-        </span>
-      </button>
+        </motion.span>
+      </motion.button>
     </div>
   )
 }

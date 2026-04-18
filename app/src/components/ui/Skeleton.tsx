@@ -43,6 +43,24 @@ export function HistorySkeleton() {
 }
 
 /**
+ * Fallback genérico pra Suspense de rotas lazy — usado enquanto o chunk JS
+ * da página baixa, antes do skeleton específico da página montar. Evita o
+ * flash de spinner roxo girando.
+ */
+export function RouteFallbackSkeleton() {
+  return (
+    <div className="min-h-screen bg-surface animate-pulse-soft">
+      <PageHeaderSkeleton />
+      <div className="px-5 space-y-3">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="skeleton h-20 rounded-xl" />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/**
  * Skeleton genérico para um título de página + subtítulo (eyebrow).
  * Usado como cabeçalho de skeletons que reproduzem a forma da tela.
  */

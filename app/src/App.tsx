@@ -11,6 +11,7 @@ import { supabase } from './lib/supabase'
 import AppShell from './components/layout/AppShell'
 import TrackerPage from './features/tracker/TrackerPage'
 import LoginPage from './pages/LoginPage'
+import { RouteFallbackSkeleton } from './components/ui/Skeleton'
 
 // Heavy/secondary routes — lazy-loaded to shrink the initial bundle
 const AdminApp = lazy(() => import('./admin/AdminApp'))
@@ -31,13 +32,10 @@ const PrivacyPage = lazy(() => import('./pages/PrivacyPage'))
 const SharedReportPage = lazy(() => import('./pages/SharedReportPage'))
 
 function RouteFallback() {
-  return (
-    <div className="min-h-screen bg-surface flex items-center justify-center">
-      <span className="material-symbols-outlined text-primary text-4xl animate-spin">
-        progress_activity
-      </span>
-    </div>
-  )
+  // Skeleton genérico — aparece enquanto o chunk JS da rota baixa.
+  // Evita o flash de spinner girando antes do skeleton específico da página
+  // montar. Ver components/ui/Skeleton.tsx.
+  return <RouteFallbackSkeleton />
 }
 
 const isNative = Capacitor.isNativePlatform()
