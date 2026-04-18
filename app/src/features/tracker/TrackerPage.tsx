@@ -49,7 +49,18 @@ export default function TrackerPage() {
   const dispatch = useAppDispatch()
   const { user } = useAuth()
   const myRole = useMyRole()
-  const now = useTimer()
+  const nowRaw = useTimer()
+  // Arredonda `now` pro minuto corrente. Ticks do useTimer (a cada ~30s)
+  // criavam um Date novo que cascateava recálculos em useMedications.dayStatuses
+  // (que depende de `now`), que por sua vez refazia medicationProjections —
+  // causando "piscar" na home. Com nowMinute estável por minuto, memos ficam
+  // consistentes até o minuto virar.
+  const now = useMemo(() => {
+    const r = new Date(nowRaw)
+    r.setSeconds(0, 0)
+    return r
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [Math.floor(nowRaw.getTime() / 60000)])
 
   // Shifts do bebê — aparecem mesclados no RecentLogs (que já limita a 5
   // após ordenar por timestamp). Sem filtro de data: um shift enviado ontem
@@ -111,13 +122,12 @@ export default function TrackerPage() {
   } = useMedications(baby?.id, medicationMembersById, now)
 
   // Proximas doses (janela 1h) — card com check inline. Overdues ficam no
-  // alert da HighlightsStrip (complementam, não duplicam).
-  // Arredondamos `now` pro minuto pra evitar que o useTimer (que tickava a cada
-  // 30s) recalcule a projection a cada render e cause "piscar" na home.
-  const nowMinute = useMemo(() => Math.floor(now.getTime() / 60000), [now])
+  // alert da HighlightsStrip (complementam, não duplicam). `now` já é
+  // arredondado pro minuto (vide declaração), então o useMemo é estável
+  // entre ticks do useTimer.
   const medicationProjections = useMemo(
-    () => getMedicationProjections(medicationDayStatuses, new Date(nowMinute * 60000)),
-    [medicationDayStatuses, nowMinute],
+    () => getMedicationProjections(medicationDayStatuses, now),
+    [medicationDayStatuses, now],
   )
 
   const allMedications = useMemo(
