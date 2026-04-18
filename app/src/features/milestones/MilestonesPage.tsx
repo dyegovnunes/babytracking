@@ -27,6 +27,7 @@ import { hapticLight } from '../../lib/haptics'
 import { contractionDe } from '../../lib/genderUtils'
 import { maybeShowInterstitialOncePerDay } from '../../lib/admob'
 import { useSheetBackClose } from '../../hooks/useSheetBackClose'
+import { MilestonesSkeleton } from '../../components/ui/Skeleton'
 
 type FilterMode = 'all' | 'achieved' | 'pending'
 
@@ -243,13 +244,7 @@ export default function MilestonesPage() {
   }
 
   if (loading || !baby) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <span className="material-symbols-outlined text-primary text-4xl animate-spin">
-          progress_activity
-        </span>
-      </div>
-    )
+    return <MilestonesSkeleton />
   }
 
   return (

@@ -14,6 +14,7 @@ import MedicationForm from './components/MedicationForm'
 import MedicationAdminSheet from './components/MedicationAdminSheet'
 import MedicationLogEditModal from './components/MedicationLogEditModal'
 import MedicationSlotPickerSheet from './components/MedicationSlotPickerSheet'
+import { MedicationsSkeleton } from '../../components/ui/Skeleton'
 import type { Medication, MedicationDayStatus, MedicationLog } from './medicationData'
 
 const DISCLAIMER =
@@ -81,24 +82,8 @@ export default function MedicationsPage() {
     [adminFor, dayStatuses],
   )
 
-  if (!baby) {
-    return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <span className="material-symbols-outlined text-primary text-4xl animate-spin">
-          progress_activity
-        </span>
-      </div>
-    )
-  }
-
-  if (loading) {
-    return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <span className="material-symbols-outlined text-primary text-4xl animate-spin">
-          progress_activity
-        </span>
-      </div>
-    )
+  if (!baby || loading) {
+    return <MedicationsSkeleton />
   }
 
   const handleAddPress = () => {

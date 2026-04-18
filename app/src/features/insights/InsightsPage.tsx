@@ -12,6 +12,7 @@ import InsightPaywallBanner from './components/InsightPaywallBanner'
 import WeekChart from './components/WeekChart'
 import { PaywallModal } from '../../components/ui/PaywallModal'
 import { hapticLight } from '../../lib/haptics'
+import { InsightsSkeleton } from '../../components/ui/Skeleton'
 
 const FREE_INSIGHT_LIMIT = 2
 
@@ -63,13 +64,7 @@ export default function InsightsPage() {
   }
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <span className="material-symbols-outlined text-primary text-4xl animate-spin">
-          progress_activity
-        </span>
-      </div>
-    )
+    return <InsightsSkeleton />
   }
 
   if (logs.length === 0) {

@@ -72,10 +72,16 @@
   --color-outline: #757294;
   --color-outline-variant: #474464;
 
-  /* Fonts */
+  /* Lavender muted — substitui cinza frio em metadata/legend/placeholder.
+     Mantém a família roxa viva em elementos secundários. */
+  --color-lavender-muted: #a8a0c9;
+
+  /* Fonts — Manrope é a única família. Plus Jakarta Sans foi removida
+     para evitar a tríade saturada no segmento wellbeing. Hierarquia
+     ousada vem do peso (200-800) + letter-spacing, não de famílias diferentes. */
   --font-headline: 'Manrope', sans-serif;
   --font-body: 'Manrope', sans-serif;
-  --font-label: 'Plus Jakarta Sans', sans-serif;
+  --font-label: 'Manrope', sans-serif;
 
   /* Border Radius */
   --radius: 1rem;
@@ -98,16 +104,20 @@
  * Evite adicionar !important aqui; o seletor mais específico já basta.
  */
 html.theme-light {
-  /* Surfaces — tons claros neutros */
-  --color-surface: #ffffff;
-  --color-surface-dim: #f5f5f7;
-  --color-surface-container-lowest: #fafafa;
-  --color-surface-container-low: #f5f5f7;
-  --color-surface-container: #f0f0f4;
-  --color-surface-container-high: #e8e7ee;
-  --color-surface-container-highest: #dedce6;
-  --color-surface-bright: #ffffff;
-  --color-surface-variant: #e8e7ee;
+  /* Surfaces — brancos lilás-suave. Saem do branco puro (frio, genérico)
+     pra uma base com leve tint roxo, mantendo a família da marca. */
+  --color-surface: #fafafe;
+  --color-surface-dim: #f3f2f8;
+  --color-surface-container-lowest: #fafafe;
+  --color-surface-container-low: #efedf6;
+  --color-surface-container: #e8e5f2;
+  --color-surface-container-high: #ded9ea;
+  --color-surface-container-highest: #d0ccde;
+  --color-surface-bright: #fafafe;
+  --color-surface-variant: #ded9ea;
+
+  /* Lavender muted — versão mais saturada pra contraste AA em fundo claro */
+  --color-lavender-muted: #6f6896;
 
   /* Primary — escurecido para manter contraste WCAG AA em background claro */
   --color-primary: #7056e0;
@@ -252,6 +262,77 @@ html, body, #root {
 }
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+/*
+ * Sombras em 2 camadas pra CTAs primários — cria profundidade real
+ * (flutuar, não apenas colorir). Substitui qualquer tentativa de gradiente.
+ *   - 1ª camada (near): contato com superfície, nitidez
+ *   - 2ª camada (diffused): halo colorido, sensação de elevação
+ */
+.shadow-cta-primary {
+  box-shadow:
+    0 1px 2px rgba(91, 61, 181, 0.30),
+    0 8px 24px rgba(91, 61, 181, 0.20);
+}
+
+.shadow-cta-tertiary {
+  box-shadow:
+    0 1px 2px rgba(197, 72, 122, 0.30),
+    0 8px 24px rgba(197, 72, 122, 0.20);
+}
+
+/*
+ * Aplica sombra em 2 camadas automaticamente em qualquer <button> que use
+ * bg-primary + text-on-primary (padrão de CTA do app) ou bg-tertiary.
+ * Evita ter que tocar 20+ arquivos. Botões que não querem sombra podem
+ * adicionar .no-cta-shadow.
+ */
+button.bg-primary.text-on-primary:not(.no-cta-shadow),
+button.bg-primary-container:not(.no-cta-shadow),
+a.bg-primary.text-on-primary:not(.no-cta-shadow) {
+  box-shadow:
+    0 1px 2px rgba(91, 61, 181, 0.30),
+    0 8px 24px rgba(91, 61, 181, 0.20);
+}
+
+button.bg-tertiary.text-on-primary:not(.no-cta-shadow),
+button.bg-tertiary:not(.no-cta-shadow),
+a.bg-tertiary:not(.no-cta-shadow) {
+  box-shadow:
+    0 1px 2px rgba(197, 72, 122, 0.30),
+    0 8px 24px rgba(197, 72, 122, 0.20);
+}
+
+/* Sombra sutil pra ActivityButton e cards elevados — flat hoje, ganha
+   uma dica de elevação sem sair do tom do app. */
+.shadow-soft {
+  box-shadow:
+    0 1px 2px rgba(13, 10, 39, 0.15),
+    0 4px 12px rgba(13, 10, 39, 0.10);
+}
+
+html.theme-light .shadow-soft {
+  box-shadow:
+    0 1px 2px rgba(91, 61, 181, 0.10),
+    0 4px 12px rgba(91, 61, 181, 0.08);
+}
+
+/*
+ * Acessibilidade: quando o usuário pede reduced motion, zeramos durações
+ * de animação/transição globalmente. Componentes podem detectar via
+ * matchMedia('(prefers-reduced-motion: reduce)') e desabilitar springs
+ * da Framer Motion especificamente; este reset cobre CSS animations.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* Safe area insets for mobile */

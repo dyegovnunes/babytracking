@@ -21,6 +21,7 @@ import { useVaccineUnlock } from './useVaccineUnlock'
 import VaccineRow from './components/VaccineRow'
 import VaccineDetailSheet from './components/VaccineDetailSheet'
 import VaccineApplySheet from './components/VaccineApplySheet'
+import { VaccinesSkeleton } from '../../components/ui/Skeleton'
 
 type FilterMode = 'all' | 'can_take' | 'overdue' | 'applied'
 
@@ -122,24 +123,8 @@ export default function VaccinesPage() {
     return map
   }, [records])
 
-  if (!baby) {
-    return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <span className="material-symbols-outlined text-primary text-4xl animate-spin">
-          progress_activity
-        </span>
-      </div>
-    )
-  }
-
-  if (loading) {
-    return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <span className="material-symbols-outlined text-primary text-4xl animate-spin">
-          progress_activity
-        </span>
-      </div>
-    )
+  if (!baby || loading) {
+    return <VaccinesSkeleton />
   }
 
   const handleRowTap = (v: Vaccine) => {
