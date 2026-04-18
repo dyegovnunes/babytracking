@@ -235,7 +235,7 @@ function NavActiveGlow() {
         className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full"
         style={{
           background:
-            'radial-gradient(circle, rgba(107,78,201,0.55) 0%, rgba(107,78,201,0.22) 40%, rgba(107,78,201,0) 75%)',
+            'radial-gradient(circle, rgba(107,78,201,0.28) 0%, rgba(107,78,201,0.11) 40%, rgba(107,78,201,0) 75%)',
           filter: 'blur(6px)',
         }}
       />

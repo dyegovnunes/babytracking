@@ -60,7 +60,6 @@ export default function MilestoneRegister({
   const today = getLocalToday()
   const [achievedAt, setAchievedAt] = useState(today)
   const [photoDataUrl, setPhotoDataUrl] = useState<string | undefined>()
-  const [note, setNote] = useState('')
   const [saving, setSaving] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   useSheetBackClose(true, onCancel)
@@ -106,7 +105,6 @@ export default function MilestoneRegister({
       await onSave({
         achievedAt,
         photoDataUrl,
-        note: note.trim() || undefined,
       })
     } finally {
       setSaving(false)
@@ -139,11 +137,11 @@ export default function MilestoneRegister({
 
         {/* Milestone title */}
         <div className="text-center mb-6">
-          <div className="text-5xl mb-2">{milestone.emoji}</div>
-          <h2 className="font-headline text-xl font-bold text-on-surface leading-tight mb-1">
+          <div className="text-4xl mb-2">{milestone.emoji}</div>
+          <h2 className="font-headline text-lg font-bold text-on-surface leading-tight mb-1 text-balance">
             {milestone.name}
           </h2>
-          <p className="font-label text-sm text-on-surface-variant leading-relaxed">
+          <p className="font-label text-xs text-on-surface-variant leading-relaxed text-balance">
             {milestone.description}
           </p>
         </div>
@@ -196,7 +194,7 @@ export default function MilestoneRegister({
             <button
               type="button"
               onClick={handlePickPhoto}
-              className="w-full aspect-[4/3] rounded-md border-2 border-dashed border-white/15 bg-surface-container/50 flex flex-col items-center justify-center gap-2 active:scale-[0.98] transition-transform"
+              className="w-full aspect-[16/9] rounded-md border-2 border-dashed border-white/15 bg-surface-container/50 flex flex-col items-center justify-center gap-2 active:scale-[0.98] transition-transform"
             >
               <span className="material-symbols-outlined text-4xl text-on-surface-variant/70">
                 add_a_photo
@@ -207,25 +205,6 @@ export default function MilestoneRegister({
             </button>
           )}
         </div>
-
-        {/* Note */}
-        <label className="block mb-6">
-          <span className="font-label text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5 block">
-            Nota (opcional)
-          </span>
-          <textarea
-            value={note}
-            onChange={(e) =>
-              setNote(e.target.value.slice(0, 140))
-            }
-            rows={3}
-            placeholder="Como foi esse momento?"
-            className="w-full bg-surface-container rounded-md px-4 py-3 text-on-surface font-body text-sm outline-none focus:ring-2 focus:ring-primary/40 resize-none"
-          />
-          <span className="font-label text-[10px] text-on-surface-variant/60 block text-right mt-1">
-            {note.length}/140
-          </span>
-        </label>
 
         {/* Save button */}
         <div className="mt-auto flex gap-3">
