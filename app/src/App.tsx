@@ -47,15 +47,10 @@ function AuthenticatedRoutes() {
 
   // Auth loading or data loading — show logo splash
   if (authLoading || (!user ? false : dataLoading)) {
-    return (
-      <div className="min-h-screen bg-surface flex flex-col items-center justify-center gap-4">
-        <img
-          src="./landing/symbol-light.png"
-          alt="Yaya"
-          className="w-40 h-40 animate-pulse-soft"
-        />
-      </div>
-    )
+    // Skeleton full-screen em vez do logo pulsando (que aparece como
+    // "bolinha roxa carregando"). Segue o padrão da Fase 1: forma de
+    // conteúdo, não indicador abstrato.
+    return <RouteFallbackSkeleton />
   }
 
   // Not logged in

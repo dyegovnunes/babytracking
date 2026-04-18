@@ -133,7 +133,7 @@ export default function BottomNav() {
                 return (
                   <div
                     key={tab.to}
-                    className={`flex flex-col items-center gap-0.5 min-w-[64px] py-1 transition-colors cursor-pointer select-none ${
+                    className={`relative flex flex-col items-center gap-0.5 min-w-[64px] py-1 transition-colors cursor-pointer select-none ${
                       isProfileActive ? 'text-primary' : 'text-on-surface-variant'
                     }`}
                     onPointerDown={handleProfileTouchStart}
@@ -141,6 +141,7 @@ export default function BottomNav() {
                     onPointerCancel={handleProfileTouchCancel}
                     onPointerLeave={handleProfileTouchCancel}
                   >
+                    {isProfileActive && <NavActiveGlow />}
                     {usePhoto ? (
                       <img
                         src={babyPhoto}
@@ -173,13 +174,14 @@ export default function BottomNav() {
                   key={tab.to}
                   to={tab.to}
                   className={({ isActive }) =>
-                    `flex flex-col items-center gap-0.5 min-w-[64px] py-1 transition-colors ${
+                    `relative flex flex-col items-center gap-0.5 min-w-[64px] py-1 transition-colors ${
                       isActive ? 'text-primary' : 'text-on-surface-variant'
                     }`
                   }
                 >
                   {({ isActive }) => (
                     <>
+                      {isActive && <NavActiveGlow />}
                       <motion.span
                         className="material-symbols-outlined text-2xl"
                         animate={{ scale: isActive ? 1.1 : 1 }}
@@ -204,5 +206,26 @@ export default function BottomNav() {
       {showBabySheet && <BabySwitcher onClose={() => setShowBabySheet(false)} />}
       {switchToast && <Toast message={switchToast} onDismiss={() => setSwitchToast(null)} />}
     </>
+  )
+}
+
+/**
+ * Glow rosa aerado que indica a tab ativa e desliza entre as tabs
+ * quando o usuário troca. `layoutId="nav-active-glow"` faz Framer Motion
+ * tratar como mesmo elemento entre renders diferentes — quando ele some
+ * de uma tab e aparece em outra, o movimento é interpolado com spring.
+ *
+ * Design: pill rosa (tertiary) com blur suave + gradiente radial discreto.
+ * Fica atrás do ícone (z-[-1] via absolute + negative inset) pra não
+ * competir visualmente com o conteúdo da tab.
+ */
+function NavActiveGlow() {
+  return (
+    <motion.div
+      layoutId="nav-active-glow"
+      className="absolute inset-x-1 inset-y-0 rounded-2xl bg-tertiary/20 blur-[6px] pointer-events-none"
+      transition={spring.delight}
+      aria-hidden
+    />
   )
 }
