@@ -319,6 +319,27 @@ html.theme-light .shadow-soft {
 }
 
 /*
+ * Acessibilidade: foco visível consistente pra navegação por teclado / leitor
+ * de tela / switch control. Aplica anel roxo (primary) em qualquer elemento
+ * focado VIA teclado, mas nunca em cliques do mouse (via :focus-visible).
+ * Compliance mínima pra Play Store + App Store.
+ *
+ * Elementos que querem foco diferente (ex: input com borda própria) podem
+ * adicionar .no-focus-ring pra opt-out.
+ */
+:focus {
+  outline: none;
+}
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+.no-focus-ring:focus-visible {
+  outline: none;
+}
+
+/*
  * Acessibilidade: quando o usuário pede reduced motion, zeramos durações
  * de animação/transição globalmente. Componentes podem detectar via
  * matchMedia('(prefers-reduced-motion: reduce)') e desabilitar springs

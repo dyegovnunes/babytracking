@@ -13,6 +13,7 @@ import WeekChart from './components/WeekChart'
 import { PaywallModal } from '../../components/ui/PaywallModal'
 import { hapticLight } from '../../lib/haptics'
 import { InsightsSkeleton } from '../../components/ui/Skeleton'
+import EmptyState from '../../components/ui/EmptyState'
 
 const FREE_INSIGHT_LIMIT = 2
 
@@ -78,12 +79,11 @@ export default function InsightsPage() {
             Padrões e tendências
           </p>
         </section>
-        <div className="flex flex-col items-center justify-center py-16 px-5">
-          <span className="text-4xl mb-4">📊</span>
-          <p className="text-center text-on-surface-variant font-label text-sm">
-            Registre atividades para ver os insights do seu bebê.
-          </p>
-        </div>
+        <EmptyState
+          emoji="📊"
+          title="Os padrões vão aparecer aqui"
+          description="Registre alguns dias de mamadas, sono e trocas — o Yaya começa a identificar tendências em poucas rotinas."
+        />
       </div>
     )
   }
@@ -115,11 +115,13 @@ export default function InsightsPage() {
         {canViewInsights && (
           <>
             {visibleInsights.length === 0 && (
-              <div className="rounded-md p-5 border border-white/5 bg-surface-container text-center">
-                <span className="text-3xl mb-2 block">✨</span>
-                <p className="font-label text-sm text-on-surface-variant">
-                  Ainda não há insights suficientes para esse período. Continue registrando!
-                </p>
+              <div className="rounded-md border border-white/5 bg-surface-container">
+                <EmptyState
+                  emoji="✨"
+                  title="Ainda juntando contexto"
+                  description="Poucos dados pra conclusões confiáveis nesse período. Continue registrando — logo aparecem padrões."
+                  size="compact"
+                />
               </div>
             )}
 

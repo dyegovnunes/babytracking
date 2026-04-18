@@ -14,6 +14,9 @@ export default function BottleModal({ onConfirm, onClose }: Props) {
 
   return (
     <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Registrar mamadeira"
       className="fixed inset-0 z-50 flex items-end justify-center bg-black/75 backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
