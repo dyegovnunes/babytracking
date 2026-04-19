@@ -26,6 +26,7 @@ import { RewardedAdModal } from '../../components/ui/RewardedAdModal'
 import { PaywallModal } from '../../components/ui/PaywallModal'
 import { useDailyLimit } from './useDailyLimit'
 import HighlightsStrip from './components/HighlightsStrip'
+import DiscoveryHint from '../journey/components/DiscoveryHint'
 import { collectHighlights } from './highlights'
 import { getAgeBand, getHighlightedEvents } from '../../lib/ageUtils'
 import { useMilestones } from '../milestones'
@@ -341,6 +342,10 @@ export default function TrackerPage() {
       <HeroIdentity streak={myRole !== 'caregiver' ? streak : undefined} />
 
       <ActivityGrid events={DEFAULT_EVENTS} logs={logs} onLog={handleLog} highlightedEventIds={highlightedEventIds} />
+
+      {/* DiscoveryHint: sugere próxima feature contextualmente. Single
+          slot — renderiza null quando não há hint ativo. */}
+      <DiscoveryHint />
 
       <OutOfHoursBanner />
 
