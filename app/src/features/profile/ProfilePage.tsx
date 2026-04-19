@@ -11,6 +11,7 @@ import Toast from '../../components/ui/Toast'
 import BabySwitcher from '../../components/ui/BabySwitcher'
 import { PaywallModal } from '../../components/ui/PaywallModal'
 import SharedReports from './components/SharedReports'
+import JourneySection from '../journey/JourneySection'
 import { hapticLight } from '../../lib/haptics'
 import { contractionDe } from '../../lib/genderUtils'
 import { useSheetBackClose } from '../../hooks/useSheetBackClose'
@@ -265,6 +266,9 @@ export default function ProfilePage() {
 
         {/* ===== PERFIL DO BEBÊ ===== */}
         <BabyCard baby={baby} onSave={handleSaveBaby} canEdit={can.editBaby(myRole)} />
+
+        {/* ===== JORNADA (casa das conquistas — só pra parent/guardian) ===== */}
+        {myRole !== 'caregiver' && <JourneySection />}
 
         {/* ===== CRESCIMENTO ===== */}
         {canShowGrowth && <GrowthSection babyId={baby.id} readOnly={myRole === 'caregiver'} />}
