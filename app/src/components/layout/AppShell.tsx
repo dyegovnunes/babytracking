@@ -4,6 +4,7 @@ import Header from './Header'
 import BottomNav from './BottomNav'
 import { AdBanner } from '../ui/AdBanner'
 import { prefersReducedMotion } from '../../lib/motion'
+import CelebrationHost from '../../features/journey/components/CelebrationHost'
 
 export default function AppShell() {
   const location = useLocation()
@@ -44,6 +45,10 @@ export default function AppShell() {
           Ao mudar de página não há mais sequência hide/show que causava crash. */}
       <AdBanner />
       <BottomNav />
+      {/* Host global de celebrações (micro toasts + medium modal + big
+          fullscreen). Monta 1x no shell pra persistir entre trocas de
+          aba e pegar unlocks acontecidos em qualquer página. */}
+      <CelebrationHost />
     </div>
   )
 }

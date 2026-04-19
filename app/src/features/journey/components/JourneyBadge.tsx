@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAchievements } from '../useAchievements'
 import { getAchievement } from '../achievements'
@@ -19,6 +19,16 @@ import AchievementSheet from './AchievementSheet'
 export default function JourneyBadge() {
   const { unseen } = useAchievements()
   const [sheetOpen, setSheetOpen] = useState(false)
+
+  // Permite CelebrationHost ou outros pontos do app pedirem pra abrir
+  // o sheet via evento global. Ex: user clica "Ver jornada" numa
+  // celebração de outra tela → navega pra home → sheet abre.
+  useEffect(() => {
+    const handler = () => setSheetOpen(true)
+    window.addEventListener('yaya:open-achievement-sheet', handler)
+    return () =>
+      window.removeEventListener('yaya:open-achievement-sheet', handler)
+  }, [])
 
   if (unseen.length === 0 && !sheetOpen) return null
 
