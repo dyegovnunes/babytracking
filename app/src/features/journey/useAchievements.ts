@@ -79,27 +79,24 @@ export function useAchievements() {
     fetchRows()
   }, [fetchRows])
 
-  // Realtime — novos unlocks aparecem sem refresh manual
+  // Re-fetch ao voltar pra aba (visibilitychange) + em evento custom
+  // disparado por useFeatureSeen quando destrava algo.
+  // Realtime subscription via postgres_changes foi desabilitada — as
+  // novas tabelas não têm publication enabled por padrão e o subscribe
+  // estava crashando o app.
   useEffect(() => {
     if (!user) return
-    const channel = supabase
-      .channel(`app_achievements_${user.id}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'app_achievements',
-          filter: `user_id=eq.${user.id}`,
-        },
-        () => {
-          fetchRows()
-        },
-      )
-      .subscribe()
-
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        fetchRows()
+      }
+    }
+    const handleChanged = () => fetchRows()
+    document.addEventListener('visibilitychange', handleVisibility)
+    window.addEventListener('yaya:achievements-changed', handleChanged)
     return () => {
-      supabase.removeChannel(channel)
+      document.removeEventListener('visibilitychange', handleVisibility)
+      window.removeEventListener('yaya:achievements-changed', handleChanged)
     }
   }, [user, fetchRows])
 

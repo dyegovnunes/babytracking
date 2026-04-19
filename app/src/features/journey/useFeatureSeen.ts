@@ -44,7 +44,11 @@ export function useFeatureSeen(featureKey: string) {
       })
       if (error) {
         console.error('[useFeatureSeen] track failed', error)
+        return
       }
+      // Dispara evento global pra useAchievements re-fetchar e mostrar
+      // o novo unlock imediatamente (substitui o realtime subscription).
+      window.dispatchEvent(new CustomEvent('yaya:achievements-changed'))
     })()
   }, [user, featureKey])
 }
