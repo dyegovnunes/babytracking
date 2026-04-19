@@ -3,28 +3,28 @@ import { SEALS } from '../seals'
 
 interface Props {
   achievement: AchievementDef
-  /** Se já foi desbloqueado; locked mostra silhueta esmaecida + "?". */
+  /** Se já foi desbloqueado; locked mostra versão esmaecida + howTo. */
   unlocked: boolean
   /** Data ISO do unlock (só mostra se unlocked). */
   unlockedAt?: string | null
-  /** Visual compacto pro AchievementSheet (vs regular pra JourneySection). */
-  size?: 'compact' | 'regular'
   onTap?: () => void
 }
 
 /**
- * Card individual de achievement. Duas variantes visuais:
- *  - **Unlocked**: emoji em destaque, label, data, howTo em tom discreto
- *  - **Locked**: silhueta cinza, "?", "Ainda bloqueado" — SEM revelar howTo
- *    (cria curiosidade, user quer descobrir o que destrava)
+ * Card de achievement em layout horizontal compacto.
  *
- * Selo (🌱 / 🔍 / 🏅) aparece no canto inferior direito indicando categoria.
+ * **Unlocked**: emoji em destaque à esquerda, label + data à direita.
+ * **Locked**: versão esmaecida com emoji cinza e `howTo` mostrando o
+ * caminho pra destravar (clareza > curiosidade — user feedback V1 foi
+ * que "ainda bloqueado" sem contexto gerava dúvida "preciso fazer algo?").
+ *
+ * Radius `rounded-md` (6px) segue o padrão do app — não é botão.
+ * Selo da camada aparece discreto no canto inferior direito.
  */
 export default function AchievementCard({
   achievement,
   unlocked,
   unlockedAt,
-  size = 'regular',
   onTap,
 }: Props) {
   const seal = SEALS[achievement.seal]
@@ -35,46 +35,47 @@ export default function AchievementCard({
       })
     : null
 
-  const padding = size === 'compact' ? 'p-3' : 'p-4'
-  const emojiSize = size === 'compact' ? 'text-3xl' : 'text-4xl'
-  const labelSize = size === 'compact' ? 'text-sm' : 'text-base'
-
-  // Container base — usa button se onTap, senão div
   const Comp = onTap ? 'button' : 'div'
 
   return (
     <Comp
       type={onTap ? 'button' : undefined}
       onClick={onTap}
-      className={`relative flex flex-col items-start gap-1.5 rounded-xl bg-surface-container ${padding} w-full text-left transition-colors ${
+      className={`relative flex items-center gap-3 rounded-md bg-surface-container p-3 w-full text-left transition-colors ${
         onTap ? 'active:bg-surface-container-high' : ''
       } ${!unlocked ? 'opacity-60' : ''}`}
     >
-      <span
-        className={`${emojiSize} leading-none ${!unlocked ? 'grayscale' : ''}`}
+      {/* Emoji */}
+      <div
+        className={`shrink-0 w-10 h-10 rounded-md flex items-center justify-center text-2xl leading-none ${
+          unlocked ? 'bg-surface-container-high' : 'bg-surface-container-high/40'
+        } ${!unlocked ? 'grayscale' : ''}`}
         aria-hidden
       >
-        {unlocked ? achievement.emoji : '❔'}
-      </span>
-      <div className="flex-1 min-w-0 w-full">
-        <h4
-          className={`font-headline ${labelSize} font-bold text-on-surface leading-tight truncate`}
-        >
-          {unlocked ? achievement.label : 'Ainda bloqueado'}
-        </h4>
-        {unlocked ? (
-          <p className="font-label text-[11px] text-on-surface-variant/80 mt-0.5 truncate">
-            {dateLabel ? `Desbloqueado em ${dateLabel}` : achievement.howTo}
-          </p>
-        ) : (
-          <p className="font-label text-[11px] text-on-surface-variant/50 mt-0.5 truncate">
-            Continue explorando
-          </p>
-        )}
+        {unlocked ? achievement.emoji : '🔒'}
       </div>
-      {/* Selo no canto inferior direito */}
+
+      {/* Info */}
+      <div className="flex-1 min-w-0">
+        <h4
+          className={`font-headline text-sm font-bold leading-tight truncate ${
+            unlocked ? 'text-on-surface' : 'text-on-surface-variant'
+          }`}
+        >
+          {achievement.label}
+        </h4>
+        <p className="font-label text-[11px] leading-snug mt-0.5 text-on-surface-variant/70 line-clamp-2">
+          {unlocked
+            ? dateLabel
+              ? `Desbloqueado em ${dateLabel}`
+              : achievement.description
+            : achievement.howTo}
+        </p>
+      </div>
+
+      {/* Selo (canto inferior direito, discreto) */}
       <span
-        className="absolute bottom-2 right-2 text-sm opacity-70"
+        className="absolute bottom-1.5 right-2 text-[11px] opacity-50"
         aria-label={`Categoria ${seal.label}`}
         title={seal.description}
       >

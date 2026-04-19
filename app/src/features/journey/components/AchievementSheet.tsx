@@ -115,14 +115,13 @@ export default function AchievementSheet({ isOpen, onClose }: Props) {
             <h3 className="font-label text-[11px] font-bold uppercase tracking-wider text-tertiary mb-2">
               ✨ Recém desbloqueados
             </h3>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="space-y-2">
               {recentDefs.map((a) => (
                 <AchievementCard
                   key={a.key}
                   achievement={a}
                   unlocked
                   unlockedAt={unlockedByKey.get(a.key)?.unlockedAt}
-                  size="compact"
                   onTap={() => handleCardTap(a)}
                 />
               ))}
@@ -145,14 +144,13 @@ export default function AchievementSheet({ isOpen, onClose }: Props) {
                   }/{achievements.length})
                 </span>
               </h3>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-2">
                 {achievements.map((a) => (
                   <AchievementCard
                     key={a.key}
                     achievement={a}
                     unlocked={unlockedKeys.has(a.key)}
                     unlockedAt={unlockedByKey.get(a.key)?.unlockedAt}
-                    size="compact"
                     onTap={() => handleCardTap(a)}
                   />
                 ))}
