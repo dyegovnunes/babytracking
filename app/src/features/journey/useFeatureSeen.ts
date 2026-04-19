@@ -17,15 +17,17 @@ import { useAuth } from '../../contexts/AuthContext'
  *
  * Comportamento:
  * - Chama `track_feature_seen` RPC (SECURITY DEFINER em 20260419 migration)
- *   que faz INSERT com ON CONFLICT DO NOTHING — idempotente
+ *   que faz INSERT em `user_feature_seen` AND já destrava o
+ *   `discovered_*` correspondente em `app_achievements` no mesmo call —
+ *   idempotente (ON CONFLICT DO NOTHING)
  * - Dispara 1x por montagem do componente (ref evita chamar múltiplas
  *   vezes no mesmo mount se re-renderizar)
- * - Após track, dispara `achievement-checker` edge function via invoke pra
- *   avaliar imediatamente os achievements `discovered_*` sem esperar o
- *   cron de 5min. User espera reconhecimento AGORA, não em 5min.
+ * - A subscription realtime em `useAchievements` pega o novo unlock e
+ *   atualiza o badge na Home instantaneamente
  *
- * O edge function roda e, se houver novo unlock, a subscription de
- * realtime em `useAchievements` pega e atualiza o badge na Home.
+ * Nota: a edge function `achievement-checker` existe pra triggers
+ * temporais (cron), não é mais chamada aqui — havia problema de JWT
+ * forwarding em `supabase.functions.invoke` que dava 401.
  */
 export function useFeatureSeen(featureKey: string) {
   const { user } = useAuth()
@@ -42,14 +44,7 @@ export function useFeatureSeen(featureKey: string) {
       })
       if (error) {
         console.error('[useFeatureSeen] track failed', error)
-        return
       }
-      // Fire-and-forget: checker edge function avalia agora
-      supabase.functions
-        .invoke('achievement-checker', { body: { user_id: user.id } })
-        .catch(() => {
-          // Silencia — cron vai eventualmente pegar. UX não trava por isso.
-        })
     })()
   }, [user, featureKey])
 }
