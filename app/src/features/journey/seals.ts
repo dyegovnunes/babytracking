@@ -20,7 +20,7 @@ export interface Seal {
   label: string
   /** Descrição curta — aparece em tooltips/details */
   description: string
-  /** Cor de destaque usada em fundos sutis (bg-*/20) */
+  /** Cor de destaque usada em fundos sutis (tokens Tailwind). */
   colorToken: 'primary' | 'tertiary' | 'amber'
 }
 

@@ -8,6 +8,7 @@ import { DEVELOPMENT_LEAPS, type DevelopmentLeap } from './developmentLeaps'
 import { contractionDe } from '../../lib/genderUtils'
 import { maybeShowInterstitialOncePerDay } from '../../lib/admob'
 import LeapTimeline from './components/LeapTimeline'
+import { useFeatureSeen } from '../journey/useFeatureSeen'
 
 type LeapStatus = 'past' | 'active' | 'upcoming' | 'future'
 
@@ -31,6 +32,7 @@ function getLeapEstimatedDate(birthDate: string, weekStart: number): Date {
 }
 
 export default function LeapsPage() {
+  useFeatureSeen('leaps')
   const navigate = useNavigate()
   const { baby, logs } = useAppState()
   const isPremium = useBabyPremium()

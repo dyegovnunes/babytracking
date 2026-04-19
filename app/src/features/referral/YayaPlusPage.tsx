@@ -6,6 +6,7 @@ import { PaywallModal } from '../../components/ui/PaywallModal'
 import { hapticLight } from '../../lib/haptics'
 import { contractionDe } from '../../lib/genderUtils'
 import ReferralPanel from './components/ReferralPanel'
+import { useFeatureSeen } from '../journey/useFeatureSeen'
 
 /**
  * Tela "Yaya+": visível só pra free (aba da bottom nav). Premium que chega
@@ -13,6 +14,7 @@ import ReferralPanel from './components/ReferralPanel'
  * ReferralPanel (MGM).
  */
 export default function YayaPlusPage() {
+  useFeatureSeen('yaya_plus')
   const navigate = useNavigate()
   const isPremium = useBabyPremium()
   const { baby } = useAppState()

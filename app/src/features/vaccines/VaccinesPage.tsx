@@ -23,6 +23,7 @@ import VaccineDetailSheet from './components/VaccineDetailSheet'
 import VaccineApplySheet from './components/VaccineApplySheet'
 import { VaccinesSkeleton } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
+import { useFeatureSeen } from '../journey/useFeatureSeen'
 
 type FilterMode = 'all' | 'can_take' | 'overdue' | 'applied'
 
@@ -37,6 +38,7 @@ const DISCLAIMER =
   'Este calendário é baseado no PNI (SUS) e nas recomendações da SBP. Serve como apoio para organização da rotina. Consulte sempre o pediatra do seu bebê antes de vacinar.'
 
 export default function VaccinesPage() {
+  useFeatureSeen('vaccines')
   const navigate = useNavigate()
   const { baby } = useAppState()
   const { user } = useAuth()

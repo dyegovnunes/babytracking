@@ -14,10 +14,12 @@ import { PaywallModal } from '../../components/ui/PaywallModal'
 import { hapticLight } from '../../lib/haptics'
 import { InsightsSkeleton } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
+import { useFeatureSeen } from '../journey/useFeatureSeen'
 
 const FREE_INSIGHT_LIMIT = 2
 
 export default function InsightsPage() {
+  useFeatureSeen('insights')
   const { logs, baby, loading, quietHours } = useAppState()
   const isPremium = useBabyPremium()
   const myRole = useMyRole()

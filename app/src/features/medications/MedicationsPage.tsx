@@ -16,12 +16,14 @@ import MedicationLogEditModal from './components/MedicationLogEditModal'
 import MedicationSlotPickerSheet from './components/MedicationSlotPickerSheet'
 import { MedicationsSkeleton } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
+import { useFeatureSeen } from '../journey/useFeatureSeen'
 import type { Medication, MedicationDayStatus, MedicationLog } from './medicationData'
 
 const DISCLAIMER =
   'O Yaya ajuda a organizar a rotina de medicamentos. Sempre siga as orientações do pediatra — dosagens, horários e duração devem ser prescritos por um profissional.'
 
 export default function MedicationsPage() {
+  useFeatureSeen('medications')
   const navigate = useNavigate()
   const { baby, members } = useAppState()
   const { user } = useAuth()

@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAppState } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
+import { useFeatureSeen } from '../journey/useFeatureSeen'
 import { useBabyPremium } from '../../hooks/useBabyPremium'
 import { useMyRole } from '../../hooks/useMyRole'
 import { useMyCaregiverPermissions } from '../../hooks/useMyCaregiverPermissions'
@@ -57,6 +58,7 @@ function getLeapAtDate(
 }
 
 export default function MilestonesPage() {
+  useFeatureSeen('milestones')
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const { baby } = useAppState()

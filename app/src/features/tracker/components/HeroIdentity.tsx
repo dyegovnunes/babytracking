@@ -8,6 +8,7 @@ import StreakBadge from './StreakBadge'
 import { hapticLight } from '../../../lib/haptics'
 import type { StreakData } from '../../../lib/streak'
 import { getGreeting, type GreetingTone } from '../../../lib/greeting'
+import JourneyBadge from '../../journey/components/JourneyBadge'
 
 interface HeroIdentityProps {
   streak?: StreakData | null;
@@ -93,6 +94,10 @@ export default function HeroIdentity({ streak }: HeroIdentityProps) {
           <span className="font-headline text-xl font-extrabold text-on-surface tracking-tight">
             {formatTime(now)}
           </span>
+        </div>
+        {/* JourneyBadge: pill sutil abaixo do nome quando há marcos novos */}
+        <div className="mt-2 min-h-[1px]">
+          <JourneyBadge />
         </div>
       </section>
 
