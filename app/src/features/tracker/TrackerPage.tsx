@@ -1,5 +1,6 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useEffect } from 'react'
 import { useAppState, useAppDispatch, addLog, updateLog, deleteLog } from '../../contexts/AppContext'
+import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
 import { DEFAULT_EVENTS } from '../../lib/constants'
 import { getNextProjection } from './projections'
@@ -51,6 +52,25 @@ export default function TrackerPage() {
   const dispatch = useAppDispatch()
   const { user } = useAuth()
   const myRole = useMyRole()
+
+  // Avalia triggers temporais de achievements (first_week, 30d streak,
+  // baby_one_month, first_month_in_app) no mount da home. Elimina
+  // dependência de cron — é idempotente e leve (SECURITY DEFINER em
+  // migration journey_v1_full_triggers).
+  useEffect(() => {
+    if (!user) return
+    ;(async () => {
+      const { error } = await supabase.rpc('check_user_achievements')
+      if (error) {
+        /* silencia — não bloqueia UX */
+      }
+    })()
+    // Também dispara o evento pra re-fetch do useAchievements
+    const timer = setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('yaya:achievements-changed'))
+    }, 500)
+    return () => clearTimeout(timer)
+  }, [user])
   const nowRaw = useTimer()
   // Arredonda `now` pro minuto corrente. Ticks do useTimer (a cada ~30s)
   // criavam um Date novo que cascateava recálculos em useMedications.dayStatuses
