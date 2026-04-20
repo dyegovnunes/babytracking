@@ -1,0 +1,199 @@
+---
+import BlogLayout from '../layouts/BlogLayout.astro'
+import { supabase } from '../lib/supabase'
+import type { BlogPost, ContentCategory } from '../types'
+import { CATEGORY_LABEL, CATEGORY_EMOJI } from '../types'
+import { marked } from 'marked'
+
+export async function getStaticPaths() {
+  const { data } = await supabase
+    .from('blog_posts')
+    .select('slug')
+    .eq('status', 'published')
+
+  return (data ?? []).map((p) => ({ params: { slug: p.slug } }))
+}
+
+const { slug } = Astro.params
+
+const { data, error } = await supabase
+  .from('blog_posts')
+  .select('*')
+  .eq('slug', slug)
+  .eq('status', 'published')
+  .single()
+
+if (error || !data) {
+  return Astro.redirect('/404')
+}
+
+const post = data as BlogPost
+
+// Configurar marked: links em nova aba, sem html puro do DB
+marked.setOptions({ breaks: true })
+const contentHtml = await marked(post.content_md)
+
+function formatWeekRange(start: number | null, end: number | null): string {
+  if (!start) return ''
+  if (!end || start === end) return `Semana ${start}`
+  return `Semanas ${start}–${end}`
+}
+
+const canonicalUrl = `https://blog.yayababy.app/${post.slug}`
+const publishDate = post.published_at
+  ? new Date(post.published_at).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })
+  : null
+---
+
+<BlogLayout
+  title={post.title}
+  description={post.meta_description ?? undefined}
+  image={post.image_url ?? undefined}
+  canonicalUrl={canonicalUrl}
+>
+  <!-- Schema markup: Article -->
+  <script type="application/ld+json" set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: post.title,
+    description: post.meta_description,
+    image: post.image_url,
+    datePublished: post.published_at,
+    publisher: {
+      '@type': 'Organization',
+      name: 'Yaya Baby',
+      url: 'https://yayababy.app',
+    },
+  })} />
+
+  <article class="max-w-2xl mx-auto px-4 py-12">
+
+    <!-- Breadcrumb -->
+    <nav class="text-sm text-zinc-500 mb-8 flex items-center gap-1.5">
+      <a href="/" class="hover:text-zinc-300 transition-colors">Blog</a>
+      <span>›</span>
+      <span class="text-violet-400">{CATEGORY_LABEL[post.category as ContentCategory]}</span>
+    </nav>
+
+    <!-- Header do artigo -->
+    <header class="mb-10">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="text-2xl">{CATEGORY_EMOJI[post.category as ContentCategory]}</span>
+        <span class="text-sm font-semibold text-violet-400 uppercase tracking-wide">
+          {CATEGORY_LABEL[post.category as ContentCategory]}
+        </span>
+        {post.target_week_start && (
+          <span class="text-sm text-zinc-600">
+            · {formatWeekRange(post.target_week_start, post.target_week_end)}
+          </span>
+        )}
+      </div>
+
+      <h1 class="font-serif text-3xl md:text-4xl font-bold text-white leading-tight mb-5">
+        {post.title}
+      </h1>
+
+      {post.meta_description && (
+        <p class="text-zinc-400 text-lg leading-relaxed mb-5">
+          {post.meta_description}
+        </p>
+      )}
+
+      {publishDate && (
+        <time class="text-sm text-zinc-600" datetime={post.published_at ?? ''}>
+          Publicado em {publishDate}
+        </time>
+      )}
+    </header>
+
+    <!-- Imagem de capa -->
+    {post.image_url && (
+      <div class="mb-10 rounded-xl overflow-hidden">
+        <img
+          src={post.image_url}
+          alt={post.image_alt ?? post.title}
+          class="w-full object-cover max-h-80"
+        />
+      </div>
+    )}
+
+    <!-- Corpo do artigo -->
+    <div class="prose prose-invert prose-violet max-w-none" set:html={contentHtml} />
+
+    <!-- Disclaimer -->
+    <div class="mt-12 p-4 rounded-xl bg-zinc-900 border border-zinc-800 text-sm text-zinc-500 leading-relaxed">
+      <strong class="text-zinc-400">Aviso:</strong> Este artigo tem caráter educativo e não substitui
+      orientação médica individualizada. Consulte sempre o pediatra do seu bebê.
+    </div>
+
+    <!-- CTA baixar app -->
+    <div class="mt-10 p-6 rounded-xl bg-violet-950 border border-violet-800 text-center">
+      <p class="text-lg font-bold text-white mb-2">Acompanhe o desenvolvimento do seu bebê</p>
+      <p class="text-violet-300 text-sm mb-5">
+        Registre alimentação, sono, marcos e muito mais com o Yaya — gratuito para baixar.
+      </p>
+      <a
+        href="https://yayababy.app"
+        class="inline-block bg-violet-600 hover:bg-violet-500 text-white font-bold px-6 py-3 rounded-lg transition-colors"
+      >
+        Baixar o Yaya grátis
+      </a>
+    </div>
+  </article>
+</BlogLayout>
+
+<style is:global>
+  /* Prose styles para o conteúdo Markdown */
+  .prose {
+    color: theme('colors.zinc.300');
+    line-height: 1.75;
+  }
+  .prose h2 {
+    color: theme('colors.white');
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+  }
+  .prose h3 {
+    color: theme('colors.white');
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+  }
+  .prose p {
+    margin-bottom: 1.25rem;
+  }
+  .prose strong {
+    color: theme('colors.white');
+    font-weight: 600;
+  }
+  .prose ul, .prose ol {
+    padding-left: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .prose li {
+    margin-bottom: 0.4rem;
+  }
+  .prose a {
+    color: theme('colors.violet.400');
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .prose a:hover {
+    color: theme('colors.violet.300');
+  }
+  .prose blockquote {
+    border-left: 3px solid theme('colors.violet.600');
+    padding-left: 1.25rem;
+    color: theme('colors.zinc.400');
+    font-style: italic;
+    margin: 1.5rem 0;
+  }
+  .prose hr {
+    border-color: theme('colors.zinc.800');
+    margin: 2.5rem 0;
+  }
+</style>
