@@ -647,7 +647,7 @@ function MilestoneDetailModal({
       className="fixed inset-0 z-[60] flex items-end justify-center bg-black/75 backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="w-full max-w-lg bg-surface-container-highest rounded-t-md p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] max-h-[92vh] overflow-y-auto animate-slide-up">
+      <div className="w-full max-w-lg bg-surface-container-highest rounded-t-md p-6 pb-sheet max-h-[92vh] overflow-y-auto animate-slide-up">
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3 min-w-0">
             <span className="text-3xl">{milestone.emoji}</span>

@@ -249,7 +249,9 @@ export default function LoginPage() {
         className="relative z-10 flex flex-col min-h-screen px-6"
         style={{
           paddingTop: 'max(env(safe-area-inset-top), 1rem)',
-          paddingBottom: 'max(env(safe-area-inset-bottom), 1.5rem)',
+          // Soma --yaya-ad-offset pra não ficar atrás do banner AdMob
+          // quando usuário não-logado ainda vê o banner na tela de login.
+          paddingBottom: 'calc(max(env(safe-area-inset-bottom), 1.5rem) + var(--yaya-ad-offset, 0px))',
         }}
       >
         {/* Logo no topo — deixa o centro da foto livre para o rosto das

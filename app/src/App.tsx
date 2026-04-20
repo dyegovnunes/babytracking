@@ -207,7 +207,6 @@ function PublicOrAuth() {
 
 function PushNavigationHandler() {
   const navigate = useNavigate()
-  const location = useLocation()
   const { user, loading: authLoading } = useAuth()
   const { loading: dataLoading } = useAppState()
   const didColdStartNav = useRef(false)
@@ -229,9 +228,13 @@ function PushNavigationHandler() {
   // Cold-start navigation: once the app has finished loading the user and
   // data, force the initial route to home ("/") unless there is either:
   // - a pending push notification route, or
-  // - a public route we should preserve (/privacy, /r/*, /paineladmin/*)
-  // This prevents Capacitor's WebView from reopening the app on the last
-  // visited page (e.g. /settings).
+  // - a public route we should preserve (/privacy, /r/*, /paineladmin/*, /i/*)
+  //
+  // Prevents Capacitor's WebView from reopening the app on the last visited
+  // page (e.g. /settings, /profile, /marcos). Lê `window.location.pathname`
+  // ao invés da `location.pathname` do React Router pra não depender do
+  // estado do router — evita race condition quando o Capacitor restaura a
+  // URL mais rápido do que o React Router atualiza.
   useEffect(() => {
     if (didColdStartNav.current) return
     if (authLoading || dataLoading || !user) return
@@ -244,16 +247,19 @@ function PushNavigationHandler() {
       return
     }
 
-    const path = location.pathname
+    const path = window.location.pathname
     const isPublic =
       path === '/privacy' ||
       path.startsWith('/r/') ||
       path.startsWith('/paineladmin') ||
       path.startsWith('/i/')
-    if (!isPublic && path !== '/') {
+    if (!isPublic) {
+      // Sempre força '/' — é idempotente se já estiver lá, e garante que
+      // rotas privadas (/settings, /profile, /marcos, /vacinas, /insights,
+      // etc.) caiam pra Home no cold start.
       navigate('/', { replace: true })
     }
-  }, [authLoading, dataLoading, user, navigate, location.pathname])
+  }, [authLoading, dataLoading, user, navigate])
 
   return null
 }

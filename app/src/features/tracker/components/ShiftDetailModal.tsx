@@ -72,7 +72,7 @@ export default function ShiftDetailModal({ shift, caregiverName, onClose, onEdit
       className="fixed inset-0 z-[60] flex items-end justify-center bg-black/75 backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="w-full max-w-lg max-h-[90vh] overflow-y-auto bg-surface-container-highest rounded-t-md p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] border-t-2 border-primary-fixed animate-slide-up">
+      <div className="w-full max-w-lg max-h-[90vh] overflow-y-auto bg-surface-container-highest rounded-t-md p-6 pb-sheet border-t-2 border-primary-fixed animate-slide-up">
         <div className="flex items-start justify-between mb-5">
           <div className="flex items-start gap-3 min-w-0">
             <span className="material-symbols-outlined text-primary text-xl mt-0.5">assignment</span>

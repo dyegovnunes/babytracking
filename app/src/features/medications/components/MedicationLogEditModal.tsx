@@ -57,7 +57,7 @@ export default function MedicationLogEditModal({
       className="fixed inset-0 z-[70] flex items-end justify-center bg-black/75 backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="w-full max-w-lg bg-surface-container-highest rounded-t-md p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] border-t-2 border-amber-500 animate-slide-up">
+      <div className="w-full max-w-lg bg-surface-container-highest rounded-t-md p-6 pb-sheet border-t-2 border-amber-500 animate-slide-up">
         <div className="flex items-center gap-3 mb-1">
           <span className="text-2xl">💊</span>
           <h2 className="font-headline text-lg font-bold text-on-surface">

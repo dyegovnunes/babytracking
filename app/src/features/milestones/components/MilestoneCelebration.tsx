@@ -188,7 +188,7 @@ export default function MilestoneCelebration({
         )}
       </div>
 
-      <div className="relative z-10 px-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] pt-4 flex gap-3">
+      <div className="relative z-10 px-6 pb-sheet pt-4 flex gap-3">
         <button
           type="button"
           onClick={onClose}

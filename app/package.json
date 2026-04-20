@@ -1,7 +1,7 @@
 {
   "name": "yaya",
   "private": true,
-  "version": "1.9.0",
+  "version": "1.9.1",
   "description": "Yaya — Baby Tracker. Cada momento conta.",
   "type": "module",
   "scripts": {

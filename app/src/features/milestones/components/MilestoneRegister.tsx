@@ -118,7 +118,7 @@ export default function MilestoneRegister({
       className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm overflow-y-auto"
       onClick={(e) => e.target === e.currentTarget && onCancel()}
     >
-      <div className="min-h-full flex flex-col max-w-lg mx-auto px-5 pt-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
+      <div className="min-h-full flex flex-col max-w-lg mx-auto px-5 pt-6 pb-sheet">
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
           <button

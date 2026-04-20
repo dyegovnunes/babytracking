@@ -242,7 +242,7 @@ export function PaywallModal({ isOpen, onClose, trigger = 'generic' }: PaywallMo
         </div>
 
         {/* Fixed bottom — CTA always visible */}
-        <div className="px-5 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-2 border-t border-[#474464]/30 bg-[#0d0a27]">
+        <div className="px-5 pb-sheet-sm pt-2 border-t border-[#474464]/30 bg-[#0d0a27]">
           {error && (
             <p className="text-center text-xs text-red-400 mb-2">{error}</p>
           )}

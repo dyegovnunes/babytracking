@@ -337,7 +337,7 @@ export default function MilestoneShareImage({
         )}
       </div>
 
-      <div className="px-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] pt-4">
+      <div className="px-6 pb-sheet pt-4">
         <button
           type="button"
           disabled={!dataUrl || busy}

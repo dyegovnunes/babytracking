@@ -583,7 +583,7 @@ export default function ProfilePage() {
       {/* Modal informativo sobre os papéis */}
       {rolesInfoOpen && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/75 backdrop-blur-sm" onClick={() => setRolesInfoOpen(false)}>
-          <div className="w-full max-w-md bg-surface-container-highest rounded-t-md sm:rounded-md p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] animate-slide-up" onClick={e => e.stopPropagation()}>
+          <div className="w-full max-w-md bg-surface-container-highest rounded-t-md sm:rounded-md p-6 pb-sheet animate-slide-up" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-headline text-lg font-bold text-on-surface">Papéis do cuidador</h3>
               <button onClick={() => setRolesInfoOpen(false)} aria-label="Fechar" className="p-1 -m-1 rounded-md active:bg-surface-container">
@@ -724,7 +724,7 @@ export default function ProfilePage() {
           className="fixed inset-0 z-[60] flex items-end justify-center bg-black/75 backdrop-blur-sm"
           onClick={(e) => e.target === e.currentTarget && setFullInstructionsOpen(false)}
         >
-          <div className="w-full max-w-lg max-h-[80vh] overflow-y-auto bg-surface-container-highest rounded-t-md p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] border-t-2 border-primary-fixed animate-slide-up">
+          <div className="w-full max-w-lg max-h-[80vh] overflow-y-auto bg-surface-container-highest rounded-t-md p-6 pb-sheet border-t-2 border-primary-fixed animate-slide-up">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2 min-w-0">
                 <span className="material-symbols-outlined text-primary text-lg">sticky_note_2</span>

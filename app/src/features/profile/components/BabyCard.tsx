@@ -3,9 +3,15 @@ import type { Baby } from '../../../types'
 import { formatAge, formatBirthDate } from '../../../lib/formatters'
 import { supabase } from '../../../lib/supabase'
 import ImageCropModal from '../../../components/ui/ImageCropModal'
+import Toast from '../../../components/ui/Toast'
 import { useBabyPremium } from '../../../hooks/useBabyPremium'
 import { showRewardedAd } from '../../../lib/admob'
 import { useSheetBackClose } from '../../../hooks/useSheetBackClose'
+
+// Limite antes de abrir o ImageCropModal. Fotos HEIC/RAW > 15MB podem dar
+// OOM no FileReader em WebView Android — rejeitamos com mensagem clara
+// em vez de deixar o crop falhar silenciosamente.
+const MAX_PHOTO_SIZE_BYTES = 15 * 1024 * 1024
 
 interface Props {
   baby: Baby
@@ -21,6 +27,7 @@ export default function BabyCard({ baby, onSave, canEdit = true }: Props) {
   const [uploading, setUploading] = useState(false)
   const [cropFile, setCropFile] = useState<File | null>(null)
   const [showPhotoMenu, setShowPhotoMenu] = useState(false)
+  const [photoError, setPhotoError] = useState<string | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
   useSheetBackClose(showPhotoMenu, () => setShowPhotoMenu(false))
   useSheetBackClose(editing, handleCancel)
@@ -37,7 +44,7 @@ export default function BabyCard({ baby, onSave, canEdit = true }: Props) {
 
       if (error) {
         console.error('Upload error:', error)
-        alert(`Erro ao enviar foto: ${error.message}`)
+        setPhotoError('Não conseguimos enviar a foto. Verifique sua conexão e tente de novo.')
       } else {
         const { data } = supabase.storage.from('baby-photos').getPublicUrl(path)
         const photoUrl = data.publicUrl + '?t=' + Date.now()
@@ -45,7 +52,7 @@ export default function BabyCard({ baby, onSave, canEdit = true }: Props) {
       }
     } catch (err) {
       console.error('Upload exception:', err)
-      alert('Erro inesperado ao enviar foto. Tente novamente.')
+      setPhotoError('Erro inesperado ao enviar foto. Tente novamente.')
     }
     setUploading(false)
   }
@@ -186,8 +193,13 @@ export default function BabyCard({ baby, onSave, canEdit = true }: Props) {
         className="hidden"
         onChange={(e) => {
           const file = e.target.files?.[0]
-          if (file) setCropFile(file)
           if (fileRef.current) fileRef.current.value = ''
+          if (!file) return
+          if (file.size > MAX_PHOTO_SIZE_BYTES) {
+            setPhotoError('Foto muito grande (acima de 15MB). Escolha uma foto menor ou reduza a qualidade.')
+            return
+          }
+          setCropFile(file)
         }}
       />
 
@@ -199,6 +211,15 @@ export default function BabyCard({ baby, onSave, canEdit = true }: Props) {
             handlePhotoUpload(blob)
           }}
           onClose={() => setCropFile(null)}
+        />
+      )}
+
+      {photoError && (
+        <Toast
+          message={photoError}
+          variant="error"
+          duration={4000}
+          onDismiss={() => setPhotoError(null)}
         />
       )}
       </>
@@ -268,8 +289,13 @@ export default function BabyCard({ baby, onSave, canEdit = true }: Props) {
       className="hidden"
       onChange={(e) => {
         const file = e.target.files?.[0]
-        if (file) setCropFile(file)
         if (fileRef.current) fileRef.current.value = ''
+        if (!file) return
+        if (file.size > MAX_PHOTO_SIZE_BYTES) {
+          setPhotoError('Foto muito grande (acima de 15MB). Escolha uma foto menor ou reduza a qualidade.')
+          return
+        }
+        setCropFile(file)
       }}
     />
 
@@ -281,6 +307,15 @@ export default function BabyCard({ baby, onSave, canEdit = true }: Props) {
           handlePhotoUpload(blob)
         }}
         onClose={() => setCropFile(null)}
+      />
+    )}
+
+    {photoError && (
+      <Toast
+        message={photoError}
+        variant="error"
+        duration={4000}
+        onDismiss={() => setPhotoError(null)}
       />
     )}
     </>

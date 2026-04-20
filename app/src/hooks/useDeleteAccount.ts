@@ -1,6 +1,5 @@
 import { useCallback, useState } from 'react'
 import { supabase } from '../lib/supabase'
-import { signOut } from '../contexts/AuthContext'
 
 /**
  * Hook pra chamar a edge function `delete-account` e deslogar.
@@ -8,10 +7,16 @@ import { signOut } from '../contexts/AuthContext'
  * Fluxo:
  *   1. Pega session atual (precisamos do access_token pra Authorization)
  *   2. Invoca a edge function via `supabase.functions.invoke`
- *   3. Se ok, `signOut()` — isso dispara o listener em AuthProvider
- *      e a UI volta pro LoginPage sozinha.
+ *   3. Em sucesso: signOut LOCAL (scope='local' evita 401 do servidor
+ *      já que o user foi apagado) + FULL RELOAD pra garantir que todo
+ *      o AppContext volta a `initialState` e a UI aterrissa em LoginPage
+ *      deslogado. Sem reload, o AppContext mantém `needsOnboarding=true`
+ *      stale e App.tsx renderiza OnboardingPage por engano.
  *
  * Retorna `{ ok, error }` ao invés de throw, pra o caller exibir toast.
+ * **Nota**: em sucesso, a função dispara `window.location.href = '/login'`
+ * e nunca retorna de fato (navega fora), mas mantém a assinatura por
+ * compat com o consumer.
  */
 export function useDeleteAccount() {
   const [loading, setLoading] = useState(false)
@@ -42,8 +47,12 @@ export function useDeleteAccount() {
         return { ok: false, error: data.error }
       }
 
-      // Sucesso — desloga localmente (a conta já não existe no servidor)
-      await signOut()
+      // Sucesso — a conta já não existe no servidor. signOut com
+      // scope='local' evita o 401 do /logout endpoint (que precisaria
+      // de user válido). Depois full reload pra zerar AppContext e
+      // aterrissar em /login deslogado.
+      await supabase.auth.signOut({ scope: 'local' })
+      window.location.href = '/login'
       return { ok: true }
     } catch (e) {
       return {

@@ -362,3 +362,20 @@ html.theme-light .shadow-soft {
     padding-bottom: env(safe-area-inset-bottom);
   }
 }
+
+/*
+ * Padding bottom padrão pra sheets/modals bottom-anchored.
+ * Soma safe-area + banner AdMob offset (--yaya-ad-offset, 0 quando
+ * premium). Substitui `pb-[calc(1.5rem+env(safe-area-inset-bottom))]`
+ * nos bottom sheets — evita que o banner nativo cubra o conteúdo final
+ * do sheet (botões "Salvar", CTAs de paywall, etc).
+ *
+ *   .pb-sheet    — 1.5rem de respiro (padrão)
+ *   .pb-sheet-sm — 1rem (pra sheets onde o bottom strip é compacto)
+ */
+.pb-sheet {
+  padding-bottom: calc(1.5rem + env(safe-area-inset-bottom) + var(--yaya-ad-offset, 0px));
+}
+.pb-sheet-sm {
+  padding-bottom: calc(1rem + env(safe-area-inset-bottom) + var(--yaya-ad-offset, 0px));
+}

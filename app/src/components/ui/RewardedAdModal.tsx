@@ -51,7 +51,7 @@ export function RewardedAdModal({ isOpen, onClose, onAdCompleted, onUpgrade, rec
           </button>
 
           <button
-            onClick={() => { onClose(); onUpgrade(); }}
+            onClick={() => { onUpgrade(); onClose(); }}
             className="w-full py-3.5 rounded-2xl bg-[#b79fff] text-[#0d0a27] font-bold text-sm"
           >
             Conhecer Yaya+ — Registros ilimitados

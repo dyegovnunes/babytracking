@@ -75,7 +75,7 @@ export default function VaccineApplySheet({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md rounded-t-md bg-surface-container-highest p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] max-h-[85vh] overflow-y-auto animate-slide-up"
+        className="w-full max-w-md rounded-t-md bg-surface-container-highest p-6 pb-sheet max-h-[85vh] overflow-y-auto animate-slide-up"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Drag handle */}

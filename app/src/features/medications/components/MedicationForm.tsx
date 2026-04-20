@@ -166,7 +166,7 @@ export default function MedicationForm({ isOpen, onClose, onSave, initialData }:
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md rounded-t-md bg-surface-container-highest p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] max-h-[92vh] overflow-y-auto animate-slide-up"
+        className="w-full max-w-md rounded-t-md bg-surface-container-highest p-6 pb-sheet max-h-[92vh] overflow-y-auto animate-slide-up"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Drag handle */}

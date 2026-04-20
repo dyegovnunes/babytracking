@@ -117,7 +117,7 @@ export default function ResumoDoDiaSheet({ babyId, babyName, caregiverId, onClos
       className="fixed inset-0 z-[60] flex items-end justify-center bg-black/75 backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="w-full max-w-lg max-h-[90vh] overflow-y-auto bg-surface-container-highest rounded-t-md p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] border-t-2 border-primary-fixed animate-slide-up">
+      <div className="w-full max-w-lg max-h-[90vh] overflow-y-auto bg-surface-container-highest rounded-t-md p-6 pb-sheet border-t-2 border-primary-fixed animate-slide-up">
         <div className="flex items-center justify-between mb-5">
           <div>
             <h2 className="font-headline text-lg font-bold text-on-surface">
