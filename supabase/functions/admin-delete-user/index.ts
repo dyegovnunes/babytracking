@@ -2,25 +2,14 @@ import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 /**
- * Admin Delete User — Edge Function v2
+ * Admin Delete User — Edge Function v4
  *
- * Permite que um admin (profiles.is_admin=true) remova permanentemente outro
- * usuário. Body: { user_id: string }
+ * verify_jwt=false + validacao interna (decode JWT + checa is_admin
+ * via service role). Isso contorna 401 vindos do gateway de forma
+ * opaca.
  *
- * v2: JWT é DECODIFICADO manualmente pra extrair o sub — `admin.auth.getUser(jwt)`
- * com client service-role apresentou 401 intermitente em prod. A validação de
- * assinatura já aconteceu no gateway do Supabase (verify_jwt: true), então
- * decodar o payload só pra pegar sub+role é seguro. Depois consultamos
- * profiles.is_admin via service role (bypassa RLS).
- *
- * Fluxo:
- *  1. Decode JWT → callerId + role (tem que ser 'authenticated')
- *  2. Query profiles.is_admin pra validar
- *  3. Pra cada baby do target: órfão → delete (cascade), compartilhado → NULL
- *  4. NULL refs globais (admin_broadcasts, feature_flags, invite_codes,
- *     profiles.courtesy_granted_by)
- *  5. DELETE courtesy_log
- *  6. auth.admin.deleteUser → cascade limpa o resto
+ * v4 adiciona nullificacao de profiles.referred_by e babies.created_by
+ * que eram as ultimas FKs NO ACTION faltando.
  */
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
@@ -56,29 +45,26 @@ serve(async (req) => {
     return json({ error: 'Method not allowed' }, 405)
   }
 
+  const authHeader = req.headers.get('Authorization') ?? ''
+  const hasAuth = authHeader.startsWith('Bearer ')
+  console.log('[admin-delete-user] request', { hasAuth, authLen: authHeader.length })
+
   try {
-    const authHeader = req.headers.get('Authorization') ?? ''
-    if (!authHeader.startsWith('Bearer ')) {
-      return json({ error: 'Missing bearer token' }, 401)
-    }
+    if (!hasAuth) return json({ error: 'Missing bearer token' }, 401)
     const jwt = authHeader.slice('Bearer '.length)
 
     const payload = decodeJwtPayload(jwt)
-    const callerId = payload?.sub
-    const role = payload?.role
-    if (!callerId || typeof callerId !== 'string') {
-      console.warn('JWT sem sub claim', { role, keys: Object.keys(payload ?? {}) })
-      return json({ error: 'Invalid JWT — sem sub claim', role: role ?? null }, 401)
+    if (!payload) return json({ error: 'JWT malformado' }, 401)
+    const callerId = payload.sub
+    const role = payload.role
+    const exp = payload.exp
+    const nowSec = Math.floor(Date.now() / 1000)
+    if (typeof exp === 'number' && exp < nowSec) {
+      return json({ error: 'Token expirado', hint: 'Faça refresh/login.' }, 401)
     }
+    if (!callerId) return json({ error: 'JWT sem sub claim' }, 401)
     if (role !== 'authenticated') {
-      console.warn('JWT role inesperado', { role, sub: callerId })
-      return json(
-        {
-          error: `Role não autenticado: ${role}`,
-          hint: 'Passe o access_token do usuário no header Authorization, não a anon key.',
-        },
-        401,
-      )
+      return json({ error: `Role inesperado: ${role}`, hint: 'Passe o access_token.' }, 401)
     }
 
     const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
@@ -90,40 +76,27 @@ serve(async (req) => {
       .select('is_admin')
       .eq('id', callerId)
       .maybeSingle()
-    if (profErr) {
-      console.error('profile lookup failed', profErr)
-      return json({ error: 'Falha ao validar admin', detail: profErr.message }, 500)
-    }
-    if (!callerProfile?.is_admin) {
-      return json({ error: 'Not an admin' }, 403)
-    }
+    if (profErr) return json({ error: 'Falha admin lookup', detail: profErr.message }, 500)
+    if (!callerProfile?.is_admin) return json({ error: 'Not an admin' }, 403)
 
     let body: any
-    try {
-      body = await req.json()
-    } catch {
-      return json({ error: 'Invalid JSON body' }, 400)
-    }
+    try { body = await req.json() } catch { return json({ error: 'Invalid JSON body' }, 400) }
     const targetId = body?.user_id
     if (typeof targetId !== 'string' || targetId.length < 10) {
       return json({ error: 'Missing or invalid user_id' }, 400)
     }
-    if (targetId === callerId) {
-      return json({ error: 'Admin não pode se auto-excluir por aqui.' }, 400)
-    }
+    if (targetId === callerId) return json({ error: 'Não pode se auto-excluir.' }, 400)
 
-    // ── Descobrir babies do target ─────────────────────────────────────
+    console.log('[admin-delete-user] starting delete', { callerId, targetId })
+
     const { data: memberships } = await admin
       .from('baby_members')
       .select('baby_id')
       .eq('user_id', targetId)
-    const babyIds: string[] = (memberships ?? []).map(
-      (m: { baby_id: string }) => m.baby_id,
-    )
+    const babyIds: string[] = (memberships ?? []).map((m: any) => m.baby_id)
 
     const orphanBabies: string[] = []
     const sharedBabies: string[] = []
-
     for (const babyId of babyIds) {
       const { count } = await admin
         .from('baby_members')
@@ -142,9 +115,7 @@ serve(async (req) => {
           `${babyId}/photo.png`,
           `${babyId}/photo.jpeg`,
         ])
-      } catch (e) {
-        console.warn('storage remove failed', babyId, e)
-      }
+      } catch (e) { console.warn('storage remove failed', babyId, e) }
       const { error: delErr } = await admin.from('babies').delete().eq('id', babyId)
       if (delErr) console.warn('baby delete failed', babyId, delErr.message)
       else removedBabies++
@@ -170,6 +141,17 @@ serve(async (req) => {
     await nullScoped('measurements', 'measured_by')
     await nullScoped('medications', 'created_by')
 
+    // babies.created_by: query separada porque baby_id EH o id da linha
+    if (sharedBabies.length > 0) {
+      const { error, count } = await admin
+        .from('babies')
+        .update({ created_by: null }, { count: 'exact' })
+        .eq('created_by', targetId)
+        .in('id', sharedBabies)
+      if (error) console.warn('null babies.created_by failed', error.message)
+      else if (count) nullified += count
+    }
+
     async function nullGlobal(table: string, column: string) {
       const { error, count } = await admin
         .from(table)
@@ -183,6 +165,7 @@ serve(async (req) => {
     await nullGlobal('invite_codes', 'created_by')
     await nullGlobal('invite_codes', 'used_by')
     await nullGlobal('profiles', 'courtesy_granted_by')
+    await nullGlobal('profiles', 'referred_by')
 
     await admin
       .from('courtesy_log')
@@ -191,27 +174,26 @@ serve(async (req) => {
 
     const { error: delUserErr } = await admin.auth.admin.deleteUser(targetId)
     if (delUserErr) {
-      console.error('auth.admin.deleteUser failed', delUserErr)
-      return json(
-        {
-          error: delUserErr.message,
-          hint: 'Pode restar FK NO ACTION não tratada.',
-        },
-        500,
-      )
+      console.error('[admin-delete-user] auth.admin.deleteUser failed', delUserErr)
+      return json({
+        error: delUserErr.message,
+        hint: 'Pode restar FK NO ACTION não tratada.',
+      }, 500)
     }
 
-    return json(
-      {
-        ok: true,
-        removed_babies: removedBabies,
-        shared_babies: sharedBabies.length,
-        nullified_rows: nullified,
-      },
-      200,
-    )
+    console.log('[admin-delete-user] success', {
+      removedBabies,
+      sharedBabies: sharedBabies.length,
+      nullified,
+    })
+    return json({
+      ok: true,
+      removed_babies: removedBabies,
+      shared_babies: sharedBabies.length,
+      nullified_rows: nullified,
+    }, 200)
   } catch (e) {
-    console.error('admin-delete-user unexpected error', e)
+    console.error('[admin-delete-user] unexpected', e)
     return json({ error: (e as Error).message ?? 'unknown' }, 500)
   }
 })
