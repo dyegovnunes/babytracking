@@ -120,15 +120,33 @@ export default function AdminUserDetailPage() {
     if (!id || deleteConfirmText.toLowerCase() !== 'confirmar') return;
     setDeleting(true);
 
-    await Promise.all([
-      supabase.from('push_tokens').delete().eq('user_id', id),
-      supabase.from('streaks').delete().eq('user_id', id),
-      supabase.from('courtesy_log').delete().eq('user_id', id),
-    ]);
-    await supabase.from('baby_members').delete().eq('user_id', id);
-    await supabase.from('profiles').delete().eq('id', id);
+    // O delete-account direto no client nao funciona por 2 motivos:
+    // 1. RLS em profiles so libera SELECT/UPDATE pra admin (nao DELETE)
+    // 2. auth.admin.deleteUser precisa de service role, inacessivel do client
+    // 3. Varias FKs sao NO ACTION (logs.created_by, baby_milestones.recorded_by
+    //    etc) e bloqueiam o cascade se o usuario tiver conteudo em babies
+    //    compartilhadas.
+    //
+    // A edge function admin-delete-user faz o fluxo completo: babies
+    // orfaos deletados, atribuicoes em babies compartilhadas nulificadas,
+    // refs globais nulificadas, depois auth.admin.deleteUser finaliza.
+    const { data, error } = await supabase.functions.invoke('admin-delete-user', {
+      body: { user_id: id },
+    });
 
     setDeleting(false);
+
+    if (error) {
+      setToast(`Erro ao excluir: ${error.message}`);
+      setTimeout(() => setToast(''), 5000);
+      return;
+    }
+    if (data?.error) {
+      setToast(`Erro: ${data.error}`);
+      setTimeout(() => setToast(''), 5000);
+      return;
+    }
+
     navigate('/paineladmin/users');
   }
 
