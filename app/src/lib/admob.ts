@@ -33,9 +33,11 @@ export async function initAdMob(): Promise<void> {
       // eslint-disable-next-line no-console
       console.log('[AdMob] ATT status=', current?.status);
       if (current?.status === 'notDetermined') {
-        const res = await AdMob.requestTrackingAuthorization();
+        // requestTrackingAuthorization retorna void — re-lê status depois.
+        await AdMob.requestTrackingAuthorization();
+        const after = await AdMob.trackingAuthorizationStatus();
         // eslint-disable-next-line no-console
-        console.log('[AdMob] ATT after request=', res?.status);
+        console.log('[AdMob] ATT after request=', after?.status);
       }
     }
   } catch (err) {
