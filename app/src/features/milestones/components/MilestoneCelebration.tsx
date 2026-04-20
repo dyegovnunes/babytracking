@@ -14,7 +14,7 @@ interface Props {
   photoUrl?: string | null
   note?: string | null
   onClose: () => void
-  onShare: () => void
+  onShare?: () => void
 }
 
 interface ConfettiPiece {
@@ -196,14 +196,16 @@ export default function MilestoneCelebration({
         >
           Fechar
         </button>
-        <button
-          type="button"
-          onClick={onShare}
-          className="flex-1 py-3 rounded-md bg-gradient-to-br from-primary to-primary-container text-on-primary font-label font-bold text-sm flex items-center justify-center gap-2"
-        >
-          <span className="material-symbols-outlined text-base">share</span>
-          Compartilhar
-        </button>
+        {onShare && (
+          <button
+            type="button"
+            onClick={onShare}
+            className="flex-1 py-3 rounded-md bg-gradient-to-br from-primary to-primary-container text-on-primary font-label font-bold text-sm flex items-center justify-center gap-2"
+          >
+            <span className="material-symbols-outlined text-base">share</span>
+            Compartilhar
+          </button>
+        )}
       </div>
     </div>
   )

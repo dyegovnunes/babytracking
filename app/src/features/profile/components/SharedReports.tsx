@@ -4,6 +4,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { useBabyPremium } from '../../../hooks/useBabyPremium';
 import { useSheetBackClose } from '../../../hooks/useSheetBackClose';
 import { PaywallModal } from '../../../components/ui/PaywallModal';
+import Toast from '../../../components/ui/Toast';
 import {
   createSharedReport,
   listSharedReports,
@@ -12,7 +13,20 @@ import {
   getReportUrl,
   getExpirationDate,
   type SharedReport,
+  type ReportAudience,
 } from '../sharedReports';
+
+// Público-alvo do link. Define seções e CTA renderizados em SharedReportPage.
+const AUDIENCES: {
+  key: ReportAudience;
+  icon: string;
+  title: string;
+  desc: string;
+}[] = [
+  { key: 'pediatrician', icon: 'stethoscope', title: 'Pediatra', desc: 'Dados clínicos, curva OMS e padrões.' },
+  { key: 'caregiver',    icon: 'child_care',  title: 'Cuidadora', desc: 'Rotina do dia, próximas doses, turnos.' },
+  { key: 'family',       icon: 'favorite',    title: 'Família', desc: 'Marcos recentes, fotos e progresso.' },
+];
 import { hapticLight, hapticMedium, hapticSuccess } from '../../../lib/haptics';
 
 export default function SharedReports() {
@@ -26,6 +40,7 @@ export default function SharedReports() {
   const [showCreate, setShowCreate] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
+  const [copyToast, setCopyToast] = useState<string | null>(null);
 
   useSheetBackClose(showCreate, () => setShowCreate(false));
   useSheetBackClose(!!confirmDelete, () => setConfirmDelete(null));
@@ -37,6 +52,7 @@ export default function SharedReports() {
   const [password, setPassword] = useState('');
   const [expirationPreset, setExpirationPreset] = useState('7d');
   const [customDate, setCustomDate] = useState('');
+  const [audience, setAudience] = useState<ReportAudience>('pediatrician');
   const [creating, setCreating] = useState(false);
   const [createdReport, setCreatedReport] = useState<{ url: string; password: string } | null>(null);
 
@@ -60,6 +76,7 @@ export default function SharedReports() {
     setPassword('');
     setExpirationPreset('7d');
     setCustomDate('');
+    setAudience('pediatrician');
     setCreatedReport(null);
     setShowCreate(true);
   };
@@ -76,7 +93,7 @@ export default function SharedReports() {
       expiresAt = getExpirationDate(expirationPreset);
     }
 
-    const report = await createSharedReport(baby.id, user.id, name.trim(), password, expiresAt);
+    const report = await createSharedReport(baby.id, user.id, name.trim(), password, expiresAt, audience);
     setCreating(false);
 
     if (report) {
@@ -106,12 +123,14 @@ export default function SharedReports() {
   const handleCopyLink = (token: string) => {
     hapticLight();
     navigator.clipboard.writeText(getReportUrl(token));
+    setCopyToast('Link copiado!');
   };
 
   const handleShareWhatsApp = (report: SharedReport) => {
     hapticLight();
     const url = getReportUrl(report.token);
-    const text = `Oi! Compartilhei o acompanhamento ${genderContraction} ${baby?.name} com você. Acesse: ${url}`;
+    // Texto conversacional, com quebra de linha (\n preservado pelo encodeURIComponent).
+    const text = `Oi! Preparei o acompanhamento ${genderContraction} ${baby?.name} pra você dar uma olhada.\n\nLink: ${url}\n\nA senha eu te mando separado pra ficar seguro 🙂`;
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
   };
 
@@ -127,6 +146,20 @@ export default function SharedReports() {
     if (days <= 1) return 'Expira hoje';
     if (days <= 7) return `Expira em ${days} dias`;
     return `Expira em ${d.toLocaleDateString('pt-BR')}`;
+  };
+
+  // Linha curta mostrando quantas vezes e quando foi acessado pela última vez.
+  // Fica em cinza abaixo do "Expira em …", sem detalhes sensíveis (IP, device).
+  const formatAccess = (count: number | null | undefined, lastAt: string | null | undefined) => {
+    if (!count || !lastAt) return 'Nunca acessado';
+    const d = new Date(lastAt);
+    const diffMin = Math.round((Date.now() - d.getTime()) / 60000);
+    let when: string;
+    if (diffMin < 60) when = `há ${diffMin}min`;
+    else if (diffMin < 24 * 60) when = `há ${Math.floor(diffMin / 60)}h`;
+    else when = d.toLocaleDateString('pt-BR');
+    const plural = count === 1 ? 'acesso' : 'acessos';
+    return `${count} ${plural} · último ${when}`;
   };
 
   if (!baby) return null;
@@ -199,6 +232,9 @@ export default function SharedReports() {
                         expired ? 'text-error' : 'text-on-surface-variant'
                       }`}>
                         {formatExpiry(r.expires_at)}
+                      </p>
+                      <p className="font-label text-[11px] text-on-surface-variant/70 mt-0.5">
+                        {formatAccess(r.access_count, r.last_accessed_at)}
                       </p>
                     </div>
 
@@ -276,26 +312,69 @@ export default function SharedReports() {
           onClick={() => { if (!createdReport) setShowCreate(false); }}
         >
           <div
-            className="w-full max-w-md rounded-t-md bg-[#0d0a27] border border-[#b79fff]/20 p-5 pb-sheet max-h-[85vh] overflow-y-auto animate-slide-up"
+            className="w-full max-w-md rounded-t-md bg-surface border border-primary/20 p-5 pb-sheet max-h-[85vh] overflow-y-auto animate-slide-up"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-2">
                 <span className="material-symbols-outlined text-primary text-xl">add_link</span>
-                <h3 className="text-base font-bold text-[#e7e2ff]">
+                <h3 className="text-base font-bold text-on-surface">
                   {createdReport ? 'Link criado!' : 'Novo link de acesso'}
                 </h3>
               </div>
-              <button onClick={() => setShowCreate(false)} className="text-[#e7e2ff]/40">
+              <button onClick={() => setShowCreate(false)} className="text-on-surface/40">
                 <span className="material-symbols-outlined">close</span>
               </button>
             </div>
 
             {!createdReport ? (
               <>
+                {/* Audience */}
+                <div className="mb-4">
+                  <label className="font-label text-xs text-on-surface/60 uppercase tracking-wider mb-2 block">
+                    Para quem é esse link?
+                  </label>
+                  <div className="space-y-1.5">
+                    {AUDIENCES.map((opt) => {
+                      const selected = audience === opt.key;
+                      return (
+                        <button
+                          key={opt.key}
+                          type="button"
+                          onClick={() => { hapticLight(); setAudience(opt.key); }}
+                          className={`w-full flex items-start gap-3 p-3 rounded-md text-left transition-colors ${
+                            selected
+                              ? 'bg-primary/20 border border-primary/60'
+                              : 'bg-white/[0.04] border border-white/10'
+                          }`}
+                        >
+                          <span
+                            className={`material-symbols-outlined text-lg mt-0.5 shrink-0 ${
+                              selected ? 'text-primary' : 'text-on-surface/60'
+                            }`}
+                          >
+                            {opt.icon}
+                          </span>
+                          <div className="flex-1 min-w-0">
+                            <p className={`font-label text-sm font-semibold ${selected ? 'text-on-surface' : 'text-on-surface/80'}`}>
+                              {opt.title}
+                            </p>
+                            <p className="font-body text-[11px] text-on-surface/50 leading-snug">
+                              {opt.desc}
+                            </p>
+                          </div>
+                          {selected && (
+                            <span className="material-symbols-outlined text-base text-primary shrink-0">check_circle</span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
                 {/* Name */}
                 <div className="mb-4">
-                  <label className="font-label text-xs text-[#e7e2ff]/60 uppercase tracking-wider mb-1.5 block">
+                  <label className="font-label text-xs text-on-surface/60 uppercase tracking-wider mb-1.5 block">
                     Nome do acesso
                   </label>
                   <input
@@ -303,13 +382,13 @@ export default function SharedReports() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Ex: Dr. Silva, Consultora Ana, Baba Maria"
-                    className="w-full bg-white/[0.06] rounded-md px-4 py-3 text-[#e7e2ff] font-body text-sm outline-none focus:ring-2 focus:ring-[#b79fff]/40 placeholder:text-[#e7e2ff]/30"
+                    className="w-full bg-white/[0.06] rounded-md px-4 py-3 text-on-surface font-body text-sm outline-none focus:ring-2 focus:ring-primary/40 placeholder:text-on-surface/30"
                   />
                 </div>
 
                 {/* Password */}
                 <div className="mb-4">
-                  <label className="font-label text-xs text-[#e7e2ff]/60 uppercase tracking-wider mb-1.5 block">
+                  <label className="font-label text-xs text-on-surface/60 uppercase tracking-wider mb-1.5 block">
                     Senha de acesso
                   </label>
                   <input
@@ -317,13 +396,13 @@ export default function SharedReports() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Crie uma senha simples para o acesso"
-                    className="w-full bg-white/[0.06] rounded-md px-4 py-3 text-[#e7e2ff] font-body text-sm outline-none focus:ring-2 focus:ring-[#b79fff]/40 placeholder:text-[#e7e2ff]/30"
+                    className="w-full bg-white/[0.06] rounded-md px-4 py-3 text-on-surface font-body text-sm outline-none focus:ring-2 focus:ring-primary/40 placeholder:text-on-surface/30"
                   />
                 </div>
 
                 {/* Expiration */}
                 <div className="mb-5">
-                  <label className="font-label text-xs text-[#e7e2ff]/60 uppercase tracking-wider mb-2 block">
+                  <label className="font-label text-xs text-on-surface/60 uppercase tracking-wider mb-2 block">
                     Validade
                   </label>
                   <div className="grid grid-cols-2 gap-2 mb-2">
@@ -338,8 +417,8 @@ export default function SharedReports() {
                         onClick={() => { hapticLight(); setExpirationPreset(opt.key); }}
                         className={`py-2.5 rounded-md font-label text-sm font-semibold transition-colors ${
                           expirationPreset === opt.key
-                            ? 'bg-[#b79fff] text-[#0d0a27]'
-                            : 'bg-white/[0.06] text-[#e7e2ff]/70'
+                            ? 'bg-primary text-on-primary'
+                            : 'bg-white/[0.06] text-on-surface/70'
                         }`}
                       >
                         {opt.label}
@@ -350,8 +429,8 @@ export default function SharedReports() {
                     onClick={() => { hapticLight(); setExpirationPreset('custom'); }}
                     className={`w-full py-2.5 rounded-md font-label text-sm font-semibold transition-colors ${
                       expirationPreset === 'custom'
-                        ? 'bg-[#b79fff] text-[#0d0a27]'
-                        : 'bg-white/[0.06] text-[#e7e2ff]/70'
+                        ? 'bg-primary text-on-primary'
+                        : 'bg-white/[0.06] text-on-surface/70'
                     }`}
                   >
                     Data personalizada
@@ -362,7 +441,7 @@ export default function SharedReports() {
                       value={customDate}
                       onChange={(e) => setCustomDate(e.target.value)}
                       min={new Date().toISOString().split('T')[0]}
-                      className="w-full mt-2 bg-white/[0.06] rounded-md px-4 py-3 text-[#e7e2ff] font-body text-sm outline-none focus:ring-2 focus:ring-[#b79fff]/40"
+                      className="w-full mt-2 bg-white/[0.06] rounded-md px-4 py-3 text-on-surface font-body text-sm outline-none focus:ring-2 focus:ring-primary/40"
                     />
                   )}
                 </div>
@@ -371,7 +450,7 @@ export default function SharedReports() {
                 <button
                   onClick={handleCreate}
                   disabled={creating || !name.trim() || !password.trim() || (expirationPreset === 'custom' && !customDate)}
-                  className="w-full py-3.5 rounded-md bg-gradient-to-r from-[#7C4DFF] to-[#b79fff] text-white font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="w-full py-3.5 rounded-md bg-gradient-to-r from-primary to-primary-container text-on-primary font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   {creating ? (
                     <>
@@ -393,26 +472,26 @@ export default function SharedReports() {
                   <div className="w-16 h-16 mx-auto mb-3 rounded-md bg-green-500/20 flex items-center justify-center">
                     <span className="material-symbols-outlined text-green-400 text-3xl">check_circle</span>
                   </div>
-                  <p className="font-body text-xs text-[#e7e2ff]/60 mb-4">
+                  <p className="font-body text-xs text-on-surface/60 mb-4">
                     Envie o link e a senha para o profissional
                   </p>
                 </div>
 
                 <div className="bg-white/[0.04] rounded-md p-4 mb-3">
-                  <p className="font-label text-[11px] text-[#e7e2ff]/50 uppercase tracking-wider mb-1">Link</p>
-                  <p className="font-body text-xs text-[#b79fff] break-all">{createdReport.url}</p>
+                  <p className="font-label text-[11px] text-on-surface/50 uppercase tracking-wider mb-1">Link</p>
+                  <p className="font-body text-xs text-primary break-all">{createdReport.url}</p>
                 </div>
 
                 <div className="bg-white/[0.04] rounded-md p-4 mb-5">
-                  <p className="font-label text-[11px] text-[#e7e2ff]/50 uppercase tracking-wider mb-1">Senha</p>
-                  <p className="font-headline text-lg font-bold text-[#e7e2ff] tracking-wider">{createdReport.password}</p>
+                  <p className="font-label text-[11px] text-on-surface/50 uppercase tracking-wider mb-1">Senha</p>
+                  <p className="font-headline text-lg font-bold text-on-surface tracking-wider">{createdReport.password}</p>
                 </div>
 
                 <div className="space-y-2.5">
                   <button
                     onClick={() => {
                       hapticLight();
-                      const text = `Oi! Compartilhei o acompanhamento ${genderContraction} ${baby?.name} com você.\n\nAcesse: ${createdReport!.url}\nSenha: ${createdReport!.password}`;
+                      const text = `Oi! Preparei o acompanhamento ${genderContraction} ${baby?.name} pra você dar uma olhada.\n\nLink: ${createdReport!.url}\nSenha: ${createdReport!.password}\n\nQualquer dúvida me chama 🙂`;
                       window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
                     }}
                     className="w-full py-3 rounded-md bg-[#25D366] text-white font-semibold text-sm flex items-center justify-center gap-2"
@@ -424,17 +503,19 @@ export default function SharedReports() {
                   <button
                     onClick={() => {
                       hapticLight();
-                      navigator.clipboard.writeText(`Link: ${createdReport!.url}\nSenha: ${createdReport!.password}`);
+                      const text = `Oi! Preparei o acompanhamento ${genderContraction} ${baby?.name} pra você. Link: ${createdReport!.url} — Senha: ${createdReport!.password}`;
+                      navigator.clipboard.writeText(text);
+                      setCopyToast('Mensagem copiada! Só colar onde quiser.');
                     }}
-                    className="w-full py-3 rounded-md bg-white/[0.06] text-[#e7e2ff] font-semibold text-sm flex items-center justify-center gap-2"
+                    className="w-full py-3 rounded-md bg-on-surface/10 text-on-surface font-semibold text-sm flex items-center justify-center gap-2"
                   >
                     <span className="material-symbols-outlined text-lg">content_copy</span>
-                    Copiar link e senha
+                    Copiar mensagem pronta
                   </button>
 
                   <button
                     onClick={() => setShowCreate(false)}
-                    className="w-full py-3 rounded-md text-[#e7e2ff]/40 font-semibold text-sm"
+                    className="w-full py-3 rounded-md text-on-surface/40 font-semibold text-sm"
                   >
                     Fechar
                   </button>
@@ -481,6 +562,14 @@ export default function SharedReports() {
       )}
 
       <PaywallModal isOpen={showPaywall} onClose={() => setShowPaywall(false)} trigger="shared_report" />
+
+      {copyToast && (
+        <Toast
+          message={copyToast}
+          duration={1800}
+          onDismiss={() => setCopyToast(null)}
+        />
+      )}
     </>
   );
 }

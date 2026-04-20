@@ -1,7 +1,5 @@
-import { useRef, useState } from 'react'
-import { Capacitor } from '@capacitor/core'
-import { Camera, CameraResultType, CameraSource } from '@capacitor/camera'
-import { hapticLight, hapticSuccess } from '../../../lib/haptics'
+import { useState } from 'react'
+import { hapticSuccess } from '../../../lib/haptics'
 import type { Milestone } from '../milestoneData'
 import { useSheetBackClose } from '../../../hooks/useSheetBackClose'
 
@@ -24,33 +22,6 @@ function getLocalToday(): string {
   return `${y}-${m}-${day}`
 }
 
-// Downscale image to ~1024px longest side before storing as data URL
-async function fileToDataUrl(file: File, maxDim = 1280): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      const img = new Image()
-      img.onload = () => {
-        const canvas = document.createElement('canvas')
-        const scale = Math.min(1, maxDim / Math.max(img.width, img.height))
-        canvas.width = Math.round(img.width * scale)
-        canvas.height = Math.round(img.height * scale)
-        const ctx = canvas.getContext('2d')
-        if (!ctx) {
-          reject(new Error('canvas context failed'))
-          return
-        }
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
-        resolve(canvas.toDataURL('image/jpeg', 0.85))
-      }
-      img.onerror = reject
-      img.src = e.target?.result as string
-    }
-    reader.onerror = reject
-    reader.readAsDataURL(file)
-  })
-}
-
 export default function MilestoneRegister({
   milestone,
   birthDate,
@@ -59,43 +30,8 @@ export default function MilestoneRegister({
 }: Props) {
   const today = getLocalToday()
   const [achievedAt, setAchievedAt] = useState(today)
-  const [photoDataUrl, setPhotoDataUrl] = useState<string | undefined>()
   const [saving, setSaving] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement>(null)
   useSheetBackClose(true, onCancel)
-
-  const handlePickPhoto = async () => {
-    hapticLight()
-    // Native (Android/iOS): usa o Capacitor Camera plugin → prompt câmera/galeria
-    if (Capacitor.isNativePlatform()) {
-      try {
-        const photo = await Camera.getPhoto({
-          source: CameraSource.Prompt,
-          resultType: CameraResultType.DataUrl,
-          quality: 85,
-          width: 1280,
-          correctOrientation: true,
-        })
-        if (photo.dataUrl) setPhotoDataUrl(photo.dataUrl)
-      } catch {
-        // user cancelled or denied permission — silently ignore
-      }
-      return
-    }
-    // Web: fallback para input file (com capture, por se for mobile web)
-    fileInputRef.current?.click()
-  }
-
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    try {
-      const dataUrl = await fileToDataUrl(file)
-      setPhotoDataUrl(dataUrl)
-    } catch {
-      // ignore
-    }
-  }
 
   const handleSave = async () => {
     if (saving) return
@@ -104,7 +40,6 @@ export default function MilestoneRegister({
     try {
       await onSave({
         achievedAt,
-        photoDataUrl,
       })
     } finally {
       setSaving(false)
@@ -161,50 +96,10 @@ export default function MilestoneRegister({
           />
         </label>
 
-        {/* Photo */}
-        <div className="mb-4">
-          <span className="font-label text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5 block">
-            Foto (opcional)
-          </span>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            capture="environment"
-            className="hidden"
-            onChange={handleFileChange}
-          />
-          {photoDataUrl ? (
-            <div className="relative">
-              <img
-                src={photoDataUrl}
-                alt="Foto do marco"
-                className="w-full aspect-square object-cover rounded-md"
-              />
-              <button
-                type="button"
-                onClick={() => setPhotoDataUrl(undefined)}
-                className="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/60 text-white flex items-center justify-center"
-                aria-label="Remover foto"
-              >
-                <span className="material-symbols-outlined text-base">close</span>
-              </button>
-            </div>
-          ) : (
-            <button
-              type="button"
-              onClick={handlePickPhoto}
-              className="w-full aspect-[16/9] rounded-md border-2 border-dashed border-white/15 bg-surface-container/50 flex flex-col items-center justify-center gap-2 active:scale-[0.98] transition-transform"
-            >
-              <span className="material-symbols-outlined text-4xl text-on-surface-variant/70">
-                add_a_photo
-              </span>
-              <span className="font-label text-xs text-on-surface-variant">
-                Tocar para adicionar
-              </span>
-            </button>
-          )}
-        </div>
+        {/* Foto de marcos removida temporariamente — unreliability no iOS
+            (câmera Capacitor + file picker) + payload de data URL pesando
+            no Supabase. Voltar quando tivermos upload via Storage + testado
+            em iOS real. Não apagamos o state/ref pra não quebrar imports. */}
 
         {/* Save button */}
         <div className="mt-auto flex gap-3">

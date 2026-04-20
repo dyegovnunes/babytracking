@@ -5,8 +5,8 @@ import { supabase } from '../../../lib/supabase'
 import ImageCropModal from '../../../components/ui/ImageCropModal'
 import Toast from '../../../components/ui/Toast'
 import { useBabyPremium } from '../../../hooks/useBabyPremium'
-import { showRewardedAd } from '../../../lib/admob'
 import { useSheetBackClose } from '../../../hooks/useSheetBackClose'
+import { PaywallModal } from '../../../components/ui/PaywallModal'
 
 // Limite antes de abrir o ImageCropModal. Fotos HEIC/RAW > 15MB podem dar
 // OOM no FileReader em WebView Android — rejeitamos com mensagem clara
@@ -28,6 +28,7 @@ export default function BabyCard({ baby, onSave, canEdit = true }: Props) {
   const [cropFile, setCropFile] = useState<File | null>(null)
   const [showPhotoMenu, setShowPhotoMenu] = useState(false)
   const [photoError, setPhotoError] = useState<string | null>(null)
+  const [showPaywall, setShowPaywall] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
   useSheetBackClose(showPhotoMenu, () => setShowPhotoMenu(false))
   useSheetBackClose(editing, handleCancel)
@@ -72,14 +73,23 @@ export default function BabyCard({ baby, onSave, canEdit = true }: Props) {
   async function openFilePicker() {
     setShowPhotoMenu(false)
     if (!isPremium) {
-      const rewarded = await showRewardedAd()
-      if (!rewarded) return
+      // Feature gated pro Yaya+. Abre paywall direto — mesmo padrão que
+      // o limite de 5 registros. Ads ficam só como interstitial/banner
+      // de entrada, não como unlock de feature.
+      setShowPaywall(true)
+      return
     }
     setTimeout(() => fileRef.current?.click(), 100)
   }
 
   function handlePhotoClick(e: React.MouseEvent) {
     e.stopPropagation()
+    if (!isPremium) {
+      // Free user clica no círculo → abre paywall (não importa se já
+      // tem foto ou não — no free a foto está bloqueada).
+      setShowPaywall(true)
+      return
+    }
     if (baby.photoUrl) {
       setShowPhotoMenu(!showPhotoMenu)
     } else {
@@ -110,9 +120,9 @@ export default function BabyCard({ baby, onSave, canEdit = true }: Props) {
           child_care
         </span>
       )}
-      <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+      <div className={`absolute inset-0 bg-black/30 flex items-center justify-center transition-opacity ${isPremium ? 'opacity-0 hover:opacity-100' : 'opacity-100'}`}>
         <span className="material-symbols-outlined text-white text-lg">
-          {uploading ? 'progress_activity' : 'photo_camera'}
+          {uploading ? 'progress_activity' : isPremium ? 'photo_camera' : 'lock'}
         </span>
       </div>
     </div>
@@ -222,6 +232,12 @@ export default function BabyCard({ baby, onSave, canEdit = true }: Props) {
           onDismiss={() => setPhotoError(null)}
         />
       )}
+
+      <PaywallModal
+        isOpen={showPaywall}
+        onClose={() => setShowPaywall(false)}
+        trigger="generic"
+      />
       </>
     )
   }
@@ -318,6 +334,12 @@ export default function BabyCard({ baby, onSave, canEdit = true }: Props) {
         onDismiss={() => setPhotoError(null)}
       />
     )}
+
+    <PaywallModal
+      isOpen={showPaywall}
+      onClose={() => setShowPaywall(false)}
+      trigger="generic"
+    />
     </>
   )
 }

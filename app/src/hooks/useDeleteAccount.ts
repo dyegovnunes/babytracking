@@ -49,10 +49,23 @@ export function useDeleteAccount() {
 
       // Sucesso — a conta já não existe no servidor. signOut com
       // scope='local' evita o 401 do /logout endpoint (que precisaria
-      // de user válido). Depois full reload pra zerar AppContext e
-      // aterrissar em /login deslogado.
+      // de user válido). Limpa storage manualmente antes do reload
+      // pra garantir que nenhum refresh_token sobrevive.
       await supabase.auth.signOut({ scope: 'local' })
-      window.location.href = '/login'
+      try {
+        for (let i = localStorage.length - 1; i >= 0; i--) {
+          const key = localStorage.key(i)
+          if (!key) continue
+          if (key.startsWith('sb-') || key.startsWith('supabase.') || key.startsWith('yaya_')) {
+            localStorage.removeItem(key)
+          }
+        }
+        sessionStorage.clear()
+      } catch { /* ignore */ }
+      // Pequeno delay pro caller exibir toast de sucesso antes do reload.
+      setTimeout(() => {
+        window.location.replace('/login')
+      }, 1200)
       return { ok: true }
     } catch (e) {
       return {

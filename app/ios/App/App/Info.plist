@@ -62,6 +62,8 @@
 	<string>O Yaya precisa acessar a câmera para você tirar uma foto do bebê para o perfil.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>O Yaya precisa acessar suas fotos para você escolher a imagem do perfil do bebê.</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>O Yaya usa esse identificador apenas para mostrar anúncios mais relevantes no plano gratuito.</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>

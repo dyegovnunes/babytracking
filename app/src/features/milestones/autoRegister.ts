@@ -23,14 +23,9 @@ export async function autoRegisterPastMilestones(
   babyId: string,
   birthDate: string,
 ): Promise<number> {
-  // Auto-registro é feature premium (marcos é feature premium)
-  const { data: babyRow } = await supabase
-    .from('babies')
-    .select('is_premium')
-    .eq('id', babyId)
-    .single()
-  if (!babyRow?.is_premium) return 0
-
+  // Auto-registro roda pra todo bebê — é onboarding, não feature premium.
+  // O valor de "bebê entrou com 8 meses e vê os marcos passados já marcados"
+  // é o que reduz fricção. Feature premium real é marcar/editar manualmente.
   const birthMs = new Date(birthDate).getTime()
   const ageDays = Math.floor((Date.now() - birthMs) / MS_PER_DAY)
 

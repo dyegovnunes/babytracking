@@ -33,9 +33,22 @@ export function AdBanner() {
       return;
     }
 
-    showBanner();
-    root.style.setProperty('--yaya-ad-offset', `${AD_BANNER_HEIGHT_PX}px`);
-    // Sem cleanup: o banner vive com o AppShell até premium mudar/logout.
+    let cancelled = false;
+    showBanner().then((shown) => {
+      if (cancelled) return;
+      // Só aplica o offset se o banner REALMENTE carregou — evita
+      // "buraco" na base do app quando o banner falha (comum no iOS
+      // sem ATT ou em TestFlight com inventário vazio).
+      if (shown) {
+        root.style.setProperty('--yaya-ad-offset', `${AD_BANNER_HEIGHT_PX}px`);
+      } else {
+        root.style.removeProperty('--yaya-ad-offset');
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+    // Sem cleanup de hideBanner: o banner vive com o AppShell até premium mudar/logout.
   }, [isPremium]);
 
   return null;

@@ -22,6 +22,13 @@ export async function initializePurchases(userId: string) {
     ? import.meta.env.VITE_REVENUECAT_IOS_KEY
     : import.meta.env.VITE_REVENUECAT_ANDROID_KEY;
 
+  // Log instrumentado pra diagnosticar chave errada/ausente no build.
+  // Mostra só prefixo — chaves públicas do RevenueCat começam com `appl_`
+  // (iOS) ou `goog_` (Android). Se aparecer `undefined`, o grupo de vars
+  // do Codemagic não está injetando. Remover esse log depois de confirmar.
+  // eslint-disable-next-line no-console
+  console.log('[RC] platform=', platform, 'key prefix=', apiKey ? apiKey.slice(0, 8) : 'UNDEFINED');
+
   await Purchases.setLogLevel({ level: LOG_LEVEL.DEBUG });
   await Purchases.configure({ apiKey });
   await Purchases.logIn({ appUserID: userId });
@@ -103,13 +110,23 @@ export async function getAvailablePackages(): Promise<{
   lifetime: PurchasesPackage | null;
 }> {
   try {
-    const { current } = await Purchases.getOfferings();
+    const offerings = await Purchases.getOfferings();
+    const current = offerings.current;
+    if (!current) {
+      // eslint-disable-next-line no-console
+      console.warn('[RC] No current offering. All offering ids:', Object.keys(offerings.all || {}));
+      return { monthly: null, annual: null, lifetime: null };
+    }
+    // eslint-disable-next-line no-console
+    console.log('[RC] current offering=', current.identifier, 'packages=', current.availablePackages?.map((p) => p.identifier));
     return {
-      monthly: current?.monthly ?? null,
-      annual: current?.annual ?? null,
-      lifetime: current?.lifetime ?? null,
+      monthly: current.monthly ?? null,
+      annual: current.annual ?? null,
+      lifetime: current.lifetime ?? null,
     };
-  } catch {
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error('[RC] getOfferings failed:', err);
     return { monthly: null, annual: null, lifetime: null };
   }
 }
@@ -118,7 +135,12 @@ export async function purchasePackage(planType: PlanType): Promise<boolean> {
   try {
     const packages = await getAvailablePackages();
     const pkg = packages[planType];
-    if (!pkg) throw new Error(`Package ${planType} not available`);
+    if (!pkg) {
+      // Mensagem mais descritiva pro usuário quando offerings não carregam.
+      // Em sandbox costuma ser StoreKit ainda não sincronizado, conta
+      // sandbox inválida ou chave RevenueCat errada.
+      throw new Error(`Plano "${planType}" indisponível. Feche o app e reabra, ou verifique sua conta Apple ID.`);
+    }
 
     const { customerInfo } = await Purchases.purchasePackage({ aPackage: pkg });
     return customerInfo.entitlements.active[ENTITLEMENT_YAYA_PLUS] !== undefined;

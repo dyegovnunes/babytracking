@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../contexts/AuthContext'
 import { useAppState, useAppDispatch, switchBaby } from '../../contexts/AppContext'
@@ -44,6 +44,15 @@ export default function AddBabySheet({ onClose }: Props) {
   const userHasPremium = parentedBabies.some(b => b.isPremium)
   const currentLimit = userHasPremium ? PREMIUM_BABY_LIMIT : FREE_BABY_LIMIT
   const reachedLimit = parentedBabies.length >= currentLimit
+
+  // Paywall antecipado: se o user já bateu o limite, abre o paywall
+  // assim que o sheet monta — sem deixar preencher o formulário em vão.
+  // Ao fechar o paywall, fecha o sheet também (sem formulário preenchido).
+  useEffect(() => {
+    if (reachedLimit) {
+      setShowPaywall(true)
+    }
+  }, [reachedLimit])
 
   // Reuse the user's name from existing membership (or fallback to email prefix)
   const existingDisplayName =
@@ -222,7 +231,13 @@ export default function AddBabySheet({ onClose }: Props) {
 
       <PaywallModal
         isOpen={showPaywall}
-        onClose={() => setShowPaywall(false)}
+        onClose={() => {
+          setShowPaywall(false)
+          // Se o paywall foi aberto por limite atingido e o user
+          // fechou sem comprar, também fecha o sheet (evita deixar
+          // um formulário inútil na tela).
+          if (reachedLimit) onClose()
+        }}
         trigger="multi_profile"
       />
     </div>

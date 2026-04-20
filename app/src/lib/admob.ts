@@ -21,19 +21,48 @@ let bannerCall: Promise<void> | null = null;
 export async function initAdMob(): Promise<void> {
   if (!Capacitor.isNativePlatform() || initialized) return;
 
+  // iOS 14.5+ exige App Tracking Transparency (ATT) antes de carregar
+  // qualquer SKAdNetwork ad. Sem essa chamada os anúncios NÃO aparecem
+  // no iOS — é a causa mais comum de "banner/rewarded não carrega".
+  // O Info.plist precisa ter NSUserTrackingUsageDescription (garantido
+  // via script do codemagic.yaml).
+  try {
+    const platform = Capacitor.getPlatform();
+    if (platform === 'ios') {
+      const current = await AdMob.trackingAuthorizationStatus();
+      // eslint-disable-next-line no-console
+      console.log('[AdMob] ATT status=', current?.status);
+      if (current?.status === 'notDetermined') {
+        const res = await AdMob.requestTrackingAuthorization();
+        // eslint-disable-next-line no-console
+        console.log('[AdMob] ATT after request=', res?.status);
+      }
+    }
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.warn('[AdMob] ATT flow failed:', err);
+  }
+
   await AdMob.initialize({});
   initialized = true;
+  // eslint-disable-next-line no-console
+  console.log('[AdMob] initialized platform=', Capacitor.getPlatform());
 }
 
 /**
  * Mostra o banner nativo. Idempotente via bannerCall + bannerVisible.
  * Serializa chamadas (show/hide) para evitar race no plugin.
+ *
+ * Retorna `true` se o banner foi de fato exibido, `false` se falhou
+ * (offline, inventory vazio, ATT negado). O caller usa esse retorno
+ * pra decidir se aplica ou não o offset do bottom nav — evita criar
+ * "buraco" na base quando o banner não carrega.
  */
-export async function showBanner(): Promise<void> {
-  if (!Capacitor.isNativePlatform()) return;
+export async function showBanner(): Promise<boolean> {
+  if (!Capacitor.isNativePlatform()) return false;
   // Aguarda qualquer operação de banner em andamento
   if (bannerCall) await bannerCall.catch(() => {});
-  if (bannerVisible) return;
+  if (bannerVisible) return true;
 
   // BUG DESCOBERTO no plugin @capacitor-community/admob (Android 15+):
   //
@@ -62,12 +91,17 @@ export async function showBanner(): Promise<void> {
       try { await AdMob.removeBanner(); } catch { /* no-op */ }
       await AdMob.showBanner(options);
       bannerVisible = true;
-    } catch {
+      // eslint-disable-next-line no-console
+      console.log('[AdMob] banner shown');
+    } catch (err) {
       bannerVisible = false;
+      // eslint-disable-next-line no-console
+      console.warn('[AdMob] showBanner failed:', err);
     }
   })();
   await bannerCall;
   bannerCall = null;
+  return bannerVisible;
 }
 
 export async function hideBanner(): Promise<void> {

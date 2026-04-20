@@ -177,10 +177,13 @@ export const BAND_INTRO_TEXT: Record<string, string> = {
 
 /** Calcula idade em dias, meses e dias para exibição ("4 meses e 12 dias") */
 export function formatAgeAtDate(birthDate: string, achievedAt: string): string {
+  if (!birthDate || !achievedAt) return '—'
   const [by, bm, bd] = birthDate.split('-').map(Number)
   const [ay, am, ad] = achievedAt.split('-').map(Number)
+  if (!by || !bm || !bd || !ay || !am || !ad) return '—'
   const birth = new Date(by, bm - 1, bd)
   const achieved = new Date(ay, am - 1, ad)
+  if (isNaN(birth.getTime()) || isNaN(achieved.getTime())) return '—'
   const totalDays = Math.max(
     0,
     Math.floor((achieved.getTime() - birth.getTime()) / 86400000)

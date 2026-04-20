@@ -5,7 +5,12 @@ import { useBabyPremium } from '../../hooks/useBabyPremium'
 import { PaywallModal } from '../../components/ui/PaywallModal'
 import { hapticLight } from '../../lib/haptics'
 import { contractionDe } from '../../lib/genderUtils'
-import ReferralPanel from './components/ReferralPanel'
+// import ReferralPanel from './components/ReferralPanel'
+
+// Feature flag: MGM (member-get-member / indicação) desativado até o fluxo
+// estar azeitado. A tabela comparativa + hero da Yaya+ continuam visíveis
+// pra free — agrega valor sem depender do painel de indicação.
+const FEATURE_MGM = false
 
 /**
  * Tela "Yaya+": visível só pra free (aba da bottom nav). Premium que chega
@@ -142,8 +147,8 @@ export default function YayaPlusPage() {
         </button>
       </section>
 
-      {/* MGM */}
-      <ReferralPanel />
+      {/* MGM — escondido via FEATURE_MGM até fluxo estar pronto */}
+      {FEATURE_MGM && null}
 
       <PaywallModal
         isOpen={showPaywall}

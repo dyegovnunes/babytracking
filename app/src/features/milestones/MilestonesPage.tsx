@@ -20,7 +20,6 @@ import type { AgeBand } from '../../lib/ageUtils'
 import { DEVELOPMENT_LEAPS } from './developmentLeaps'
 import MilestoneRegister from './components/MilestoneRegister'
 import MilestoneCelebration from './components/MilestoneCelebration'
-import MilestoneShareImage from './components/MilestoneShareImage'
 import { PaywallModal } from '../../components/ui/PaywallModal'
 import Toast from '../../components/ui/Toast'
 import { hapticLight } from '../../lib/haptics'
@@ -81,10 +80,6 @@ export default function MilestonesPage() {
   const [filter, setFilter] = useState<FilterMode>('all')
   const [registerTarget, setRegisterTarget] = useState<Milestone | null>(null)
   const [celebrationData, setCelebrationData] = useState<{
-    milestone: Milestone
-    entry: BabyMilestone
-  } | null>(null)
-  const [shareData, setShareData] = useState<{
     milestone: Milestone
     entry: BabyMilestone
   } | null>(null)
@@ -156,16 +151,18 @@ export default function MilestonesPage() {
   )
 
   // Modal de boas-vindas: aparece só na primeira visita à página quando há
-  // marcos auto-registrados (bebê adicionado com idade > 14 dias)
-  // Chave global por user (não por bebê): explicação sobre auto-registro é
-  // a mesma pra qualquer bebê. Igual ao welcome de vacinas.
-  const welcomeKey = 'yaya_milestones_welcome_seen'
+  // marcos auto-registrados (bebê adicionado com idade > 14 dias).
+  // Chave POR BEBÊ pra evitar reaparecer ao trocar bebê e pra ser resiliente
+  // a limpezas parciais de localStorage. Se não há baby ainda, não mostra.
+  const welcomeKey = baby?.id ? `yaya_milestones_welcome_seen_${baby.id}` : null
   const [welcomeOpen, setWelcomeOpen] = useState(false)
 
   useEffect(() => {
     if (!welcomeKey || loading) return
     if (autoRegisteredCount === 0) return
     if (localStorage.getItem(welcomeKey) === '1') return
+    // Limpa flag antigo global pra não pular welcome legítimo de outro bebê
+    try { localStorage.removeItem('yaya_milestones_welcome_seen') } catch { /* ignore */ }
     setWelcomeOpen(true)
   }, [loading, autoRegisteredCount, welcomeKey])
 
@@ -417,7 +414,8 @@ export default function MilestonesPage() {
         />
       )}
 
-      {/* Celebration */}
+      {/* Celebration — share desativado temporariamente (image gen não
+          confiável em iOS; voltar depois do lançamento). */}
       {celebrationData && (
         <MilestoneCelebration
           milestone={celebrationData.milestone}
@@ -427,26 +425,10 @@ export default function MilestonesPage() {
           photoUrl={celebrationData.entry.photoUrl}
           note={celebrationData.entry.note}
           onClose={() => setCelebrationData(null)}
-          onShare={() => {
-            setShareData(celebrationData)
-          }}
         />
       )}
 
-      {/* Share image */}
-      {shareData && (
-        <MilestoneShareImage
-          milestone={shareData.milestone}
-          babyName={baby.name}
-          achievedAt={shareData.entry.achievedAt ?? ''}
-          birthDate={baby.birthDate}
-          photoUrl={shareData.entry.photoUrl}
-          note={shareData.entry.note}
-          onClose={() => setShareData(null)}
-        />
-      )}
-
-      {/* Detail modal */}
+      {/* Detail modal — share desativado junto com celebration */}
       {detailEntry && (
         <MilestoneDetailModal
           milestone={detailEntry.milestone}
@@ -454,10 +436,6 @@ export default function MilestonesPage() {
           birthDate={baby.birthDate}
           onClose={() => setDetailEntry(null)}
           onDelete={() => handleDelete(detailEntry.entry)}
-          onShare={() => {
-            setShareData(detailEntry)
-            setDetailEntry(null)
-          }}
           readOnly={readOnly}
         />
       )}
@@ -629,7 +607,7 @@ function MilestoneDetailModal({
   birthDate: string
   onClose: () => void
   onDelete: () => void
-  onShare: () => void
+  onShare?: () => void
   readOnly?: boolean
 }) {
   const [confirmDelete, setConfirmDelete] = useState(false)
@@ -704,14 +682,16 @@ function MilestoneDetailModal({
         )}
 
         <div className="flex gap-3">
-          <button
-            type="button"
-            onClick={onShare}
-            className="flex-1 py-3 rounded-md bg-primary text-on-primary font-label font-bold text-sm flex items-center justify-center gap-2"
-          >
-            <span className="material-symbols-outlined text-base">share</span>
-            Compartilhar
-          </button>
+          {onShare && (
+            <button
+              type="button"
+              onClick={onShare}
+              className="flex-1 py-3 rounded-md bg-primary text-on-primary font-label font-bold text-sm flex items-center justify-center gap-2"
+            >
+              <span className="material-symbols-outlined text-base">share</span>
+              Compartilhar
+            </button>
+          )}
           {!readOnly && (
             <button
               type="button"

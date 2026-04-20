@@ -31,7 +31,7 @@ interface Caregiver {
 }
 
 export default function ProfilePage() {
-  const { baby, members, loading } = useAppState()
+  const { baby, members, loading, babiesWithRole } = useAppState()
   const { user } = useAuth()
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
@@ -516,8 +516,10 @@ export default function ProfilePage() {
             onClick={() => { hapticLight(); setBabySwitcherOpen(true) }}
             className="w-full py-2.5 rounded-md bg-surface-container text-on-surface font-label font-semibold text-sm flex items-center justify-center gap-2 active:bg-surface-container-high"
           >
-            <span className="material-symbols-outlined text-base">swap_horiz</span>
-            Trocar bebê
+            <span className="material-symbols-outlined text-base">
+              {babiesWithRole.length <= 1 ? 'add_circle' : 'swap_horiz'}
+            </span>
+            {babiesWithRole.length <= 1 ? 'Adicionar bebê' : 'Trocar bebê'}
           </button>
           {can.editBaby(myRole) && (
             <button

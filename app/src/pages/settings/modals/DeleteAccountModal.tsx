@@ -47,8 +47,10 @@ export default function DeleteAccountModal({ isOpen, onClose, onToast }: Props) 
       onToast(res.error ?? 'Erro ao excluir conta')
       return
     }
-    // Sucesso: signOut já rolou dentro do hook, o listener do AuthProvider
-    // vai tirar a gente dessa tela. Não precisa fazer nada aqui.
+    // Sucesso: hook agenda o reload em 1.2s. Mostra toast pro usuário
+    // antes da tela recarregar pra /login (evita confusão de cair
+    // "do nada" em outra página).
+    onToast('Conta excluída com sucesso.')
   }
 
   function handleClose() {
