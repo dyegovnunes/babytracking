@@ -120,7 +120,7 @@ export default function AdminUserDetailPage() {
     if (!id || deleteConfirmText.toLowerCase() !== 'confirmar') return;
     setDeleting(true);
 
-    // O delete-account direto no client nao funciona por 2 motivos:
+    // O delete direto no client nao funciona por varios motivos:
     // 1. RLS em profiles so libera SELECT/UPDATE pra admin (nao DELETE)
     // 2. auth.admin.deleteUser precisa de service role, inacessivel do client
     // 3. Varias FKs sao NO ACTION (logs.created_by, baby_milestones.recorded_by
@@ -130,8 +130,21 @@ export default function AdminUserDetailPage() {
     // A edge function admin-delete-user faz o fluxo completo: babies
     // orfaos deletados, atribuicoes em babies compartilhadas nulificadas,
     // refs globais nulificadas, depois auth.admin.deleteUser finaliza.
+    //
+    // Observacao: passamos o access_token EXPLICITAMENTE em Authorization.
+    // Sem isso, o supabase-js as vezes envia so a anon key, o que quebra
+    // a validacao `admin.auth.getUser(jwt)` dentro da edge function.
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      setDeleting(false);
+      setToast('Sessão expirada. Faça login de novo.');
+      setTimeout(() => setToast(''), 5000);
+      return;
+    }
+
     const { data, error } = await supabase.functions.invoke('admin-delete-user', {
       body: { user_id: id },
+      headers: { Authorization: `Bearer ${session.access_token}` },
     });
 
     setDeleting(false);
@@ -142,8 +155,8 @@ export default function AdminUserDetailPage() {
       return;
     }
     if (data?.error) {
-      setToast(`Erro: ${data.error}`);
-      setTimeout(() => setToast(''), 5000);
+      setToast(`Erro: ${data.error}${data.hint ? ` — ${data.hint}` : ''}`);
+      setTimeout(() => setToast(''), 6000);
       return;
     }
 
