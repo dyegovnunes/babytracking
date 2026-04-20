@@ -2,6 +2,7 @@ import { useMemo, useState, useRef, useEffect } from 'react'
 import type { Highlight } from '../highlights'
 import { hapticLight } from '../../../lib/haptics'
 import HighlightSheet from './HighlightSheet'
+import type { ContentAction } from '../../content'
 
 interface Props {
   highlights: Highlight[]
@@ -10,6 +11,8 @@ interface Props {
   birthDate: string
   /** Chamado quando o usuário dispensa (ou quando "Ver mais" navega) — para forçar recoleta */
   onChange: () => void
+  /** Tracking de interações com content_card (viewed/clicked/dismissed) */
+  onTrackContentInteraction?: (cardId: string, action: ContentAction) => void
 }
 
 /** Quando há mais destaques que isto, o strip vira marquee (auto-scroll). */
@@ -30,7 +33,7 @@ const RESUME_IDLE_MS = 2500
  *   Durante a interação o auto-scroll pausa, e retoma após 2.5s ocioso.
  * - Cada chip abre um bottom sheet com ações Fechar · Dispensar · Ver mais.
  */
-export default function HighlightsStrip({ highlights, babyName, babyGender, birthDate, onChange }: Props) {
+export default function HighlightsStrip({ highlights, babyName, babyGender, birthDate, onChange, onTrackContentInteraction }: Props) {
   const [openHighlight, setOpenHighlight] = useState<Highlight | null>(null)
   const scrollerRef = useRef<HTMLDivElement>(null)
 
@@ -173,6 +176,7 @@ export default function HighlightsStrip({ highlights, babyName, babyGender, birt
             setOpenHighlight(null)
             onChange()
           }}
+          onTrackContentInteraction={onTrackContentInteraction}
         />
       )}
     </>

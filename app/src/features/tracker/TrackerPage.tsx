@@ -34,6 +34,7 @@ import { useMedications } from '../medications'
 import { useMyRole } from '../../hooks/useMyRole'
 import { can } from '../../lib/roles'
 import { useTimeline, useMedicationLogsRange } from '../timeline'
+import { useContentCards } from '../content'
 import VaccineLogEditModal from '../vaccines/components/VaccineLogEditModal'
 import MilestoneLogEditModal from '../milestones/components/MilestoneLogEditModal'
 import type { BabyVaccine } from '../vaccines/vaccineData'
@@ -186,7 +187,15 @@ export default function TrackerPage() {
     return last4h.length >= 5 ? last4h : timelineItems.slice(0, 5)
   }, [timelineItems])
 
-  // Highlights strip (saltos + marcos + vacinas + medicamentos)
+  // Card de conteúdo contextual por idade
+  const ageWeeks = Math.floor(ageDays / 7)
+  const { card: contentCard, trackInteraction: trackContentInteraction } = useContentCards(
+    baby?.id,
+    user?.id,
+    ageWeeks,
+  )
+
+  // Highlights strip (saltos + marcos + vacinas + medicamentos + conteúdo)
   const [highlightsTick, setHighlightsTick] = useState(0)
   const highlights = useMemo(
     () =>
@@ -197,6 +206,7 @@ export default function TrackerPage() {
         vaccines: VACCINES,
         vaccineStatus: vaccineStatusByCode,
         medicationAlerts,
+        contentCard,
         reactivityTick: highlightsTick,
       }),
     [
@@ -205,6 +215,7 @@ export default function TrackerPage() {
       ageDays,
       vaccineStatusByCode,
       medicationAlerts,
+      contentCard,
       highlightsTick,
     ],
   )
@@ -360,6 +371,7 @@ export default function TrackerPage() {
           babyGender={baby.gender}
           birthDate={baby.birthDate}
           onChange={() => setHighlightsTick((t) => t + 1)}
+          onTrackContentInteraction={trackContentInteraction}
         />
       )}
 

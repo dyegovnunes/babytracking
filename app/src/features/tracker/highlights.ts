@@ -7,6 +7,7 @@ import {
 } from '../milestones'
 import type { Vaccine, VaccineStatus } from '../vaccines'
 import type { MedicationHomeAlert } from '../medications'
+import type { ContentCard } from '../content'
 
 /**
  * Sistema de "Destaques da Home" (Highlights).
@@ -29,6 +30,7 @@ export type HighlightType =
   | 'vaccine_upcoming'
   | 'medication_overdue'
   | 'medication_due_soon'
+  | 'content_card'
 
 export interface Highlight {
   /** ID único estável, usado como chave do chip e do dismissal no localStorage */
@@ -83,6 +85,7 @@ export interface Highlight {
         othersCount: number
         otherNames: string[]
       }
+    | { type: 'content_card'; card: ContentCard }
 }
 
 // ---------- Dismissal (localStorage) ----------
@@ -106,6 +109,8 @@ function dismissKey(h: Pick<Highlight, 'type' | 'id'>): string {
   ) {
     return `medication_highlight_dismissed_${h.id}`
   }
+  // content_card: dismissed é gerenciado no Supabase (useContentCards),
+  // mas o localStorage serve de fallback offline
   return `highlight_dismissed_${h.type}_${h.id}`
 }
 
@@ -149,6 +154,12 @@ interface CollectOpts {
    */
   medicationAlerts?: readonly MedicationHomeAlert[]
   /**
+   * Card de conteúdo contextual (por idade do bebê) já filtrado pelo hook
+   * useContentCards — null quando não há card aplicável ou foi dispensado.
+   * Aparece na posição 4 da prioridade (após medicamentos/vacinas urgentes).
+   */
+  contentCard?: ContentCard | null
+  /**
    * Tick numérico para forçar o coletor a reavaliar (ex: depois de dispensar).
    * O valor em si não importa, só precisa mudar.
    */
@@ -166,6 +177,7 @@ export function collectHighlights({
   vaccines,
   vaccineStatus,
   medicationAlerts,
+  contentCard,
   reactivityTick,
 }: CollectOpts): Highlight[] {
   void reactivityTick // só pra invalidar memos quando o tick mudar
@@ -204,7 +216,30 @@ export function collectHighlights({
   })
   if (vaccineHighlight) out.push(vaccineHighlight)
 
-  // 4. Próximo marco (só se existir e estiver "dentro da janela")
+  // 4. Card de conteúdo contextual — educativo, não urgente
+  if (contentCard) {
+    const CATEGORY_EMOJI: Record<string, string> = {
+      alimentacao: '🥦',
+      sono: '😴',
+      desenvolvimento: '🧠',
+      saude: '❤️',
+      rotina: '🔁',
+      marcos: '⭐',
+    }
+    const h: Highlight = {
+      id: contentCard.id,
+      type: 'content_card',
+      emoji: CATEGORY_EMOJI[contentCard.category] ?? '📖',
+      kicker: 'PARA VOCÊ LER',
+      title: contentCard.title,
+      accent: 'primary',
+      dismissDays: 7,
+      data: { type: 'content_card', card: contentCard },
+    }
+    if (!isDismissed(h, h.dismissDays)) out.push(h)
+  }
+
+  // 5. Próximo marco (só se existir e estiver "dentro da janela")
   const nextMilestone = getNextMilestoneForHome(
     achievedCodes,
     ageDays,
@@ -225,12 +260,12 @@ export function collectHighlights({
     })
   }
 
-  // 5. Medicamento com dose chegando (due_soon) — ação suave, vem depois
+  // 6. Medicamento com dose chegando (due_soon) — ação suave, vem depois
   //    dos marcos para não competir com chips mais informativos.
   const medDueSoonHighlight = pickMedicationDueSoonHighlight(medicationAlerts)
   if (medDueSoonHighlight) out.push(medDueSoonHighlight)
 
-  // 6. Salto próximo (só se não tiver ativo e estiver a ≤2 semanas)
+  // 7. Salto próximo (só se não tiver ativo e estiver a ≤2 semanas)
   if (!activeLeap) {
     const upcoming = getUpcomingLeap(birthDate)
     if (upcoming && upcoming.weeksUntil <= 2) {

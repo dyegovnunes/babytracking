@@ -6,6 +6,7 @@ import { formatDueSoon, formatOverdue } from '../../medications'
 import { hapticLight, hapticMedium } from '../../../lib/haptics'
 import { contractionDe } from '../../../lib/genderUtils'
 import { useSheetBackClose } from '../../../hooks/useSheetBackClose'
+import type { ContentAction } from '../../content'
 
 interface Props {
   highlight: Highlight
@@ -15,6 +16,7 @@ interface Props {
   onClose: () => void
   onDismissed: () => void
   onNavigated: () => void
+  onTrackContentInteraction?: (cardId: string, action: ContentAction) => void
 }
 
 /**
@@ -36,6 +38,7 @@ export default function HighlightSheet({
   onClose,
   onDismissed,
   onNavigated,
+  onTrackContentInteraction,
 }: Props) {
   const navigate = useNavigate()
   useSheetBackClose(true, onClose)
@@ -49,9 +52,20 @@ export default function HighlightSheet({
     }
   }, [])
 
+  // Registra 'viewed' quando o sheet abre para um content_card
+  useEffect(() => {
+    if (highlight.data.type === 'content_card') {
+      onTrackContentInteraction?.(highlight.data.card.id, 'viewed')
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [highlight.id])
+
   const handleDismiss = () => {
     hapticMedium()
     dismissHighlight({ type: highlight.type, id: highlight.id })
+    if (highlight.data.type === 'content_card') {
+      onTrackContentInteraction?.(highlight.data.card.id, 'dismissed')
+    }
     onDismissed()
   }
 
@@ -80,6 +94,13 @@ export default function HighlightSheet({
     }
     if (highlight.data.type === 'leap_active' || highlight.data.type === 'leap_upcoming') {
       navigate('/saltos')
+      onNavigated()
+      return
+    }
+    if (highlight.data.type === 'content_card') {
+      onTrackContentInteraction?.(highlight.data.card.id, 'clicked')
+      const url = highlight.data.card.blogUrl ?? highlight.data.card.ctaUrl
+      window.open(url, '_blank', 'noopener')
       onNavigated()
       return
     }
@@ -543,6 +564,21 @@ function renderContent({
             </p>
           </div>
         </>
+      ),
+    }
+  }
+
+  // ---------- CONTENT CARD ----------
+  if (data.type === 'content_card') {
+    const card = data.card
+    return {
+      heading: card.title,
+      subheading: card.category.charAt(0).toUpperCase() + card.category.slice(1),
+      seeMoreLabel: card.ctaText,
+      body: (
+        <p className="font-body text-sm text-on-surface-variant leading-relaxed">
+          {card.body}
+        </p>
       ),
     }
   }
