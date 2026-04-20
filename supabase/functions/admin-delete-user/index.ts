@@ -2,28 +2,25 @@ import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 /**
- * Admin Delete User — Edge Function
+ * Admin Delete User — Edge Function v2
  *
  * Permite que um admin (profiles.is_admin=true) remova permanentemente outro
- * usuário. É diferente de `delete-account` (self-delete chamado pelo próprio
- * usuário) — este valida o caller como admin e apaga um TARGET.
+ * usuário. Body: { user_id: string }
  *
- * Body: { user_id: string }
+ * v2: JWT é DECODIFICADO manualmente pra extrair o sub — `admin.auth.getUser(jwt)`
+ * com client service-role apresentou 401 intermitente em prod. A validação de
+ * assinatura já aconteceu no gateway do Supabase (verify_jwt: true), então
+ * decodar o payload só pra pegar sub+role é seguro. Depois consultamos
+ * profiles.is_admin via service role (bypassa RLS).
  *
  * Fluxo:
- *  1. Valida JWT + caller é admin + target != caller
- *  2. Pra cada baby do target:
- *     - se é o único membro → deleta o baby (cascade limpa logs etc)
- *     - se é compartilhado → NULL as atribuições do target (logs.created_by,
- *       baby_milestones.recorded_by, etc) pra preservar conteúdo dos outros
- *       sem quebrar FKs
- *  3. NULL referências globais fora do escopo de baby (admin_broadcasts,
- *     feature_flags, invite_codes, profiles.courtesy_granted_by)
- *  4. DELETE courtesy_log (user_id / granted_by — FK NO ACTION)
- *  5. auth.admin.deleteUser → cascade limpa profiles, baby_members,
- *     push_tokens, push_log, notification_prefs, shared_reports etc.
- *
- * Retorna { ok: true, removed_babies: N, nullified_rows: N } em sucesso.
+ *  1. Decode JWT → callerId + role (tem que ser 'authenticated')
+ *  2. Query profiles.is_admin pra validar
+ *  3. Pra cada baby do target: órfão → delete (cascade), compartilhado → NULL
+ *  4. NULL refs globais (admin_broadcasts, feature_flags, invite_codes,
+ *     profiles.courtesy_granted_by)
+ *  5. DELETE courtesy_log
+ *  6. auth.admin.deleteUser → cascade limpa o resto
  */
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
@@ -36,6 +33,21 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 }
 
+function decodeJwtPayload(jwt: string): Record<string, any> | null {
+  try {
+    const parts = jwt.split('.')
+    if (parts.length !== 3) return null
+    const payload = parts[1]
+    const b64 = payload.replace(/-/g, '+').replace(/_/g, '/') +
+      '=='.slice((payload.length + 2) % 4)
+    const json = atob(b64)
+    return JSON.parse(json)
+  } catch (e) {
+    console.warn('decodeJwtPayload failed', e)
+    return null
+  }
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
@@ -45,33 +57,47 @@ serve(async (req) => {
   }
 
   try {
-    // ── 1. Autenticar caller e validar admin ────────────────────────────
     const authHeader = req.headers.get('Authorization') ?? ''
     if (!authHeader.startsWith('Bearer ')) {
       return json({ error: 'Missing bearer token' }, 401)
     }
     const jwt = authHeader.slice('Bearer '.length)
 
+    const payload = decodeJwtPayload(jwt)
+    const callerId = payload?.sub
+    const role = payload?.role
+    if (!callerId || typeof callerId !== 'string') {
+      console.warn('JWT sem sub claim', { role, keys: Object.keys(payload ?? {}) })
+      return json({ error: 'Invalid JWT — sem sub claim', role: role ?? null }, 401)
+    }
+    if (role !== 'authenticated') {
+      console.warn('JWT role inesperado', { role, sub: callerId })
+      return json(
+        {
+          error: `Role não autenticado: ${role}`,
+          hint: 'Passe o access_token do usuário no header Authorization, não a anon key.',
+        },
+        401,
+      )
+    }
+
     const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
       auth: { persistSession: false },
     })
 
-    const { data: userData, error: userErr } = await admin.auth.getUser(jwt)
-    if (userErr || !userData?.user) {
-      return json({ error: 'Invalid token' }, 401)
-    }
-    const callerId = userData.user.id
-
-    const { data: callerProfile } = await admin
+    const { data: callerProfile, error: profErr } = await admin
       .from('profiles')
       .select('is_admin')
       .eq('id', callerId)
-      .single()
+      .maybeSingle()
+    if (profErr) {
+      console.error('profile lookup failed', profErr)
+      return json({ error: 'Falha ao validar admin', detail: profErr.message }, 500)
+    }
     if (!callerProfile?.is_admin) {
       return json({ error: 'Not an admin' }, 403)
     }
 
-    // ── 2. Parse body ───────────────────────────────────────────────────
     let body: any
     try {
       body = await req.json()
@@ -83,16 +109,10 @@ serve(async (req) => {
       return json({ error: 'Missing or invalid user_id' }, 400)
     }
     if (targetId === callerId) {
-      return json(
-        {
-          error:
-            'Admin não pode se auto-excluir por aqui. Use a função de conta (delete-account) ou outro admin.',
-        },
-        400,
-      )
+      return json({ error: 'Admin não pode se auto-excluir por aqui.' }, 400)
     }
 
-    // ── 3. Descobrir babies do target ──────────────────────────────────
+    // ── Descobrir babies do target ─────────────────────────────────────
     const { data: memberships } = await admin
       .from('baby_members')
       .select('baby_id')
@@ -114,10 +134,8 @@ serve(async (req) => {
       else sharedBabies.push(babyId)
     }
 
-    // ── 4. Apagar babies órfãos (cascade limpa logs/marcos/vacinas/meds) ─
     let removedBabies = 0
     for (const babyId of orphanBabies) {
-      // storage best-effort
       try {
         await admin.storage.from('baby-photos').remove([
           `${babyId}/photo.jpg`,
@@ -128,15 +146,10 @@ serve(async (req) => {
         console.warn('storage remove failed', babyId, e)
       }
       const { error: delErr } = await admin.from('babies').delete().eq('id', babyId)
-      if (delErr) {
-        console.warn('baby delete failed', babyId, delErr.message)
-      } else {
-        removedBabies++
-      }
+      if (delErr) console.warn('baby delete failed', babyId, delErr.message)
+      else removedBabies++
     }
 
-    // ── 5. Nulificar atribuições do target em babies compartilhados ─────
-    // Preserva o conteúdo pros outros membros mas libera a FK pra o auth delete.
     let nullified = 0
     async function nullScoped(table: string, column: string) {
       if (sharedBabies.length === 0) return
@@ -157,7 +170,6 @@ serve(async (req) => {
     await nullScoped('measurements', 'measured_by')
     await nullScoped('medications', 'created_by')
 
-    // ── 6. Nulificar refs globais (sem escopo de baby) ──────────────────
     async function nullGlobal(table: string, column: string) {
       const { error, count } = await admin
         .from(table)
@@ -172,18 +184,18 @@ serve(async (req) => {
     await nullGlobal('invite_codes', 'used_by')
     await nullGlobal('profiles', 'courtesy_granted_by')
 
-    // ── 7. Deletar rows de courtesy_log (FK NO ACTION, não cascata) ────
-    await admin.from('courtesy_log').delete().or(`user_id.eq.${targetId},granted_by.eq.${targetId}`)
+    await admin
+      .from('courtesy_log')
+      .delete()
+      .or(`user_id.eq.${targetId},granted_by.eq.${targetId}`)
 
-    // ── 8. Finalmente: auth.admin.deleteUser (cascade limpa o resto) ────
     const { error: delUserErr } = await admin.auth.admin.deleteUser(targetId)
     if (delUserErr) {
       console.error('auth.admin.deleteUser failed', delUserErr)
       return json(
         {
           error: delUserErr.message,
-          hint:
-            'Provavelmente resta alguma FK NO ACTION não tratada. Verifique logs do Supabase.',
+          hint: 'Pode restar FK NO ACTION não tratada.',
         },
         500,
       )
@@ -207,9 +219,6 @@ serve(async (req) => {
 function json(body: unknown, status: number) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: {
-      ...corsHeaders,
-      'Content-Type': 'application/json',
-    },
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
   })
 }
