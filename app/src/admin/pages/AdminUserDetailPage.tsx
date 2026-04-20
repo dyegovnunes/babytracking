@@ -1,6 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import { useSheetBackClose } from '../../hooks/useSheetBackClose';
+import { formatRelativeShort } from '../../lib/formatters';
+
+function platformLabel(p: string): string {
+  if (p === 'android') return 'Android';
+  if (p === 'ios') return 'iOS';
+  if (p === 'web') return 'Web';
+  return p.charAt(0).toUpperCase() + p.slice(1);
+}
 
 export default function AdminUserDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -18,12 +27,18 @@ export default function AdminUserDetailPage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
   const [deleting, setDeleting] = useState(false);
-  const [userPlatform, setUserPlatform] = useState<string | null>(null);
 
-  useEffect(() => { if (id) loadUser(id); }, [id]);
+  useSheetBackClose(showCourtesy, () => setShowCourtesy(false));
+  useSheetBackClose(showDeleteConfirm, () => {
+    setShowDeleteConfirm(false);
+    setDeleteConfirmText('');
+  });
+
+  useEffect(() => {
+    if (id) loadUser(id);
+  }, [id]);
 
   async function loadUser(userId: string) {
-    // Get user with email from admin function
     const { data: users } = await supabase.rpc('admin_get_users');
     const found = (users as any[])?.find((u: any) => u.id === userId);
     if (found) {
@@ -48,26 +63,19 @@ export default function AdminUserDetailPage() {
       setLogCount(logRes.count ?? 0);
       setStreak(streakRes.data);
     }
-
-    // Detect platform from push_tokens
-    const { data: tokenData } = await supabase
-      .from('push_tokens')
-      .select('platform')
-      .eq('user_id', userId)
-      .limit(1);
-    if (tokenData?.[0]?.platform) {
-      setUserPlatform(tokenData[0].platform);
-    }
   }
 
   async function togglePremium() {
     if (!id || !user) return;
     setSaving(true);
     const newValue = !user.is_premium;
-    await supabase.from('profiles').update({
-      is_premium: newValue,
-      subscription_plan: newValue ? 'admin_granted' : null,
-    }).eq('id', id);
+    await supabase
+      .from('profiles')
+      .update({
+        is_premium: newValue,
+        subscription_plan: newValue ? 'admin_granted' : null,
+      })
+      .eq('id', id);
     setUser({ ...user, is_premium: newValue });
     setToast(newValue ? 'Usuário promovido para Yaya+' : 'Usuário rebaixado para Free');
     setSaving(false);
@@ -82,12 +90,15 @@ export default function AdminUserDetailPage() {
     const { data: { user: adminUser } } = await supabase.auth.getUser();
 
     await Promise.all([
-      supabase.from('profiles').update({
-        courtesy_expires_at: expiresAt,
-        courtesy_granted_by: adminUser?.id,
-        courtesy_reason: courtesyReason,
-        is_premium: true,
-      }).eq('id', id),
+      supabase
+        .from('profiles')
+        .update({
+          courtesy_expires_at: expiresAt,
+          courtesy_granted_by: adminUser?.id,
+          courtesy_reason: courtesyReason,
+          is_premium: true,
+        })
+        .eq('id', id),
       supabase.from('courtesy_log').insert({
         user_id: id,
         granted_by: adminUser?.id,
@@ -109,181 +120,143 @@ export default function AdminUserDetailPage() {
     if (!id || deleteConfirmText.toLowerCase() !== 'confirmar') return;
     setDeleting(true);
 
-    // Delete all user data
     await Promise.all([
       supabase.from('push_tokens').delete().eq('user_id', id),
       supabase.from('streaks').delete().eq('user_id', id),
       supabase.from('courtesy_log').delete().eq('user_id', id),
     ]);
-
-    // Delete baby_members (must be before babies check)
     await supabase.from('baby_members').delete().eq('user_id', id);
-
-    // Delete profile
     await supabase.from('profiles').delete().eq('id', id);
 
     setDeleting(false);
     navigate('/paineladmin/users');
   }
 
-  if (!user) return (
-    <div style={{ display: 'flex', justifyContent: 'center', padding: 80 }}>
-      <div style={{ width: 24, height: 24, border: '2px solid #b79fff', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-    </div>
-  );
+  if (!user) {
+    return (
+      <div className="flex justify-center py-20">
+        <span className="material-symbols-outlined text-primary text-3xl animate-spin">
+          progress_activity
+        </span>
+      </div>
+    );
+  }
 
-  const isCourtesyActive = user.courtesy_expires_at && new Date(user.courtesy_expires_at) > new Date();
+  const isCourtesyActive =
+    (user.courtesy_expires_at && new Date(user.courtesy_expires_at) > new Date()) ||
+    user.subscription_plan === 'courtesy_lifetime';
 
-  const cardStyle: React.CSSProperties = {
-    background: 'rgba(255,255,255,0.06)',
-    border: '1px solid rgba(183,159,255,0.08)',
-    borderRadius: 14,
-    padding: '18px 20px',
-    marginBottom: 12,
-  };
-
-  const labelStyle: React.CSSProperties = {
-    fontSize: 11, color: 'rgba(231,226,255,0.4)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 6,
-  };
+  const platforms: string[] = Array.isArray(user.platforms) ? user.platforms : [];
+  const platformDisplay =
+    platforms.length > 0
+      ? platforms.map(platformLabel).join(' | ')
+      : user.signup_platform
+        ? platformLabel(user.signup_platform)
+        : '—';
 
   return (
-    <div style={{ maxWidth: 640 }}>
+    <div className="max-w-2xl">
       <button
         onClick={() => navigate(-1)}
-        style={{ color: '#b79fff', fontSize: 13, background: 'none', border: 'none', cursor: 'pointer', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 6 }}
+        className="flex items-center gap-1.5 text-primary font-label text-sm bg-transparent border-none cursor-pointer mb-4 hover:opacity-80"
       >
-        {'\u2190'} Voltar
+        ← Voltar
       </button>
 
       {/* User header */}
-      <div style={{
-        ...cardStyle,
-        background: 'rgba(183,159,255,0.08)',
-        border: '1px solid rgba(183,159,255,0.15)',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'start', justifyContent: 'space-between', marginBottom: 16 }}>
-          <div>
-            <div style={{ fontSize: 18, fontWeight: 600, color: '#e7e2ff' }}>{email}</div>
-            <div style={{ fontSize: 12, color: 'rgba(231,226,255,0.4)', marginTop: 4 }}>
+      <div className="bg-primary/8 border border-primary/20 rounded-md px-5 py-4 mb-3">
+        <div className="flex items-start justify-between mb-4">
+          <div className="min-w-0">
+            <div className="font-headline text-lg font-semibold text-on-surface truncate">{email}</div>
+            <div className="font-label text-xs text-on-surface-variant/70 mt-1">
               Cadastro: {new Date(user.created_at).toLocaleDateString('pt-BR')} · ID: {id?.slice(0, 8)}
+              {user.last_activity_at && (
+                <> · Último acesso: {formatRelativeShort(user.last_activity_at)}</>
+              )}
             </div>
           </div>
-          {isCourtesyActive ? (
-            <span style={{ fontSize: 12, background: 'rgba(255,179,0,0.15)', color: '#FFB300', padding: '4px 12px', borderRadius: 20 }}>Cortesia</span>
-          ) : user.is_premium ? (
-            <span style={{ fontSize: 12, background: 'rgba(183,159,255,0.2)', color: '#b79fff', padding: '4px 12px', borderRadius: 20 }}>Yaya+</span>
-          ) : (
-            <span style={{ fontSize: 12, background: 'rgba(255,255,255,0.08)', color: 'rgba(231,226,255,0.5)', padding: '4px 12px', borderRadius: 20 }}>Free</span>
-          )}
+          <StatusBadge
+            bucket={
+              isCourtesyActive ? 'courtesy' : user.is_premium ? 'paying' : 'free'
+            }
+          />
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
-          <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: 10, padding: '10px 12px', textAlign: 'center' }}>
-            <div style={{ fontSize: 22, fontWeight: 700, color: '#e7e2ff' }}>{babies.length}</div>
-            <div style={{ fontSize: 10, color: 'rgba(231,226,255,0.4)' }}>Bebês</div>
-          </div>
-          <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: 10, padding: '10px 12px', textAlign: 'center' }}>
-            <div style={{ fontSize: 22, fontWeight: 700, color: '#e7e2ff' }}>{logCount}</div>
-            <div style={{ fontSize: 10, color: 'rgba(231,226,255,0.4)' }}>Registros</div>
-          </div>
-          <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: 10, padding: '10px 12px', textAlign: 'center' }}>
-            <div style={{ fontSize: 22, fontWeight: 700, color: '#e7e2ff' }}>{streak?.current_streak ?? 0}</div>
-            <div style={{ fontSize: 10, color: 'rgba(231,226,255,0.4)' }}>Streak</div>
-          </div>
+        <div className="grid grid-cols-3 gap-2">
+          <MiniStat value={babies.length} label="Bebês" />
+          <MiniStat value={logCount} label="Registros" />
+          <MiniStat value={streak?.current_streak ?? 0} label="Streak" />
         </div>
       </div>
 
       {/* Babies */}
       {babies.length > 0 && (
-        <div style={cardStyle}>
-          <div style={labelStyle}>Bebês</div>
+        <InfoCard>
+          <CardLabel>Bebês</CardLabel>
           {babies.map((b: any) => (
-            <div key={b.baby_id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 0' }}>
-              <span style={{ fontSize: 16 }}>{b.babies?.gender === 'boy' ? '\u{1F466}' : b.babies?.gender === 'girl' ? '\u{1F467}' : '\u{1F476}'}</span>
+            <div key={b.baby_id} className="flex items-center gap-2.5 py-1.5">
+              <span className="text-base">
+                {b.babies?.gender === 'boy' ? '👦' : b.babies?.gender === 'girl' ? '👧' : '👶'}
+              </span>
               <div>
-                <span style={{ fontSize: 14, color: '#e7e2ff' }}>{b.babies?.name}</span>
-                <span style={{ fontSize: 12, color: 'rgba(231,226,255,0.35)', marginLeft: 8 }}>
+                <span className="font-body text-sm text-on-surface">{b.babies?.name}</span>
+                <span className="font-label text-xs text-on-surface-variant/60 ml-2">
                   {b.babies?.birth_date ? b.babies.birth_date.split('-').reverse().join('/') : ''} · {b.role}
                 </span>
               </div>
             </div>
           ))}
-        </div>
+        </InfoCard>
       )}
 
       {/* Details */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
-        <div style={cardStyle}>
-          <div style={labelStyle}>Plataforma</div>
-          <div style={{ fontSize: 14, color: '#e7e2ff' }}>
-            {user.signup_platform === 'android' ? 'Android' : user.signup_platform === 'ios' ? 'iOS' : userPlatform === 'android' ? 'Android' : userPlatform === 'ios' ? 'iOS' : 'Web'}
-          </div>
-        </div>
-        <div style={cardStyle}>
-          <div style={labelStyle}>Plano</div>
-          <div style={{ fontSize: 14, color: '#e7e2ff', textTransform: 'capitalize' }}>
+      <div className="grid grid-cols-2 gap-3 mb-3">
+        <InfoCard>
+          <CardLabel>Plataforma</CardLabel>
+          <div className="font-body text-sm text-on-surface">{platformDisplay}</div>
+        </InfoCard>
+        <InfoCard>
+          <CardLabel>Plano</CardLabel>
+          <div className="font-body text-sm text-on-surface capitalize">
             {user.subscription_plan || (user.is_premium ? 'premium' : 'free')}
           </div>
-        </div>
+        </InfoCard>
       </div>
 
-      {isCourtesyActive && (
-        <div style={{ ...cardStyle, background: 'rgba(255,179,0,0.06)', border: '1px solid rgba(255,179,0,0.15)' }}>
-          <div style={labelStyle}>Cortesia ativa</div>
-          <div style={{ fontSize: 14, color: '#FFB300' }}>
+      {isCourtesyActive && user.courtesy_expires_at && (
+        <div className="bg-amber-500/10 border border-amber-500/25 rounded-md px-5 py-4 mb-3">
+          <CardLabel>Cortesia ativa</CardLabel>
+          <div className="font-body text-sm text-amber-500">
             Até {new Date(user.courtesy_expires_at).toLocaleDateString('pt-BR')}
-            {user.courtesy_reason && <span style={{ color: 'rgba(231,226,255,0.4)' }}> — {user.courtesy_reason}</span>}
+            {user.courtesy_reason && (
+              <span className="text-on-surface-variant/70"> — {user.courtesy_reason}</span>
+            )}
           </div>
         </div>
       )}
 
       {/* Actions */}
-      <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
+      <div className="flex gap-2.5 mt-4 flex-wrap">
         <button
           onClick={togglePremium}
           disabled={saving}
-          style={{
-            flex: 1,
-            padding: '14px 16px',
-            borderRadius: 12,
-            border: 'none',
-            cursor: 'pointer',
-            fontSize: 14,
-            fontWeight: 600,
-            background: user.is_premium ? 'rgba(239,83,80,0.12)' : 'rgba(183,159,255,0.15)',
-            color: user.is_premium ? '#EF5350' : '#b79fff',
-          }}
+          className={`flex-1 py-3.5 px-4 rounded-md border-none cursor-pointer font-label text-sm font-semibold transition-colors ${
+            user.is_premium
+              ? 'bg-error/12 text-error hover:bg-error/20'
+              : 'bg-primary/15 text-primary hover:bg-primary/25'
+          }`}
         >
           {user.is_premium ? 'Rebaixar para Free' : 'Promover para Yaya+'}
         </button>
         <button
           onClick={() => setShowCourtesy(true)}
-          style={{
-            flex: 1,
-            padding: '14px 16px',
-            borderRadius: 12,
-            border: 'none',
-            cursor: 'pointer',
-            fontSize: 14,
-            fontWeight: 600,
-            background: 'rgba(255,179,0,0.12)',
-            color: '#FFB300',
-          }}
+          className="flex-1 py-3.5 px-4 rounded-md bg-amber-500/12 text-amber-500 font-label text-sm font-semibold border-none cursor-pointer hover:bg-amber-500/20 transition-colors"
         >
           Dar cortesia
         </button>
         <button
           onClick={() => setShowDeleteConfirm(true)}
-          style={{
-            padding: '14px 16px',
-            borderRadius: 12,
-            border: 'none',
-            cursor: 'pointer',
-            fontSize: 14,
-            fontWeight: 600,
-            background: 'rgba(239,83,80,0.12)',
-            color: '#EF5350',
-          }}
+          className="py-3.5 px-4 rounded-md bg-error/12 text-error font-label text-sm font-semibold border-none cursor-pointer hover:bg-error/20 transition-colors"
         >
           Excluir
         </button>
@@ -291,34 +264,35 @@ export default function AdminUserDetailPage() {
 
       {/* Toast */}
       {toast && (
-        <div style={{
-          position: 'fixed', bottom: 80, left: 20, right: 20,
-          background: '#4CAF50', color: 'white', fontSize: 14, textAlign: 'center',
-          padding: '14px', borderRadius: 14, zIndex: 100, maxWidth: 400, margin: '0 auto',
-        }}>
+        <div className="fixed bottom-20 left-5 right-5 mx-auto max-w-md bg-green-600 text-white font-label text-sm text-center px-4 py-3.5 rounded-md z-50">
           {toast}
         </div>
       )}
 
       {/* Courtesy Modal */}
       {showCourtesy && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, padding: 20 }} onClick={() => setShowCourtesy(false)}>
-          <div style={{ background: '#1a1540', borderRadius: 20, padding: 28, width: '100%', maxWidth: 400, border: '1px solid rgba(183,159,255,0.15)' }} onClick={e => e.stopPropagation()}>
-            <h3 style={{ fontSize: 18, fontWeight: 700, color: '#e7e2ff', marginBottom: 20 }}>Conceder cortesia</h3>
+        <div
+          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-5"
+          onClick={() => setShowCourtesy(false)}
+        >
+          <div
+            className="bg-surface-container-high border border-outline-variant/30 rounded-md p-7 w-full max-w-md"
+            onClick={e => e.stopPropagation()}
+          >
+            <h3 className="font-headline text-lg font-bold text-on-surface mb-5">Conceder cortesia</h3>
 
-            <div style={{ marginBottom: 16 }}>
-              <div style={labelStyle}>Dias de Yaya+</div>
-              <div style={{ display: 'flex', gap: 8 }}>
+            <div className="mb-4">
+              <CardLabel>Dias de Yaya+</CardLabel>
+              <div className="flex gap-2">
                 {['7', '14', '30', '60', '90'].map(d => (
                   <button
                     key={d}
                     onClick={() => setCourtesyDays(d)}
-                    style={{
-                      flex: 1, padding: '10px 0', borderRadius: 10, border: 'none', cursor: 'pointer',
-                      fontSize: 14, fontWeight: 600,
-                      background: courtesyDays === d ? '#b79fff' : 'rgba(255,255,255,0.06)',
-                      color: courtesyDays === d ? '#0d0a27' : 'rgba(231,226,255,0.5)',
-                    }}
+                    className={`flex-1 py-2.5 rounded-md border-none cursor-pointer font-label text-sm font-semibold transition-colors ${
+                      courtesyDays === d
+                        ? 'bg-primary text-on-primary'
+                        : 'bg-surface-container-lowest text-on-surface-variant'
+                    }`}
                   >
                     {d}d
                   </button>
@@ -326,25 +300,29 @@ export default function AdminUserDetailPage() {
               </div>
             </div>
 
-            <div style={{ marginBottom: 20 }}>
-              <div style={labelStyle}>Motivo (opcional)</div>
+            <div className="mb-5">
+              <CardLabel>Motivo (opcional)</CardLabel>
               <input
                 type="text"
                 value={courtesyReason}
                 onChange={e => setCourtesyReason(e.target.value)}
                 placeholder="ex: Pedido via email, influencer..."
-                style={{
-                  width: '100%', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(183,159,255,0.1)',
-                  borderRadius: 12, padding: '12px 16px', color: '#e7e2ff', fontSize: 14, outline: 'none',
-                }}
+                className="w-full rounded-md px-4 py-3 text-sm bg-surface-container-low text-on-surface outline-none focus:ring-2 focus:ring-primary/40 border border-outline-variant/30"
               />
             </div>
 
-            <div style={{ display: 'flex', gap: 10 }}>
-              <button onClick={() => setShowCourtesy(false)} style={{ flex: 1, padding: 14, borderRadius: 12, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 600, background: 'rgba(255,255,255,0.06)', color: 'rgba(231,226,255,0.5)' }}>
+            <div className="flex gap-2.5">
+              <button
+                onClick={() => setShowCourtesy(false)}
+                className="flex-1 py-3.5 rounded-md bg-surface-container-lowest text-on-surface-variant font-label text-sm font-semibold border-none cursor-pointer"
+              >
                 Cancelar
               </button>
-              <button onClick={grantCourtesy} disabled={saving} style={{ flex: 2, padding: 14, borderRadius: 12, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 600, background: '#b79fff', color: '#0d0a27', opacity: saving ? 0.5 : 1 }}>
+              <button
+                onClick={grantCourtesy}
+                disabled={saving}
+                className="flex-[2] py-3.5 rounded-md bg-primary text-on-primary font-label text-sm font-bold border-none cursor-pointer disabled:opacity-50 active:opacity-80 transition-opacity"
+              >
                 {saving ? 'Salvando...' : `Conceder ${courtesyDays} dias`}
               </button>
             </div>
@@ -352,34 +330,47 @@ export default function AdminUserDetailPage() {
         </div>
       )}
 
+      {/* Delete Confirm Modal */}
       {showDeleteConfirm && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, padding: 20 }} onClick={() => setShowDeleteConfirm(false)}>
-          <div style={{ background: '#1a1540', borderRadius: 20, padding: 28, width: '100%', maxWidth: 400, border: '1px solid rgba(239,83,80,0.3)' }} onClick={e => e.stopPropagation()}>
-            <h3 style={{ fontSize: 18, fontWeight: 700, color: '#EF5350', marginBottom: 12 }}>Excluir usuário</h3>
-            <p style={{ fontSize: 14, color: 'rgba(231,226,255,0.6)', marginBottom: 8 }}>
+        <div
+          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-5"
+          onClick={() => {
+            setShowDeleteConfirm(false);
+            setDeleteConfirmText('');
+          }}
+        >
+          <div
+            className="bg-surface-container-high border border-error/30 rounded-md p-7 w-full max-w-md"
+            onClick={e => e.stopPropagation()}
+          >
+            <h3 className="font-headline text-lg font-bold text-error mb-3">Excluir usuário</h3>
+            <p className="font-body text-sm text-on-surface-variant mb-2">
               Esta ação é irreversível. Todos os dados do usuário serão excluídos permanentemente.
             </p>
-            <p style={{ fontSize: 13, color: 'rgba(231,226,255,0.5)', marginBottom: 16 }}>
-              Digite <strong style={{ color: '#EF5350' }}>confirmar</strong> para prosseguir:
+            <p className="font-label text-[13px] text-on-surface-variant/70 mb-4">
+              Digite <strong className="text-error">confirmar</strong> para prosseguir:
             </p>
             <input
               type="text"
               value={deleteConfirmText}
               onChange={e => setDeleteConfirmText(e.target.value)}
               placeholder="Digite confirmar"
-              style={{
-                width: '100%', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(239,83,80,0.2)',
-                borderRadius: 12, padding: '12px 16px', color: '#e7e2ff', fontSize: 14, outline: 'none', marginBottom: 20,
-              }}
+              className="w-full rounded-md px-4 py-3 text-sm bg-surface-container-low text-on-surface outline-none focus:ring-2 focus:ring-error/40 border border-error/20 mb-5"
             />
-            <div style={{ display: 'flex', gap: 10 }}>
-              <button onClick={() => { setShowDeleteConfirm(false); setDeleteConfirmText(''); }} style={{ flex: 1, padding: 14, borderRadius: 12, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 600, background: 'rgba(255,255,255,0.06)', color: 'rgba(231,226,255,0.5)' }}>
+            <div className="flex gap-2.5">
+              <button
+                onClick={() => {
+                  setShowDeleteConfirm(false);
+                  setDeleteConfirmText('');
+                }}
+                className="flex-1 py-3.5 rounded-md bg-surface-container-lowest text-on-surface-variant font-label text-sm font-semibold border-none cursor-pointer"
+              >
                 Cancelar
               </button>
               <button
                 onClick={handleDeleteUser}
                 disabled={deleting || deleteConfirmText.toLowerCase() !== 'confirmar'}
-                style={{ flex: 2, padding: 14, borderRadius: 12, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 600, background: '#EF5350', color: 'white', opacity: (deleting || deleteConfirmText.toLowerCase() !== 'confirmar') ? 0.4 : 1 }}
+                className="flex-[2] py-3.5 rounded-md bg-error text-white font-label text-sm font-semibold border-none cursor-pointer disabled:opacity-40 transition-opacity"
               >
                 {deleting ? 'Excluindo...' : 'Excluir permanentemente'}
               </button>
@@ -387,8 +378,53 @@ export default function AdminUserDetailPage() {
           </div>
         </div>
       )}
-
-      <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
     </div>
+  );
+}
+
+function InfoCard({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="bg-surface-container-low border border-outline-variant/30 rounded-md px-5 py-4 mb-3">
+      {children}
+    </div>
+  );
+}
+
+function CardLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="font-label text-[11px] text-on-surface-variant/70 uppercase tracking-wider mb-1.5">
+      {children}
+    </div>
+  );
+}
+
+function MiniStat({ value, label }: { value: number | string; label: string }) {
+  return (
+    <div className="bg-surface-container-lowest rounded-md px-3 py-2.5 text-center">
+      <div className="font-headline text-xl font-bold text-on-surface">{value}</div>
+      <div className="font-label text-[10px] text-on-surface-variant/70">{label}</div>
+    </div>
+  );
+}
+
+function StatusBadge({ bucket }: { bucket: 'courtesy' | 'paying' | 'free' }) {
+  if (bucket === 'courtesy') {
+    return (
+      <span className="inline-block font-label text-xs px-3 py-1 rounded-full bg-amber-500/15 text-amber-500 shrink-0">
+        Cortesia
+      </span>
+    );
+  }
+  if (bucket === 'paying') {
+    return (
+      <span className="inline-block font-label text-xs px-3 py-1 rounded-full bg-primary/20 text-primary shrink-0">
+        Yaya+
+      </span>
+    );
+  }
+  return (
+    <span className="inline-block font-label text-xs px-3 py-1 rounded-full bg-surface-container-low text-on-surface-variant/70 shrink-0">
+      Free
+    </span>
   );
 }

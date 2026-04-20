@@ -20,33 +20,35 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div
-      className="min-h-screen font-body"
-      style={{ background: '#0d0a27', color: '#e7e2ff' }}
-    >
+    <div className="min-h-screen font-body bg-surface text-on-surface">
       {/* Header */}
-      <header
-        className="max-w-[1200px] mx-auto flex items-center justify-between px-6 py-4"
-        style={{ borderBottom: '1px solid rgba(183,159,255,0.1)' }}
-      >
+      <header className="max-w-[1200px] mx-auto flex items-center justify-between px-6 py-4 border-b border-outline-variant/30">
         <div className="flex items-center gap-2.5">
-          <img
-            src="/logo-symbol.png"
-            alt="Yaya"
-            className="w-7 h-7"
-            style={{ filter: 'brightness(0) saturate(100%) invert(72%) sepia(40%) saturate(1500%) hue-rotate(220deg) brightness(105%) contrast(95%)' }}
+          {/* Logo com mask-image pra herdar cor do tema (bg-primary) */}
+          <div
+            className="w-7 h-7 bg-primary"
+            style={{
+              maskImage: 'url(/logo-symbol.png)',
+              WebkitMaskImage: 'url(/logo-symbol.png)',
+              maskSize: 'contain',
+              WebkitMaskSize: 'contain',
+              maskRepeat: 'no-repeat',
+              WebkitMaskRepeat: 'no-repeat',
+              maskPosition: 'center',
+              WebkitMaskPosition: 'center',
+            }}
+            aria-label="Yaya"
           />
-          <span className="font-headline text-lg font-extrabold tracking-tight">
-            Ya<span style={{ color: '#b79fff' }}>ya</span>
-            <span className="font-label text-xs font-medium ml-2" style={{ color: 'rgba(231,226,255,0.5)' }}>
+          <span className="font-headline text-lg font-extrabold tracking-tight text-on-surface">
+            Ya<span className="text-primary">ya</span>
+            <span className="font-label text-xs font-medium ml-2 text-on-surface-variant/70">
               Admin
             </span>
           </span>
         </div>
         <button
           onClick={handleSignOut}
-          className="font-label text-sm flex items-center gap-1.5 active:opacity-60 transition-opacity"
-          style={{ color: 'rgba(231,226,255,0.5)', background: 'none', border: 'none', cursor: 'pointer' }}
+          className="font-label text-sm flex items-center gap-1.5 text-on-surface-variant/70 hover:text-on-surface bg-transparent border-none cursor-pointer active:opacity-60 transition-opacity"
         >
           <span className="material-symbols-outlined text-base">logout</span>
           Sair
@@ -56,25 +58,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Desktop: sidebar + content | Mobile: content + bottom nav */}
       <div className="max-w-[1200px] mx-auto flex" style={{ minHeight: 'calc(100vh - 60px)' }}>
         {/* Desktop sidebar */}
-        <nav
-          className="admin-sidebar flex-shrink-0 py-6 px-3"
-          style={{ width: 220, borderRight: '1px solid rgba(183,159,255,0.08)' }}
-        >
+        <nav className="admin-sidebar flex-shrink-0 py-6 px-3 border-r border-outline-variant/20" style={{ width: 220 }}>
           {NAV_ITEMS.map(item => {
             const isActive = current === item.path;
             return (
               <button
                 key={item.path}
                 onClick={() => navigate(`/paineladmin/${item.path}`)}
-                className="font-label flex items-center gap-3 w-full px-4 py-2.5 mb-1 rounded-lg transition-colors"
-                style={{
-                  border: 'none',
-                  cursor: 'pointer',
-                  background: isActive ? 'rgba(183,159,255,0.12)' : 'transparent',
-                  color: isActive ? '#b79fff' : 'rgba(231,226,255,0.55)',
-                  fontSize: 14,
-                  fontWeight: isActive ? 600 : 500,
-                }}
+                className={`font-label flex items-center gap-3 w-full px-4 py-2.5 mb-1 rounded-md bg-transparent border-none cursor-pointer text-sm transition-colors ${
+                  isActive
+                    ? 'bg-primary/12 text-primary font-semibold'
+                    : 'text-on-surface-variant hover:bg-surface-container-low font-medium'
+                }`}
               >
                 <span className="material-symbols-outlined text-xl">{item.icon}</span>
                 {item.label}
@@ -89,13 +84,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </main>
       </div>
 
-      {/* Mobile bottom nav */}
+      {/* Mobile bottom nav — blur sobre surface */}
       <nav
-        className="admin-bottom-nav fixed bottom-0 left-0 right-0"
+        className="admin-bottom-nav fixed bottom-0 left-0 right-0 border-t border-outline-variant/30"
         style={{
-          background: 'rgba(13,10,39,0.95)',
-          borderTop: '1px solid rgba(183,159,255,0.1)',
+          background: 'color-mix(in srgb, var(--color-surface) 85%, transparent)',
           backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
           paddingBottom: 'env(safe-area-inset-bottom, 0px)',
         }}
       >
@@ -106,19 +101,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <button
                 key={item.path}
                 onClick={() => navigate(`/paineladmin/${item.path}`)}
-                className="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg transition-colors"
-                style={{
-                  border: 'none',
-                  cursor: 'pointer',
-                  background: isActive ? 'rgba(183,159,255,0.15)' : 'transparent',
-                  color: isActive ? '#b79fff' : 'rgba(231,226,255,0.4)',
-                }}
+                className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-md bg-transparent border-none cursor-pointer transition-colors ${
+                  isActive
+                    ? 'bg-primary/15 text-primary'
+                    : 'text-on-surface-variant/70 hover:text-on-surface'
+                }`}
               >
                 <span className="material-symbols-outlined text-xl">{item.icon}</span>
-                <span
-                  className="font-label"
-                  style={{ fontSize: 10, fontWeight: isActive ? 600 : 500 }}
-                >
+                <span className={`font-label text-[10px] ${isActive ? 'font-semibold' : 'font-medium'}`}>
                   {item.label}
                 </span>
               </button>

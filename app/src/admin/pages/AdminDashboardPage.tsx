@@ -5,8 +5,10 @@ interface Stats {
   total_users: number;
   new_today: number;
   new_this_week: number;
-  premium_users: number;
+  premium_users: number; // is_premium=true (inclui cortesia) — DEPRECATED para UI
   free_users: number;
+  paying_users?: number; // só subscription_plan in (monthly, annual, lifetime) e sem cortesia
+  courtesy_users?: number; // subscription_plan=courtesy_lifetime ou courtesy_expires_at > now
   total_babies: number;
   total_logs: number;
   logs_today: number;
@@ -32,31 +34,40 @@ export default function AdminDashboardPage() {
 
   if (loading || !stats) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', padding: 80 }}>
-        <div style={{ width: 32, height: 32, border: '2px solid #b79fff', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+      <div className="flex justify-center py-20">
+        <span className="material-symbols-outlined text-primary text-3xl animate-spin">
+          progress_activity
+        </span>
       </div>
     );
   }
 
-  const conversionRate = stats.total_users > 0
-    ? ((stats.premium_users / stats.total_users) * 100).toFixed(1)
-    : '0';
+  // Valores derivados. Se a RPC ainda não trouxer paying/courtesy, derivamos
+  // conservador: paying = premium_users - courtesy (fallback 0 se não souber);
+  // courtesy = 0.
+  const paying = stats.paying_users ?? 0;
+  const courtesy = stats.courtesy_users ?? stats.premium_users - paying;
+  // Conversão real: só pagantes dividido por (pagantes + free). Cortesia e
+  // admin ficam de fora — cortesia não é receita, admin não conta como mercado.
+  const convertible = paying + stats.free_users;
+  const realConversion = convertible > 0 ? ((paying / convertible) * 100).toFixed(1) : '0';
 
   return (
     <div>
-      <h2 style={{ fontSize: 20, fontWeight: 700, color: '#e7e2ff', marginBottom: 20 }}>Visão Geral</h2>
+      <h2 className="font-headline text-xl font-bold text-on-surface mb-5">Visão Geral</h2>
 
       {/* Top row — key metrics */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12, marginBottom: 20 }}>
-        <Card label="Usuários" value={stats.total_users} sub={`+${stats.new_this_week} esta semana`} accent />
+      <div className="grid gap-3 mb-5" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))' }}>
+        <Card label="Usuários" value={stats.total_users} sub={`+${stats.new_this_week} esta semana`} />
         <Card label="Bebês" value={stats.total_babies} sub={`${stats.avg_users_per_baby} cuid./bebê`} />
-        <Card label="Premium (Yaya+)" value={stats.premium_users} sub={`${conversionRate}% conversão`} accent />
-        <Card label="Free" value={stats.free_users} sub={`${stats.total_users - stats.premium_users - stats.free_users} sem plano`} />
+        <Card label="Pagantes (Yaya+)" value={paying} sub={`${realConversion}% conversão real`} accent />
+        <Card label="Cortesia" value={courtesy} sub="Ativas" amber />
+        <Card label="Free" value={stats.free_users} sub="Sem plano" />
       </div>
 
       {/* Activity */}
-      <h3 style={{ fontSize: 14, fontWeight: 600, color: 'rgba(231,226,255,0.55)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: 1 }}>Atividade</h3>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12, marginBottom: 20 }}>
+      <SectionLabel>Atividade</SectionLabel>
+      <div className="grid gap-3 mb-5" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))' }}>
         <MiniCard label="DAU" value={stats.dau} />
         <MiniCard label="WAU (7d)" value={stats.wau} />
         <MiniCard label="MAU (30d)" value={stats.mau} />
@@ -66,43 +77,82 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Engagement */}
-      <h3 style={{ fontSize: 14, fontWeight: 600, color: 'rgba(231,226,255,0.55)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: 1 }}>Engajamento</h3>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12 }}>
+      <SectionLabel>Engajamento</SectionLabel>
+      <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))' }}>
         <MiniCard label="Streaks ativos" value={stats.active_streaks} />
         <MiniCard label="Bebês 2+ cuidadores" value={stats.multi_caregiver_babies} />
         <MiniCard label="Novos hoje" value={stats.new_today} highlight />
       </div>
 
-      <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+      {/* Nota pra quem lê: a diferença entre "Pagantes" e conversão real */}
+      <div className="mt-6 p-3 rounded-md bg-surface-container-lowest border border-outline-variant/20 font-label text-xs text-on-surface-variant/80 leading-relaxed">
+        <span className="text-on-surface font-semibold">Como a conversão real é calculada: </span>
+        pagantes / (pagantes + free). Cortesia e contas admin ficam de fora — não
+        representam receita nem mercado endereçável.
+      </div>
     </div>
   );
 }
 
-function Card({ label, value, sub, accent }: { label: string; value: number | string; sub?: string; accent?: boolean }) {
+function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{
-      background: accent ? 'rgba(183,159,255,0.1)' : 'rgba(255,255,255,0.06)',
-      border: `1px solid ${accent ? 'rgba(183,159,255,0.2)' : 'rgba(183,159,255,0.08)'}`,
-      borderRadius: 14,
-      padding: '20px 18px',
-    }}>
-      <div style={{ fontSize: 11, color: 'rgba(231,226,255,0.5)', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}>{label}</div>
-      <div style={{ fontSize: 32, fontWeight: 700, color: accent ? '#b79fff' : '#e7e2ff' }}>{value}</div>
-      {sub && <div style={{ fontSize: 12, color: 'rgba(231,226,255,0.4)', marginTop: 4 }}>{sub}</div>}
+    <h3 className="font-label text-xs font-semibold text-on-surface-variant/70 uppercase tracking-wider mb-3">
+      {children}
+    </h3>
+  );
+}
+
+function Card({
+  label,
+  value,
+  sub,
+  accent,
+  amber,
+}: {
+  label: string;
+  value: number | string;
+  sub?: string;
+  accent?: boolean;
+  amber?: boolean;
+}) {
+  const valueColor = amber ? 'text-amber-500' : accent ? 'text-primary' : 'text-on-surface';
+  const bgClass = accent
+    ? 'bg-primary/10 border-primary/20'
+    : amber
+      ? 'bg-amber-500/10 border-amber-500/20'
+      : 'bg-surface-container-low border-outline-variant/30';
+  return (
+    <div className={`rounded-md px-5 py-5 border ${bgClass}`}>
+      <div className="font-label text-[11px] text-on-surface-variant/70 uppercase tracking-wider mb-2">
+        {label}
+      </div>
+      <div className={`font-headline text-3xl font-bold ${valueColor}`}>{value}</div>
+      {sub && <div className="font-label text-xs text-on-surface-variant/60 mt-1">{sub}</div>}
     </div>
   );
 }
 
-function MiniCard({ label, value, highlight }: { label: string; value: number | string; highlight?: boolean }) {
+function MiniCard({
+  label,
+  value,
+  highlight,
+}: {
+  label: string;
+  value: number | string;
+  highlight?: boolean;
+}) {
   return (
-    <div style={{
-      background: highlight ? 'rgba(255,150,185,0.08)' : 'rgba(255,255,255,0.04)',
-      border: `1px solid ${highlight ? 'rgba(255,150,185,0.15)' : 'rgba(183,159,255,0.06)'}`,
-      borderRadius: 12,
-      padding: '14px 16px',
-    }}>
-      <div style={{ fontSize: 24, fontWeight: 700, color: highlight ? '#ff96b9' : '#e7e2ff' }}>{value}</div>
-      <div style={{ fontSize: 11, color: 'rgba(231,226,255,0.45)', marginTop: 2 }}>{label}</div>
+    <div
+      className={`rounded-md px-4 py-3 border ${
+        highlight
+          ? 'bg-tertiary/10 border-tertiary/25'
+          : 'bg-surface-container-lowest border-outline-variant/30'
+      }`}
+    >
+      <div className={`font-headline text-2xl font-bold ${highlight ? 'text-tertiary' : 'text-on-surface'}`}>
+        {value}
+      </div>
+      <div className="font-label text-[11px] text-on-surface-variant/60 mt-0.5">{label}</div>
     </div>
   );
 }
