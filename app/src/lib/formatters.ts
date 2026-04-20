@@ -143,3 +143,34 @@ export function formatTimeBR(timestamp: number): string {
   const m = d.getMinutes().toString().padStart(2, '0')
   return `${h}h${m}`
 }
+
+/**
+ * Tempo relativo curto em pt-BR, aceita ISO string ou null.
+ * null → "—"
+ * < 1 min → "agora"
+ * < 60 min → "há Nmin"
+ * < 24h → "há Nh"
+ * < 30 dias → "há N dias"
+ * < 365 dias → "há N meses"
+ * caso contrário → "há N anos"
+ *
+ * Usado no painel admin. Para tempo futuro ou pequenos intervalos, usar
+ * `formatRelative(ms)` ou `timeSince(timestamp)`.
+ */
+export function formatRelativeShort(iso: string | null | undefined): string {
+  if (!iso) return '—'
+  const then = new Date(iso).getTime()
+  if (Number.isNaN(then)) return '—'
+  const diff = Date.now() - then
+  if (diff < 60_000) return 'agora'
+  const min = Math.floor(diff / 60_000)
+  if (min < 60) return `há ${min}min`
+  const hours = Math.floor(min / 60)
+  if (hours < 24) return `há ${hours}h`
+  const days = Math.floor(hours / 24)
+  if (days < 30) return `há ${days} dia${days !== 1 ? 's' : ''}`
+  const months = Math.floor(days / 30)
+  if (months < 12) return `há ${months} ${months !== 1 ? 'meses' : 'mês'}`
+  const years = Math.floor(months / 12)
+  return `há ${years} ano${years !== 1 ? 's' : ''}`
+}
