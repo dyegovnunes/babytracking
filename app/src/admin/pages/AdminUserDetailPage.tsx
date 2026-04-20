@@ -150,8 +150,21 @@ export default function AdminUserDetailPage() {
     setDeleting(false);
 
     if (error) {
-      setToast(`Erro ao excluir: ${error.message}`);
-      setTimeout(() => setToast(''), 5000);
+      // supabase.functions.invoke() esconde o corpo JSON do erro em
+      // error.context (Response). Extraimos manualmente pra mostrar o
+      // motivo real (role=anon, JWT expirado, is_admin=false etc.)
+      let detail = error.message;
+      try {
+        const ctx: any = (error as any).context;
+        if (ctx && typeof ctx.json === 'function') {
+          const body = await ctx.json();
+          if (body?.error) detail = body.error + (body.hint ? ` — ${body.hint}` : '');
+        }
+      } catch {
+        // mantem error.message
+      }
+      setToast(`Erro: ${detail}`);
+      setTimeout(() => setToast(''), 6000);
       return;
     }
     if (data?.error) {

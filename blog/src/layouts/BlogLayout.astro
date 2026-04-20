@@ -1,0 +1,94 @@
+---
+interface Props {
+  title: string
+  description?: string
+  image?: string
+  canonicalUrl?: string
+}
+
+const { title, description, image, canonicalUrl } = Astro.props
+const siteUrl = 'https://blog.yayababy.app'
+const fullTitle = title.includes('Yaya') ? title : `${title} | Yaya Baby`
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="index, follow" />
+
+    <title>{fullTitle}</title>
+    {description && <meta name="description" content={description} />}
+    {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content={fullTitle} />
+    {description && <meta property="og:description" content={description} />}
+    {image && <meta property="og:image" content={image} />}
+    <meta property="og:site_name" content="Yaya Baby" />
+    <meta property="og:locale" content="pt_BR" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    {description && <meta name="twitter:description" content={description} />}
+    {image && <meta name="twitter:image" content={image} />}
+
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-zinc-950 text-zinc-100 antialiased">
+    <!-- Smart banner: convida visitantes a baixar o app -->
+    <div id="smart-banner" class="bg-violet-600 text-white py-2.5 px-4 flex items-center justify-between gap-3 text-sm">
+      <span class="font-medium">📱 Acompanhe seu bebê com o Yaya — grátis</span>
+      <a
+        href="https://yayababy.app"
+        class="shrink-0 bg-white text-violet-700 font-bold text-xs px-3 py-1.5 rounded-full hover:bg-violet-50 transition-colors"
+      >
+        Baixar
+      </a>
+    </div>
+
+    <!-- Header -->
+    <header class="border-b border-zinc-800 bg-zinc-950/80 backdrop-blur-sm sticky top-0 z-10">
+      <div class="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
+        <a href="/" class="flex items-center gap-2 font-bold text-lg text-white">
+          <span class="text-2xl">🐣</span>
+          <span>Yaya Baby</span>
+        </a>
+        <a
+          href="https://yayababy.app"
+          class="text-sm text-violet-400 hover:text-violet-300 transition-colors font-medium"
+        >
+          Abrir app →
+        </a>
+      </div>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-zinc-800 mt-20 py-10 px-4 text-center text-zinc-500 text-sm">
+      <p class="mb-2">
+        <a href="/" class="hover:text-zinc-300 transition-colors">Yaya Baby Blog</a>
+        {' · '}
+        <a href="https://yayababy.app/privacidade" class="hover:text-zinc-300 transition-colors">Privacidade</a>
+      </p>
+      <p class="text-xs text-zinc-600">
+        As informações neste blog são educativas e não substituem orientação médica. Consulte sempre o pediatra.
+      </p>
+    </footer>
+  </body>
+</html>
