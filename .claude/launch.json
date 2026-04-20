@@ -22,6 +22,14 @@
       "port": 5174,
       "autoPort": true,
       "cwd": "landing-app"
+    },
+    {
+      "name": "blog",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 4321,
+      "autoPort": true,
+      "cwd": "blog"
     }
   ]
 }

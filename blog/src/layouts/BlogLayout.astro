@@ -7,7 +7,6 @@ interface Props {
 }
 
 const { title, description, image, canonicalUrl } = Astro.props
-const siteUrl = 'https://blog.yayababy.app'
 const fullTitle = title.includes('Yaya') ? title : `${title} | Yaya Baby`
 ---
 
@@ -16,6 +15,7 @@ const fullTitle = title.includes('Yaya') ? title : `${title} | Yaya Baby`
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0d0a27" />
     <meta name="robots" content="index, follow" />
 
     <title>{fullTitle}</title>
@@ -36,59 +36,76 @@ const fullTitle = title.includes('Yaya') ? title : `${title} | Yaya Baby`
     {description && <meta name="twitter:description" content={description} />}
     {image && <meta name="twitter:image" content={image} />}
 
-    <link rel="icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="sitemap" href="/sitemap-index.xml" />
 
-    <!-- Google Fonts -->
+    <!-- Manrope (display/headlines) + Plus Jakarta Sans (body) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
   </head>
-  <body class="bg-zinc-950 text-zinc-100 antialiased">
-    <!-- Smart banner: convida visitantes a baixar o app -->
-    <div id="smart-banner" class="bg-violet-600 text-white py-2.5 px-4 flex items-center justify-between gap-3 text-sm">
-      <span class="font-medium">📱 Acompanhe seu bebê com o Yaya — grátis</span>
+  <body class="bg-yaya-night text-yaya-cloud font-sans antialiased min-h-screen flex flex-col">
+    <!-- Smart banner: convite calmo pra baixar o app -->
+    <div class="bg-yaya-purple/10 border-b border-yaya-purple/20 py-2.5 px-4 flex items-center justify-between gap-3 text-sm">
+      <span class="text-yaya-cloud/90">Acompanhe a rotina do seu bebê com o Yaya</span>
       <a
         href="https://yayababy.app"
-        class="shrink-0 bg-white text-violet-700 font-bold text-xs px-3 py-1.5 rounded-full hover:bg-violet-50 transition-colors"
+        class="shrink-0 bg-yaya-purple text-yaya-night font-display font-bold text-xs px-3 py-1.5 rounded-md hover:bg-yaya-glow transition-colors"
       >
-        Baixar
+        Baixar grátis
       </a>
     </div>
 
     <!-- Header -->
-    <header class="border-b border-zinc-800 bg-zinc-950/80 backdrop-blur-sm sticky top-0 z-10">
+    <header class="border-b border-yaya-cloud/5 bg-yaya-night/90 backdrop-blur-sm sticky top-0 z-10">
       <div class="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
-        <a href="/" class="flex items-center gap-2 font-bold text-lg text-white">
-          <span class="text-2xl">🐣</span>
-          <span>Yaya Baby</span>
+        <a href="/" class="flex items-center gap-2.5" aria-label="Yaya Baby — Blog">
+          <img
+            src="/logo.png"
+            alt="Yaya"
+            class="h-7 w-auto"
+            width="120"
+            height="28"
+          />
+          <span class="text-yaya-cloud/50 font-sans text-sm">/ blog</span>
         </a>
         <a
           href="https://yayababy.app"
-          class="text-sm text-violet-400 hover:text-violet-300 transition-colors font-medium"
+          class="text-sm text-yaya-purple hover:text-yaya-glow transition-colors font-sans font-medium"
         >
           Abrir app →
         </a>
       </div>
     </header>
 
-    <main>
+    <main class="flex-1">
       <slot />
     </main>
 
     <!-- Footer -->
-    <footer class="border-t border-zinc-800 mt-20 py-10 px-4 text-center text-zinc-500 text-sm">
-      <p class="mb-2">
-        <a href="/" class="hover:text-zinc-300 transition-colors">Yaya Baby Blog</a>
-        {' · '}
-        <a href="https://yayababy.app/privacidade" class="hover:text-zinc-300 transition-colors">Privacidade</a>
-      </p>
-      <p class="text-xs text-zinc-600">
-        As informações neste blog são educativas e não substituem orientação médica. Consulte sempre o pediatra.
-      </p>
+    <footer class="border-t border-yaya-cloud/5 mt-20 py-10 px-4 text-center">
+      <div class="max-w-2xl mx-auto">
+        <img
+          src="/symbol.png"
+          alt="Yaya"
+          class="h-8 w-auto mx-auto mb-4 opacity-50"
+          width="32"
+          height="32"
+        />
+        <p class="text-yaya-cloud/60 text-sm mb-2 font-sans">
+          <a href="/" class="hover:text-yaya-cloud transition-colors">Yaya Baby Blog</a>
+          {' · '}
+          <a href="https://yayababy.app" class="hover:text-yaya-cloud transition-colors">Abrir app</a>
+          {' · '}
+          <a href="https://yayababy.app/privacidade" class="hover:text-yaya-cloud transition-colors">Privacidade</a>
+        </p>
+        <p class="text-xs text-yaya-cloud/40 font-sans leading-relaxed max-w-md mx-auto">
+          Conteúdo educativo que acolhe sem substituir orientação médica. Consulte sempre o pediatra do seu bebê.
+        </p>
+      </div>
     </footer>
   </body>
 </html>

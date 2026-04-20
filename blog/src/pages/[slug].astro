@@ -29,7 +29,6 @@ if (error || !data) {
 
 const post = data as BlogPost
 
-// Configurar marked: links em nova aba, sem html puro do DB
 marked.setOptions({ breaks: true })
 const contentHtml = await marked(post.content_md)
 
@@ -63,44 +62,48 @@ const publishDate = post.published_at
       '@type': 'Organization',
       name: 'Yaya Baby',
       url: 'https://yayababy.app',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://blog.yayababy.app/logo.png',
+      },
     },
   })} />
 
   <article class="max-w-2xl mx-auto px-4 py-12">
 
     <!-- Breadcrumb -->
-    <nav class="text-sm text-zinc-500 mb-8 flex items-center gap-1.5">
-      <a href="/" class="hover:text-zinc-300 transition-colors">Blog</a>
-      <span>›</span>
-      <span class="text-violet-400">{CATEGORY_LABEL[post.category as ContentCategory]}</span>
+    <nav class="text-sm text-yaya-cloud/50 mb-8 flex items-center gap-1.5 font-sans">
+      <a href="/" class="hover:text-yaya-cloud transition-colors">Blog</a>
+      <span class="text-yaya-cloud/30">›</span>
+      <span class="text-yaya-purple font-medium">{CATEGORY_LABEL[post.category as ContentCategory]}</span>
     </nav>
 
     <!-- Header do artigo -->
     <header class="mb-10">
-      <div class="flex items-center gap-3 mb-4">
+      <div class="flex items-center gap-3 mb-5">
         <span class="text-2xl">{CATEGORY_EMOJI[post.category as ContentCategory]}</span>
-        <span class="text-sm font-semibold text-violet-400 uppercase tracking-wide">
+        <span class="text-xs font-display font-bold text-yaya-purple uppercase tracking-wider">
           {CATEGORY_LABEL[post.category as ContentCategory]}
         </span>
         {post.target_week_start && (
-          <span class="text-sm text-zinc-600">
+          <span class="text-xs text-yaya-cloud/40 font-sans">
             · {formatWeekRange(post.target_week_start, post.target_week_end)}
           </span>
         )}
       </div>
 
-      <h1 class="font-serif text-3xl md:text-4xl font-bold text-white leading-tight mb-5">
+      <h1 class="font-display text-3xl md:text-4xl font-extrabold text-yaya-cloud leading-tight mb-5 tracking-tight">
         {post.title}
       </h1>
 
       {post.meta_description && (
-        <p class="text-zinc-400 text-lg leading-relaxed mb-5">
+        <p class="text-yaya-cloud/70 text-lg leading-relaxed mb-5 font-sans">
           {post.meta_description}
         </p>
       )}
 
       {publishDate && (
-        <time class="text-sm text-zinc-600" datetime={post.published_at ?? ''}>
+        <time class="text-sm text-yaya-cloud/40 font-sans" datetime={post.published_at ?? ''}>
           Publicado em {publishDate}
         </time>
       )}
@@ -108,7 +111,7 @@ const publishDate = post.published_at
 
     <!-- Imagem de capa -->
     {post.image_url && (
-      <div class="mb-10 rounded-xl overflow-hidden">
+      <div class="mb-10 rounded-md overflow-hidden border border-yaya-cloud/10">
         <img
           src={post.image_url}
           alt={post.image_alt ?? post.title}
@@ -118,23 +121,22 @@ const publishDate = post.published_at
     )}
 
     <!-- Corpo do artigo -->
-    <div class="prose prose-invert prose-violet max-w-none" set:html={contentHtml} />
+    <div class="prose-yaya" set:html={contentHtml} />
 
     <!-- Disclaimer -->
-    <div class="mt-12 p-4 rounded-xl bg-zinc-900 border border-zinc-800 text-sm text-zinc-500 leading-relaxed">
-      <strong class="text-zinc-400">Aviso:</strong> Este artigo tem caráter educativo e não substitui
-      orientação médica individualizada. Consulte sempre o pediatra do seu bebê.
+    <div class="mt-12 p-4 rounded-md bg-yaya-cloud/[0.03] border border-yaya-cloud/10 text-sm text-yaya-cloud/60 leading-relaxed font-sans">
+      <strong class="text-yaya-cloud/80">Aviso:</strong> Este artigo tem caráter educativo e não substitui orientação médica individualizada. Consulte sempre o pediatra do seu bebê.
     </div>
 
     <!-- CTA baixar app -->
-    <div class="mt-10 p-6 rounded-xl bg-violet-950 border border-violet-800 text-center">
-      <p class="text-lg font-bold text-white mb-2">Acompanhe o desenvolvimento do seu bebê</p>
-      <p class="text-violet-300 text-sm mb-5">
-        Registre alimentação, sono, marcos e muito mais com o Yaya — gratuito para baixar.
+    <div class="mt-10 p-6 rounded-md bg-gradient-to-br from-yaya-purple/15 to-yaya-blush/10 border border-yaya-purple/25 text-center">
+      <p class="font-display text-lg font-bold text-yaya-cloud mb-2">Organize a rotina do seu bebê</p>
+      <p class="text-yaya-cloud/70 text-sm mb-5 font-sans leading-relaxed">
+        Registre amamentação, sono, fraldas e marcos com 1 toque — mesmo às 3 da manhã.
       </p>
       <a
         href="https://yayababy.app"
-        class="inline-block bg-violet-600 hover:bg-violet-500 text-white font-bold px-6 py-3 rounded-lg transition-colors"
+        class="inline-block bg-yaya-purple hover:bg-yaya-glow text-yaya-night font-display font-bold px-6 py-3 rounded-md transition-colors"
       >
         Baixar o Yaya grátis
       </a>
@@ -143,57 +145,79 @@ const publishDate = post.published_at
 </BlogLayout>
 
 <style is:global>
-  /* Prose styles para o conteúdo Markdown */
-  .prose {
-    color: theme('colors.zinc.300');
+  /* Prose styles para o conteúdo Markdown — paleta Yaya */
+  .prose-yaya {
+    color: rgb(231 226 255 / 0.85);
     line-height: 1.75;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-size: 1rem;
   }
-  .prose h2 {
-    color: theme('colors.white');
-    font-family: 'Playfair Display', serif;
-    font-size: 1.6rem;
-    font-weight: 700;
+  .prose-yaya h2 {
+    color: rgb(231 226 255);
+    font-family: 'Manrope', system-ui, sans-serif;
+    font-size: 1.55rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
     margin-top: 2.5rem;
     margin-bottom: 1rem;
+    line-height: 1.3;
   }
-  .prose h3 {
-    color: theme('colors.white');
+  .prose-yaya h3 {
+    color: rgb(231 226 255);
+    font-family: 'Manrope', system-ui, sans-serif;
     font-size: 1.2rem;
     font-weight: 700;
     margin-top: 2rem;
     margin-bottom: 0.75rem;
+    line-height: 1.35;
   }
-  .prose p {
+  .prose-yaya p {
     margin-bottom: 1.25rem;
   }
-  .prose strong {
-    color: theme('colors.white');
-    font-weight: 600;
+  .prose-yaya strong {
+    color: rgb(231 226 255);
+    font-weight: 700;
   }
-  .prose ul, .prose ol {
+  .prose-yaya em {
+    color: rgb(231 226 255 / 0.95);
+  }
+  .prose-yaya ul, .prose-yaya ol {
     padding-left: 1.5rem;
     margin-bottom: 1.25rem;
   }
-  .prose li {
+  .prose-yaya li {
     margin-bottom: 0.4rem;
   }
-  .prose a {
-    color: theme('colors.violet.400');
+  .prose-yaya li::marker {
+    color: rgb(183 159 255);
+  }
+  .prose-yaya a {
+    color: rgb(183 159 255);
     text-decoration: underline;
     text-underline-offset: 3px;
+    text-decoration-color: rgb(183 159 255 / 0.4);
+    transition: color 0.15s, text-decoration-color 0.15s;
   }
-  .prose a:hover {
-    color: theme('colors.violet.300');
+  .prose-yaya a:hover {
+    color: rgb(171 143 254);
+    text-decoration-color: rgb(171 143 254);
   }
-  .prose blockquote {
-    border-left: 3px solid theme('colors.violet.600');
+  .prose-yaya blockquote {
+    border-left: 3px solid rgb(183 159 255);
     padding-left: 1.25rem;
-    color: theme('colors.zinc.400');
+    color: rgb(231 226 255 / 0.7);
     font-style: italic;
     margin: 1.5rem 0;
   }
-  .prose hr {
-    border-color: theme('colors.zinc.800');
+  .prose-yaya hr {
+    border-color: rgb(231 226 255 / 0.1);
     margin: 2.5rem 0;
+  }
+  .prose-yaya code {
+    background: rgb(231 226 255 / 0.08);
+    padding: 0.15em 0.4em;
+    border-radius: 4px;
+    font-size: 0.9em;
+    color: rgb(255 150 185);
   }
 </style>

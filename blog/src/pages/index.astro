@@ -24,16 +24,17 @@ function formatWeekRange(start: number | null, end: number | null): string {
 ---
 
 <BlogLayout
-  title="Blog Yaya Baby — Guias para pais de primeira viagem"
-  description="Artigos práticos e baseados em evidências sobre alimentação, sono, desenvolvimento e saúde do bebê. Escritos para pais reais."
+  title="Blog Yaya Baby — Companhia para a rotina do seu bebê"
+  description="Guias práticos sobre alimentação, sono, desenvolvimento e saúde. Baseados em evidências, escritos para pais reais."
 >
   <!-- Hero -->
   <section class="max-w-3xl mx-auto px-4 pt-14 pb-10 text-center">
-    <h1 class="font-serif text-4xl md:text-5xl font-bold text-white leading-tight mb-4">
-      Guias para acompanhar<br class="hidden md:block" /> o seu bebê
+    <h1 class="font-display text-4xl md:text-5xl font-extrabold text-yaya-cloud leading-tight mb-4 tracking-tight">
+      A rotina do seu bebê,<br class="hidden md:block" />
+      <span class="text-yaya-purple">explicada com calma.</span>
     </h1>
-    <p class="text-zinc-400 text-lg max-w-xl mx-auto">
-      Conteúdo prático, baseado em evidências, feito para pais de primeira viagem.
+    <p class="text-yaya-cloud/70 text-lg max-w-xl mx-auto font-sans leading-relaxed">
+      Guias práticos sobre sono, alimentação, desenvolvimento e saúde do bebê — baseados em evidências, escritos pra pais reais.
     </p>
   </section>
 
@@ -42,14 +43,14 @@ function formatWeekRange(start: number | null, end: number | null): string {
     <div class="flex flex-wrap gap-2">
       <a
         href="/"
-        class="px-3 py-1.5 rounded-full text-sm font-medium bg-violet-600 text-white"
+        class="px-3 py-1.5 rounded-md text-sm font-display font-bold bg-yaya-purple text-yaya-night"
       >
         Todos
       </a>
       {categories.map((cat) => (
         <a
           href={`/?categoria=${cat}`}
-          class="px-3 py-1.5 rounded-full text-sm font-medium bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition-colors"
+          class="px-3 py-1.5 rounded-md text-sm font-display font-bold bg-yaya-cloud/5 text-yaya-cloud/80 hover:bg-yaya-cloud/10 hover:text-yaya-cloud transition-colors"
         >
           {CATEGORY_EMOJI[cat]} {CATEGORY_LABEL[cat]}
         </a>
@@ -60,51 +61,55 @@ function formatWeekRange(start: number | null, end: number | null): string {
   <!-- Lista de artigos -->
   <section class="max-w-3xl mx-auto px-4 pb-20">
     {error && (
-      <p class="text-zinc-500 text-center py-20">Erro ao carregar artigos. Tente novamente.</p>
+      <p class="text-yaya-cloud/50 text-center py-20 font-sans">Não conseguimos carregar os artigos agora. Tenta de novo em alguns instantes.</p>
     )}
 
     {!error && allPosts.length === 0 && (
-      <p class="text-zinc-500 text-center py-20">Nenhum artigo publicado ainda.</p>
+      <div class="text-center py-24">
+        <img src="/symbol.png" alt="Yaya" class="h-14 w-auto mx-auto mb-6 opacity-40" />
+        <p class="text-yaya-cloud/60 font-sans text-lg mb-2">Ainda estamos preparando os primeiros guias.</p>
+        <p class="text-yaya-cloud/40 font-sans text-sm">Volte em breve — conteúdo novo toda semana.</p>
+      </div>
     )}
 
-    <div class="space-y-6">
+    <div class="space-y-4">
       {allPosts.map((post) => (
         <a
           href={`/${post.slug}`}
-          class="group block bg-zinc-900 rounded-xl overflow-hidden border border-zinc-800 hover:border-violet-500/40 transition-colors"
+          class="group block bg-yaya-cloud/[0.03] rounded-md overflow-hidden border border-yaya-cloud/10 hover:border-yaya-purple/40 hover:bg-yaya-cloud/[0.06] transition-all"
         >
           <div class="flex gap-4 p-5">
             {post.image_url ? (
               <img
                 src={post.image_url}
                 alt={post.title}
-                class="w-24 h-24 rounded-lg object-cover shrink-0"
+                class="w-24 h-24 rounded-md object-cover shrink-0"
                 loading="lazy"
               />
             ) : (
-              <div class="w-24 h-24 rounded-lg bg-zinc-800 flex items-center justify-center shrink-0">
+              <div class="w-24 h-24 rounded-md bg-yaya-purple/10 border border-yaya-purple/15 flex items-center justify-center shrink-0">
                 <span class="text-3xl">{CATEGORY_EMOJI[post.category as ContentCategory]}</span>
               </div>
             )}
 
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-2 mb-2">
-                <span class="text-xs font-semibold text-violet-400 uppercase tracking-wide">
+                <span class="text-[10px] font-display font-bold text-yaya-purple uppercase tracking-wider">
                   {CATEGORY_LABEL[post.category as ContentCategory]}
                 </span>
                 {post.target_week_start && (
-                  <span class="text-xs text-zinc-600">
+                  <span class="text-[10px] text-yaya-cloud/40 font-sans font-medium">
                     · {formatWeekRange(post.target_week_start, post.target_week_end)}
                   </span>
                 )}
               </div>
 
-              <h2 class="font-bold text-white text-base leading-snug mb-2 group-hover:text-violet-300 transition-colors">
+              <h2 class="font-display font-bold text-yaya-cloud text-base leading-snug mb-2 group-hover:text-yaya-purple transition-colors">
                 {post.title}
               </h2>
 
               {post.meta_description && (
-                <p class="text-zinc-400 text-sm line-clamp-2 leading-relaxed">
+                <p class="text-yaya-cloud/60 text-sm line-clamp-2 leading-relaxed font-sans">
                   {post.meta_description}
                 </p>
               )}
