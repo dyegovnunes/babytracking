@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { supabase } from '../../lib/supabase';
+import { supabase, supabaseUrl, supabaseAnonKey } from '../../lib/supabase';
 import { useSheetBackClose } from '../../hooks/useSheetBackClose';
 import { formatRelativeShort } from '../../lib/formatters';
 
@@ -120,47 +120,60 @@ export default function AdminUserDetailPage() {
     if (!id || deleteConfirmText.toLowerCase() !== 'confirmar') return;
     setDeleting(true);
 
-    // O delete direto no client nao funciona por varios motivos:
-    // 1. RLS em profiles so libera SELECT/UPDATE pra admin (nao DELETE)
-    // 2. auth.admin.deleteUser precisa de service role, inacessivel do client
-    // 3. Varias FKs sao NO ACTION (logs.created_by, baby_milestones.recorded_by
-    //    etc) e bloqueiam o cascade se o usuario tiver conteudo em babies
-    //    compartilhadas.
+    // Por que nao usamos supabase.functions.invoke():
+    //  - O invoke() nao garante que o access_token do usuario vai como
+    //    Authorization; em alguns cenarios ele cai pra anon key, o que
+    //    faz a edge function rejeitar (role != 'authenticated').
+    //  - Na resposta de erro, invoke() retorna `error.message =
+    //    "Edge Function returned a non-2xx status code"` e esconde o
+    //    corpo JSON, dificultando diagnostico.
     //
-    // A edge function admin-delete-user faz o fluxo completo: babies
-    // orfaos deletados, atribuicoes em babies compartilhadas nulificadas,
-    // refs globais nulificadas, depois auth.admin.deleteUser finaliza.
-    //
-    // Observacao: passamos o access_token EXPLICITAMENTE em Authorization.
-    // Sem isso, o supabase-js as vezes envia so a anon key, o que quebra
-    // a validacao `admin.auth.getUser(jwt)` dentro da edge function.
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
+    // Usando fetch direto: controle total sobre os headers e acesso ao
+    // JSON real do erro.
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        setDeleting(false);
+        setToast('Sessão expirada. Faça login de novo.');
+        setTimeout(() => setToast(''), 5000);
+        return;
+      }
+
+      const url = `${supabaseUrl}/functions/v1/admin-delete-user`;
+
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+          apikey: supabaseAnonKey,
+        },
+        body: JSON.stringify({ user_id: id }),
+      });
+
+      let bodyJson: any = null;
+      try {
+        bodyJson = await res.json();
+      } catch {
+        // resposta nao-JSON: deixa null
+      }
+
       setDeleting(false);
-      setToast('Sessão expirada. Faça login de novo.');
-      setTimeout(() => setToast(''), 5000);
-      return;
-    }
 
-    const { data, error } = await supabase.functions.invoke('admin-delete-user', {
-      body: { user_id: id },
-      headers: { Authorization: `Bearer ${session.access_token}` },
-    });
+      if (!res.ok) {
+        const msg = bodyJson?.error || `HTTP ${res.status}`;
+        const hint = bodyJson?.hint ? ` — ${bodyJson.hint}` : '';
+        setToast(`Erro: ${msg}${hint}`);
+        setTimeout(() => setToast(''), 6000);
+        return;
+      }
 
-    setDeleting(false);
-
-    if (error) {
-      setToast(`Erro ao excluir: ${error.message}`);
-      setTimeout(() => setToast(''), 5000);
-      return;
-    }
-    if (data?.error) {
-      setToast(`Erro: ${data.error}${data.hint ? ` — ${data.hint}` : ''}`);
+      navigate('/paineladmin/users');
+    } catch (e: any) {
+      setDeleting(false);
+      setToast(`Erro de rede: ${e?.message ?? 'desconhecido'}`);
       setTimeout(() => setToast(''), 6000);
-      return;
     }
-
-    navigate('/paineladmin/users');
   }
 
   if (!user) {
