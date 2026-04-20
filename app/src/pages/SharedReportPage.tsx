@@ -1,15 +1,69 @@
 import { useState, useMemo, useCallback, useRef } from 'react';
+import { WEIGHT_BOYS, WEIGHT_GIRLS, type OMSDataPoint } from '../lib/omsData';
+import { MILESTONES, type Milestone } from '../features/milestones/milestoneData';
+import { DEVELOPMENT_LEAPS, type DevelopmentLeap } from '../features/milestones/developmentLeaps';
 
-const SUPABASE_URL = 'https://kgfjfdizxziacblgvplh.supabase.co';
-const NIGHT_START = 20; // 20h
-const NIGHT_END = 8;    // 08h
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
+
+interface ReportVaccine {
+  appliedAt: string;
+  code: string | null;
+  name: string;
+  fullName: string | null;
+  doseLabel: string | null;
+  recommendedAgeDays: number | null;
+  source: 'PNI' | 'SBP' | null;
+}
+
+interface ReportMilestone {
+  code: string | null;
+  achievedAt: string;
+  photoUrl: string | null;
+  note: string | null;
+}
+
+interface ReportLeapNote {
+  leapId: number;
+  note: string;
+  updatedAt: string;
+}
+
+interface ReportMedication {
+  id: string;
+  name: string;
+  dosage: string;
+  frequencyHours: number;
+  scheduleTimes: string[];
+  durationType: 'continuous' | 'fixed';
+  startDate: string;
+  endDate: string | null;
+}
+
+interface ReportMedicationLog {
+  medicationId: string;
+  administeredAt: string;
+}
+
+type ReportAudience = 'pediatrician' | 'caregiver' | 'family';
 
 interface ReportData {
-  report: { name: string; expires_at: string | null };
-  baby: { name: string; birthDate: string; gender: string; photoUrl?: string };
+  report: { name: string; expires_at: string | null; audience?: ReportAudience };
+  baby: {
+    name: string;
+    birthDate: string;
+    gender: string;
+    photoUrl?: string;
+    quietHoursStart: number;
+    quietHoursEnd: number;
+  };
   logs: { event_id: string; timestamp: number; ml?: number; duration?: number }[];
   measurements: { type: string; value: number; unit: string; measured_at: string }[];
   streak: { current_streak: number; longest_streak: number } | null;
+  vaccines?: ReportVaccine[];
+  milestones?: ReportMilestone[];
+  leapNotes?: ReportLeapNote[];
+  medications?: ReportMedication[];
+  medicationLogs?: ReportMedicationLog[];
 }
 
 interface Stats {
@@ -135,9 +189,21 @@ function getFilterAvailability(logs: { timestamp: number }[]): Record<FilterKey,
 
 // ─── Stats ────────────────────────────────
 const FEED_IDS = new Set(['breast_left', 'breast_right', 'breast_both', 'bottle']);
-const isNight = (ts: number) => { const h = new Date(ts).getHours(); return h >= NIGHT_START || h < NIGHT_END; };
 
-function computeStats(data: ReportData, startTs: number, endTs: number): Stats {
+/**
+ * Trata janela noturna tanto atravessando meia-noite (22-7, padrão) quanto
+ * janela simples dentro do mesmo dia (caso raro, ex: 0-12).
+ */
+function makeIsNight(start: number, end: number): (ts: number) => boolean {
+  const wraps = start > end;
+  return (ts: number) => {
+    const h = new Date(ts).getHours();
+    return wraps ? h >= start || h < end : h >= start && h < end;
+  };
+}
+
+function computeStats(data: ReportData, startTs: number, endTs: number, nightStart: number, nightEnd: number): Stats {
+  const isNight = makeIsNight(nightStart, nightEnd);
   const logs = data.logs.filter(l => l.timestamp >= startTs && l.timestamp <= endTs);
   const uniqueDays = new Set(logs.map(l => new Date(l.timestamp).toDateString()));
   const effectiveDays = Math.max(1, uniqueDays.size);
@@ -257,6 +323,52 @@ function fmtAge(birthDate: string): string {
   return rm > 0 ? `${years} ano${years > 1 ? 's' : ''} e ${rm} ${rm === 1 ? 'mês' : 'meses'}` : `${years} ano${years > 1 ? 's' : ''}`;
 }
 
+// ─── Content lookups (vaccines / milestones / leaps / medications) ───
+
+/** Rótulo legível para agrupar vacinas por idade recomendada (em dias). */
+function vaccineAgeLabel(days: number | null): string {
+  if (days == null) return 'Outras';
+  if (days === 0) return 'Ao nascer';
+  const months = Math.round(days / 30);
+  if (months < 1) return `${days} dias`;
+  return `${months} ${months === 1 ? 'mês' : 'meses'}`;
+}
+
+const MILESTONE_INDEX: Record<string, Milestone> = Object.fromEntries(
+  MILESTONES.map((m) => [m.code, m]),
+);
+
+const LEAP_INDEX: Record<number, DevelopmentLeap> = Object.fromEntries(
+  DEVELOPMENT_LEAPS.map((l) => [l.id, l]),
+);
+
+/** Semana (contada a partir do nascimento) para descobrir o salto ativo. */
+function currentWeek(birthDate: string): number {
+  const ms = Date.now() - parseLocal(birthDate).getTime();
+  return Math.max(0, Math.floor(ms / (7 * 86400000)));
+}
+
+function getActiveLeap(birthDate: string): DevelopmentLeap | null {
+  const w = currentWeek(birthDate);
+  return DEVELOPMENT_LEAPS.find((l) => w >= l.weekStart && w <= l.weekEnd) ?? null;
+}
+
+/**
+ * Próxima dose estimada para um medicamento com frequência em horas.
+ * Retorna texto curto como "em 2h30" ou "agora" (null se não pode estimar).
+ */
+function nextDoseRelative(med: ReportMedication, lastLogTs: number | null): string | null {
+  if (!med.frequencyHours || !lastLogTs) return null;
+  const nextTs = lastLogTs + med.frequencyHours * 3600_000;
+  const diffMs = nextTs - Date.now();
+  if (diffMs <= 0) return 'agora';
+  const diffMin = Math.round(diffMs / 60000);
+  if (diffMin < 60) return `em ${diffMin}min`;
+  const h = Math.floor(diffMin / 60);
+  const m = diffMin % 60;
+  return m === 0 ? `em ${h}h` : `em ${h}h${m.toString().padStart(2, '0')}`;
+}
+
 // ─── Interactive Charts ─────────────────────────
 function BarChartInteractive({ data, c, refLine, unit = '' }: { data: { date: string; value: number }[]; c: Colors; refLine?: number; unit?: string }) {
   const [hover, setHover] = useState<number | null>(null);
@@ -359,33 +471,46 @@ function DiaperChartInteractive({ data, c }: { data: { date: string; wet: number
   );
 }
 
-function OMSCurve({ history, c }: { history: { months: number; value: number }[]; c: Colors }) {
-  const omsP3 = [[0,2.5],[1,3.4],[2,4.3],[3,5.0],[4,5.6],[5,6.1],[6,6.4],[7,6.7],[8,6.9],[9,7.1],[10,7.4],[11,7.6],[12,7.7]];
-  const omsP50 = [[0,3.3],[1,4.5],[2,5.6],[3,6.4],[4,7.0],[5,7.5],[6,7.9],[7,8.3],[8,8.6],[9,8.9],[10,9.2],[11,9.4],[12,9.6]];
-  const omsP97 = [[0,4.4],[1,5.8],[2,7.1],[3,8.0],[4,8.7],[5,9.3],[6,9.8],[7,10.3],[8,10.7],[9,11.0],[10,11.4],[11,11.7],[12,12.0]];
+function OMSCurve({ history, gender, c }: { history: { months: number; value: number }[]; gender: 'boy' | 'girl'; c: Colors }) {
+  // Seleciona curva OMS por gênero (dados em app/src/lib/omsData.ts, vão até 24 meses).
+  const omsData: OMSDataPoint[] = gender === 'girl' ? WEIGHT_GIRLS : WEIGHT_BOYS;
   const maxMonth = Math.max(...history.map(h => h.months), 6);
-  const maxIdx = Math.min(Math.ceil(maxMonth) + 2, 12);
-  const allVals = [...omsP3.slice(0, maxIdx + 1).map(p => p[1]), ...omsP97.slice(0, maxIdx + 1).map(p => p[1]), ...history.map(h => h.value)];
-  const minVal = Math.min(...allVals) * 0.85; const maxVal = Math.max(...allVals) * 1.1;
+  const omsMaxMonth = omsData[omsData.length - 1].months;
+  // Corta a curva em maxMonth + 3 meses de folga, sem ultrapassar o fim da tabela OMS.
+  const cutMonth = Math.min(maxMonth + 3, omsMaxMonth);
+  const visibleOms = omsData.filter(p => p.months <= cutMonth);
+  const allVals = [
+    ...visibleOms.map(p => p.p3),
+    ...visibleOms.map(p => p.p97),
+    ...history.map(h => h.value),
+  ];
+  const minVal = Math.min(...allVals) * 0.9;
+  const maxVal = Math.max(...allVals) * 1.05;
   const w = 400; const h = 180; const pad = { top: 15, right: 30, bottom: 25, left: 35 };
   const cw = w - pad.left - pad.right; const ch = h - pad.top - pad.bottom;
-  const sx = (m: number) => pad.left + (m / maxIdx) * cw;
+  const sx = (m: number) => pad.left + (m / cutMonth) * cw;
   const sy = (v: number) => pad.top + ch - ((v - minVal) / (maxVal - minVal)) * ch;
-  const toPath = (pts: number[][]) => pts.slice(0, maxIdx + 1).map((p, i) => `${i === 0 ? 'M' : 'L'}${sx(p[0])},${sy(p[1])}`).join(' ');
+  const toPath = (pts: OMSDataPoint[], key: keyof Pick<OMSDataPoint, 'p3' | 'p50' | 'p97'>) =>
+    pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${sx(p.months)},${sy(p[key])}`).join(' ');
   const last = history[history.length - 1];
+  const lastOms = visibleOms[visibleOms.length - 1];
+  // Tick labels: 0, 2, 4... até cutMonth (inclui cutMonth se não for múltiplo de 2).
+  const ticks: number[] = [];
+  for (let m = 0; m <= cutMonth; m += 2) ticks.push(m);
+  if (cutMonth % 2 !== 0) ticks.push(cutMonth);
   return (
     <svg viewBox={`0 0 ${w} ${h}`} className="w-full">
       {Array.from({ length: 5 }, (_, i) => <line key={i} x1={pad.left} y1={pad.top + ch * (i / 4)} x2={w - pad.right} y2={pad.top + ch * (i / 4)} stroke={c.accent} strokeWidth={0.15} />)}
-      <path d={toPath(omsP97)} fill="none" stroke={c.accent} strokeWidth={0.8} strokeDasharray="3,2" opacity={0.4} />
-      <path d={toPath(omsP50)} fill="none" stroke={c.accent} strokeWidth={1} opacity={0.5} />
-      <path d={toPath(omsP3)} fill="none" stroke={c.accent} strokeWidth={0.8} strokeDasharray="3,2" opacity={0.4} />
-      <text x={w - pad.right + 3} y={sy(omsP97[maxIdx]?.[1] ?? 12)} fontSize={7} fill={c.accent} opacity={0.5}>P97</text>
-      <text x={w - pad.right + 3} y={sy(omsP50[maxIdx]?.[1] ?? 9.6)} fontSize={7} fill={c.accent} opacity={0.5}>P50</text>
-      <text x={w - pad.right + 3} y={sy(omsP3[maxIdx]?.[1] ?? 7.7)} fontSize={7} fill={c.accent} opacity={0.5}>P3</text>
+      <path d={toPath(visibleOms, 'p97')} fill="none" stroke={c.accent} strokeWidth={0.8} strokeDasharray="3,2" opacity={0.4} />
+      <path d={toPath(visibleOms, 'p50')} fill="none" stroke={c.accent} strokeWidth={1} opacity={0.5} />
+      <path d={toPath(visibleOms, 'p3')} fill="none" stroke={c.accent} strokeWidth={0.8} strokeDasharray="3,2" opacity={0.4} />
+      {lastOms && <text x={w - pad.right + 3} y={sy(lastOms.p97)} fontSize={7} fill={c.accent} opacity={0.5}>P97</text>}
+      {lastOms && <text x={w - pad.right + 3} y={sy(lastOms.p50)} fontSize={7} fill={c.accent} opacity={0.5}>P50</text>}
+      {lastOms && <text x={w - pad.right + 3} y={sy(lastOms.p3)} fontSize={7} fill={c.accent} opacity={0.5}>P3</text>}
       {history.length >= 2 && <path d={history.map((p, i) => `${i === 0 ? 'M' : 'L'}${sx(p.months)},${sy(p.value)}`).join(' ')} fill="none" stroke={c.accentDim} strokeWidth={2} />}
       {history.map((p, i) => <circle key={i} cx={sx(p.months)} cy={sy(p.value)} r={i === history.length - 1 ? 4 : 2.5} fill={c.accentDim} />)}
       {last && <text x={sx(last.months)} y={sy(last.value) - 8} fontSize={8} fontWeight="bold" fill={c.text} textAnchor="end">{last.value.toFixed(1)}kg</text>}
-      {Array.from({ length: Math.ceil(maxIdx / 2) + 1 }, (_, i) => { const m = i * 2; return m <= maxIdx ? <text key={m} x={sx(m)} y={h - 4} fontSize={7} fill={c.accent} opacity={0.5} textAnchor="middle">{m}m</text> : null; })}
+      {ticks.map((m) => <text key={m} x={sx(m)} y={h - 4} fontSize={7} fill={c.accent} opacity={0.5} textAnchor="middle">{m}m</text>)}
       {Array.from({ length: 5 }, (_, i) => { const v = minVal + (maxVal - minVal) * (1 - i / 4); return <text key={i} x={pad.left - 4} y={pad.top + ch * (i / 4) + 3} fontSize={7} fill={c.accent} opacity={0.5} textAnchor="end">{v.toFixed(1)}</text>; })}
     </svg>
   );
@@ -405,10 +530,145 @@ export default function SharedReportPage() {
 
   const token = window.location.pathname.split('/r/')[1]?.split('/')[0] ?? '';
   const c = dark ? DARK : LIGHT;
-  const activeFilter = filter ?? '7d';
-  const range = useMemo(() => getFilterRange(activeFilter), [activeFilter]);
-  const stats = useMemo(() => data ? computeStats(data, range.start, range.end) : null, [data, range]);
+
   const filterAvail = useMemo(() => data ? getFilterAvailability(data.logs) : ({} as Record<FilterKey, boolean>), [data]);
+
+  // Ordem de preferência para o default: o maior filtro com dados disponíveis.
+  // Assim bebê novo (<2d) cai em "today"/"all" sem "7d" vazio.
+  const DEFAULT_PRIORITY: FilterKey[] = ['30d', '15d', '7d', 'today', 'all'];
+  const defaultFilter: FilterKey = DEFAULT_PRIORITY.find((k) => filterAvail[k]) ?? 'all';
+  const activeFilter = filter ?? defaultFilter;
+  const range = useMemo(() => getFilterRange(activeFilter), [activeFilter]);
+  const stats = useMemo(
+    () => data ? computeStats(data, range.start, range.end, data.baby.quietHoursStart, data.baby.quietHoursEnd) : null,
+    [data, range],
+  );
+
+  // Opções visíveis no dropdown: esconde as sem dado em vez de desabilitar.
+  // "Tudo" sempre fica disponível (é o fallback seguro).
+  const visibleFilters = useMemo(
+    () => FILTERS.filter((f) => f.key === 'all' || filterAvail[f.key]),
+    [filterAvail],
+  );
+
+  // ─── Hooks de conteúdo (precisam vir ANTES de qualquer early return
+  //     para respeitar a regra dos hooks — tolerem data === null). ───
+
+  const audience: ReportAudience = data?.report.audience ?? 'pediatrician';
+  const babyName = data?.baby.name ?? '';
+
+  const cta = useMemo(() => {
+    if (audience === 'caregiver') {
+      return {
+        title: 'Adicione esse link aos favoritos',
+        subtitle: 'Acesse rápido durante os turnos.',
+        btnLabel: 'Conhecer o Yaya',
+        whatsappText: `Oi! Uso o Yaya para acompanhar ${babyName}. Link do app: https://yayababy.app`,
+      };
+    }
+    if (audience === 'family') {
+      return {
+        title: `Acompanhe ${babyName} pelo Yaya`,
+        subtitle: 'Veja marcos e novidades em primeira mão.',
+        btnLabel: 'Baixar o Yaya',
+        whatsappText: `Olha só ${babyName}! Acompanho pelo Yaya: https://yayababy.app`,
+      };
+    }
+    return {
+      title: 'Recomende o Yaya para seus pacientes',
+      subtitle: 'Pais organizados trazem dados melhores para a consulta.',
+      btnLabel: 'Compartilhar no WhatsApp',
+      whatsappText: 'Conheça o Yaya — o app que ajuda pais a acompanhar a rotina do bebê com calma e clareza.\n\nhttps://yayababy.app',
+    };
+  }, [audience, babyName]);
+
+  const vaccinesByAge = useMemo(() => {
+    const vacs = data?.vaccines ?? [];
+    if (vacs.length === 0) return [];
+    const groups = new Map<string, { days: number; label: string; items: ReportVaccine[] }>();
+    for (const v of vacs) {
+      const label = vaccineAgeLabel(v.recommendedAgeDays);
+      const key = `${v.recommendedAgeDays ?? -1}`;
+      if (!groups.has(key)) groups.set(key, { days: v.recommendedAgeDays ?? -1, label, items: [] });
+      groups.get(key)!.items.push(v);
+    }
+    return Array.from(groups.values()).sort((a, b) => a.days - b.days);
+  }, [data?.vaccines]);
+
+  const recentMilestones = useMemo(() => {
+    const ms = data?.milestones ?? [];
+    const cutoff = Date.now() - 60 * 86400000;
+    return ms
+      .filter((m) => m.code && new Date(m.achievedAt).getTime() >= cutoff)
+      .map((m) => ({ ...m, meta: MILESTONE_INDEX[m.code as string] }))
+      .filter((m) => m.meta);
+  }, [data?.milestones]);
+
+  const activeLeap = useMemo(
+    () => data ? getActiveLeap(data.baby.birthDate) : null,
+    [data],
+  );
+
+  const leapNotesResolved = useMemo(() => {
+    const notes = data?.leapNotes ?? [];
+    return notes
+      .map((n) => ({ ...n, meta: LEAP_INDEX[n.leapId] }))
+      .filter((n) => n.meta)
+      .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+  }, [data?.leapNotes]);
+
+  const liveSnapshot = useMemo(() => {
+    const all = data?.logs ?? [];
+    const latestOf = (ids: string[]) => {
+      let max = 0;
+      for (const l of all) if (ids.includes(l.event_id) && l.timestamp > max) max = l.timestamp;
+      return max || null;
+    };
+    const now = Date.now();
+    const fmtRelative = (ts: number | null): string => {
+      if (!ts) return '—';
+      const diffMin = Math.round((now - ts) / 60000);
+      if (diffMin < 1) return 'agora há pouco';
+      if (diffMin < 60) return `há ${diffMin}min`;
+      const h = Math.floor(diffMin / 60);
+      const m = diffMin % 60;
+      if (h < 24) return m === 0 ? `há ${h}h` : `há ${h}h${m.toString().padStart(2, '0')}`;
+      return fmtDateShort(ts);
+    };
+    const fmtClock = (ts: number | null): string => {
+      if (!ts) return '';
+      const d = new Date(ts);
+      return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
+    };
+    const lastDiaper = latestOf(['diaper_wet', 'diaper_dirty']);
+    const lastFeed = latestOf(['breast_left', 'breast_right', 'breast_both', 'bottle']);
+    const lastSleepStart = latestOf(['sleep', 'sleep_start']);
+    const lastWake = latestOf(['wake', 'sleep_end']);
+    const currentlySleeping = lastSleepStart && (!lastWake || lastSleepStart > lastWake);
+    return {
+      diaper: { ts: lastDiaper, rel: fmtRelative(lastDiaper), clock: fmtClock(lastDiaper) },
+      feed:   { ts: lastFeed,   rel: fmtRelative(lastFeed),   clock: fmtClock(lastFeed) },
+      sleep:  currentlySleeping
+        ? { ts: lastSleepStart, rel: `dormindo há ${fmtRelative(lastSleepStart).replace('há ', '')}`, clock: fmtClock(lastSleepStart), sleeping: true }
+        : { ts: lastWake,       rel: fmtRelative(lastWake),                                          clock: fmtClock(lastWake),       sleeping: false },
+    };
+  }, [data?.logs]);
+
+  const medicationsWithNext = useMemo(() => {
+    const meds = data?.medications ?? [];
+    const logs = data?.medicationLogs ?? [];
+    const lastByMed = new Map<string, number>();
+    for (const l of logs) {
+      const ts = new Date(l.administeredAt).getTime();
+      const prev = lastByMed.get(l.medicationId) ?? 0;
+      if (ts > prev) lastByMed.set(l.medicationId, ts);
+    }
+    return meds.map((m) => ({
+      ...m,
+      lastDoseTs: lastByMed.get(m.id) ?? null,
+      nextLabel: nextDoseRelative(m, lastByMed.get(m.id) ?? null),
+    }));
+  }, [data?.medications, data?.medicationLogs]);
 
   if (data) document.title = `Yaya — Resumo de ${data.baby.name}`;
 
@@ -466,7 +726,7 @@ export default function SharedReportPage() {
   const diaperStatus = trafficLight(stats.diapers.avgPerDay, ageRanges.diapers[0], ageRanges.diapers[1]);
   const babyInitial = baby.name.charAt(0).toUpperCase();
 
-  const whatsappText = encodeURIComponent(`Conheça o Yaya — o app que ajuda pais a acompanhar a rotina do bebê com calma e clareza.\n\nhttps://yayababy.app`);
+  const whatsappText = encodeURIComponent(cta.whatsappText);
 
   return (
     <div className="min-h-screen print:bg-white" style={{ backgroundColor: c.bg, fontFamily: 'Plus Jakarta Sans, sans-serif' }} ref={reportRef}>
@@ -515,7 +775,7 @@ export default function SharedReportPage() {
                 style={{ backgroundColor: c.card, border: `1px solid ${c.cardBorder}`, color: c.text,
                   backgroundImage: `url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='${encodeURIComponent(c.accent)}' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E")`,
                   backgroundRepeat: 'no-repeat', backgroundPosition: 'right 8px center', paddingRight: '24px' }}>
-                {FILTERS.map((f) => <option key={f.key} value={f.key} disabled={!filterAvail[f.key]}>{f.label}</option>)}
+                {visibleFilters.map((f) => <option key={f.key} value={f.key}>{f.label}</option>)}
               </select>
               <p className="text-[10px] mt-1" style={{ color: c.faint }}>{periodStart} — {periodEnd}</p>
             </div>
@@ -530,29 +790,72 @@ export default function SharedReportPage() {
 
         <div className="px-4 sm:px-6 py-5 space-y-5 print:px-6">
 
-          {/* ── KPIs ── */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-            <KPI c={c} icon="restaurant" label="Amamentação" value={`${stats.feeding.avgPerDay.toFixed(1)}x`} sub="/dia"
-              refText={`Ref: ${ageRanges.feed[0]}–${ageRanges.feed[1]}x`} status={feedStatus} />
-            <KPI c={c} icon="bedtime" label="Sono total" value={fmtHours(stats.sleep.avgTotal)} sub="/dia"
-              refText={`Ref: ${Math.round(ageRanges.sleep[0] / 60)}–${Math.round(ageRanges.sleep[1] / 60)}h`} status={sleepStatus} />
-            <KPI c={c} icon="baby_changing_station" label="Fraldas" value={`${stats.diapers.avgPerDay.toFixed(1)}x`} sub="/dia"
-              refText={`Ref: ${ageRanges.diapers[0]}–${ageRanges.diapers[1]}x`} status={diaperStatus} />
-            <div className="p-3 rounded-md" style={{ backgroundColor: c.card, border: `1px solid ${c.cardBorder}`, boxShadow: c.shadow }}>
-              <div className="flex items-center gap-1.5 mb-1">
-                <span className="material-symbols-outlined text-sm" style={{ color: c.accent }}>monitor_weight</span>
-                <p className="text-[9px] font-semibold uppercase tracking-wider" style={{ color: c.muted }}>Peso atual</p>
+          {/* ── AGORA (cuidadora) ── */}
+          {audience === 'caregiver' && (
+            <Section icon="schedule" title="Agora" c={c}>
+              <div className="grid grid-cols-3 gap-2.5">
+                <div className="p-3 rounded-md" style={{ backgroundColor: c.card, border: `1px solid ${c.cardBorder}`, boxShadow: c.shadow }}>
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <span className="material-symbols-outlined text-sm" style={{ color: c.accent }}>baby_changing_station</span>
+                    <p className="text-[9px] font-semibold uppercase tracking-wider" style={{ color: c.muted }}>Última fralda</p>
+                  </div>
+                  <p className="text-base font-extrabold" style={{ fontFamily: 'Manrope, sans-serif', color: c.text }}>
+                    {liveSnapshot.diaper.clock || '—'}
+                  </p>
+                  <p className="text-[10px] mt-0.5" style={{ color: c.faint }}>{liveSnapshot.diaper.rel}</p>
+                </div>
+                <div className="p-3 rounded-md" style={{ backgroundColor: c.card, border: `1px solid ${c.cardBorder}`, boxShadow: c.shadow }}>
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <span className="material-symbols-outlined text-sm" style={{ color: c.accent }}>restaurant</span>
+                    <p className="text-[9px] font-semibold uppercase tracking-wider" style={{ color: c.muted }}>Última mamada</p>
+                  </div>
+                  <p className="text-base font-extrabold" style={{ fontFamily: 'Manrope, sans-serif', color: c.text }}>
+                    {liveSnapshot.feed.clock || '—'}
+                  </p>
+                  <p className="text-[10px] mt-0.5" style={{ color: c.faint }}>{liveSnapshot.feed.rel}</p>
+                </div>
+                <div className="p-3 rounded-md" style={{ backgroundColor: c.card, border: `1px solid ${c.cardBorder}`, boxShadow: c.shadow }}>
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <span className="material-symbols-outlined text-sm" style={{ color: c.accent }}>bedtime</span>
+                    <p className="text-[9px] font-semibold uppercase tracking-wider" style={{ color: c.muted }}>
+                      {liveSnapshot.sleep.sleeping ? 'Dormindo' : 'Último despertar'}
+                    </p>
+                  </div>
+                  <p className="text-base font-extrabold" style={{ fontFamily: 'Manrope, sans-serif', color: c.text }}>
+                    {liveSnapshot.sleep.clock || '—'}
+                  </p>
+                  <p className="text-[10px] mt-0.5" style={{ color: c.faint }}>{liveSnapshot.sleep.rel}</p>
+                </div>
               </div>
-              <p className="text-xl font-extrabold" style={{ fontFamily: 'Manrope, sans-serif', color: c.text }}>
-                {stats.growth?.weight ? `${stats.growth.weight.toFixed(2)}kg` : '—'}
-              </p>
-              {stats.growth?.weightGain != null && stats.growth.weightGain > 0 && (
-                <p className="text-[10px] mt-0.5" style={{ color: c.green }}>+{(stats.growth.weightGain * 1000).toFixed(0)}g no período</p>
-              )}
-            </div>
-          </div>
+            </Section>
+          )}
 
-          {/* ── AMAMENTAÇÃO ── */}
+          {/* ── KPIs (pediatra) ── */}
+          {audience === 'pediatrician' && (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+              <KPI c={c} icon="restaurant" label="Amamentação" value={`${stats.feeding.avgPerDay.toFixed(1)}x`} sub="/dia"
+                refText={`Ref: ${ageRanges.feed[0]}–${ageRanges.feed[1]}x`} status={feedStatus} />
+              <KPI c={c} icon="bedtime" label="Sono total" value={fmtHours(stats.sleep.avgTotal)} sub="/dia"
+                refText={`Ref: ${Math.round(ageRanges.sleep[0] / 60)}–${Math.round(ageRanges.sleep[1] / 60)}h`} status={sleepStatus} />
+              <KPI c={c} icon="baby_changing_station" label="Fraldas" value={`${stats.diapers.avgPerDay.toFixed(1)}x`} sub="/dia"
+                refText={`Ref: ${ageRanges.diapers[0]}–${ageRanges.diapers[1]}x`} status={diaperStatus} />
+              <div className="p-3 rounded-md" style={{ backgroundColor: c.card, border: `1px solid ${c.cardBorder}`, boxShadow: c.shadow }}>
+                <div className="flex items-center gap-1.5 mb-1">
+                  <span className="material-symbols-outlined text-sm" style={{ color: c.accent }}>monitor_weight</span>
+                  <p className="text-[9px] font-semibold uppercase tracking-wider" style={{ color: c.muted }}>Peso atual</p>
+                </div>
+                <p className="text-xl font-extrabold" style={{ fontFamily: 'Manrope, sans-serif', color: c.text }}>
+                  {stats.growth?.weight ? `${stats.growth.weight.toFixed(2)}kg` : '—'}
+                </p>
+                {stats.growth?.weightGain != null && stats.growth.weightGain > 0 && (
+                  <p className="text-[10px] mt-0.5" style={{ color: c.green }}>+{(stats.growth.weightGain * 1000).toFixed(0)}g no período</p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* ── AMAMENTAÇÃO / SONO / FRALDAS (pediatra) ── */}
+          {audience === 'pediatrician' && <>
           <Section icon="restaurant" title="Amamentação" c={c}>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
               <Stat label="Média diária" value={`${stats.feeding.avgPerDay.toFixed(1)} sessões`} c={c} />
@@ -576,7 +879,7 @@ export default function SharedReportPage() {
                   <p className="text-[10px] font-medium uppercase" style={{ color: c.muted }}>Noturno</p>
                 </div>
                 <p className="text-base font-extrabold" style={{ fontFamily: 'Manrope, sans-serif', color: c.text }}>{fmtHours(stats.sleep.avgNocturnal)}</p>
-                <p className="text-[9px] mt-0.5" style={{ color: c.faint }}>{NIGHT_START}h às {NIGHT_END}h</p>
+                <p className="text-[9px] mt-0.5" style={{ color: c.faint }}>{baby.quietHoursStart}h às {baby.quietHoursEnd}h</p>
               </div>
               <div className="rounded-md p-2.5" style={{ backgroundColor: c.card, border: `1px solid ${c.cardBorder}`, boxShadow: c.shadow }}>
                 <div className="flex items-center gap-1.5">
@@ -584,7 +887,7 @@ export default function SharedReportPage() {
                   <p className="text-[10px] font-medium uppercase" style={{ color: c.muted }}>Diurno</p>
                 </div>
                 <p className="text-base font-extrabold" style={{ fontFamily: 'Manrope, sans-serif', color: c.text }}>{fmtHours(stats.sleep.avgDiurnal)}</p>
-                <p className="text-[9px] mt-0.5" style={{ color: c.faint }}>{NIGHT_END}h às {NIGHT_START}h</p>
+                <p className="text-[9px] mt-0.5" style={{ color: c.faint }}>{baby.quietHoursEnd}h às {baby.quietHoursStart}h</p>
               </div>
               <Stat label="Maior bloco" value={fmtHours(stats.sleep.longestBlock)} icon="hotel" c={c} />
               <div className="rounded-md p-2.5" style={{ backgroundColor: c.card, border: `1px solid ${c.cardBorder}`, boxShadow: c.shadow }}>
@@ -631,9 +934,10 @@ export default function SharedReportPage() {
           </Section>
 
           <div className="print:break-before-page" />
+          </>}
 
-          {/* ── CRESCIMENTO ── */}
-          {stats.growth && (
+          {/* ── CRESCIMENTO (pediatra + família) ── */}
+          {stats.growth && audience !== 'caregiver' && (
             <Section icon="straighten" title="Crescimento" c={c}>
               <div className="grid grid-cols-2 gap-2.5 mb-2.5">
                 <div className="p-3 rounded-md" style={{ backgroundColor: c.card, border: `1px solid ${c.cardBorder}`, boxShadow: c.shadow }}>
@@ -666,14 +970,146 @@ export default function SharedReportPage() {
                       <span className="flex items-center gap-1"><span className="w-3 h-0.5 inline-block" style={{ backgroundColor: c.accentDim }} /> {baby.name}</span>
                     </div>
                   </div>
-                  <OMSCurve history={stats.growth.weightHistory} c={c} />
+                  <OMSCurve history={stats.growth.weightHistory} gender={baby.gender === 'girl' ? 'girl' : 'boy'} c={c} />
                 </div>
               )}
             </Section>
           )}
 
-          {/* ── PADRÕES ── */}
-          {stats.patterns.length > 0 && (
+          {/* ── VACINAS (pediatra) ── */}
+          {audience === 'pediatrician' && vaccinesByAge.length > 0 && (
+            <Section icon="vaccines" title="Vacinas aplicadas" c={c}>
+              <div className="space-y-2">
+                {vaccinesByAge.map((group) => (
+                  <div key={group.label} className="rounded-md p-3" style={{ backgroundColor: c.card, border: `1px solid ${c.cardBorder}`, boxShadow: c.shadow }}>
+                    <p className="text-[10px] font-semibold uppercase tracking-wider mb-1.5" style={{ color: c.muted }}>{group.label}</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {group.items.map((v, i) => (
+                        <div key={`${v.code}-${i}`} className="flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px]"
+                          style={{ backgroundColor: c.cardHighlight, border: `1px solid ${c.cardBorder}`, color: c.text }}
+                          title={[v.fullName, v.doseLabel, v.source].filter(Boolean).join(' · ')}>
+                          <span className="font-semibold">{v.name}</span>
+                          {v.doseLabel && <span style={{ color: c.faint }}>· {v.doseLabel}</span>}
+                          <span style={{ color: c.muted }}>{fmtDateShort(v.appliedAt)}</span>
+                          {v.source && (
+                            <span className="px-1 rounded text-[9px] font-bold"
+                              style={{ backgroundColor: v.source === 'PNI' ? c.greenBg : c.cardHighlight, color: v.source === 'PNI' ? c.green : c.accent }}>
+                              {v.source}
+                            </span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )}
+
+          {/* ── MARCOS ── */}
+          {recentMilestones.length > 0 && (
+            <Section icon="flag" title="Marcos recentes" c={c}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {recentMilestones.map((m, i) => (
+                  <div key={`${m.code}-${i}`} className="flex gap-2.5 p-3 rounded-md"
+                    style={{ backgroundColor: c.card, border: `1px solid ${c.cardBorder}`, boxShadow: c.shadow }}>
+                    {m.photoUrl ? (
+                      <img src={m.photoUrl} alt={m.meta.name}
+                        className="w-12 h-12 rounded-md object-cover shrink-0"
+                        style={{ border: `1px solid ${c.cardBorder}` }} />
+                    ) : (
+                      <div className="w-12 h-12 rounded-md flex items-center justify-center text-xl shrink-0"
+                        style={{ backgroundColor: c.cardHighlight, border: `1px solid ${c.cardBorder}` }}>
+                        {m.meta.emoji}
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-bold leading-tight" style={{ fontFamily: 'Manrope, sans-serif', color: c.text }}>
+                        {m.meta.name}
+                      </p>
+                      <p className="text-[10px] mt-0.5" style={{ color: c.muted }}>
+                        {fmtDate(m.achievedAt)}
+                      </p>
+                      {m.note && (
+                        <p className="text-[11px] mt-1 leading-snug" style={{ color: c.muted }}>"{m.note}"</p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )}
+
+          {/* ── SALTOS (pediatra + cuidadora) ── */}
+          {audience !== 'family' && (activeLeap || leapNotesResolved.length > 0) && (
+            <Section icon="trending_up" title="Saltos de desenvolvimento" c={c}>
+              {activeLeap && (
+                <div className="rounded-md p-3 mb-2"
+                  style={{ backgroundColor: c.cardHighlight, border: `1px solid ${c.cardBorder}` }}>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="material-symbols-outlined text-sm" style={{ color: c.accent }}>bolt</span>
+                    <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: c.accent }}>
+                      Salto ativo · Semana {activeLeap.weekStart}–{activeLeap.weekEnd}
+                    </p>
+                  </div>
+                  <p className="text-sm font-bold" style={{ fontFamily: 'Manrope, sans-serif', color: c.text }}>
+                    Salto {activeLeap.id} · {activeLeap.name}
+                  </p>
+                  <p className="text-[11px] mt-0.5" style={{ color: c.muted }}>{activeLeap.subtitle}</p>
+                </div>
+              )}
+              {leapNotesResolved.length > 0 && (
+                <div className="space-y-1.5">
+                  {leapNotesResolved.slice(0, 5).map((n) => (
+                    <div key={n.leapId} className="p-2.5 rounded-md"
+                      style={{ backgroundColor: c.card, border: `1px solid ${c.cardBorder}`, boxShadow: c.shadow }}>
+                      <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: c.muted }}>
+                        Salto {n.leapId} · {n.meta.name}
+                      </p>
+                      <p className="text-[12px] mt-0.5 leading-snug" style={{ color: c.text }}>"{n.note}"</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </Section>
+          )}
+
+          {/* ── MEDICAMENTOS (pediatra + cuidadora) ── */}
+          {audience !== 'family' && medicationsWithNext.length > 0 && (
+            <Section icon="medication" title="Medicamentos ativos" c={c}>
+              <div className="space-y-2">
+                {medicationsWithNext.map((m) => (
+                  <div key={m.id} className="p-3 rounded-md"
+                    style={{ backgroundColor: c.card, border: `1px solid ${c.cardBorder}`, boxShadow: c.shadow }}>
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-bold" style={{ fontFamily: 'Manrope, sans-serif', color: c.text }}>
+                          {m.name}
+                        </p>
+                        <p className="text-[11px] mt-0.5" style={{ color: c.muted }}>
+                          {m.dosage} · a cada {m.frequencyHours}h
+                          {m.scheduleTimes.length > 0 && ` · ${m.scheduleTimes.map((t) => t.slice(0, 5)).join(', ')}`}
+                        </p>
+                        <p className="text-[10px] mt-0.5" style={{ color: c.faint }}>
+                          Desde {fmtDateShort(m.startDate)}
+                          {m.endDate ? ` · até ${fmtDateShort(m.endDate)}` : ' · contínuo'}
+                        </p>
+                      </div>
+                      {m.nextLabel && (
+                        <span className="shrink-0 text-[10px] font-bold px-2 py-1 rounded-md"
+                          style={{ backgroundColor: c.cardHighlight, color: c.accent }}>
+                          próxima {m.nextLabel}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )}
+
+          {/* ── PADRÕES (pediatra) ── */}
+          {audience === 'pediatrician' && stats.patterns.length > 0 && (
             <Section icon="insights" title="Padrões observados" c={c}>
               <div className="rounded-md p-3 space-y-2" style={{ backgroundColor: c.greenBg, border: `1px solid ${c.greenBorder}` }}>
                 {stats.patterns.map((p, i) => (
@@ -686,19 +1122,19 @@ export default function SharedReportPage() {
             </Section>
           )}
 
-          {/* ── CTA ── */}
+          {/* ── CTA (varia por público) ── */}
           <div className="rounded-md p-5 print:hidden text-center" style={{ backgroundColor: c.cardHighlight, border: `1px solid ${c.cardBorder}` }}>
             <p className="font-bold text-base mb-1" style={{ fontFamily: 'Manrope, sans-serif', color: c.text }}>
-              Recomende o Yaya para seus pacientes
+              {cta.title}
             </p>
             <p className="text-xs mb-3" style={{ color: c.muted }}>
-              Pais organizados trazem dados melhores para a consulta.
+              {cta.subtitle}
             </p>
             <a href={`https://wa.me/?text=${whatsappText}`} target="_blank" rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-opacity hover:opacity-90"
               style={{ backgroundColor: '#25D366', color: '#ffffff' }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492a.75.75 0 00.917.918l4.462-1.494A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-2.336 0-4.512-.767-6.262-2.063l-.437-.338-2.66.89.89-2.66-.338-.437A9.953 9.953 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
-              Compartilhar no WhatsApp
+              {cta.btnLabel}
             </a>
           </div>
         </div>

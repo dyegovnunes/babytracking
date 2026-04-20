@@ -14,6 +14,8 @@ export function generateToken(): string {
   return Array.from(array).map(b => b.toString(36).padStart(2, '0')).join('').slice(0, 32)
 }
 
+export type ReportAudience = 'pediatrician' | 'caregiver' | 'family'
+
 export interface SharedReport {
   id: string
   baby_id: string
@@ -23,7 +25,14 @@ export interface SharedReport {
   enabled: boolean
   expires_at: string | null
   created_at: string
+  audience: ReportAudience
+  /** Quantidade de acessos bem-sucedidos. null se nunca acessado. */
+  access_count?: number | null
+  /** Último acesso bem-sucedido (ISO). null se nunca acessado. */
+  last_accessed_at?: string | null
 }
+
+const REPORT_COLUMNS = 'id, baby_id, user_id, name, token, enabled, expires_at, created_at, audience, access_count, last_accessed_at'
 
 export async function createSharedReport(
   babyId: string,
@@ -31,6 +40,7 @@ export async function createSharedReport(
   name: string,
   password: string,
   expiresAt: string | null,
+  audience: ReportAudience = 'pediatrician',
 ): Promise<SharedReport | null> {
   const token = generateToken()
   const password_hash = await hashPassword(password)
@@ -45,8 +55,9 @@ export async function createSharedReport(
       password_hash,
       enabled: true,
       expires_at: expiresAt,
+      audience,
     })
-    .select('id, baby_id, user_id, name, token, enabled, expires_at, created_at')
+    .select(REPORT_COLUMNS)
     .single()
 
   if (error) {
@@ -59,7 +70,7 @@ export async function createSharedReport(
 export async function listSharedReports(babyId: string): Promise<SharedReport[]> {
   const { data, error } = await supabase
     .from('shared_reports')
-    .select('id, baby_id, user_id, name, token, enabled, expires_at, created_at')
+    .select(REPORT_COLUMNS)
     .eq('baby_id', babyId)
     .order('created_at', { ascending: false })
 

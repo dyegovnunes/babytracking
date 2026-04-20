@@ -49,7 +49,9 @@ export function useNotificationPrefs() {
     async (updated: NotifPrefs): Promise<boolean> => {
       setPrefs(updated)
       if (!user || !baby) return true
-      const { error } = await supabase
+
+      // Persiste prefs deste user para este bebê (pushs, notificações).
+      const prefsPromise = supabase
         .from('notification_prefs')
         .upsert(
           {
@@ -67,7 +69,22 @@ export function useNotificationPrefs() {
           },
           { onConflict: 'user_id,baby_id' },
         )
-      if (error) return false
+
+      // Espelha o horário noturno na tabela babies — fonte única
+      // consumida pelo Super Relatório compartilhado (edge function report-view).
+      const babyPromise = supabase
+        .from('babies')
+        .update({
+          quiet_hours_start: updated.quietHours.start,
+          quiet_hours_end: updated.quietHours.end,
+        })
+        .eq('id', baby.id)
+
+      const [{ error: prefsError }, { error: babyError }] = await Promise.all([
+        prefsPromise,
+        babyPromise,
+      ])
+      if (prefsError || babyError) return false
       dispatch({ type: 'SET_QUIET_HOURS', value: updated.quietHours })
       return true
     },
