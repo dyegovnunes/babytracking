@@ -31,62 +31,65 @@ workflows:
           # ios/App/public. Nada de regenerar projeto.
           npx cap sync ios
 
-      - name: Fetch signing files automatically
+      - name: Fetch signing files (reusa cert existente, nunca revoga no caminho feliz)
         script: |
-          # Unset env vars residuais do setup manual antigo que podem estar
-          # no group `yaya_ios` (CM_CERTIFICATE etc). Se a CLI detectar uma
-          # CERTIFICATE_PRIVATE_KEY setada mas inválida, ela tenta usá-la
-          # e falha com "Provided value '********' is not valid".
-          unset CERTIFICATE_PRIVATE_KEY
+          # Unset env vars residuais de setup antigo (NÃO remover
+          # CERTIFICATE_PRIVATE_KEY — é exatamente ela que agora queremos
+          # usar, persistida como secret do group `yaya_ios`).
           unset CERTIFICATE_PRIVATE_KEY_PASSWORD
           unset CM_CERTIFICATE
           unset CM_CERTIFICATE_PASSWORD
           unset CM_PROVISIONING_PROFILE
 
-          # Inicializa keychain
           keychain initialize
 
-          # IMPORTANTE: geramos uma RSA key nova a cada build (não temos a
-          # key persistida em env var). Isso significa que certs DISTRIBUTION
-          # já existentes na ASC são inúteis (não temos a private key pra
-          # casar). Pior: na segunda build em diante a Apple retorna 409 no
-          # --create porque já existe um Distribution cert ativo.
+          # ---------------------------------------------------------------
+          # Code signing v2 — key RSA persistida + reuso de cert
+          # ---------------------------------------------------------------
+          # Histórico: antes, a RSA key era gerada in-memory a cada build
+          # e descartada. Cert criado ficava órfão (sem key pra parear),
+          # forçando REVOGAR + recriar a cada build. Isso invalidava
+          # TestFlight anterior e disparava e-mail da Apple "null null
+          # has revoked your certificate" toda vez.
           #
-          # Solução: revogar todos os certs DISTRIBUTION existentes antes
-          # de criar um novo. Seguro porque esse projeto só roda daqui —
-          # se outro sistema depender do mesmo cert, precisa persistir a
-          # key em CERTIFICATE_PRIVATE_KEY env var e remover este cleanup.
-          # Apple tem 2 tipos de cert de distribuição: IOS_DISTRIBUTION
-          # (legacy) e DISTRIBUTION (Apple Distribution, moderno). Precisa
-          # limpar os dois. O fetch-signing-files procura ambos.
-          echo "Limpando certs DISTRIBUTION existentes na ASC..."
-          DIST_IDS_LEGACY=$(app-store-connect certificates list --type IOS_DISTRIBUTION --json 2>/dev/null | python3 -c "import sys,json; data=json.load(sys.stdin); print(' '.join(c['id'] for c in data))" 2>/dev/null || echo "")
-          DIST_IDS_MODERN=$(app-store-connect certificates list --type DISTRIBUTION --json 2>/dev/null | python3 -c "import sys,json; data=json.load(sys.stdin); print(' '.join(c['id'] for c in data))" 2>/dev/null || echo "")
-          DIST_IDS="$DIST_IDS_LEGACY $DIST_IDS_MODERN"
+          # Agora: `CERTIFICATE_PRIVATE_KEY` é um secret env var do group
+          # `yaya_ios`. A key persiste entre builds, o cert paired com ela
+          # vira reutilizável, e o fluxo abaixo:
+          #   1. Tenta fetch do cert JÁ pareado com nossa key (sem --create)
+          #   2. Se achou → reusa. Zero side effect na Apple Developer.
+          #   3. Se NÃO achou → revoga certs DISTRIBUTION existentes (são
+          #      inúteis — feitos com keys descartadas) e cria UM novo
+          #      com a nossa key. Isso só acontece na 1ª build depois
+          #      dessa mudança, ou se alguém revogar fora daqui.
+          # ---------------------------------------------------------------
 
-          if [ -n "$(echo $DIST_IDS | tr -d ' ')" ]; then
-            echo "Revogando: $DIST_IDS"
-            for id in $DIST_IDS; do
-              app-store-connect certificates delete "$id" \
-                --ignore-not-found || true
-            done
+          if app-store-connect fetch-signing-files "app.yayababy" \
+              --type IOS_APP_STORE \
+              --certificate-key "$CERTIFICATE_PRIVATE_KEY" 2>/dev/null; then
+            echo "✅ Cert pareado com a key persistida encontrado — reusando."
           else
-            echo "Nenhum cert DISTRIBUTION pra revogar."
+            echo "⚠️  Nenhum cert pareado — limpando certs órfãos e criando novo..."
+
+            DIST_IDS_LEGACY=$(app-store-connect certificates list --type IOS_DISTRIBUTION --json 2>/dev/null | python3 -c "import sys,json; data=json.load(sys.stdin); print(' '.join(c['id'] for c in data))" 2>/dev/null || echo "")
+            DIST_IDS_MODERN=$(app-store-connect certificates list --type DISTRIBUTION --json 2>/dev/null | python3 -c "import sys,json; data=json.load(sys.stdin); print(' '.join(c['id'] for c in data))" 2>/dev/null || echo "")
+            DIST_IDS="$DIST_IDS_LEGACY $DIST_IDS_MODERN"
+
+            if [ -n "$(echo $DIST_IDS | tr -d ' ')" ]; then
+              echo "Revogando certs antigos (órfãos): $DIST_IDS"
+              for id in $DIST_IDS; do
+                app-store-connect certificates delete "$id" \
+                  --ignore-not-found || true
+              done
+            fi
+
+            # Cria cert pareado com nossa key persistida. Próxima build
+            # vai achar esse cert no primeiro fetch e pular esse else.
+            app-store-connect fetch-signing-files "app.yayababy" \
+              --type IOS_APP_STORE \
+              --certificate-key "$CERTIFICATE_PRIVATE_KEY" \
+              --create
           fi
 
-          # Gera uma RSA private key fresca e inline como string (a flag
-          # --certificate-key-path não existe nesta versão da CLI; usar
-          # --certificate-key com o conteúdo).
-          CERT_KEY_CONTENT=$(openssl genrsa 2048)
-
-          # fetch-signing-files cria cert + profile via ASC API (--create)
-          # e baixa pra keychain local.
-          app-store-connect fetch-signing-files "app.yayababy" \
-            --type IOS_APP_STORE \
-            --certificate-key "$CERT_KEY_CONTENT" \
-            --create
-
-          # Adiciona os certs baixados na keychain default.
           keychain add-certificates
 
       - name: Set app icon
@@ -95,9 +98,11 @@ workflows:
 
       - name: Set version and build number
         script: |
+          # Mantém em sync com app/package.json e app/android/app/build.gradle.
+          # Bump aqui sempre que subir versão.
           PBXPROJ="app/ios/App/App.xcodeproj/project.pbxproj"
-          sed -i '' 's/MARKETING_VERSION = [^;]*;/MARKETING_VERSION = 1.8.3;/g' "$PBXPROJ"
-          sed -i '' 's/CURRENT_PROJECT_VERSION = [^;]*;/CURRENT_PROJECT_VERSION = 42;/g' "$PBXPROJ"
+          sed -i '' 's/MARKETING_VERSION = [^;]*;/MARKETING_VERSION = 1.9.1;/g' "$PBXPROJ"
+          sed -i '' 's/CURRENT_PROJECT_VERSION = [^;]*;/CURRENT_PROJECT_VERSION = 44;/g' "$PBXPROJ"
 
       - name: Use fetched profiles
         script: |
