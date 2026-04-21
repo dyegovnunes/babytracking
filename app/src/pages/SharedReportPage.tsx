@@ -2,8 +2,7 @@ import { useState, useMemo, useCallback, useRef } from 'react';
 import { WEIGHT_BOYS, WEIGHT_GIRLS, type OMSDataPoint } from '../lib/omsData';
 import { MILESTONES, type Milestone } from '../features/milestones/milestoneData';
 import { DEVELOPMENT_LEAPS, type DevelopmentLeap } from '../features/milestones/developmentLeaps';
-
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
+import { supabaseUrl, supabaseAnonKey } from '../lib/supabase';
 
 interface ReportVaccine {
   appliedAt: string;
@@ -677,11 +676,30 @@ export default function SharedReportPage() {
     if (!token || !password) return;
     setLoading(true); setError(null);
     try {
-      const res = await fetch(`${SUPABASE_URL}/functions/v1/report-view`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, password }) });
-      const json = await res.json();
-      if (!res.ok) { setError(json.error || 'Erro ao acessar relatório'); return; }
+      // fetch direto requer headers apikey + Authorization pra passar no gateway
+      // do Supabase (mesmo em funções com verify_jwt=false). Sem isso o gateway
+      // retorna 401 com body não-JSON e a gente caía em "Erro de conexão".
+      const res = await fetch(`${supabaseUrl}/functions/v1/report-view`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': supabaseAnonKey,
+          'Authorization': `Bearer ${supabaseAnonKey}`,
+        },
+        body: JSON.stringify({ token, password }),
+      });
+      let json: any = null;
+      try { json = await res.json(); } catch { /* resposta não-JSON do gateway */ }
+      if (!res.ok) {
+        setError(json?.error || `Erro ao acessar relatório (${res.status})`);
+        return;
+      }
       setData(json);
-    } catch { setError('Erro de conexão. Tente novamente.'); } finally { setLoading(false); }
+    } catch (err: any) {
+      setError(`Erro de conexão: ${err?.message || 'tente novamente'}`);
+    } finally {
+      setLoading(false);
+    }
   }, [token, password]);
 
   // ─── PASSWORD SCREEN ──────

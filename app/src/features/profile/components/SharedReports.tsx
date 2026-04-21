@@ -129,8 +129,12 @@ export default function SharedReports() {
   const handleShareWhatsApp = (report: SharedReport) => {
     hapticLight();
     const url = getReportUrl(report.token);
-    // Texto conversacional, com quebra de linha (\n preservado pelo encodeURIComponent).
-    const text = `Oi! Preparei o acompanhamento ${genderContraction} ${baby?.name} pra você dar uma olhada.\n\nLink: ${url}\n\nA senha eu te mando separado pra ficar seguro 🙂`;
+    // Nota: não incluímos senha aqui porque, depois que o link é fechado,
+    // a senha não é mais acessível via UI (só conhecida pelo pai no momento
+    // da criação). Quem usar "Compartilhar" depois precisa da senha à mão —
+    // pra isso existe também o botão "Copiar link" e, na criação, o "Copiar
+    // mensagem pronta" que inclui senha.
+    const text = `Oi! Preparei o acompanhamento ${genderContraction} ${baby?.name} pra você dar uma olhada.\n\nLink: ${url}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
   };
 
