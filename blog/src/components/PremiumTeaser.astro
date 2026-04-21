@@ -1,0 +1,42 @@
+---
+interface Props {
+  teaser: {
+    title: string
+    body: string
+    cta_text?: string
+    cta_url?: string
+  } | null
+}
+
+const { teaser } = Astro.props
+
+const ctaText = teaser?.cta_text ?? 'Conheça o Yaya+'
+const ctaUrl = teaser?.cta_url ?? 'https://yayababy.app/yaya-plus'
+---
+
+{teaser && (
+  <aside class="my-8 p-5 rounded-md bg-gradient-to-br from-yaya-glow/15 to-yaya-purple/10 border border-yaya-purple/30">
+    <div class="flex items-start gap-3">
+      <div class="w-10 h-10 rounded-md bg-yaya-purple/20 flex items-center justify-center shrink-0">
+        <span class="text-xl">💡</span>
+      </div>
+      <div class="flex-1 min-w-0">
+        <p class="text-[10px] font-display font-bold text-yaya-purple uppercase tracking-wider mb-1">
+          Com o Yaya+
+        </p>
+        <p class="font-display text-base font-bold text-yaya-cloud leading-snug mb-2">
+          {teaser.title}
+        </p>
+        <p class="text-sm text-yaya-cloud/70 font-sans leading-relaxed mb-3">
+          {teaser.body}
+        </p>
+        <a
+          href={ctaUrl}
+          class="inline-flex items-center gap-1 text-sm font-display font-bold text-yaya-purple hover:text-yaya-glow transition-colors"
+        >
+          {ctaText} →
+        </a>
+      </div>
+    </div>
+  </aside>
+)}

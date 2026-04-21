@@ -16,6 +16,13 @@ export interface AffiliateProduct {
   context: string
 }
 
+export interface PremiumTeaserData {
+  title: string
+  body: string
+  cta_text?: string
+  cta_url?: string
+}
+
 export interface BlogPost {
   id: string
   slug: string
@@ -30,6 +37,7 @@ export interface BlogPost {
   related_slugs: string[]
   schema_type: SchemaType
   affiliate_products: AffiliateProduct[]
+  premium_teaser: PremiumTeaserData | null
   target_week_start: number | null
   target_week_end: number | null
   image_url: string | null

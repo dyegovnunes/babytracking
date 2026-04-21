@@ -17,6 +17,8 @@ import RelatedPosts from '../components/RelatedPosts.astro'
 import ShareButtons from '../components/ShareButtons.astro'
 import FeedbackBox from '../components/FeedbackBox.astro'
 import CorrectionLink from '../components/CorrectionLink.astro'
+import PremiumTeaser from '../components/PremiumTeaser.astro'
+import NewsletterSignup from '../components/NewsletterSignup.astro'
 
 export async function getStaticPaths() {
   const { data } = await supabase
@@ -184,6 +186,12 @@ const faqLd = post.schema_type === 'FAQPage' ? faqJsonLd(post) : null
 
     <!-- Corpo do artigo -->
     <div class="prose-yaya" set:html={contentHtml} />
+
+    <!-- Premium teaser (opcional, editor marca no frontmatter) -->
+    <PremiumTeaser teaser={post.premium_teaser} />
+
+    <!-- Newsletter signup inline pós-artigo -->
+    <NewsletterSignup source={`blog-post-${post.slug}`} variant="article" />
 
     <!-- Disclaimer -->
     <div class="mt-12 p-4 rounded-md bg-yaya-cloud/[0.03] border border-yaya-cloud/10 text-sm text-yaya-cloud/60 leading-relaxed font-sans">

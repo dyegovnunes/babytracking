@@ -1,0 +1,107 @@
+---
+interface Props {
+  source: string   // ex: 'blog-footer', 'blog-post-{slug}'
+  variant?: 'article' | 'footer'
+}
+
+const { source, variant = 'article' } = Astro.props
+const formId = `newsletter-form-${Math.random().toString(36).slice(2, 9)}`
+---
+
+<section
+  class:list={[
+    'rounded-md border',
+    variant === 'article'
+      ? 'my-12 p-6 bg-gradient-to-br from-yaya-purple/10 to-yaya-blush/5 border-yaya-purple/20'
+      : 'p-5 bg-yaya-cloud/[0.03] border-yaya-cloud/10',
+  ]}
+  data-newsletter-source={source}
+>
+  <form id={formId} class="newsletter-form" novalidate>
+    <p class="font-display text-base font-bold text-yaya-cloud mb-1">
+      Receba os próximos guias antes de todo mundo
+    </p>
+    <p class="text-sm text-yaya-cloud/70 font-sans leading-relaxed mb-4">
+      1 email por semana, sempre evergreen. Cancelar é 1 clique.
+    </p>
+    <div class="flex gap-2 flex-col sm:flex-row">
+      <input
+        type="email"
+        name="email"
+        required
+        placeholder="seu@email.com"
+        aria-label="Seu email"
+        class="flex-1 px-3 py-2.5 rounded-md bg-yaya-night/50 border border-yaya-cloud/15 text-yaya-cloud text-sm font-sans placeholder:text-yaya-cloud/30 focus:border-yaya-purple/50 focus:outline-none"
+      />
+      <button
+        type="submit"
+        class="bg-yaya-purple hover:bg-yaya-glow text-yaya-night font-display font-bold px-5 py-2.5 rounded-md transition-colors text-sm shrink-0"
+      >
+        Assinar
+      </button>
+    </div>
+    <p class="newsletter-msg text-xs font-sans mt-3 hidden"></p>
+  </form>
+</section>
+
+<script>
+  import { createClient } from '@supabase/supabase-js'
+
+  const supabase = createClient(
+    import.meta.env.PUBLIC_SUPABASE_URL,
+    import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
+  )
+
+  document.querySelectorAll<HTMLFormElement>('.newsletter-form').forEach((form) => {
+    const section = form.closest('[data-newsletter-source]') as HTMLElement | null
+    const source = section?.dataset.newsletterSource ?? 'unknown'
+    const msg = form.querySelector<HTMLParagraphElement>('.newsletter-msg')
+    const submitBtn = form.querySelector<HTMLButtonElement>('button[type=submit]')
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault()
+      const emailInput = form.querySelector<HTMLInputElement>('input[name=email]')
+      const email = emailInput?.value.trim() ?? ''
+      if (!email || !email.includes('@')) {
+        if (msg) {
+          msg.textContent = 'Por favor, digite um email válido.'
+          msg.className = 'text-xs font-sans mt-3 text-yellow-400'
+        }
+        return
+      }
+
+      submitBtn && (submitBtn.disabled = true)
+      submitBtn && (submitBtn.textContent = 'Enviando...')
+
+      const { error } = await supabase
+        .from('newsletter_subscribers')
+        .upsert(
+          {
+            email,
+            source,
+            user_agent: navigator.userAgent.slice(0, 255),
+          },
+          { onConflict: 'email', ignoreDuplicates: true },
+        )
+
+      if (error) {
+        if (msg) {
+          msg.textContent = 'Não conseguimos cadastrar agora. Tenta de novo daqui a pouco.'
+          msg.className = 'text-xs font-sans mt-3 text-yellow-400'
+        }
+        submitBtn && (submitBtn.disabled = false)
+        submitBtn && (submitBtn.textContent = 'Assinar')
+      } else {
+        form.innerHTML = `
+          <div class="flex items-center gap-2 text-yaya-cloud">
+            <span class="text-xl">💜</span>
+            <div>
+              <p class="font-display font-bold text-base">Pronto, vamos te avisar.</p>
+              <p class="text-sm font-sans text-yaya-cloud/70">Confere sua caixa de entrada em breve.</p>
+            </div>
+          </div>
+        `
+      }
+    })
+  })
+</script>
