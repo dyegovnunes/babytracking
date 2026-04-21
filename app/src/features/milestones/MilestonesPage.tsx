@@ -18,7 +18,6 @@ import {
 } from './milestoneData'
 import type { AgeBand } from '../../lib/ageUtils'
 import { DEVELOPMENT_LEAPS } from './developmentLeaps'
-import MilestoneRegister from './components/MilestoneRegister'
 import MilestoneCelebration from './components/MilestoneCelebration'
 import { PaywallModal } from '../../components/ui/PaywallModal'
 import Toast from '../../components/ui/Toast'
@@ -78,14 +77,15 @@ export default function MilestonesPage() {
   }, [myRole, perms.show_milestones, navigate])
 
   const [filter, setFilter] = useState<FilterMode>('all')
-  const [registerTarget, setRegisterTarget] = useState<Milestone | null>(null)
   const [celebrationData, setCelebrationData] = useState<{
     milestone: Milestone
     entry: BabyMilestone
   } | null>(null)
+  // Detail modal aceita entry opcional — quando não tem entry (marco ainda
+  // não registrado), mostra info do marco + botão "Marcar como concluído".
   const [detailEntry, setDetailEntry] = useState<{
     milestone: Milestone
-    entry: BabyMilestone
+    entry: BabyMilestone | null
   } | null>(null)
   const [showPaywall, setShowPaywall] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
@@ -97,13 +97,13 @@ export default function MilestonesPage() {
     }
   }, [isPremium])
 
-  // Open register flow from query param (?register=code)
+  // Open detail from query param (?register=code) — mantido pra retrocompat
+  // de deeplinks. Abre o detail com entry=null (não registrado).
   useEffect(() => {
     const code = searchParams.get('register')
     if (code) {
       const m = MILESTONES.find((x) => x.code === code)
-      if (m) setRegisterTarget(m)
-      // remove param
+      if (m) setDetailEntry({ milestone: m, entry: null })
       searchParams.delete('register')
       setSearchParams(searchParams, { replace: true })
     }
@@ -208,22 +208,25 @@ export default function MilestonesPage() {
     return g
   }, [filter, achievedCodes, ageDays])
 
-  const handleRegister = async (args: {
-    achievedAt: string
-    photoDataUrl?: string
-    note?: string
-  }) => {
-    if (!registerTarget) return
+  // Marca o marco como concluído a partir do detail modal (versão sem
+  // entry). Usa registerMilestone com achievedAt = hoje — pai pode
+  // ajustar depois abrindo o detail. Esse fluxo substitui o antigo
+  // MilestoneRegister (que pedia data + foto + nota num form).
+  const handleRegisterFromDetail = async (m: Milestone) => {
+    const today = new Date()
+    const y = today.getFullYear()
+    const mo = String(today.getMonth() + 1).padStart(2, '0')
+    const d = String(today.getDate()).padStart(2, '0')
     const entry = await registerMilestone(
-      registerTarget.code,
-      args.achievedAt,
-      args.photoDataUrl,
-      args.note,
+      m.code,
+      `${y}-${mo}-${d}`,
+      undefined,
+      undefined,
       user?.id,
     )
     if (entry) {
-      setCelebrationData({ milestone: registerTarget, entry })
-      setRegisterTarget(null)
+      setCelebrationData({ milestone: m, entry })
+      setDetailEntry(null)
     } else {
       setToast('Não foi possível salvar. Tente novamente.')
     }
@@ -333,8 +336,8 @@ export default function MilestonesPage() {
                 isAchieved={false}
                 isFuture={false}
                 onRowClick={() => {
-                  if (readOnly) return
-                  hapticLight(); setRegisterTarget(m)
+                  hapticLight()
+                  setDetailEntry({ milestone: m, entry: null })
                 }}
                 onCheckboxClick={() => {
                   if (readOnly) return
@@ -377,19 +380,14 @@ export default function MilestonesPage() {
                         isAchieved={isAchieved}
                         isFuture={isFuture}
                         onRowClick={() => {
-                          if (readOnly) {
-                            if (isAchieved && entry) {
-                              hapticLight()
-                              setDetailEntry({ milestone: m, entry })
-                            }
-                            return
-                          }
                           hapticLight()
-                          if (isAchieved && entry) {
-                            setDetailEntry({ milestone: m, entry })
-                          } else {
-                            setRegisterTarget(m)
-                          }
+                          // Sempre abre o detail — com entry se já registrado,
+                          // sem entry se ainda não registrado. A ação de
+                          // marcar/desmarcar fica só no checkbox da linha.
+                          setDetailEntry({
+                            milestone: m,
+                            entry: isAchieved && entry ? entry : null,
+                          })
                         }}
                         onCheckboxClick={() => {
                           if (readOnly) return
@@ -404,15 +402,8 @@ export default function MilestonesPage() {
         })}
       </div>
 
-      {/* Register modal */}
-      {registerTarget && (
-        <MilestoneRegister
-          milestone={registerTarget}
-          birthDate={baby.birthDate}
-          onCancel={() => setRegisterTarget(null)}
-          onSave={handleRegister}
-        />
-      )}
+      {/* Register modal removido — ação de marcar fica no checkbox da
+          linha ou no botão "Marcar como concluído" dentro do detail. */}
 
       {/* Celebration — share desativado temporariamente (image gen não
           confiável em iOS; voltar depois do lançamento). */}
@@ -428,14 +419,18 @@ export default function MilestonesPage() {
         />
       )}
 
-      {/* Detail modal — share desativado junto com celebration */}
+      {/* Detail modal — share desativado junto com celebration.
+          Quando entry é null, modal mostra info do marco + botão
+          "Marcar como concluído". Quando tem entry, mostra os dados
+          completos (data, idade, leap info, nota, delete). */}
       {detailEntry && (
         <MilestoneDetailModal
           milestone={detailEntry.milestone}
           entry={detailEntry.entry}
           birthDate={baby.birthDate}
           onClose={() => setDetailEntry(null)}
-          onDelete={() => handleDelete(detailEntry.entry)}
+          onDelete={detailEntry.entry ? () => handleDelete(detailEntry.entry!) : undefined}
+          onRegister={!detailEntry.entry ? () => handleRegisterFromDetail(detailEntry.milestone) : undefined}
           readOnly={readOnly}
         />
       )}
@@ -600,25 +595,39 @@ function MilestoneDetailModal({
   onClose,
   onDelete,
   onShare,
+  onRegister,
   readOnly = false,
 }: {
   milestone: Milestone
-  entry: BabyMilestone
+  entry: BabyMilestone | null
   birthDate: string
   onClose: () => void
-  onDelete: () => void
+  onDelete?: () => void
   onShare?: () => void
+  /** Quando entry é null, mostra botão "Marcar como concluído". */
+  onRegister?: () => void
   readOnly?: boolean
 }) {
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const [registering, setRegistering] = useState(false)
   useSheetBackClose(true, onClose)
-  const leapInfo = getLeapAtDate(birthDate, entry.achievedAt)
-  const dateLabel = entry.achievedAt
+  const leapInfo = entry ? getLeapAtDate(birthDate, entry.achievedAt) : null
+  const dateLabel = entry?.achievedAt
     ? new Date(entry.achievedAt + 'T12:00:00').toLocaleDateString(
         'pt-BR',
         { day: '2-digit', month: 'long', year: 'numeric' },
       )
-    : 'Data não informada'
+    : null
+
+  // Faixa etária típica quando não tem entry — ajuda o pai a saber
+  // quando o marco costuma aparecer.
+  const typicalAgeLabel = (() => {
+    const min = milestone.typicalAgeDaysMin
+    const max = milestone.typicalAgeDaysMax
+    const toMonths = (d: number) => Math.round(d / 30)
+    if (min < 30 && max < 30) return `típico: ${min}-${max} dias`
+    return `típico: ${toMonths(min)}-${toMonths(max)} meses`
+  })()
 
   return (
     <div
@@ -634,9 +643,11 @@ function MilestoneDetailModal({
                 {milestone.name}
               </h3>
               <p className="font-label text-xs text-tertiary">
-                {entry.achievedAt
-                  ? `${formatAgeAtDate(birthDate, entry.achievedAt)} · ${dateLabel}`
-                  : dateLabel}
+                {entry
+                  ? (entry.achievedAt && dateLabel
+                      ? `${formatAgeAtDate(birthDate, entry.achievedAt)} · ${dateLabel}`
+                      : 'Data não informada')
+                  : typicalAgeLabel}
               </p>
             </div>
           </div>
@@ -649,7 +660,7 @@ function MilestoneDetailModal({
           </button>
         </div>
 
-        {entry.photoUrl && (
+        {entry?.photoUrl && (
           <img
             src={entry.photoUrl}
             alt={milestone.name}
@@ -661,7 +672,7 @@ function MilestoneDetailModal({
           {milestone.description}
         </p>
 
-        {entry.note && (
+        {entry?.note && (
           <div className="bg-white/[0.03] rounded-md p-3 mb-3">
             <p className="font-label text-[10px] text-on-surface-variant/60 uppercase tracking-wider mb-1">
               Nota
@@ -682,7 +693,23 @@ function MilestoneDetailModal({
         )}
 
         <div className="flex gap-3">
-          {onShare && (
+          {/* Marco não registrado: botão principal "Marcar como concluído" */}
+          {!entry && onRegister && !readOnly && (
+            <button
+              type="button"
+              disabled={registering}
+              onClick={async () => {
+                setRegistering(true)
+                try { await onRegister() } finally { setRegistering(false) }
+              }}
+              className="flex-1 py-3 rounded-md bg-primary text-on-primary font-label font-bold text-sm flex items-center justify-center gap-2 disabled:opacity-50"
+            >
+              <span className="material-symbols-outlined text-base">check_circle</span>
+              {registering ? 'Registrando...' : 'Marcar como concluído'}
+            </button>
+          )}
+          {/* Marco registrado: share (desativado) + delete */}
+          {entry && onShare && (
             <button
               type="button"
               onClick={onShare}
@@ -692,7 +719,7 @@ function MilestoneDetailModal({
               Compartilhar
             </button>
           )}
-          {!readOnly && (
+          {entry && !readOnly && onDelete && (
             <button
               type="button"
               onClick={() => setConfirmDelete(true)}
@@ -719,7 +746,7 @@ function MilestoneDetailModal({
               </button>
               <button
                 type="button"
-                onClick={onDelete}
+                onClick={() => onDelete?.()}
                 className="flex-1 py-2 rounded-md bg-error text-on-error font-label text-xs font-semibold"
               >
                 Excluir
