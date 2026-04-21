@@ -4,12 +4,13 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Paleta oficial Yaya (Nocturnal Sanctuary)
-        'yaya-night': '#0d0a27',
-        'yaya-purple': '#b79fff',
-        'yaya-glow': '#ab8ffe',
-        'yaya-blush': '#ff96b9',
-        'yaya-cloud': '#e7e2ff',
+        // Paleta Yaya via CSS variables em blog/src/styles/theme.css
+        // Dark é o default; light mode via prefers-color-scheme do SO/browser.
+        'yaya-night': 'rgb(var(--yaya-night) / <alpha-value>)',
+        'yaya-cloud': 'rgb(var(--yaya-cloud) / <alpha-value>)',
+        'yaya-purple': 'rgb(var(--yaya-purple) / <alpha-value>)',
+        'yaya-glow': 'rgb(var(--yaya-glow) / <alpha-value>)',
+        'yaya-blush': 'rgb(var(--yaya-blush) / <alpha-value>)',
       },
       fontFamily: {
         // Manrope = display/headlines/logo; Plus Jakarta Sans = body

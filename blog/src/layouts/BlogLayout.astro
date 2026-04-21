@@ -1,5 +1,6 @@
 ---
 import CookieConsent from '../components/CookieConsent.astro'
+import '../styles/theme.css'
 
 interface Props {
   title: string
@@ -21,7 +22,8 @@ const GA_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID as string | undefined
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0d0a27" />
+    <meta name="theme-color" content="#0d0a27" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#fafafe" media="(prefers-color-scheme: light)" />
     <meta name="robots" content="index, follow" />
 
     <title>{fullTitle}</title>
