@@ -1,0 +1,51 @@
+---
+import { CATEGORY_LABEL, CATEGORY_EMOJI } from '../types'
+import type { ContentCategory } from '../types'
+
+interface Props {
+  counts: Record<string, number>
+}
+
+const { counts } = Astro.props
+
+const categories: ContentCategory[] = [
+  'gestacao-tema' as any, // placeholder; vamos usar só as reais da tabela
+]
+
+// Categorias na ordem visual desejada (match com /categoria/X)
+const visualOrder: ContentCategory[] = [
+  'sono', 'alimentacao', 'rotina', 'saude', 'desenvolvimento', 'marcos',
+]
+---
+
+<section class="max-w-3xl mx-auto px-4 mb-14">
+  <h2 class="font-display text-xl font-bold text-yaya-cloud mb-1 tracking-tight">
+    Explore por tema
+  </h2>
+  <p class="font-sans text-sm text-yaya-cloud/50 mb-6">
+    Guias organizados pelo que você precisa agora
+  </p>
+  <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+    {visualOrder.map((cat) => {
+      const n = counts[cat] ?? 0
+      return (
+        <a
+          href={`/categoria/${cat}`}
+          class="group flex items-center gap-3 p-4 rounded-md bg-yaya-cloud/[0.03] border border-yaya-cloud/10 hover:border-yaya-purple/40 hover:bg-yaya-cloud/[0.06] transition-all"
+        >
+          <div class="w-11 h-11 rounded-md bg-yaya-purple/10 border border-yaya-purple/15 flex items-center justify-center shrink-0">
+            <span class="text-2xl">{CATEGORY_EMOJI[cat]}</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="font-display font-bold text-yaya-cloud text-sm group-hover:text-yaya-purple transition-colors">
+              {CATEGORY_LABEL[cat]}
+            </p>
+            <p class="text-xs text-yaya-cloud/50 font-sans mt-0.5">
+              {n} {n === 1 ? 'guia' : 'guias'}
+            </p>
+          </div>
+        </a>
+      )
+    })}
+  </div>
+</section>
