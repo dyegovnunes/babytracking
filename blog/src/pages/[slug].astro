@@ -4,6 +4,12 @@ import { supabase } from '../lib/supabase'
 import type { BlogPost, ContentCategory } from '../types'
 import { CATEGORY_LABEL, CATEGORY_EMOJI } from '../types'
 import { marked } from 'marked'
+import {
+  breadcrumbJsonLd,
+  articleJsonLd,
+  howToJsonLd,
+  faqJsonLd,
+} from '../lib/jsonld'
 
 export async function getStaticPaths() {
   const { data } = await supabase
@@ -42,6 +48,13 @@ const canonicalUrl = `https://blog.yayababy.app/${post.slug}`
 const publishDate = post.published_at
   ? new Date(post.published_at).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })
   : null
+
+// Structured data: sempre BreadcrumbList + Article. Quando o post é HowTo ou
+// FAQPage, emite também o schema especializado para rich results no Google.
+const breadcrumbLd = breadcrumbJsonLd(post)
+const articleLd = articleJsonLd(post)
+const howToLd = post.schema_type === 'HowTo' ? howToJsonLd(post) : null
+const faqLd = post.schema_type === 'FAQPage' ? faqJsonLd(post) : null
 ---
 
 <BlogLayout
@@ -50,24 +63,11 @@ const publishDate = post.published_at
   image={post.image_url ?? undefined}
   canonicalUrl={canonicalUrl}
 >
-  <!-- Schema markup: Article -->
-  <script type="application/ld+json" set:html={JSON.stringify({
-    '@context': 'https://schema.org',
-    '@type': 'Article',
-    headline: post.title,
-    description: post.meta_description,
-    image: post.image_url,
-    datePublished: post.published_at,
-    publisher: {
-      '@type': 'Organization',
-      name: 'Yaya Baby',
-      url: 'https://yayababy.app',
-      logo: {
-        '@type': 'ImageObject',
-        url: 'https://blog.yayababy.app/logo.png',
-      },
-    },
-  })} />
+  <!-- Structured data -->
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(articleLd)} />
+  {howToLd && <script type="application/ld+json" set:html={JSON.stringify(howToLd)} />}
+  {faqLd && <script type="application/ld+json" set:html={JSON.stringify(faqLd)} />}
 
   <article class="max-w-2xl mx-auto px-4 py-12">
 

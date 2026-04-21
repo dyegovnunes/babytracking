@@ -3,6 +3,7 @@ import BlogLayout from '../../layouts/BlogLayout.astro'
 import { supabase } from '../../lib/supabase'
 import type { BlogPost, ContentCategory } from '../../types'
 import { CATEGORY_LABEL, CATEGORY_EMOJI } from '../../types'
+import { categoryBreadcrumbJsonLd } from '../../lib/jsonld'
 
 const CATEGORIES: ContentCategory[] = [
   'alimentacao', 'sono', 'desenvolvimento', 'saude', 'rotina', 'marcos',
@@ -36,6 +37,7 @@ function formatWeekRange(start: number | null, end: number | null): string {
 const catLabel = CATEGORY_LABEL[cat]
 const catEmoji = CATEGORY_EMOJI[cat]
 const canonicalUrl = `https://blog.yayababy.app/categoria/${cat}`
+const breadcrumbLd = categoryBreadcrumbJsonLd(cat)
 ---
 
 <BlogLayout
@@ -43,6 +45,7 @@ const canonicalUrl = `https://blog.yayababy.app/categoria/${cat}`
   description={`Guias práticos sobre ${catLabel.toLowerCase()} do bebê. Conteúdo baseado em evidências, escrito pra pais reais.`}
   canonicalUrl={canonicalUrl}
 >
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbLd)} />
   <!-- Hero da categoria -->
   <section class="max-w-3xl mx-auto px-4 pt-14 pb-10">
     <nav class="text-sm text-yaya-cloud/50 mb-5 flex items-center gap-1.5 font-sans">

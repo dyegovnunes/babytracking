@@ -7,6 +7,14 @@ export type ContentCategory =
   | 'marcos'
 
 export type Audience = 'gestante' | 'parent' | 'both'
+export type SchemaType = 'Article' | 'HowTo' | 'FAQPage'
+export type Pillar = 'gestacao' | 'amamentacao' | 'sono' | 'primeiros-dias' | string
+export type Role = 'pilar' | 'cluster'
+
+export interface AffiliateProduct {
+  name: string
+  context: string
+}
 
 export interface BlogPost {
   id: string
@@ -17,6 +25,11 @@ export interface BlogPost {
   keywords: string[] | null
   category: ContentCategory
   audience: Audience
+  pillar: Pillar | null
+  role: Role | null
+  related_slugs: string[]
+  schema_type: SchemaType
+  affiliate_products: AffiliateProduct[]
   target_week_start: number | null
   target_week_end: number | null
   image_url: string | null
