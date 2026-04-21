@@ -1,10 +1,13 @@
 export type ContentCategory =
   | 'alimentacao'
+  | 'amamentacao'
   | 'sono'
   | 'desenvolvimento'
   | 'saude'
   | 'rotina'
   | 'marcos'
+  | 'gestacao'
+  | 'seguranca'
 
 export type Audience = 'gestante' | 'parent' | 'both'
 export type SchemaType = 'Article' | 'HowTo' | 'FAQPage'
@@ -46,19 +49,25 @@ export interface BlogPost {
 }
 
 export const CATEGORY_LABEL: Record<ContentCategory, string> = {
+  gestacao: 'Gestação',
   alimentacao: 'Alimentação',
+  amamentacao: 'Amamentação',
   sono: 'Sono',
-  desenvolvimento: 'Desenvolvimento',
-  saude: 'Saúde',
   rotina: 'Rotina',
+  saude: 'Saúde',
+  seguranca: 'Segurança',
+  desenvolvimento: 'Desenvolvimento',
   marcos: 'Marcos',
 }
 
 export const CATEGORY_EMOJI: Record<ContentCategory, string> = {
+  gestacao: '🤰',
   alimentacao: '🥦',
+  amamentacao: '🤱',
   sono: '😴',
-  desenvolvimento: '🧠',
-  saude: '❤️',
   rotina: '🔁',
+  saude: '❤️',
+  seguranca: '🛡️',
+  desenvolvimento: '🧠',
   marcos: '⭐',
 }

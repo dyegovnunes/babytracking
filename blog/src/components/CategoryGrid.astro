@@ -8,13 +8,11 @@ interface Props {
 
 const { counts } = Astro.props
 
-const categories: ContentCategory[] = [
-  'gestacao-tema' as any, // placeholder; vamos usar só as reais da tabela
-]
-
 // Categorias na ordem visual desejada (match com /categoria/X)
 const visualOrder: ContentCategory[] = [
-  'sono', 'alimentacao', 'rotina', 'saude', 'desenvolvimento', 'marcos',
+  'gestacao', 'alimentacao', 'amamentacao',
+  'sono', 'rotina', 'saude',
+  'seguranca', 'desenvolvimento', 'marcos',
 ]
 ---
 

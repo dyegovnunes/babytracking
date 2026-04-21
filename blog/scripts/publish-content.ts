@@ -185,7 +185,10 @@ function validate(
 ): ValidationResult {
   const errors: ValidationResult['errors'] = []
   const warnings: string[] = []
-  const validCategories = ['alimentacao', 'sono', 'desenvolvimento', 'saude', 'rotina', 'marcos']
+  const validCategories = [
+    'alimentacao', 'amamentacao', 'sono', 'desenvolvimento',
+    'saude', 'rotina', 'marcos', 'gestacao', 'seguranca',
+  ]
   const validSchemas = ['Article', 'HowTo', 'FAQPage']
   const validAudiences = ['gestante', 'parent', 'both']
   const validRoles = ['pilar', 'cluster']

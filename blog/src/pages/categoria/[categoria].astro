@@ -6,12 +6,14 @@ import { CATEGORY_LABEL, CATEGORY_EMOJI } from '../../types'
 import { categoryBreadcrumbJsonLd } from '../../lib/jsonld'
 
 const CATEGORIES: ContentCategory[] = [
-  'alimentacao', 'sono', 'desenvolvimento', 'saude', 'rotina', 'marcos',
+  'gestacao', 'alimentacao', 'amamentacao', 'sono',
+  'rotina', 'saude', 'seguranca', 'desenvolvimento', 'marcos',
 ]
 
 export async function getStaticPaths() {
   const cats: ContentCategory[] = [
-    'alimentacao', 'sono', 'desenvolvimento', 'saude', 'rotina', 'marcos',
+    'gestacao', 'alimentacao', 'amamentacao', 'sono',
+    'rotina', 'saude', 'seguranca', 'desenvolvimento', 'marcos',
   ]
   return cats.map((c) => ({ params: { categoria: c } }))
 }

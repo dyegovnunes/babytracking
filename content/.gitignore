@@ -1,0 +1,12 @@
+# Imagens brutas ficam localmente. As processadas (hero.png, secondary.png)
+# vão pra blog/public/posts/<slug>/ e são a fonte para o blog.
+posts/**/*.png
+posts/**/*.jpg
+posts/**/*.jpeg
+posts/**/*.webp
+posts/**/*.psd
+
+# PDFs e .md continuam versionados:
+# - posts/*/artigo.md    → fonte do conteúdo
+# - posts/*/IMAGENS.md   → instruções pro user/designer
+# - posts/*/*.pdf        → material complementar (checklist, comparativo, etc.)
