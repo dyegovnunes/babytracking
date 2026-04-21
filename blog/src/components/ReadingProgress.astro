@@ -12,11 +12,22 @@
 
 <script>
   const bar = document.getElementById('reading-progress')
-  if (bar) {
+  const article = document.querySelector('article')
+  if (bar && article) {
     const update = () => {
+      const rect = article.getBoundingClientRect()
       const scrollTop = window.scrollY
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight
-      const pct = docHeight > 0 ? Math.min(scrollTop / docHeight, 1) : 0
+      // Início do artigo em coordenadas de documento
+      const articleStart = scrollTop + rect.top
+      // Fim do artigo menos a altura da viewport (ponto onde leitor termina de ler)
+      const articleEnd = articleStart + article.offsetHeight - window.innerHeight
+      const distance = articleEnd - articleStart
+      if (distance <= 0) {
+        bar.style.transform = 'scaleX(0)'
+        return
+      }
+      const progress = (scrollTop - articleStart) / distance
+      const pct = Math.max(0, Math.min(1, progress))
       bar.style.transform = `scaleX(${pct})`
     }
     update()

@@ -263,6 +263,9 @@ const faqLd = post.schema_type === 'FAQPage' ? faqJsonLd(post) : null
     margin-top: 2.5rem;
     margin-bottom: 1rem;
     line-height: 1.3;
+    /* Compensa o header sticky (~60px) pra o anchor jump da TOC parar
+       no lugar certo. Se o header crescer, aumentar esse valor. */
+    scroll-margin-top: 80px;
   }
   .prose-yaya h3 {
     color: rgb(var(--yaya-cloud));
@@ -272,6 +275,7 @@ const faqLd = post.schema_type === 'FAQPage' ? faqJsonLd(post) : null
     margin-top: 2rem;
     margin-bottom: 0.75rem;
     line-height: 1.35;
+    scroll-margin-top: 80px;
   }
   .prose-yaya p {
     margin-bottom: 1.25rem;

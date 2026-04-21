@@ -1,5 +1,6 @@
 ---
 import CookieConsent from '../components/CookieConsent.astro'
+import ThemeToggle from '../components/ThemeToggle.astro'
 import '../styles/theme.css'
 
 interface Props {
@@ -24,6 +25,18 @@ const GA_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID as string | undefined
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#0d0a27" media="(prefers-color-scheme: dark)" />
     <meta name="theme-color" content="#fafafe" media="(prefers-color-scheme: light)" />
+
+    <!-- Aplica tema salvo no localStorage antes do first paint pra evitar flash -->
+    <script is:inline>
+      (function() {
+        try {
+          var saved = localStorage.getItem('yb_theme');
+          if (saved === 'light' || saved === 'dark') {
+            document.documentElement.classList.add('theme-' + saved);
+          }
+        } catch(e) {}
+      })();
+    </script>
     <meta name="robots" content="index, follow" />
 
     <title>{fullTitle}</title>
@@ -103,23 +116,36 @@ const GA_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID as string | undefined
 
     <!-- Header -->
     <header class="border-b border-yaya-cloud/5 bg-yaya-night/90 backdrop-blur-sm sticky top-0 z-10">
-      <div class="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
-        <a href="/" class="flex items-center gap-2.5" aria-label="Yaya Baby — Blog">
+      <div class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+        <a href="/" class="flex items-center gap-2" aria-label="Yaya Baby — Blog">
           <img
-            src="/logo.png"
-            alt="Yaya"
-            class="h-7 w-auto"
-            width="120"
+            src="/heart.png"
+            alt=""
+            class="h-7 w-7"
+            width="28"
             height="28"
           />
-          <span class="text-yaya-cloud/50 font-sans text-sm">/ blog</span>
+          <span class="font-display text-lg font-extrabold tracking-tight">
+            <span class="text-yaya-cloud">Ya</span><span class="text-yaya-purple">ya</span>
+            <span class="text-yaya-purple font-bold ml-1">blog</span>
+          </span>
         </a>
-        <a
-          href="https://yayababy.app"
-          class="text-sm text-yaya-purple hover:text-yaya-glow transition-colors font-sans font-medium"
-        >
-          Abrir app →
-        </a>
+        <div class="flex items-center gap-2">
+          <ThemeToggle />
+          <a
+            href="https://yayababy.app"
+            class="hidden sm:inline-block bg-yaya-purple hover:bg-yaya-glow text-yaya-night font-display font-bold text-xs px-4 py-2 rounded-md transition-colors"
+          >
+            Baixar app
+          </a>
+          <a
+            href="https://yayababy.app"
+            class="sm:hidden bg-yaya-purple hover:bg-yaya-glow text-yaya-night font-display font-bold text-xs px-3 py-2 rounded-md transition-colors"
+            aria-label="Baixar app"
+          >
+            Baixar
+          </a>
+        </div>
       </div>
     </header>
 
