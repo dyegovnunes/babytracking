@@ -242,4 +242,4 @@ A evidência atual (AAP, ESPGHAN, SBP):
 
 > **Aviso:** este conteúdo é informativo e não substitui a orientação do pediatra ou nutrólogo infantil. A introdução alimentar deve ser individualizada conforme as necessidades do bebê e da família.
 
-*O Yaya acompanha a alimentação do bebê desde o primeiro dia — quando a introdução alimentar começar, os registros continuam. [Conheça o app.](https://yaya.baby)*
+*O Yaya acompanha a alimentação do bebê desde o primeiro dia — quando a introdução alimentar começar, os registros continuam. [Conheça o app.](https://yayababy.app)*

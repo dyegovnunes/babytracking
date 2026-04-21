@@ -274,4 +274,4 @@ Os **registros de temperatura e sintomas com horários** são um diferencial na 
 
 > **Aviso:** este conteúdo é informativo e não substitui a avaliação médica. Na dúvida, procure atendimento presencial ou ligue para o pediatra do seu bebê.
 
-*O Yaya registra temperatura, sintomas e observações — dados que ajudam o médico na hora da consulta. [Conheça o app.](https://yaya.baby)*
+*O Yaya registra temperatura, sintomas e observações — dados que ajudam o médico na hora da consulta. [Conheça o app.](https://yayababy.app)*

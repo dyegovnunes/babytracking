@@ -197,4 +197,4 @@ Independentemente do modelo, o mais importante é a qualidade do profissional e 
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*
 
-*O Yaya gera relatórios para levar ao pediatra com todos os dados do bebê — [experimente grátis](https://yaya.baby).*
+*O Yaya gera relatórios para levar ao pediatra com todos os dados do bebê — [experimente grátis](https://yayababy.app).*

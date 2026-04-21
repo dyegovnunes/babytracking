@@ -224,4 +224,4 @@ A partir dos 4 meses, o bebê começa a entender que suas ações geram resultad
 
 > **Aviso:** este conteúdo é informativo e não substitui a orientação do pediatra. As atividades sugeridas são para bebês com desenvolvimento típico — se você tem dúvidas sobre o desenvolvimento do seu bebê, converse com o profissional que acompanha a criança.
 
-*O Yaya acompanha os marcos do desenvolvimento — registre cada conquista e veja a evolução. [Conheça o app.](https://yaya.baby)*
+*O Yaya acompanha os marcos do desenvolvimento — registre cada conquista e veja a evolução. [Conheça o app.](https://yayababy.app)*

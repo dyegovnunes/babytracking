@@ -222,4 +222,4 @@ Procurar ajuda é o primeiro passo. E é um passo enorme. Se você chegou até a
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*
 
-*Cuidar de si é cuidar do bebê. O Yaya cuida da rotina para que você tenha espaço para cuidar de você — [conheça o Yaya](https://yaya.baby).*
+*Cuidar de si é cuidar do bebê. O Yaya cuida da rotina para que você tenha espaço para cuidar de você — [conheça o Yaya](https://yayababy.app).*

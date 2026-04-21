@@ -247,4 +247,4 @@ Este guia não defende nenhum método específico. O importante é que a famíli
 
 > **Aviso:** este conteúdo é informativo e não substitui a orientação do pediatra ou consultor de sono. Cada bebê tem um ritmo próprio e cada família tem suas necessidades.
 
-*O Yaya monitora cada soneca e noite de sono — os padrões mostram se o ambiente e a rotina estão funcionando. [Conheça o app.](https://yaya.baby)*
+*O Yaya monitora cada soneca e noite de sono — os padrões mostram se o ambiente e a rotina estão funcionando. [Conheça o app.](https://yayababy.app)*

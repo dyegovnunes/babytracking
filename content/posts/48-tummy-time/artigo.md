@@ -200,4 +200,4 @@ O tummy time é o alicerce de uma cadeia de marcos motores. Veja como tudo se co
 
 ---
 
-*O Yaya acompanha os marcos motores — registre o progresso do tummy time e veja a evolução. [Experimente grátis](https://yaya.baby)*
+*O Yaya acompanha os marcos motores — registre o progresso do tummy time e veja a evolução. [Experimente grátis](https://yayababy.app)*

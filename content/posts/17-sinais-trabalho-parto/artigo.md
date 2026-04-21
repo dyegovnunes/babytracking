@@ -121,7 +121,7 @@ Cronometrar as contrações é fundamental para saber em que fase você está. V
 
 **Na prática:** use o cronômetro do celular ou um app de contrações. Anote o horário de início de cada contração e quando ela termina. Faça isso por pelo menos uma hora para identificar o padrão.
 
-Se você já registra dados no [Yaya](https://yaya.baby), o recurso de timer facilita esse acompanhamento e gera um histórico que você pode compartilhar com a equipe médica.
+Se você já registra dados no [Yaya](https://yayababy.app), o recurso de timer facilita esse acompanhamento e gera um histórico que você pode compartilhar com a equipe médica.
 
 | Fase | Intervalo | Duração | O que fazer |
 |------|-----------|---------|-------------|
@@ -216,4 +216,4 @@ Para conhecer os [tipos de parto](/blog/tipos-de-parto) e saber o que esperar de
 
 ---
 
-*O [Yaya](https://yaya.baby) ajuda você a registrar contrações e acompanhar padrões desde a gestação até os primeiros anos do bebê.*
+*O [Yaya](https://yayababy.app) ajuda você a registrar contrações e acompanhar padrões desde a gestação até os primeiros anos do bebê.*

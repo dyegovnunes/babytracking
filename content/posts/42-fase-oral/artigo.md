@@ -223,4 +223,4 @@ Para a grande maioria dos bebês, a fase oral é uma etapa saudável e passageir
 
 > **Aviso:** este conteúdo é informativo e não substitui a avaliação do pediatra. Se você tem dúvidas sobre o desenvolvimento do seu bebê, converse com o profissional que acompanha a criança.
 
-*O Yaya acompanha marcos de desenvolvimento — incluindo quando o bebê começa a levar objetos à boca. [Conheça o app.](https://yaya.baby)*
+*O Yaya acompanha marcos de desenvolvimento — incluindo quando o bebê começa a levar objetos à boca. [Conheça o app.](https://yayababy.app)*

@@ -215,4 +215,4 @@ A investigação pode incluir exames de sangue, avaliação nutricional, avalia�
 
 ---
 
-*O Yaya registra peso e comprimento — leve os dados para a consulta e acompanhe a curva do seu bebê. [Experimente grátis](https://yaya.baby)*
+*O Yaya registra peso e comprimento — leve os dados para a consulta e acompanhe a curva do seu bebê. [Experimente grátis](https://yayababy.app)*

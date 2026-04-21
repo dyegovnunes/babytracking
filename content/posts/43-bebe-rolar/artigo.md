@@ -187,4 +187,4 @@ Cada conquista é construída sobre a anterior. O tummy time que pareceu tão di
 
 > **Aviso:** este conteúdo é informativo e não substitui a avaliação do pediatra. Se você tem dúvidas sobre o desenvolvimento motor do seu bebê, converse com o profissional que acompanha a criança.
 
-*O Yaya tem uma caderneta de marcos — registre o primeiro rolar e acompanhe cada conquista motora. [Conheça o app.](https://yaya.baby)*
+*O Yaya tem uma caderneta de marcos — registre o primeiro rolar e acompanhe cada conquista motora. [Conheça o app.](https://yayababy.app)*

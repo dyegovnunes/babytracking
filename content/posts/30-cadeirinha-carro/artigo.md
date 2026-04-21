@@ -199,4 +199,4 @@ O [acompanhamento do quarto do bebê](/blog/quarto-do-bebe-o-que-e-essencial) e 
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*
 
-*O Yaya acompanha o crescimento do bebê — e te lembra quando é hora de trocar de cadeirinha. [Experimente grátis](https://yaya.baby).*
+*O Yaya acompanha o crescimento do bebê — e te lembra quando é hora de trocar de cadeirinha. [Experimente grátis](https://yayababy.app).*

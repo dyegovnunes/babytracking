@@ -199,4 +199,4 @@ A licença começa com o nascimento (ou até 28 dias antes). Mas a organização
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*
 
-*O Yaya ajuda a organizar a rotina desde o primeiro dia com o bebê — [experimente grátis](https://yaya.baby).*
+*O Yaya ajuda a organizar a rotina desde o primeiro dia com o bebê — [experimente grátis](https://yayababy.app).*

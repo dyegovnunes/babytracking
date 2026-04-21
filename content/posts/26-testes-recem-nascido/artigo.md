@@ -209,4 +209,4 @@ Mantenha o cartão de triagem neonatal guardado junto ao cartão de vacinação.
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*
 
-*O Yaya registra cada consulta e exame, para que nada passe despercebido — [experimente grátis](https://yaya.baby).*
+*O Yaya registra cada consulta e exame, para que nada passe despercebido — [experimente grátis](https://yayababy.app).*

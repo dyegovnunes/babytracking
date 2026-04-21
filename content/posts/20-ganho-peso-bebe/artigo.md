@@ -172,7 +172,7 @@ A balança não é o único indicador. No dia a dia, os melhores sinais de que o
 - Satisfeito após mamar (solta o peito espontaneamente)
 - Boa pega e deglutição audível durante a amamentação
 
-Se você registra as amamentações e trocas de fraldas no [Yaya](https://yaya.baby), o app calcula padrões que facilitam identificar mudanças no ritmo de alimentação e eliminação.
+Se você registra as amamentações e trocas de fraldas no [Yaya](https://yayababy.app), o app calcula padrões que facilitam identificar mudanças no ritmo de alimentação e eliminação.
 
 ## Quando o ganho de peso é uma preocupação real?
 
@@ -221,4 +221,4 @@ O pediatra vai pesar o bebê, avaliar a curva de crescimento, investigar possív
 
 ---
 
-*O [Yaya](https://yaya.baby) registra amamentações, fraldas e peso, e mostra a evolução do seu bebê ao longo do tempo. Leve os dados para a consulta com o pediatra.*
+*O [Yaya](https://yayababy.app) registra amamentações, fraldas e peso, e mostra a evolução do seu bebê ao longo do tempo. Leve os dados para a consulta com o pediatra.*

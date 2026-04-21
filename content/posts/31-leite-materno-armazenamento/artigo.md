@@ -250,4 +250,4 @@ O leite doado passa por pasteurização e controle de qualidade antes de ser dis
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*
 
-*O Yaya registra cada sessão de amamentação e ajuda a identificar o padrão de produção — [experimente grátis](https://yaya.baby).*
+*O Yaya registra cada sessão de amamentação e ajuda a identificar o padrão de produção — [experimente grátis](https://yayababy.app).*

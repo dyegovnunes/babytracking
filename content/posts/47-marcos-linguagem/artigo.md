@@ -208,4 +208,4 @@ O primeiro passo costuma ser o pediatra, que pode encaminhar para o fonoaudiólo
 
 ---
 
-*O Yaya registra marcos de linguagem — desde o primeiro arrulho até as primeiras palavras. [Experimente grátis](https://yaya.baby)*
+*O Yaya registra marcos de linguagem — desde o primeiro arrulho até as primeiras palavras. [Experimente grátis](https://yayababy.app)*

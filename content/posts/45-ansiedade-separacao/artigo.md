@@ -176,4 +176,4 @@ A AAP reforça que ansiedade de separação intensa e persistente na idade pré-
 
 ---
 
-*O Yaya acompanha os marcos emocionais e cognitivos do bebê — a ansiedade de separação é um deles. [Experimente grátis](https://yaya.baby)*
+*O Yaya acompanha os marcos emocionais e cognitivos do bebê — a ansiedade de separação é um deles. [Experimente grátis](https://yayababy.app)*

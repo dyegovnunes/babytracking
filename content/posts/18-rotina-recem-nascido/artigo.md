@@ -155,7 +155,7 @@ Quando você está no meio do caos das primeiras semanas, tudo parece aleatório
 - "A soneca da manhã é a mais longa"
 - "Depois de mamar bastante, ela dorme mais"
 
-Esses padrões são invisíveis no dia a dia, mas ficam óbvios em um registro. É exatamente por isso que apps de acompanhamento como o [Yaya](https://yaya.baby) existem — eles transformam registros individuais em visualizações que revelam o ritmo natural do seu bebê.
+Esses padrões são invisíveis no dia a dia, mas ficam óbvios em um registro. É exatamente por isso que apps de acompanhamento como o [Yaya](https://yayababy.app) existem — eles transformam registros individuais em visualizações que revelam o ritmo natural do seu bebê.
 
 Não registre para se cobrar. Registre para entender. A diferença é importante.
 
@@ -194,4 +194,4 @@ Para entender como o [sono do recém-nascido](/blog/sono-recem-nascido) funciona
 
 ---
 
-*O [Yaya](https://yaya.baby) registra amamentações, sonecas e fraldas e mostra os padrões do dia do seu bebê automaticamente. Experimente grátis.*
+*O [Yaya](https://yayababy.app) registra amamentações, sonecas e fraldas e mostra os padrões do dia do seu bebê automaticamente. Experimente grátis.*

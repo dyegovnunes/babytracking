@@ -204,4 +204,4 @@ A solidão no pós-parto é um fator de risco real para depressão. Se você sen
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*
 
-*O Yaya permite adicionar cuidadores com acesso ao registro do bebê — cada pessoa da rede acompanha o dia a dia. [Experimente grátis](https://yaya.baby).*
+*O Yaya permite adicionar cuidadores com acesso ao registro do bebê — cada pessoa da rede acompanha o dia a dia. [Experimente grátis](https://yayababy.app).*

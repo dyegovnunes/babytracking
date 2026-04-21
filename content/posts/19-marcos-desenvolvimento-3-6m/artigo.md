@@ -79,7 +79,7 @@ Os marcos listados abaixo são referências baseadas na Caderneta da Criança (S
 - A ordem dos marcos importa mais que a idade exata. Um bebê que rola aos 5 meses em vez de 4 está dentro do normal.
 - Nenhum marco isolado define atraso. O pediatra avalia o conjunto.
 
-Se você acompanha os marcos do seu bebê no [Yaya](https://yaya.baby), o registro ajuda a ter uma visão clara da evolução para compartilhar na consulta pediátrica.
+Se você acompanha os marcos do seu bebê no [Yaya](https://yayababy.app), o registro ajuda a ter uma visão clara da evolução para compartilhar na consulta pediátrica.
 
 ---
 
@@ -244,7 +244,7 @@ Os marcos têm uma faixa ampla de normalidade. Mas vale trazer para a consulta s
 - Não ri ou vocaliza
 - Não demonstra interesse por pessoas ou brinquedos
 
-Nenhum desses pontos isoladamente significa atraso. O pediatra avalia o quadro completo. Levar um registro dos marcos atingidos, como o disponível no [Yaya](https://yaya.baby), facilita essa conversa e garante que nada passe despercebido.
+Nenhum desses pontos isoladamente significa atraso. O pediatra avalia o quadro completo. Levar um registro dos marcos atingidos, como o disponível no [Yaya](https://yayababy.app), facilita essa conversa e garante que nada passe despercebido.
 
 ## Resumindo
 
@@ -268,4 +268,4 @@ Nenhum desses pontos isoladamente significa atraso. O pediatra avalia o quadro c
 
 ---
 
-*O [Yaya](https://yaya.baby) tem uma seção dedicada a marcos de desenvolvimento onde você registra conquistas, visualiza a evolução e gera relatórios para o pediatra.*
+*O [Yaya](https://yayababy.app) tem uma seção dedicada a marcos de desenvolvimento onde você registra conquistas, visualiza a evolução e gera relatórios para o pediatra.*

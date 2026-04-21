@@ -211,4 +211,4 @@ Peça ajuda. Delegar não é falhar — é necessidade.
 
 ---
 
-*O Yaya registra amamentações e mamadeiras — a transição fica mais fácil quando você vê os dados. [Experimente grátis](https://yaya.baby)*
+*O Yaya registra amamentações e mamadeiras — a transição fica mais fácil quando você vê os dados. [Experimente grátis](https://yayababy.app)*

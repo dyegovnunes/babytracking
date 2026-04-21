@@ -175,4 +175,4 @@ Com o tempo, o próprio bebê vai "pedir" a rotina — vai bocejar quando ouvir 
 
 ---
 
-*O Yaya mostra os horários de sono do bebê — descubra se a rotina está funcionando pelos dados. [Experimente grátis](https://yaya.baby)*
+*O Yaya mostra os horários de sono do bebê — descubra se a rotina está funcionando pelos dados. [Experimente grátis](https://yayababy.app)*
