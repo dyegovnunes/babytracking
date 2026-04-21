@@ -80,7 +80,16 @@ export function RewardedAdModal({
           </button>
 
           <button
-            onClick={() => { onUpgrade(); onClose(); }}
+            onClick={() => {
+              // Fecha esse modal primeiro e agenda o paywall num próximo tick.
+              // Sem o delay, o useSheetBackClose do modal que está fechando
+              // chama history.back() async, que dispara um popstate ouvido
+              // pelo PaywallModal que acabou de abrir — resultando em "abriu
+              // e fechou instantaneamente". O setTimeout garante que o
+              // popstate drene antes do paywall registrar o listener.
+              onClose();
+              setTimeout(() => onUpgrade(), 100);
+            }}
             className="w-full py-3.5 rounded-md bg-primary text-on-primary font-bold text-sm"
           >
             {resolvedUpgradeLabel}

@@ -2,7 +2,23 @@ import { AdMob, BannerAdSize, BannerAdPosition, RewardAdPluginEvents } from '@ca
 import type { BannerAdOptions, RewardAdOptions, AdMobRewardItem } from '@capacitor-community/admob';
 import { Capacitor } from '@capacitor/core';
 
-const AD_IDS = Capacitor.getPlatform() === 'ios'
+// IDs de teste oficiais do Google — garantem fill 100% do tempo.
+// Usar quando o inventário real está vazio (app novo, ainda em aprovação
+// no AdMob, bundle ID recente). Ligar/desligar via localStorage:
+//   localStorage.setItem('yaya_test_ads', '1')  → liga
+//   localStorage.removeItem('yaya_test_ads')    → desliga
+// NUNCA deixar ligado em build de produção submetida à loja — o Google
+// pode suspender a conta. Desligar antes de cada submissão.
+const GOOGLE_TEST_IDS = {
+  banner: 'ca-app-pub-3940256099942544/2934735716',
+  rewarded: 'ca-app-pub-3940256099942544/1712485313',
+};
+
+function isTestAdsEnabled(): boolean {
+  try { return localStorage.getItem('yaya_test_ads') === '1'; } catch { return false; }
+}
+
+const PROD_AD_IDS = Capacitor.getPlatform() === 'ios'
   ? {
       banner: 'ca-app-pub-5445931232409285/8485808958',
       rewarded: 'ca-app-pub-5445931232409285/6609011699',
@@ -11,6 +27,20 @@ const AD_IDS = Capacitor.getPlatform() === 'ios'
       banner: 'ca-app-pub-5445931232409285/7747442352',
       rewarded: 'ca-app-pub-5445931232409285/4421832054',
     };
+
+function getAdIds() {
+  if (isTestAdsEnabled()) {
+    // eslint-disable-next-line no-console
+    console.log('[AdMob] TEST ADS mode enabled (yaya_test_ads=1)');
+    return GOOGLE_TEST_IDS;
+  }
+  return PROD_AD_IDS;
+}
+
+// Aliased pra não quebrar callers antigos que referenciam AD_IDS.
+const AD_IDS = new Proxy({} as typeof PROD_AD_IDS, {
+  get: (_, prop: keyof typeof PROD_AD_IDS) => getAdIds()[prop],
+});
 
 let initialized = false;
 // Estado do banner para evitar chamadas duplicadas (show/hide em sequência

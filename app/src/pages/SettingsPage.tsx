@@ -27,6 +27,27 @@ export default function SettingsPage() {
   const [pickingQuietHour, setPickingQuietHour] = useState<'start' | 'end' | null>(null)
   const [pickingBathHour, setPickingBathHour] = useState(false)
   const [infoModal, setInfoModal] = useState<InfoModalKind>(null)
+  // Easter egg: 7 taps no título "Configurações" revela modo debug.
+  // Usado pra ligar "test ads" (Google test IDs em vez dos prod IDs) e
+  // verificar que a integração AdMob tá funcionando mesmo quando o
+  // inventário real não fila. Desligar antes de submeter à loja.
+  const [debugTaps, setDebugTaps] = useState(0)
+  const [testAdsOn, setTestAdsOn] = useState(() => {
+    try { return localStorage.getItem('yaya_test_ads') === '1' } catch { return false }
+  })
+  const showDebug = debugTaps >= 7 || testAdsOn
+  function handleTitleTap() {
+    setDebugTaps((n) => n + 1)
+  }
+  function toggleTestAds() {
+    const next = !testAdsOn
+    try {
+      if (next) localStorage.setItem('yaya_test_ads', '1')
+      else localStorage.removeItem('yaya_test_ads')
+    } catch { /* ignore */ }
+    setTestAdsOn(next)
+    setToast(next ? 'Test ads ON — reinicie o app' : 'Test ads OFF — reinicie o app')
+  }
 
   const handleToggleExpanded = useCallback((cat: string) => {
     setExpanded((prev) => (prev === cat ? null : cat))
@@ -70,7 +91,12 @@ export default function SettingsPage() {
               arrow_back
             </span>
           </button>
-          <h1 className="font-headline text-2xl font-bold text-on-surface">Configurações</h1>
+          <h1
+            onClick={handleTitleTap}
+            className="font-headline text-2xl font-bold text-on-surface cursor-pointer select-none"
+          >
+            Configurações
+          </h1>
         </div>
       </section>
 
@@ -104,6 +130,28 @@ export default function SettingsPage() {
         <ClearHistorySection onToast={setToast} />
 
         <AccountSection onToast={setToast} />
+
+        {showDebug && (
+          <div className="bg-surface-container rounded-md p-4 border border-primary/20">
+            <p className="font-label text-xs font-bold text-primary uppercase tracking-wider mb-2">
+              Debug (interno)
+            </p>
+            <button
+              onClick={toggleTestAds}
+              className={`w-full py-2.5 rounded-md font-label text-sm font-semibold ${
+                testAdsOn
+                  ? 'bg-primary text-on-primary'
+                  : 'bg-surface-container-high text-on-surface'
+              }`}
+            >
+              {testAdsOn ? '✓ Test ads ON' : 'Test ads OFF'}
+            </button>
+            <p className="text-[10px] text-on-surface/50 mt-2 leading-relaxed">
+              Usa IDs de teste do Google (fill 100%) pra validar integração AdMob.
+              <strong> Reinicie o app após alternar.</strong> Desligar antes de submeter à loja.
+            </p>
+          </div>
+        )}
 
         <p className="text-center font-label text-[10px] text-on-surface-variant/50 pt-1">
           Yaya v{__APP_VERSION__}
