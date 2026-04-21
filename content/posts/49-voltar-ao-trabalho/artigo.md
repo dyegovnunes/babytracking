@@ -79,13 +79,13 @@ Antes de planejar a logística, conheça os direitos garantidos por lei:
 
 **Estabilidade:** A gestante e a mãe em licença têm estabilidade no emprego desde a confirmação da gravidez até 5 meses após o parto.
 
-Se você conhece seus [direitos da licença-maternidade](/blog/licenca-maternidade-direitos-organizacao) em detalhe, fica mais fácil negociar com o empregador.
+Se você conhece seus [direitos da licença-maternidade](/licenca-maternidade-direitos-organizacao) em detalhe, fica mais fácil negociar com o empregador.
 
 ## Planejando a volta: comece 2-3 semanas antes
 
 A preparação faz toda a diferença. Duas a três semanas antes de voltar ao trabalho:
 
-**Comece a formar estoque de leite.** Ordene uma vez por dia (preferencialmente de manhã, quando a produção é maior) e congele. O objetivo é ter 5-10 porções congeladas como reserva. Veja o guia completo de [armazenamento de leite materno](/blog/leite-materno-armazenamento).
+**Comece a formar estoque de leite.** Ordene uma vez por dia (preferencialmente de manhã, quando a produção é maior) e congele. O objetivo é ter 5-10 porções congeladas como reserva. Veja o guia completo de [armazenamento de leite materno](/leite-materno-armazenamento).
 
 **Introduza a mamadeira ou copinho.** Se o bebê nunca tomou leite fora do peito, comece com pequenas quantidades oferecidas por outra pessoa (não pela mãe — o bebê pode recusar se sentir o cheiro do leite no peito).
 
@@ -126,7 +126,7 @@ O leite ordenhado no trabalho alimenta o bebê no dia seguinte — é um ciclo q
 
 Se a amamentação exclusiva não for viável no retorno ao trabalho, a alimentação mista (peito + fórmula) é uma opção válida e sem culpa. A OMS recomenda amamentação exclusiva até os 6 meses, mas qualquer quantidade de leite materno é benéfica.
 
-Para manter a [amamentação sob demanda](/blog/amamentacao-sob-demanda) quando está com o bebê e complementar com fórmula na sua ausência:
+Para manter a [amamentação sob demanda](/amamentacao-sob-demanda) quando está com o bebê e complementar com fórmula na sua ausência:
 
 - Ofereça o peito sempre que estiver em casa
 - Peça ao cuidador para oferecer a fórmula no copinho ou mamadeira
@@ -144,7 +144,7 @@ A separação é duplamente nova: para você e para o bebê. Facilite a adaptaç
 - **Não prolongue a despedida** e não volte se ouvir choro — a maioria dos bebês se acalma em minutos.
 - **Mantenha a rotina do bebê** o mais próxima possível (horários de soneca, sequência de atividades).
 
-A [rede de apoio](/blog/rede-de-apoio-maternidade) — parceiro, avós, babá, amigos — é fundamental. Quanto mais o bebê tiver vínculos seguros com outras pessoas, mais tranquila será a transição.
+A [rede de apoio](/rede-de-apoio-maternidade) — parceiro, avós, babá, amigos — é fundamental. Quanto mais o bebê tiver vínculos seguros com outras pessoas, mais tranquila será a transição.
 
 ## A parte emocional: culpa, luto e ajuste
 

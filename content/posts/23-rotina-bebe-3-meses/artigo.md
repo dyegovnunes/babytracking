@@ -160,7 +160,7 @@ A rotina dos 3-4 meses funciona melhor quando é baseada em **observação** em 
 
 **Não compare.** O bebê do grupo de mães que "dorme das 19h às 7h" pode ser a exceção, não a regra. O que importa é o padrão do seu bebê, observado ao longo de dias e semanas.
 
-Se você registrou os últimos 7-10 dias de sono e alimentação do [recém-nascido](/blog/rotina-recem-nascido), vai perceber que o padrão já está se formando. É mais fácil ver no retrospecto do que no momento.
+Se você registrou os últimos 7-10 dias de sono e alimentação do [recém-nascido](/rotina-recem-nascido), vai perceber que o padrão já está se formando. É mais fácil ver no retrospecto do que no momento.
 
 ## A rotina noturna: por que ela é a mais importante
 
@@ -176,7 +176,7 @@ Uma rotina noturna simples e eficaz:
 
 Duração: 20-30 minutos. Sempre na mesma ordem. O cérebro do bebê começa a associar essas etapas com "hora de dormir".
 
-Mantenha o ambiente do [sono seguro e adequado](/blog/sono-recem-nascido): escuro, temperatura agradável, sem estímulos.
+Mantenha o ambiente do [sono seguro e adequado](/sono-do-recem-nascido): escuro, temperatura agradável, sem estímulos.
 
 ## A regressão dos 4 meses pode bagunçar tudo
 
@@ -184,7 +184,7 @@ Por volta das 14-18 semanas, o sono do bebê passa por uma reorganização neuro
 
 Se você construiu uma base de rotina, ela vai ajudar a atravessar essa fase. A estrutura não impede a regressão, mas dá um ponto de retorno.
 
-Leia o guia completo sobre a [regressão do sono aos 4 meses](/blog/regressao-do-sono-4-meses) para entender o que acontece e como lidar.
+Leia o guia completo sobre a [regressão do sono aos 4 meses](/regressao-do-sono-4-meses) para entender o que acontece e como lidar.
 
 ## Como o registro ajuda a encontrar o padrão
 
@@ -212,9 +212,9 @@ Ter esses dados torna a rotina algo que você descobre, não algo que você imp�
 
 **Leia também:**
 
-- [Rotina do Recém-Nascido](/blog/rotina-recem-nascido)
-- [Sono do Recém-Nascido: Tudo o Que Você Precisa Saber](/blog/sono-recem-nascido)
-- [Regressão do Sono aos 4 Meses](/blog/regressao-do-sono-4-meses)
+- [Rotina do Recém-Nascido](/rotina-recem-nascido)
+- [Sono do Recém-Nascido: Tudo o Que Você Precisa Saber](/sono-do-recem-nascido)
+- [Regressão do Sono aos 4 Meses](/regressao-do-sono-4-meses)
 
 ---
 

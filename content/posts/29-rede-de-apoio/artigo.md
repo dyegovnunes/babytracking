@@ -57,7 +57,7 @@ A rede de apoio não é luxo. É uma necessidade com impacto direto na saúde me
 
 ## Por que a rede de apoio importa tanto
 
-Os dados são claros: mulheres com suporte adequado no pós-parto têm menor risco de [depressão pós-parto](/blog/depressao-pos-parto), amamentam por mais tempo e relatam maior satisfação com a maternidade. A OMS incluiu o apoio social como recomendação formal para uma experiência pós-natal positiva.
+Os dados são claros: mulheres com suporte adequado no pós-parto têm menor risco de [depressão pós-parto](/depressao-pos-parto), amamentam por mais tempo e relatam maior satisfação com a maternidade. A OMS incluiu o apoio social como recomendação formal para uma experiência pós-natal positiva.
 
 Mas não se trata apenas de dados. É sobre sobrevivência prática. Nas primeiras semanas:
 
@@ -151,7 +151,7 @@ Essa é a parte mais difícil para muitas mães. A cultura da "mãe que dá cont
 
 ## Estabelecendo limites com visitantes
 
-Os [primeiros dias em casa](/blog/primeiros-dias-em-casa-com-recem-nascido) podem ser invadidos por visitas excessivas se você não se posicionar. Algumas diretrizes:
+Os [primeiros dias em casa](/primeiros-dias-em-casa-com-recem-nascido) podem ser invadidos por visitas excessivas se você não se posicionar. Algumas diretrizes:
 
 - **Primeira semana:** apenas pessoas muito próximas, e por pouco tempo.
 - **Visitas com hora marcada e duração combinada.** "Pode vir às 15h. Vamos ficar juntas até as 16h."
@@ -173,7 +173,7 @@ O terceiro trimestre é o momento de plantar as sementes:
 6. **Prepare refeições congeladas.** Seu eu do futuro vai agradecer.
 7. **Aceite que vai precisar de ajuda.** Não é fraqueza, é inteligência.
 
-Enquanto você prepara as [mudanças no corpo](/blog/o-que-muda-no-corpo-depois-do-parto) e organiza o enxoval, reserve um tempo para organizar também as pessoas ao seu redor.
+Enquanto você prepara as [mudanças no corpo](/o-que-muda-no-corpo-depois-do-parto) e organiza o enxoval, reserve um tempo para organizar também as pessoas ao seu redor.
 
 ## Quando a rede não existe
 
@@ -191,9 +191,9 @@ A solidão no pós-parto é um fator de risco real para depressão. Se você sen
 
 ### Leia também
 
-- [Depressão Pós-Parto: Sinais e Onde Buscar Ajuda](/blog/depressao-pos-parto)
-- [Primeiros Dias em Casa com o Recém-Nascido](/blog/primeiros-dias-em-casa-com-recem-nascido)
-- [O Que Muda no Corpo Depois do Parto](/blog/o-que-muda-no-corpo-depois-do-parto)
+- [Depressão Pós-Parto: Sinais e Onde Buscar Ajuda](/depressao-pos-parto)
+- [Primeiros Dias em Casa com o Recém-Nascido](/primeiros-dias-em-casa-com-recem-nascido)
+- [O Que Muda no Corpo Depois do Parto](/o-que-muda-no-corpo-depois-do-parto)
 
 ---
 

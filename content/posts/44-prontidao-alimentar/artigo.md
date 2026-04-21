@@ -122,7 +122,7 @@ Use este checklist para avaliar. Todos os itens devem ser marcados:
 
 Se todos estão marcados e o bebê tem 6 meses (ou próximo disso), a introdução alimentar pode começar. Se o bebê tem entre 4 e 6 meses e mostra todos os sinais, converse com o pediatra antes de antecipar.
 
-Para acompanhar se o crescimento está adequado, nosso guia sobre [ganho de peso do bebê](/blog/ganho-peso-bebe) pode ajudar.
+Para acompanhar se o crescimento está adequado, nosso guia sobre [ganho de peso do bebê](/ganho-peso-bebe) pode ajudar.
 
 ---
 
@@ -130,7 +130,7 @@ Para acompanhar se o crescimento está adequado, nosso guia sobre [ganho de peso
 
 ### "O bebê dorme pior, então está com fome e precisa de comida"
 
-Sono pior entre 4 e 5 meses é, na maioria dos casos, a regressão do sono — uma reorganização da arquitetura cerebral, não fome. Adicionar alimentos não melhora o sono. Consulte nosso guia sobre [marcos de desenvolvimento de 3 a 6 meses](/blog/marcos-desenvolvimento-3-6-meses) para entender o que está acontecendo.
+Sono pior entre 4 e 5 meses é, na maioria dos casos, a regressão do sono — uma reorganização da arquitetura cerebral, não fome. Adicionar alimentos não melhora o sono. Consulte nosso guia sobre [marcos de desenvolvimento de 3 a 6 meses](/marcos-desenvolvimento-3-6-meses) para entender o que está acontecendo.
 
 ### "O bebê olha eu comendo, então quer comer"
 
@@ -138,7 +138,7 @@ Bebês de 3-4 meses olham **tudo** com fascínação. Observar o adulto comer po
 
 ### "Meu leite não sustenta mais"
 
-O leite materno continua sendo nutricionalmente completo para as necessidades do bebê até os 6 meses. Após essa idade, ele continua sendo a principal fonte nutricional — os alimentos complementam, não substituem. Veja mais sobre [amamentação sob demanda](/blog/amamentacao-sob-demanda).
+O leite materno continua sendo nutricionalmente completo para as necessidades do bebê até os 6 meses. Após essa idade, ele continua sendo a principal fonte nutricional — os alimentos complementam, não substituem. Veja mais sobre [amamentação sob demanda](/amamentacao-sob-demanda).
 
 ### "A avó deu papinha com 3 meses e eu cresci bem"
 
@@ -225,9 +225,9 @@ A evidência atual (AAP, ESPGHAN, SBP):
 
 ### Leia também
 
-- [Marcos de desenvolvimento: 3 a 6 meses](/blog/marcos-desenvolvimento-3-6-meses)
-- [Amamentação sob demanda: como funciona](/blog/amamentacao-sob-demanda)
-- [Ganho de peso do bebê: como acompanhar](/blog/ganho-peso-bebe)
+- [Marcos de desenvolvimento: 3 a 6 meses](/marcos-desenvolvimento-3-6-meses)
+- [Amamentação sob demanda: como funciona](/amamentacao-sob-demanda)
+- [Ganho de peso do bebê: como acompanhar](/ganho-peso-bebe)
 
 ---
 

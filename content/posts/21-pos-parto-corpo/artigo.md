@@ -97,7 +97,7 @@ Entre 2 e 5 dias após o parto, acontece a apojadura — a "descida do leite". A
 
 O que ajuda: amamentar com frequência (livre demanda), compressas frias entre as amamentações para aliviar o inchaço, e ordenha manual suave se necessário para aliviar a pressão. Evite compressas quentes prolongadas, que podem piorar o ingurgitamento.
 
-Se você está [se preparando para a amamentação](/blog/amamentacao-preparo-durante-gestacao), saiba que o ingurgitamento inicial é temporário. Em poucos dias o corpo regula a produção conforme a demanda do bebê.
+Se você está [se preparando para a amamentação](/amamentacao-o-que-saber-antes-do-bebe-nascer), saiba que o ingurgitamento inicial é temporário. Em poucos dias o corpo regula a produção conforme a demanda do bebê.
 
 Fissuras nos mamilos são comuns nos primeiros dias, mas não são normais a ponto de sangrar ou causar dor intensa. Se isso acontecer, avalie a pega do bebê (e procure ajuda de consultora de lactação se necessário).
 
@@ -125,7 +125,7 @@ A cesariana é uma cirurgia abdominal. A recuperação envolve:
 
 Cuide da cicatriz mantendo-a limpa e seca. Vermelhidão que se expande, secreção com odor, abertura dos pontos ou febre são sinais de alerta.
 
-Se o seu parto foi por [cesariana ou vaginal](/blog/tipos-de-parto-normal-cesarea-humanizado), cada via tem sua recuperação específica. Nenhuma é "mais fácil" — são diferentes.
+Se o seu parto foi por [cesariana ou vaginal](/tipos-de-parto), cada via tem sua recuperação específica. Nenhuma é "mais fácil" — são diferentes.
 
 ## Mudanças hormonais e queda de cabelo
 
@@ -219,7 +219,7 @@ Não espere a consulta de 40 dias se apresentar:
 - Dor de cabeça intensa e persistente
 - Pensamentos de se machucar ou machucar o bebê
 
-Os [primeiros dias em casa](/blog/primeiros-dias-em-casa-com-recem-nascido) são de adaptação, mas sinais de alerta não devem ser ignorados.
+Os [primeiros dias em casa](/primeiros-dias-em-casa-com-recem-nascido) são de adaptação, mas sinais de alerta não devem ser ignorados.
 
 ## Dicas práticas para a recuperação
 
@@ -243,9 +243,9 @@ Os [primeiros dias em casa](/blog/primeiros-dias-em-casa-com-recem-nascido) são
 
 **Leia também:**
 
-- [Tipos de Parto: Normal, Cesárea e Humanizado](/blog/tipos-de-parto-normal-cesarea-humanizado)
-- [Primeiros Dias em Casa com o Recém-Nascido](/blog/primeiros-dias-em-casa-com-recem-nascido)
-- [Plano de Parto](/blog/plano-de-parto)
+- [Tipos de Parto: Normal, Cesárea e Humanizado](/tipos-de-parto)
+- [Primeiros Dias em Casa com o Recém-Nascido](/primeiros-dias-em-casa-com-recem-nascido)
+- [Plano de Parto](/plano-de-parto)
 
 ---
 

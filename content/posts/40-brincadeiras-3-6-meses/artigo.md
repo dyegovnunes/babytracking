@@ -83,9 +83,9 @@ Você não precisa de brinquedos caros ou técnicas elaboradas. Precisa de prese
 
 Nessa fase, o cérebro do bebê está formando conexões a uma velocidade impressionante — cerca de 1 milhão de novas sinapses por segundo. Cada interação conta: quando você conversa, canta, mostra um objeto ou simplesmente sorri de volta, está ajudando a construir essas conexões.
 
-O desenvolvimento não é linear. Tem semanas em que o bebê parece "estacionar" e outras em que aprende duas coisas novas no mesmo dia. Os [saltos de desenvolvimento](/blog/saltos-desenvolvimento) explicam parte dessa oscilação.
+O desenvolvimento não é linear. Tem semanas em que o bebê parece "estacionar" e outras em que aprende duas coisas novas no mesmo dia. Os [saltos de desenvolvimento](/saltos-desenvolvimento) explicam parte dessa oscilação.
 
-Para acompanhar o que é esperado a cada mês, o guia de [marcos de desenvolvimento de 3 a 6 meses](/blog/marcos-desenvolvimento-3-6-meses) é um bom complemento a este artigo.
+Para acompanhar o que é esperado a cada mês, o guia de [marcos de desenvolvimento de 3 a 6 meses](/marcos-desenvolvimento-3-6-meses) é um bom complemento a este artigo.
 
 ---
 
@@ -208,9 +208,9 @@ A partir dos 4 meses, o bebê começa a entender que suas ações geram resultad
 
 ### Leia também
 
-- [Marcos de desenvolvimento: 3 a 6 meses](/blog/marcos-desenvolvimento-3-6-meses)
-- [Saltos de desenvolvimento do bebê](/blog/saltos-desenvolvimento)
-- [Sono do bebê de 3 a 6 meses](/blog/sono-bebe-3-6-meses)
+- [Marcos de desenvolvimento: 3 a 6 meses](/marcos-desenvolvimento-3-6-meses)
+- [Saltos de desenvolvimento do bebê](/saltos-desenvolvimento)
+- [Sono do bebê de 3 a 6 meses](/sono-bebe-3-6-meses)
 
 ---
 

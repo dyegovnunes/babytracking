@@ -81,7 +81,7 @@ A boa notícia: essa fase tem explicação, tem padrão e tem o que fazer. Não 
 
 ## O que muda no sono entre 3 e 6 meses
 
-Nos primeiros 3 meses, o sono do bebê era relativamente simples: dois estágios (ativo e quieto), ciclos curtos e muita imprevisibilidade. Se você quer rever essa fase, temos um guia sobre [sono do recém-nascido](/blog/sono-do-recem-nascido).
+Nos primeiros 3 meses, o sono do bebê era relativamente simples: dois estágios (ativo e quieto), ciclos curtos e muita imprevisibilidade. Se você quer rever essa fase, temos um guia sobre [sono do recém-nascido](/sono-do-recem-nascido).
 
 A partir dos 3-4 meses, o cérebro do bebê amadurece e adota a **arquitetura de sono adulta**: 4 estágios distintos (sono leve N1, sono intermediário N2, sono profundo N3 e sono REM). Isso é uma conquista — mas vem com efeitos colaterais.
 
@@ -101,7 +101,7 @@ Sinais típicos:
 - Mais irritabilidade ao final do dia
 - Dificuldade para adormecer no início da noite
 
-A duração varia: para alguns bebês, são 2 semanas; para outros, 6 semanas. Não existe prazo fixo. Temos um artigo específico sobre a [regressão do sono dos 4 meses](/blog/regressao-do-sono-4-meses) com estratégias detalhadas para esse período.
+A duração varia: para alguns bebês, são 2 semanas; para outros, 6 semanas. Não existe prazo fixo. Temos um artigo específico sobre a [regressão do sono dos 4 meses](/regressao-do-sono-4-meses) com estratégias detalhadas para esse período.
 
 O que ajuda: **consistência**. Mantenha a rotina, ajuste as janelas de sono e tenha paciência. O cérebro está aprendendo algo novo.
 
@@ -146,7 +146,7 @@ A maioria dos bebês nessa faixa etária precisa de 1 a 3 sessões de amamentaç
 
 O que diferencia uma necessidade de amamentação de um despertar por associação de sono é o **comportamento**: se o bebê mama ativamente e volta a dormir, é alimentação. Se ele suga 2 minutos e usa o peito só para adormecer, pode ser associação.
 
-A [rotina do bebê de 3 a 4 meses](/blog/rotina-bebe-3-4-meses) detalha como organizar o dia para que as noites fluam melhor.
+A [rotina do bebê de 3 a 4 meses](/rotina-bebe-3-4-meses) detalha como organizar o dia para que as noites fluam melhor.
 
 ---
 
@@ -161,7 +161,7 @@ Se o bebê precisa mamar para adormecer e acorda 6 vezes por noite esperando mam
 **Associações positivas (que o bebê controla):**
 - Chupar o próprio dedo/mão
 - Segurar um paninho ou naninha (a partir de 6 meses, com supervisão)
-- Ambiente escuro e com [ruído branco](/blog/ruido-branco-bebe)
+- Ambiente escuro e com [ruído branco](/ruido-branco-bebe)
 
 **Associações que dependem de terceiros:**
 - Mamar para adormecer
@@ -200,7 +200,7 @@ Escuridão total (blackout), temperatura entre 20-22 °C, ruído branco constant
 
 - **Escuro**: investir em blackout é uma das melhores decisões para o sono do bebê. Melatonina (hormônio do sono) é inibida pela luz.
 - **Fresco**: entre 20 e 22 °C. Use saco de dormir adequado ao clima em vez de cobertores soltos.
-- **Ruído branco**: contínuo, volume moderado (50-60 dB — como um chuveiro ligado no cômodo ao lado). O [ruído branco](/blog/ruido-branco-bebe) ajuda a mascarar sons do ambiente.
+- **Ruído branco**: contínuo, volume moderado (50-60 dB — como um chuveiro ligado no cômodo ao lado). O [ruído branco](/ruido-branco-bebe) ajuda a mascarar sons do ambiente.
 - **Seguro**: berço sem almofadas, cobertores, pelúcias ou protetores. Colchão firme, lençol ajustado.
 
 ---
@@ -231,9 +231,9 @@ Este guia não defende nenhum método específico. O importante é que a famíli
 
 ### Leia também
 
-- [Sono do recém-nascido: o que esperar](/blog/sono-do-recem-nascido)
-- [Regressão do sono dos 4 meses](/blog/regressao-do-sono-4-meses)
-- [Ruído branco para bebê: funciona?](/blog/ruido-branco-bebe)
+- [Sono do recém-nascido: o que esperar](/sono-do-recem-nascido)
+- [Regressão do sono dos 4 meses](/regressao-do-sono-4-meses)
+- [Ruído branco para bebê: funciona?](/ruido-branco-bebe)
 
 ---
 

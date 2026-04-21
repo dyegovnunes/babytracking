@@ -80,8 +80,8 @@ A OMS recomenda amamentação exclusiva até os 6 meses, e complementada até os
 - Produção insuficiente de leite materno comprovada (situação rara, mas real)
 
 **Indicações práticas:**
-- Complementação orientada pelo pediatra quando o [ganho de peso](/blog/ganho-peso-bebe) está abaixo do esperado
-- Mãe que retorna ao trabalho e não consegue manter estoque suficiente de [leite materno armazenado](/blog/leite-materno-armazenamento)
+- Complementação orientada pelo pediatra quando o [ganho de peso](/ganho-peso-bebe) está abaixo do esperado
+- Mãe que retorna ao trabalho e não consegue manter estoque suficiente de [leite materno armazenado](/leite-materno-armazenamento)
 - Escolha pessoal da família — que merece respeito, não culpa
 
 O pediatra é o profissional indicado para orientar a introdução da fórmula. Não tome essa decisão sozinha com base apenas em percepções como "meu leite é fraco" — o leite materno é adequado para a grande maioria dos bebês.
@@ -160,7 +160,7 @@ A alimentação mista — oferecer leite materno e fórmula — é mais comum do
 
 **Pontos de atenção:**
 - A oferta de fórmula pode reduzir a produção de leite materno (a mama produz conforme a demanda)
-- Use [técnicas de pega correta](/blog/pega-correta-posicoes-amamentacao) para manter a amamentação eficiente
+- Use [técnicas de pega correta](/pega-correta-posicoes-amamentacao) para manter a amamentação eficiente
 - Se o objetivo é manter a produção de leite, amamente antes de oferecer a fórmula
 - Mamadeiras com fluxo lento evitam a "confusão de bicos" (o bebê preferir o fluxo fácil da mamadeira)
 
@@ -180,7 +180,7 @@ Mito na maioria dos casos. O leite materno muda de composição conforme a neces
 Parcialmente verdade. A fórmula é digerida mais lentamente, o que pode estender os intervalos. Mas isso não é argumento para introduzir fórmula — e não garante sono contínuo.
 
 **"Preciso trocar de fórmula se o bebê está com cólica."**
-Nem sempre. [Cólicas](/blog/colicas-do-bebe) são multifatoriais e geralmente não se resolvem só com troca de fórmula. Converse com o pediatra antes de trocar.
+Nem sempre. [Cólicas](/colicas-do-bebe) são multifatoriais e geralmente não se resolvem só com troca de fórmula. Converse com o pediatra antes de trocar.
 
 **"Qualquer água serve para preparar."**
 Não. A água deve ser fervida. Água mineral não é estéril, e água de filtro pode não eliminar todos os micro-organismos.
@@ -189,9 +189,9 @@ Não. A água deve ser fervida. Água mineral não é estéril, e água de filtr
 
 ### Leia também
 
-- [Amamentação sob demanda: como funciona](/blog/amamentacao-sob-demanda)
-- [Leite materno: armazenamento e conservação](/blog/leite-materno-armazenamento)
-- [Ganho de peso do bebê: o que é normal](/blog/ganho-peso-bebe)
+- [Amamentação sob demanda: como funciona](/amamentacao-sob-demanda)
+- [Leite materno: armazenamento e conservação](/leite-materno-armazenamento)
+- [Ganho de peso do bebê: o que é normal](/ganho-peso-bebe)
 
 ---
 

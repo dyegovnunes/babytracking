@@ -95,7 +95,7 @@ A diferença prática: nas curvas OMS, bebês amamentados tendem a aparecer em p
 
 O pediatra acompanha várias curvas simultaneamente. As principais:
 
-**Peso por idade (P/I):** A mais conhecida. Mostra se o bebê está ganhando peso adequadamente. Serve para acompanhar o [ganho de peso do bebê](/blog/ganho-peso-bebe) ao longo das consultas.
+**Peso por idade (P/I):** A mais conhecida. Mostra se o bebê está ganhando peso adequadamente. Serve para acompanhar o [ganho de peso do bebê](/ganho-peso-bebe) ao longo das consultas.
 
 **Comprimento/estatura por idade (E/I):** Avalia o crescimento linear. Em bebês, mede-se deitado (comprimento); após os 2 anos, em pé (estatura).
 
@@ -145,7 +145,7 @@ Sim, e isso é normal. Bebês amamentados exclusivamente tendem a:
 
 Se o pediatra usar curvas do CDC, um bebê amamentado pode parecer "abaixo do esperado" após os 6 meses, quando na verdade está crescendo normalmente para o padrão da OMS. É por isso que o tipo de curva importa — e por isso o Brasil adota as curvas OMS.
 
-A [amamentação sob demanda](/blog/amamentacao-sob-demanda) é a melhor garantia de que o bebê está recebendo o volume adequado de leite para seu crescimento individual.
+A [amamentação sob demanda](/amamentacao-sob-demanda) é a melhor garantia de que o bebê está recebendo o volume adequado de leite para seu crescimento individual.
 
 ## E o bebê prematuro?
 
@@ -167,7 +167,7 @@ A Caderneta da Criança, distribuída pelo Ministério da Saúde, traz as curvas
 - Calendário vacinal
 - Espaço para registro das consultas
 
-**Dica prática:** Leve a caderneta a todas as consultas e peça ao pediatra para marcar os pontos. Se ele usar prontuário eletrônico, peça uma cópia dos dados para manter a caderneta atualizada. Ter o [pediatra certo](/blog/como-escolher-pediatra) faz diferença — um bom profissional vai explicar cada marcação.
+**Dica prática:** Leve a caderneta a todas as consultas e peça ao pediatra para marcar os pontos. Se ele usar prontuário eletrônico, peça uma cópia dos dados para manter a caderneta atualizada. Ter o [pediatra certo](/como-escolher-pediatra) faz diferença — um bom profissional vai explicar cada marcação.
 
 ## Mitos comuns sobre percentis
 

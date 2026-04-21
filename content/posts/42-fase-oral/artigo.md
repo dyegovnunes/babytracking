@@ -83,7 +83,7 @@ A fase oral tem um **início claro** e um **fim gradual**:
 - **Diminui**: a partir dos **12 meses**, conforme as mãos se tornam mais hábeis e a exploração visual e manual ganha protagonismo.
 - **Praticamente desaparece**: entre **18 e 24 meses** para a maioria das crianças.
 
-É normal que, durante [saltos de desenvolvimento](/blog/saltos-desenvolvimento), o comportamento oral se intensifique temporariamente — o bebê volta a usar a boca como recurso de regulação em períodos de estresse neurológico.
+É normal que, durante [saltos de desenvolvimento](/saltos-desenvolvimento), o comportamento oral se intensifique temporariamente — o bebê volta a usar a boca como recurso de regulação em períodos de estresse neurológico.
 
 ---
 
@@ -175,7 +175,7 @@ Na prática:
 - **Supervisione** — a fase oral coincide com o início da mobilidade (rolar, sentar, engatinhar), então o bebê alcança mais coisas.
 - **Prepare a casa** — é mais fácil adaptar o ambiente do que vigiar cada segundo.
 
-Para mais ideias de como explorar essa fase de forma segura e divertida, veja nosso guia de [brincadeiras para bebê de 3 a 6 meses](/blog/brincadeiras-bebe-3-6-meses).
+Para mais ideias de como explorar essa fase de forma segura e divertida, veja nosso guia de [brincadeiras para bebê de 3 a 6 meses](/brincadeiras-bebe-3-6-meses).
 
 ![Bebê de 6 meses no chão explorando brinquedos sensoriais variados, levando um à boca](img42-2.png)
 
@@ -207,9 +207,9 @@ Para a grande maioria dos bebês, a fase oral é uma etapa saudável e passageir
 
 ### Leia também
 
-- [Marcos de desenvolvimento: 3 a 6 meses](/blog/marcos-desenvolvimento-3-6-meses)
-- [Brincadeiras para bebê de 3 a 6 meses](/blog/brincadeiras-bebe-3-6-meses)
-- [Saltos de desenvolvimento do bebê](/blog/saltos-desenvolvimento)
+- [Marcos de desenvolvimento: 3 a 6 meses](/marcos-desenvolvimento-3-6-meses)
+- [Brincadeiras para bebê de 3 a 6 meses](/brincadeiras-bebe-3-6-meses)
+- [Saltos de desenvolvimento do bebê](/saltos-desenvolvimento)
 
 ---
 

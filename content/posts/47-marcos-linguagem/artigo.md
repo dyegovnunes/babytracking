@@ -65,7 +65,7 @@ O primeiro sorriso social, o arrulho que parece uma conversa, aquele "da-da-da" 
 
 ## Timeline: do nascimento aos 12 meses
 
-Cada bebê tem seu ritmo, mas a ciência mapeou marcos que servem como guia geral. Se você está acompanhando os [marcos de desenvolvimento entre 3 e 6 meses](/blog/marcos-desenvolvimento-3-6-meses), a linguagem é uma parte central.
+Cada bebê tem seu ritmo, mas a ciência mapeou marcos que servem como guia geral. Se você está acompanhando os [marcos de desenvolvimento entre 3 e 6 meses](/marcos-desenvolvimento-3-6-meses), a linguagem é uma parte central.
 
 ### 0-2 meses: choro e primeiros sons
 
@@ -81,7 +81,7 @@ A primeira gargalhada costuma aparecer entre 3 e 4 meses. Junto com ela vêm gui
 
 ### 4-6 meses: balbucio marginal
 
-O balbucio começa com sons de consoantes misturados com vogais: "ga", "ba", "ma". Ainda são combinações simples e não repetitivas. O bebê pode passar longos minutos "falando" sozinho, testando sons. Este período coincide com [saltos de desenvolvimento](/blog/saltos-desenvolvimento) importantes.
+O balbucio começa com sons de consoantes misturados com vogais: "ga", "ba", "ma". Ainda são combinações simples e não repetitivas. O bebê pode passar longos minutos "falando" sozinho, testando sons. Este período coincide com [saltos de desenvolvimento](/saltos-desenvolvimento) importantes.
 
 ### 6-9 meses: balbucio canônico
 
@@ -129,7 +129,7 @@ A AAP e a SBP recomendam estratégias simples e baseadas em evidências:
 
 Ler para o bebê desde os primeiros meses é uma das intervenções mais poderosas para a linguagem. Não importa se o bebê não "entende a história" — ele está absorvendo entonação, vocabulário e padrões de frase.
 
-As [brincadeiras para bebês de 3 a 6 meses](/blog/brincadeiras-bebe-3-6-meses) podem incluir livros de tecido e livros com texturas. Nessa fase, o bebê vai querer morder, apertar e explorar o livro — e tudo bem. O objetivo é criar uma associação positiva entre livros e momentos prazerosos.
+As [brincadeiras para bebês de 3 a 6 meses](/brincadeiras-bebe-3-6-meses) podem incluir livros de tecido e livros com texturas. Nessa fase, o bebê vai querer morder, apertar e explorar o livro — e tudo bem. O objetivo é criar uma associação positiva entre livros e momentos prazerosos.
 
 **Dicas práticas:**
 - Livros de tecido ou cartonados (resistem à fase oral)

@@ -89,7 +89,7 @@ A rotina dá previsibilidade sem rigidez. O bebê sabe o que vem depois, mesmo q
 Nas primeiras semanas, o que existe é sobrevivência organizada. O bebê dorme entre 16 e 18 horas por dia, em blocos de 45 minutos a 3 horas, distribuídos igualmente entre dia e noite.
 
 **O que esperar:**
-- 8 a 12 amamentações em 24 horas (a [amamentação sob demanda](/blog/amamentacao-sob-demanda) é a recomendação padrão)
+- 8 a 12 amamentações em 24 horas (a [amamentação sob demanda](/amamentacao-sob-demanda) é a recomendação padrão)
 - Janela de sono acordado de apenas 30-45 minutos
 - Nenhuma distinção entre dia e noite
 - Muitas trocas de fralda (8-12 por dia)
@@ -97,7 +97,7 @@ Nas primeiras semanas, o que existe é sobrevivência organizada. O bebê dorme 
 
 **Seu papel:** atender às necessidades quando aparecem. Mamar quando tem fome, dormir quando dá sinais de sono, trocar quando precisa. Essa responsividade é a fundação de qualquer rotina futura.
 
-Se você quer entender melhor o que é normal nessa fase, confira o guia sobre os [primeiros dias em casa](/blog/primeiros-dias-em-casa).
+Se você quer entender melhor o que é normal nessa fase, confira o guia sobre os [primeiros dias em casa](/primeiros-dias-em-casa-com-recem-nascido).
 
 ## O que muda entre 4 e 8 semanas?
 
@@ -170,7 +170,7 @@ A maioria dos especialistas aponta para os 3-4 meses como a fase em que o bebê 
 
 Mesmo assim, "mais estrutura" não significa rigidez. Significa que os horários passam a variar em uma faixa menor. A amamentação da manhã pode ser entre 6h e 7h30 em vez de "em algum momento da madrugada".
 
-Para entender como o [sono do recém-nascido](/blog/sono-recem-nascido) funciona e evolui, nosso guia dedicado traz detalhes sobre cada fase.
+Para entender como o [sono do recém-nascido](/sono-do-recem-nascido) funciona e evolui, nosso guia dedicado traz detalhes sobre cada fase.
 
 ## Resumindo
 
@@ -184,9 +184,9 @@ Para entender como o [sono do recém-nascido](/blog/sono-recem-nascido) funciona
 ---
 
 **Leia também:**
-- [Sono do Recém-Nascido: O Que Esperar](/blog/sono-recem-nascido)
-- [Amamentação Sob Demanda: Guia Prático](/blog/amamentacao-sob-demanda)
-- [Primeiros Dias em Casa com o Recém-Nascido](/blog/primeiros-dias-em-casa)
+- [Sono do Recém-Nascido: O Que Esperar](/sono-do-recem-nascido)
+- [Amamentação Sob Demanda: Guia Prático](/amamentacao-sob-demanda)
+- [Primeiros Dias em Casa com o Recém-Nascido](/primeiros-dias-em-casa-com-recem-nascido)
 
 ---
 

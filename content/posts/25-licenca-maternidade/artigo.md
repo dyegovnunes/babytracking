@@ -123,7 +123,7 @@ A Constituição Federal garante **5 dias** de licença-paternidade. Se a empres
 
 A licença-paternidade também se aplica em casos de adoção, e o pai pode solicitar ao INSS se for contribuinte individual.
 
-A participação ativa do pai desde os primeiros dias faz diferença enorme — tanto para o bebê quanto para a saúde mental da mãe. Organizar a rotina a dois desde o início é um investimento que vale cada dia. Preparar o [plano de parto](/blog/plano-de-parto) juntos é um bom começo.
+A participação ativa do pai desde os primeiros dias faz diferença enorme — tanto para o bebê quanto para a saúde mental da mãe. Organizar a rotina a dois desde o início é um investimento que vale cada dia. Preparar o [plano de parto](/plano-de-parto) juntos é um bom começo.
 
 ## Posso ser demitida após a licença-maternidade?
 
@@ -160,9 +160,9 @@ A licença começa com o nascimento (ou até 28 dias antes). Mas a organização
 
 **Na vida pessoal:**
 
-- Monte sua [rede de apoio](/blog/primeiros-dias-em-casa-com-recem-nascido) — quem vai ajudar nas primeiras semanas.
+- Monte sua [rede de apoio](/primeiros-dias-em-casa-com-recem-nascido) — quem vai ajudar nas primeiras semanas.
 - Planeje as finanças: o salário-maternidade cobre o período, mas é bom ter reserva para gastos extras.
-- Entenda as [mudanças no corpo no pós-parto](/blog/o-que-muda-no-corpo-depois-do-parto) para não se assustar.
+- Entenda as [mudanças no corpo no pós-parto](/o-que-muda-no-corpo-depois-do-parto) para não se assustar.
 - Congele refeições. Sério. Seu eu do futuro vai agradecer.
 - Deixe tudo pronto: pediatra escolhido, mala da maternidade feita, quarto organizado.
 
@@ -185,9 +185,9 @@ A licença começa com o nascimento (ou até 28 dias antes). Mas a organização
 
 ### Leia também
 
-- [Plano de Parto: Como Fazer o Seu](/blog/plano-de-parto)
-- [O Que Muda no Corpo Depois do Parto](/blog/o-que-muda-no-corpo-depois-do-parto)
-- [Primeiros Dias em Casa com o Recém-Nascido](/blog/primeiros-dias-em-casa-com-recem-nascido)
+- [Plano de Parto: Como Fazer o Seu](/plano-de-parto)
+- [O Que Muda no Corpo Depois do Parto](/o-que-muda-no-corpo-depois-do-parto)
+- [Primeiros Dias em Casa com o Recém-Nascido](/primeiros-dias-em-casa-com-recem-nascido)
 
 ---
 

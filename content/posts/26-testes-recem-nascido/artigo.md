@@ -168,7 +168,7 @@ A Lei 14.154, sancionada em 2021, ampliou significativamente o Programa Nacional
 
 A ampliação está em processo de implantação nos estados. Na prática, consulte a maternidade e o pediatra para saber quais doenças já estão cobertas na sua região. Se possível, complemente com o teste ampliado particular para cobrir o que o SUS ainda não cobre localmente.
 
-Esse é um avanço histórico. Nos [primeiros dias em casa com o recém-nascido](/blog/primeiros-dias-em-casa-com-recem-nascido), saber que esses exames foram feitos traz tranquilidade.
+Esse é um avanço histórico. Nos [primeiros dias em casa com o recém-nascido](/primeiros-dias-em-casa-com-recem-nascido), saber que esses exames foram feitos traz tranquilidade.
 
 ## O que acontece se um resultado vier alterado?
 
@@ -180,9 +180,9 @@ Se houver confirmação de alguma condição:
 - O tratamento precoce é, na maioria dos casos, extremamente eficaz.
 - Condições como hipotireoidismo congênito, se tratadas desde as primeiras semanas, permitem desenvolvimento completamente normal.
 
-Se o bebê estiver com [icterícia](/blog/ictericia-neonatal), isso não interfere nos resultados dos testes de triagem, mas é importante que ambas as situações sejam acompanhadas.
+Se o bebê estiver com [icterícia](/ictericia-neonatal), isso não interfere nos resultados dos testes de triagem, mas é importante que ambas as situações sejam acompanhadas.
 
-Mantenha o cartão de triagem neonatal guardado junto ao cartão de vacinação. Leve nas consultas pediátricas — o acompanhamento do [ganho de peso](/blog/ganho-peso-bebe) e dos marcos de desenvolvimento complementa o quadro de saúde do bebê.
+Mantenha o cartão de triagem neonatal guardado junto ao cartão de vacinação. Leve nas consultas pediátricas — o acompanhamento do [ganho de peso](/ganho-peso-bebe) e dos marcos de desenvolvimento complementa o quadro de saúde do bebê.
 
 ## Resumindo
 
@@ -196,9 +196,9 @@ Mantenha o cartão de triagem neonatal guardado junto ao cartão de vacinação.
 
 ### Leia também
 
-- [Primeiros Dias em Casa com o Recém-Nascido](/blog/primeiros-dias-em-casa-com-recem-nascido)
-- [Icterícia Neonatal: O Que Saber](/blog/ictericia-neonatal)
-- [Ganho de Peso do Bebê: O Que Esperar](/blog/ganho-peso-bebe)
+- [Primeiros Dias em Casa com o Recém-Nascido](/primeiros-dias-em-casa-com-recem-nascido)
+- [Icterícia Neonatal: O Que Saber](/ictericia-neonatal)
+- [Ganho de Peso do Bebê: O Que Esperar](/ganho-peso-bebe)
 
 ---
 

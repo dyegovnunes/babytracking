@@ -99,7 +99,7 @@ A AAP (Academia Americana de Pediatria) recomenda manter a criança virada para 
 
 **Modelos combinados** (0+/I ou I/II/III) cobrem faixas mais amplas e podem ser mais econômicos, mas verifique se o modelo é certificado pelo INMETRO para todos os grupos que anuncia.
 
-Para o recém-nascido, você precisará de um **bebê conforto (grupo 0 ou 0+)**. É o item que vai direto na sua [lista de enxoval](/blog/enxoval-do-bebe-o-que-realmente-precisa) e na [mala da maternidade](/blog/mala-da-maternidade-lista-completa) (instalado no carro, pronto para a volta para casa).
+Para o recém-nascido, você precisará de um **bebê conforto (grupo 0 ou 0+)**. É o item que vai direto na sua [lista de enxoval](/enxoval-do-bebe-o-que-realmente-precisa) e na [mala da maternidade](/mala-da-maternidade-lista-completa) (instalado no carro, pronto para a volta para casa).
 
 ## Por que virada para trás é mais seguro
 
@@ -179,15 +179,15 @@ A troca deve ser feita quando:
 
 Não tenha pressa de "promover" o bebê para o próximo grupo. O grupo anterior, desde que dentro dos limites, é mais seguro. Isso é especialmente verdade para a transição de virado para trás para virado para frente.
 
-O [acompanhamento do quarto do bebê](/blog/quarto-do-bebe-o-que-e-essencial) e do crescimento como um todo ajudam a saber quando é hora de migrar.
+O [acompanhamento do quarto do bebê](/quarto-do-bebe-o-que-e-essencial) e do crescimento como um todo ajudam a saber quando é hora de migrar.
 
 ---
 
 ### Leia também
 
-- [Enxoval do Bebê: O Que Realmente Precisa](/blog/enxoval-do-bebe-o-que-realmente-precisa)
-- [Mala da Maternidade: Lista Completa](/blog/mala-da-maternidade-lista-completa)
-- [Quarto do Bebê: O Que É Essencial](/blog/quarto-do-bebe-o-que-e-essencial)
+- [Enxoval do Bebê: O Que Realmente Precisa](/enxoval-do-bebe-o-que-realmente-precisa)
+- [Mala da Maternidade: Lista Completa](/mala-da-maternidade-lista-completa)
+- [Quarto do Bebê: O Que É Essencial](/quarto-do-bebe-o-que-e-essencial)
 
 ---
 

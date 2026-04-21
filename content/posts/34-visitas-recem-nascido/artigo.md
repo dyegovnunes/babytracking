@@ -61,7 +61,7 @@ O bebê nasceu e o mundo inteiro quer conhecê-lo. Avós, tios, amigos, colegas 
 
 ## A realidade dos primeiros dias
 
-Nos [primeiros dias em casa](/blog/primeiros-dias-em-casa-com-recem-nascido), a mãe está se recuperando do parto, aprendendo a amamentar (ou a preparar mamadeiras), dormindo em fragmentos de 2-3 horas e lidando com hormônios em montanha-russa. O bebê está se adaptando ao mundo fora do útero. O casal está se reconfigurando como família.
+Nos [primeiros dias em casa](/primeiros-dias-em-casa-com-recem-nascido), a mãe está se recuperando do parto, aprendendo a amamentar (ou a preparar mamadeiras), dormindo em fragmentos de 2-3 horas e lidando com hormônios em montanha-russa. O bebê está se adaptando ao mundo fora do útero. O casal está se reconfigurando como família.
 
 Nesse contexto, uma visita "rápida" de 30 minutos pode custar a única janela de descanso do dia. A mãe se sente obrigada a estar apresentável, servir café, sorrir — quando o que ela precisava era dormir.
 
@@ -142,7 +142,7 @@ O parceiro (pai, companheira, acompanhante) tem um papel fundamental: ser o filt
 - Proteger os momentos de amamentação e descanso da mãe
 - Dizer "não" quando a mãe não consegue
 
-Isso não é ser chato. É construir uma [rede de apoio](/blog/rede-de-apoio-maternidade) que funciona de verdade.
+Isso não é ser chato. É construir uma [rede de apoio](/rede-de-apoio-maternidade) que funciona de verdade.
 
 ## Visitas que realmente ajudam
 
@@ -155,15 +155,15 @@ A melhor visita é aquela que resolve algo. Sugestões para compartilhar com que
 - Fazer compras de mercado
 - Simplesmente perguntar "do que vocês estão precisando?" — e respeitar a resposta
 
-A avó que chega, pega o bebê e diz "vai dormir, eu cuido" é ouro. O primo que fica sentado esperando café e perguntando se o [coto umbilical](/blog/cordao-umbilical) já caiu, talvez possa esperar mais uma semana.
+A avó que chega, pega o bebê e diz "vai dormir, eu cuido" é ouro. O primo que fica sentado esperando café e perguntando se o [coto umbilical](/cordao-umbilical) já caiu, talvez possa esperar mais uma semana.
 
 ---
 
 ### Leia também
 
-- [Primeiros dias em casa com o recém-nascido](/blog/primeiros-dias-em-casa-com-recem-nascido)
-- [Rede de apoio na maternidade: como construir](/blog/rede-de-apoio-maternidade)
-- [Cordão umbilical: cuidados e quando cai](/blog/cordao-umbilical)
+- [Primeiros dias em casa com o recém-nascido](/primeiros-dias-em-casa-com-recem-nascido)
+- [Rede de apoio na maternidade: como construir](/rede-de-apoio-maternidade)
+- [Cordão umbilical: cuidados e quando cai](/cordao-umbilical)
 
 ---
 

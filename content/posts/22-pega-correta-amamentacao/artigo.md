@@ -79,7 +79,7 @@ A pega determina três coisas:
 2. **Conforto.** Dor durante a amamentação quase sempre indica problema de pega. Amamentar pode ser desconfortável nos primeiros dias, mas não deve ser doloroso a ponto de causar fissuras ou sangramento
 3. **Produção de leite.** O corpo produz leite sob demanda: quanto mais eficiente a extração, mais leite é produzido. Pega ruim = extração ruim = sinal para o corpo reduzir produção
 
-Entender a [amamentação sob demanda](/blog/amamentacao-sob-demanda) é essencial, mas sem pega correta a demanda não se traduz em oferta adequada.
+Entender a [amamentação sob demanda](/amamentacao-sob-demanda) é essencial, mas sem pega correta a demanda não se traduz em oferta adequada.
 
 ## Como é a pega correta
 
@@ -150,7 +150,7 @@ Você se reclina (não deitada totalmente) e o bebê fica de bruços sobre o seu
 
 Ambos deitados de lado, frente a frente. A boca do bebê fica na altura do mamilo.
 
-**Quando funciona bem:** amamentações noturnas, pós-cesariana, quando você precisa descansar. Se estiver com o [preparo para a amamentação](/blog/amamentacao-preparo-durante-gestacao) em dia, essa posição pode ser tentada desde o início.
+**Quando funciona bem:** amamentações noturnas, pós-cesariana, quando você precisa descansar. Se estiver com o [preparo para a amamentação](/amamentacao-o-que-saber-antes-do-bebe-nascer) em dia, essa posição pode ser tentada desde o início.
 
 ## Problemas comuns e como resolver
 
@@ -198,9 +198,9 @@ Bancos de leite humano do SUS oferecem apoio gratuito à amamentação. Ligue pa
 
 **Leia também:**
 
-- [Amamentação Sob Demanda: Como Funciona](/blog/amamentacao-sob-demanda)
-- [Preparação para a Amamentação na Gestação](/blog/amamentacao-preparo-durante-gestacao)
-- [Fórmula Infantil: Quando e Como Usar](/blog/formula-infantil)
+- [Amamentação Sob Demanda: Como Funciona](/amamentacao-sob-demanda)
+- [Preparação para a Amamentação na Gestação](/amamentacao-o-que-saber-antes-do-bebe-nascer)
+- [Fórmula Infantil: Quando e Como Usar](/formula-infantil)
 
 ---
 

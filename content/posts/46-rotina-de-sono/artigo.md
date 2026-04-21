@@ -86,7 +86,7 @@ O mecanismo é duplo: regulação de cortisol (o hormônio do estresse cai quand
 
 Você pode introduzir sinais básicos desde as **primeiras semanas** — como escurecer o ambiente à noite e manter a luz durante o dia. Mas uma rotina mais estruturada começa a fazer sentido por volta das **6-8 semanas**, quando o bebê já mostra os primeiros sinais de ritmo circadiano.
 
-Entre 3 e 4 meses, a rotina ganha mais importância porque é quando o [sono do bebê se reorganiza](/blog/sono-do-recem-nascido) e as fases de sono se parecem mais com as do adulto. Esse é, inclusive, o período da famosa [regressão de sono dos 4 meses](/blog/regressao-do-sono-4-meses) — e ter uma rotina estabelecida antes dela chegar é uma vantagem.
+Entre 3 e 4 meses, a rotina ganha mais importância porque é quando o [sono do bebê se reorganiza](/sono-do-recem-nascido) e as fases de sono se parecem mais com as do adulto. Esse é, inclusive, o período da famosa [regressão de sono dos 4 meses](/regressao-do-sono-4-meses) — e ter uma rotina estabelecida antes dela chegar é uma vantagem.
 
 ## Os blocos de uma boa rotina de sono
 
@@ -117,7 +117,7 @@ Na prática, isso nem sempre funciona — e tudo bem. Alguns bebês precisam de 
 
 ## O ambiente ideal para dormir
 
-O cenário importa tanto quanto a rotina em si. O [quarto do bebê](/blog/quarto-do-bebe-o-que-e-essencial) deve ter:
+O cenário importa tanto quanto a rotina em si. O [quarto do bebê](/quarto-do-bebe-o-que-e-essencial) deve ter:
 
 - **Escuridão:** cortinas blackout fazem diferença real. A melatonina é produzida no escuro.
 - **Temperatura agradável:** entre 20°C e 22°C. O saco de dormir é um aliado — ajuda a manter a temperatura estável e elimina a preocupação com cobertores soltos.
@@ -130,7 +130,7 @@ Sim, mas uma versão mais curta. Para sonecas, 5-10 minutos de ritual bastam: tr
 
 O importante é que o ambiente seja o mesmo (ou parecido) e que exista algum sinal de transição. Bebês que têm rotina de soneca consistente tendem a dormir mais rápido e por mais tempo durante o dia, segundo dados da SBP.
 
-Entre 3 e 6 meses, a [rotina diurna e noturna](/blog/sono-bebe-3-6-meses) começa a se estabilizar — esse é um bom momento para consolidar os rituais.
+Entre 3 e 6 meses, a [rotina diurna e noturna](/sono-bebe-3-6-meses) começa a se estabilizar — esse é um bom momento para consolidar os rituais.
 
 ## Quando a rotina quebra
 
@@ -149,7 +149,7 @@ A rotina evolui junto com o bebê:
 
 **0-2 meses:** Sinais simples — escurecer, embalar, amamentação. Não há rotina formal, apenas consistência ambiental.
 
-**3-4 meses:** Introduza a sequência completa (banho, massagem, amamentação, canção, berço). Comece a [construir a rotina do dia](/blog/rotina-bebe-3-4-meses) também.
+**3-4 meses:** Introduza a sequência completa (banho, massagem, amamentação, canção, berço). Comece a [construir a rotina do dia](/rotina-bebe-3-4-meses) também.
 
 **5-6 meses:** A rotina já pode estar bem estabelecida. Reduza estímulos progressivamente nos 30 minutos antes do ritual começar.
 

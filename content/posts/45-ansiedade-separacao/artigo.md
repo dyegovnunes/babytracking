@@ -77,7 +77,7 @@ A ansiedade de separação costuma aparecer entre **6 e 8 meses**, com pico entr
 
 A boa notícia: é uma fase. A intensidade vai diminuindo conforme o bebê amadurece emocionalmente e ganha mais experiências de que "a mãe vai, mas volta". A maioria das crianças supera a fase mais intensa por volta dos 2-3 anos, embora picos menores possam reaparecer em momentos de mudança — como entrada na escola ou chegada de um irmão.
 
-Esse é um dos [marcos de desenvolvimento mais importantes entre 3 e 6 meses](/blog/marcos-desenvolvimento-3-6-meses) e se intensifica durante os [saltos de desenvolvimento](/blog/saltos-desenvolvimento).
+Esse é um dos [marcos de desenvolvimento mais importantes entre 3 e 6 meses](/marcos-desenvolvimento-3-6-meses) e se intensifica durante os [saltos de desenvolvimento](/saltos-desenvolvimento).
 
 ## Por que a ansiedade de separação é um bom sinal?
 
@@ -131,7 +131,7 @@ Se o bebê está entrando na creche ou começando a ficar com um novo cuidador, 
 4. **Leve um objeto de transição** — uma fralda de pano com o cheiro da mãe, um bichinho familiar.
 5. **Mantenha o ritual de despedida** igual ao de casa.
 
-A [rede de apoio](/blog/rede-de-apoio-maternidade) é fundamental nessa fase. Quanto mais pessoas de confiança o bebê conhecer, mais experiências positivas de "separação e reencontro" ele acumula.
+A [rede de apoio](/rede-de-apoio-maternidade) é fundamental nessa fase. Quanto mais pessoas de confiança o bebê conhecer, mais experiências positivas de "separação e reencontro" ele acumula.
 
 ## O parceiro ou cuidador pode ajudar?
 

@@ -112,7 +112,7 @@ A progressão é gradual. Não existe uma meta rígida, mas as diretrizes da OMS
 **4-6 meses:**
 - O bebê provavelmente já gosta (ou tolera bem)
 - Começa a rolar, alcançar brinquedos, girar
-- A transição para sentar e [rolar](/blog/bebe-quando-comeca-rolar) acontece naturalmente
+- A transição para sentar e [rolar](/bebe-quando-comeca-rolar) acontece naturalmente
 
 Lembre-se: esses tempos são metas, não obrigações. Qualquer quantidade de tummy time é melhor que nenhuma.
 
@@ -152,7 +152,7 @@ Tummy time não precisa ser só no chão. Variar as posições mantém o bebê i
 - **Cante ou converse.** A voz familiar distrai e acalma.
 - **Faça sessões ultracurtas.** 30 segundos já conta. Aumente aos poucos.
 - **Escolha o melhor horário.** Evite momentos de fome, sono ou pós-alimentação imediata.
-- **Coloque brinquedos coloridos.** Chocalhos, [brinquedos para 3-6 meses](/blog/brincadeiras-bebe-3-6-meses) ou objetos com contraste visual atraem a atenção.
+- **Coloque brinquedos coloridos.** Chocalhos, [brinquedos para 3-6 meses](/brincadeiras-bebe-3-6-meses) ou objetos com contraste visual atraem a atenção.
 
 Se o bebê chorar, não force. Tire-o, acalme e tente novamente mais tarde. A ideia é que o tummy time seja uma experiência positiva, não uma tortura.
 
@@ -175,7 +175,7 @@ O tummy time é o alicerce de uma cadeia de marcos motores. Veja como tudo se co
 
 - **Controle cervical (2-3 meses):** O bebê levanta a cabeça de bruços. Sem tummy time, esse marco pode atrasar.
 - **Apoio nos antebraços (3-4 meses):** "Mini push-up" — o bebê empurra o peito para cima. Fortalece ombros e braços.
-- **Rolar (4-6 meses):** O movimento de rolar de barriga para costas nasce do tummy time. O bebê aprende a transferir peso e girar. Esse é um dos [marcos de desenvolvimento mais esperados entre 3 e 6 meses](/blog/marcos-desenvolvimento-3-6-meses).
+- **Rolar (4-6 meses):** O movimento de rolar de barriga para costas nasce do tummy time. O bebê aprende a transferir peso e girar. Esse é um dos [marcos de desenvolvimento mais esperados entre 3 e 6 meses](/marcos-desenvolvimento-3-6-meses).
 - **Sentar (5-7 meses):** O core fortalecido no tummy time sustenta o tronco na posição sentada.
 - **Engatinhar (7-10 meses):** A posição de quatro apoios é uma evolução direta do tummy time com apoio nas mãos.
 

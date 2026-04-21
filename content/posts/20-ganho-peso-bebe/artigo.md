@@ -87,7 +87,7 @@ Sim. Todos os recém-nascidos perdem peso nos primeiros dias de vida. Isso é fi
 - Peso de nascimento não recuperado até os 14 dias
 - Perda de peso contínua após o 5º dia
 
-Se isso acontecer, o pediatra vai investigar. Não entre em pânico, mas também não ignore. Converse sobre como está a [amamentação](/blog/amamentacao-sob-demanda) — a causa mais comum de perda excessiva é dificuldade na pega ou na transferência de leite.
+Se isso acontecer, o pediatra vai investigar. Não entre em pânico, mas também não ignore. Converse sobre como está a [amamentação](/amamentacao-sob-demanda) — a causa mais comum de perda excessiva é dificuldade na pega ou na transferência de leite.
 
 ## Quanto peso o bebê ganha por mês?
 
@@ -148,7 +148,7 @@ Não exatamente. Os padrões são ligeiramente diferentes:
 - Podem ganhar mais peso entre 3-12 meses
 - Têm maior risco de ganho excessivo se a oferta não for responsiva
 
-**Ponto essencial:** a desaceleração do ganho de peso do bebê amamentado a partir dos 3 meses não significa que o leite é fraco ou insuficiente. É o padrão normal de crescimento. A AAP e a SBP recomendam [amamentação exclusiva sob demanda](/blog/amamentacao-sob-demanda) até os 6 meses.
+**Ponto essencial:** a desaceleração do ganho de peso do bebê amamentado a partir dos 3 meses não significa que o leite é fraco ou insuficiente. É o padrão normal de crescimento. A AAP e a SBP recomendam [amamentação exclusiva sob demanda](/amamentacao-sob-demanda) até os 6 meses.
 
 ## Como saber se o bebê está mamando o suficiente?
 
@@ -211,9 +211,9 @@ O pediatra vai pesar o bebê, avaliar a curva de crescimento, investigar possív
 ---
 
 **Leia também:**
-- [Amamentação Sob Demanda: Guia Prático](/blog/amamentacao-sob-demanda)
-- [Primeiros Dias em Casa com o Recém-Nascido](/blog/primeiros-dias-em-casa)
-- [Sono do Recém-Nascido: O Que Esperar](/blog/sono-recem-nascido)
+- [Amamentação Sob Demanda: Guia Prático](/amamentacao-sob-demanda)
+- [Primeiros Dias em Casa com o Recém-Nascido](/primeiros-dias-em-casa-com-recem-nascido)
+- [Sono do Recém-Nascido: O Que Esperar](/sono-do-recem-nascido)
 
 ---
 

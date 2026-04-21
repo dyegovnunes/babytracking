@@ -72,7 +72,7 @@ O plano não é um contrato. Situações de emergência sempre terão prioridade
 - **É um direito**: a OMS inclui o plano de parto nas recomendações para uma experiência positiva de nascimento.
 - **Envolve o acompanhante**: quem estiver com você na sala pode consultar o documento se precisar falar por você.
 
-Se você ainda está decidindo sobre [tipos de parto](/blog/tipos-de-parto), o plano de parto é justamente o momento de colocar essas reflexões no papel.
+Se você ainda está decidindo sobre [tipos de parto](/tipos-de-parto), o plano de parto é justamente o momento de colocar essas reflexões no papel.
 
 ---
 
@@ -214,7 +214,7 @@ Adapte cada item à sua realidade. Converse com seu obstetra sobre cada ponto.
 
 O momento ideal para começar a rascunhar é entre a **28ª e a 32ª semana**. Assim, você tem tempo de pesquisar, conversar com o obstetra e ajustar antes do parto.
 
-Quando estiver com o plano pronto, é hora de montar a [mala da maternidade](/blog/mala-da-maternidade) e ficar atenta aos [sinais de trabalho de parto](/blog/sinais-trabalho-parto).
+Quando estiver com o plano pronto, é hora de montar a [mala da maternidade](/mala-da-maternidade-lista-completa) e ficar atenta aos [sinais de trabalho de parto](/sinais-trabalho-de-parto).
 
 ![Casal revendo juntos documentos sobre o parto, com caderno e caneta na mesa](img13-2.png)
 
@@ -222,9 +222,9 @@ Quando estiver com o plano pronto, é hora de montar a [mala da maternidade](/bl
 
 ## Leia também
 
-- [Tipos de Parto: Vantagens e Desvantagens de Cada Um](/blog/tipos-de-parto)
-- [Mala da Maternidade: O Que Levar](/blog/mala-da-maternidade)
-- [Sinais de Trabalho de Parto](/blog/sinais-trabalho-parto)
+- [Tipos de Parto: Vantagens e Desvantagens de Cada Um](/tipos-de-parto)
+- [Mala da Maternidade: O Que Levar](/mala-da-maternidade-lista-completa)
+- [Sinais de Trabalho de Parto](/sinais-trabalho-de-parto)
 
 ---
 

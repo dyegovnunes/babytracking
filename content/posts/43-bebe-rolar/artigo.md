@@ -85,7 +85,7 @@ O rolar depende de pré-requisitos que se constroem ao longo dos primeiros meses
 - **Dissociação de cintura**: o movimento de girar a parte superior do corpo independente da inferior.
 - **Tempo de prática no chão**: bebês que passam mais tempo no chão (e menos em dispositivos como cadeirinhas e bebê-conforto) desenvolvem essas habilidades mais cedo.
 
-O **tummy time** é, de longe, o exercício mais importante para construir todos esses pré-requisitos. Se o seu bebê ainda não tolera bem o tempo de bruços, temos um guia de [marcos de desenvolvimento de 3 a 6 meses](/blog/marcos-desenvolvimento-3-6-meses) com progressão gradual.
+O **tummy time** é, de longe, o exercício mais importante para construir todos esses pré-requisitos. Se o seu bebê ainda não tolera bem o tempo de bruços, temos um guia de [marcos de desenvolvimento de 3 a 6 meses](/marcos-desenvolvimento-3-6-meses) com progressão gradual.
 
 ---
 
@@ -130,7 +130,7 @@ A lógica: se o bebê tem força para rolar, tem força para levantar a cabeça 
 - Use saco de dormir em vez de cobertor.
 - Se o bebê rola para bruços mas ainda não rola de volta, fique atento nos primeiros dias — a maioria aprende rápido.
 
-Para revisitar as regras de sono seguro, veja nosso guia sobre [sono do recém-nascido](/blog/sono-do-recem-nascido).
+Para revisitar as regras de sono seguro, veja nosso guia sobre [sono do recém-nascido](/sono-do-recem-nascido).
 
 ![Bebê de 5 meses sorrindo após rolar de costas para barriga no tapete, mãe aplaudindo ao lado](img43-2.png)
 
@@ -138,7 +138,7 @@ Para revisitar as regras de sono seguro, veja nosso guia sobre [sono do recém-n
 
 ## Brincadeiras que estimulam o rolar
 
-Além do tummy time clássico, estas [brincadeiras](/blog/brincadeiras-bebe-3-6-meses) ajudam:
+Além do tummy time clássico, estas [brincadeiras](/brincadeiras-bebe-3-6-meses) ajudam:
 
 - **Rolar a bola**: deite o bebê de barriga para cima e role uma bola colorida ao lado dele. O rastreamento visual incentiva o giro da cabeça e do corpo.
 - **Brinquedo sonoro lateral**: agite um chocalho ao lado do bebê (fora do campo de visão). Ele vai girar a cabeça e, eventualmente, o corpo todo.
@@ -171,9 +171,9 @@ Cada conquista é construída sobre a anterior. O tummy time que pareceu tão di
 
 ### Leia também
 
-- [Marcos de desenvolvimento: 3 a 6 meses](/blog/marcos-desenvolvimento-3-6-meses)
-- [Brincadeiras para bebê de 3 a 6 meses](/blog/brincadeiras-bebe-3-6-meses)
-- [Sono do recém-nascido: o que esperar](/blog/sono-do-recem-nascido)
+- [Marcos de desenvolvimento: 3 a 6 meses](/marcos-desenvolvimento-3-6-meses)
+- [Brincadeiras para bebê de 3 a 6 meses](/brincadeiras-bebe-3-6-meses)
+- [Sono do recém-nascido: o que esperar](/sono-do-recem-nascido)
 
 ---
 

@@ -122,7 +122,7 @@ O sistema respiratório do bebê é imaturo e pode descompensar rapidamente. Obs
 - Espirros frequentes sem outros sinais
 - Tosse leve e esporádica, sem febre
 
-O [ruído branco](/blog/ruido-branco-bebe) pode acalmar o bebê enquanto você avalia, mas não substitui atendimento se há esforço respiratório.
+O [ruído branco](/ruido-branco-bebe) pode acalmar o bebê enquanto você avalia, mas não substitui atendimento se há esforço respiratório.
 
 ---
 
@@ -140,7 +140,7 @@ Bebês desidratam rápido, especialmente com diarreia e vômito. Sinais que indi
 
 A desidratação é uma das principais causas de internação em lactentes. Se o bebê está vomitando tudo que ingere ou tem diarreia líquida frequente (mais de 6 episódios em 24 horas), procure atendimento.
 
-Se o bebê está amamentando e você quer entender melhor os sinais de que ele está mamando o suficiente, veja nosso guia sobre [ganho de peso do bebê](/blog/ganho-peso-bebe).
+Se o bebê está amamentando e você quer entender melhor os sinais de que ele está mamando o suficiente, veja nosso guia sobre [ganho de peso do bebê](/ganho-peso-bebe).
 
 ---
 
@@ -150,7 +150,7 @@ Sinais neurológicos em bebês são **sempre urgência**:
 
 - **Convulsão**: movimentos rítmicos de braços/pernas, rigidez súbita, olhar fixo e "ausente", desvio ocular. Nem toda convulsão é "grande mal" — em bebês, pode ser sutil.
 - **Letargia extrema**: bebê não acorda para mamar, hipotônico (muito "mole"), sem resposta a estímulos.
-- **Irritabilidade inconsolável**: choro agudo, estridente, que não cede com nenhuma medida habitual — diferente do [choro de cólica](/blog/colicas-do-bebe), que tem padrão e horário.
+- **Irritabilidade inconsolável**: choro agudo, estridente, que não cede com nenhuma medida habitual — diferente do [choro de cólica](/colicas-do-bebe), que tem padrão e horário.
 - **Abaulamento da fontanela**: moleira tensa e elevada com o bebê calmo e em posição vertical.
 - **Após trauma na cabeça**: vômito, sonolência incomum, assimetria de pupilas, mudança de comportamento.
 
@@ -168,7 +168,7 @@ Nem toda golfada é preocupante — a maioria é fisiológica nos primeiros mese
 - Ausência de evacuação por mais de 5 dias em bebê em aleitamento exclusivo **com outros sinais** (distensão, dor, vômitos)
 
 **Observe em casa:**
-- Golfadas pequenas após as sessões de amamentação — [refluxo fisiológico é comum](/blog/refluxo-regurgitacao-bebe)
+- Golfadas pequenas após as sessões de amamentação — [refluxo fisiológico é comum](/refluxo-regurgitacao-bebe)
 - Fezes esverdeadas em bebê que está bem e ganhando peso
 - Soluço — não é sinal de doença
 
@@ -176,7 +176,7 @@ Nem toda golfada é preocupante — a maioria é fisiológica nos primeiros mese
 
 ## Pele e aparência geral
 
-- **Icterícia** (pele/olhos amarelados) que aparece nas primeiras 24 horas de vida ou piora após a alta — é urgência. Para entender melhor, leia sobre [icterícia neonatal](/blog/ictericia-neonatal).
+- **Icterícia** (pele/olhos amarelados) que aparece nas primeiras 24 horas de vida ou piora após a alta — é urgência. Para entender melhor, leia sobre [icterícia neonatal](/ictericia-neonatal).
 - **Petéquias**: manchinhas vermelhas/roxas que **não desaparecem** quando você pressiona a pele com o dedo (teste do copo). Podem indicar infecção grave (meningococcemia).
 - **Palidez extrema** ou pele acinzentada.
 - **Urticária extensa** com inchaço de lábios/língua (reação alérgica grave).
@@ -188,7 +188,7 @@ Nem toda golfada é preocupante — a maioria é fisiológica nos primeiros mese
 
 É tão importante saber quando ir quanto saber quando **não** ir. Idas desnecessárias ao PS expõem o bebê a infecções hospitalares e geram ansiedade. Situações que geralmente **não** exigem pronto-socorro:
 
-- **Choro intenso, mas consolável** — especialmente no padrão de [cólica](/blog/colicas-do-bebe) (fim de tarde, flexão de pernas, melhora com medidas de conforto)
+- **Choro intenso, mas consolável** — especialmente no padrão de [cólica](/colicas-do-bebe) (fim de tarde, flexão de pernas, melhora com medidas de conforto)
 - **Nariz entupido sem febre e sem esforço** — lavagem nasal com soro fisiológico costuma resolver
 - **Golfadas pequenas** após sessões de amamentação em bebê que ganha peso adequadamente
 - **Soluço** — normal e autolimitado
@@ -258,9 +258,9 @@ Os **registros de temperatura e sintomas com horários** são um diferencial na 
 
 ### Leia também
 
-- [Primeiros dias em casa com o recém-nascido](/blog/primeiros-dias-em-casa-com-recem-nascido)
-- [Icterícia neonatal: o que é e quando se preocupar](/blog/ictericia-neonatal)
-- [Ganho de peso do bebê: como acompanhar](/blog/ganho-peso-bebe)
+- [Primeiros dias em casa com o recém-nascido](/primeiros-dias-em-casa-com-recem-nascido)
+- [Icterícia neonatal: o que é e quando se preocupar](/ictericia-neonatal)
+- [Ganho de peso do bebê: como acompanhar](/ganho-peso-bebe)
 
 ---
 

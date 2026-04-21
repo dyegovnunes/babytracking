@@ -96,7 +96,7 @@ A evidência é moderada, mas positiva:
 
 **Hugh et al. (2014, Pediatrics/AAP):** não avaliou eficácia, mas segurança. Testou 14 máquinas de ruído branco para bebês e descobriu que **todas** ultrapassavam 50 dB a 30 cm do berço, e algumas chegavam a 85 dB — nível potencialmente prejudicial para exposição prolongada.
 
-**Revisões sistemáticas:** a evidência de que o ruído branco melhora o [sono do recém-nascido](/blog/sono-do-recem-nascido) é promissora, mas a qualidade dos estudos é variável. A maioria dos especialistas considera uma ferramenta útil, desde que usada corretamente.
+**Revisões sistemáticas:** a evidência de que o ruído branco melhora o [sono do recém-nascido](/sono-do-recem-nascido) é promissora, mas a qualidade dos estudos é variável. A maioria dos especialistas considera uma ferramenta útil, desde que usada corretamente.
 
 ## Qual o volume seguro de ruído branco para bebê?
 
@@ -146,7 +146,7 @@ Não existe resposta universal — cada bebê responde diferente. Mas a tendênc
 - Sons com melodia (músicas de ninar são úteis para a rotina, mas não substituem o ruído constante para manutenção do sono)
 - Sons da natureza com pássaros ou animais (variações interrompem o efeito)
 
-Se o bebê está passando pela [regressão do sono dos 4 meses](/blog/regressao-do-sono-4-meses), o ruído branco pode ajudar a suavizar as transições entre ciclos de sono.
+Se o bebê está passando pela [regressão do sono dos 4 meses](/regressao-do-sono-4-meses), o ruído branco pode ajudar a suavizar as transições entre ciclos de sono.
 
 ## Quando usar e quando não usar?
 
@@ -183,7 +183,7 @@ Não há regra fixa, mas a maioria dos especialistas sugere:
 2. Quando estiver em volume muito baixo, passe a ligar apenas nos primeiros minutos
 3. Depois, elimine completamente
 
-Se o [quarto do bebê](/blog/quarto-do-bebe-o-que-e-essencial) for naturalmente silencioso, o ruído branco tende a ser mais útil. Ambientes com algum som de fundo natural (cidade, casa movimentada) podem dispensá-lo.
+Se o [quarto do bebê](/quarto-do-bebe-o-que-e-essencial) for naturalmente silencioso, o ruído branco tende a ser mais útil. Ambientes com algum som de fundo natural (cidade, casa movimentada) podem dispensá-lo.
 
 ## Resumindo
 
@@ -198,9 +198,9 @@ Se o [quarto do bebê](/blog/quarto-do-bebe-o-que-e-essencial) for naturalmente 
 
 ### Leia também
 
-- [Sono do recém-nascido: o que esperar](/blog/sono-do-recem-nascido)
-- [Regressão do sono dos 4 meses](/blog/regressao-do-sono-4-meses)
-- [Quarto do bebê: o que é essencial](/blog/quarto-do-bebe-o-que-e-essencial)
+- [Sono do recém-nascido: o que esperar](/sono-do-recem-nascido)
+- [Regressão do sono dos 4 meses](/regressao-do-sono-4-meses)
+- [Quarto do bebê: o que é essencial](/quarto-do-bebe-o-que-e-essencial)
 
 ---
 

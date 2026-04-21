@@ -85,7 +85,7 @@ Isso acontece porque a sucção do bebê estimula a liberação de dois hormôni
 
 Nos primeiros dias, o que sai é o **colostro** — um líquido amarelado, denso e rico em anticorpos. A quantidade é pequena (e é isso que o bebê precisa). O leite de transição aparece entre o 3º e o 5º dia, e o leite maduro se estabelece por volta da 2ª semana.
 
-Para entender melhor como a [amamentação sob demanda](/blog/amamentacao-sob-demanda) funciona e sua relação com a produção, vale a leitura complementar.
+Para entender melhor como a [amamentação sob demanda](/amamentacao-sob-demanda) funciona e sua relação com a produção, vale a leitura complementar.
 
 ## Quais são as técnicas de ordenha?
 
@@ -189,7 +189,7 @@ Se você volta ao trabalho ou precisa ficar longe do bebê por períodos regular
 - **Amamente diretamente** nos horários em que estiver com o bebê (manhã, noite, finais de semana).
 - **Ordenha power pumping:** 20 min de extração + 10 min de descanso + 10 min de extração + 10 min de descanso + 10 min de extração. Uma sessão por dia pode ajudar a sinalizar ao corpo que precisa produzir mais.
 
-A [pega correta](/blog/pega-correta-posicoes-amamentacao) é fundamental: quanto mais eficiente a sucção do bebê, mais leite o corpo produz. Se a pega não está boa, a produção pode cair mesmo com sessões de amamentação frequentes.
+A [pega correta](/pega-correta-posicoes-amamentacao) é fundamental: quanto mais eficiente a sucção do bebê, mais leite o corpo produz. Se a pega não está boa, a produção pode cair mesmo com sessões de amamentação frequentes.
 
 ## Mitos sobre o leite materno
 
@@ -203,7 +203,7 @@ A [pega correta](/blog/pega-correta-posicoes-amamentacao) é fundamental: quanto
 
 **"Se o leite está amarelado, está estragado."** Leite materno muda de cor. O colostro é amarelo. Leite com mais gordura é mais cremoso. Variações de cor (amarelado, azulado, esverdeado) são normais e geralmente relacionadas à alimentação da mãe.
 
-Para quem está se preparando, o artigo sobre [o que saber sobre amamentação antes do bebê nascer](/blog/amamentacao-o-que-saber-antes-do-bebe-nascer) traz informações complementares.
+Para quem está se preparando, o artigo sobre [o que saber sobre amamentação antes do bebê nascer](/amamentacao-o-que-saber-antes-do-bebe-nascer) traz informações complementares.
 
 ## Como doar para o banco de leite?
 
@@ -236,9 +236,9 @@ O leite doado passa por pasteurização e controle de qualidade antes de ser dis
 
 ### Leia também
 
-- [Amamentação Sob Demanda: O Que Saber](/blog/amamentacao-sob-demanda)
-- [Pega Correta e Posições para Amamentar](/blog/pega-correta-posicoes-amamentacao)
-- [Amamentação: O Que Saber Antes do Bebê Nascer](/blog/amamentacao-o-que-saber-antes-do-bebe-nascer)
+- [Amamentação Sob Demanda: O Que Saber](/amamentacao-sob-demanda)
+- [Pega Correta e Posições para Amamentar](/pega-correta-posicoes-amamentacao)
+- [Amamentação: O Que Saber Antes do Bebê Nascer](/amamentacao-o-que-saber-antes-do-bebe-nascer)
 
 ---
 

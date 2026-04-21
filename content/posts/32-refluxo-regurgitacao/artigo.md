@@ -115,7 +115,7 @@ A DRGE acomete uma minoria dos bebês. De acordo com as diretrizes da NASPGHAN/E
 - Engasgos frequentes ou apneia
 - Complicações respiratórias recorrentes (sibilância, pneumonias de repetição)
 
-Se o seu bebê apresenta algum desses sinais, consulte o pediatra. Monitorar o [ganho de peso](/blog/ganho-peso-bebe) é uma das formas mais confiáveis de avaliar se o refluxo está causando impacto real.
+Se o seu bebê apresenta algum desses sinais, consulte o pediatra. Monitorar o [ganho de peso](/ganho-peso-bebe) é uma das formas mais confiáveis de avaliar se o refluxo está causando impacto real.
 
 ## Quais são os sinais de alerta?
 
@@ -143,7 +143,7 @@ O volume em si não é o melhor indicador. O que importa é: o bebê está ganha
 Sim. A sobrealimentação é uma causa frequente de regurgitação, especialmente em bebês alimentados com mamadeira, onde o fluxo é menos controlável.
 
 **Estratégias para evitar:**
-- Em [amamentação sob demanda](/blog/amamentacao-sob-demanda), observe os sinais de saciedade (solta o peito, vira o rosto, relaxa as mãos)
+- Em [amamentação sob demanda](/amamentacao-sob-demanda), observe os sinais de saciedade (solta o peito, vira o rosto, relaxa as mãos)
 - Na mamadeira, ofereça volumes adequados para a idade e faça pausas durante a alimentação
 - Evite sacudir ou brincar intensamente logo após a alimentação
 - Observe se o bebê realmente tem fome ou se busca o peito/mamadeira por conforto (o que é válido, mas pode contribuir para o excesso)
@@ -182,7 +182,7 @@ Para a minoria que desenvolve DRGE com sintomas objetivos, o pediatra pode consi
 
 A NASPGHAN/ESPGHAN é enfática: **não há evidência para tratar RGE fisiológico com medicação**. O uso indiscriminado de antiácidos em bebês tem crescido e é motivo de preocupação entre especialistas.
 
-Se o seu bebê tem [cólicas](/blog/colicas-do-bebe) e refluxo ao mesmo tempo, é comum confundir os sintomas. Converse com o pediatra antes de assumir que a causa do choro é o refluxo.
+Se o seu bebê tem [cólicas](/colicas-do-bebe) e refluxo ao mesmo tempo, é comum confundir os sintomas. Converse com o pediatra antes de assumir que a causa do choro é o refluxo.
 
 ## Quando o refluxo melhora?
 
@@ -208,9 +208,9 @@ O amadurecimento do esfíncter esofágico, a mudança postural e a dieta mais es
 
 ### Leia também
 
-- [Amamentação sob demanda: como funciona](/blog/amamentacao-sob-demanda)
-- [Ganho de peso do bebê: o que é normal](/blog/ganho-peso-bebe)
-- [Cólicas do bebê: causas e como aliviar](/blog/colicas-do-bebe)
+- [Amamentação sob demanda: como funciona](/amamentacao-sob-demanda)
+- [Ganho de peso do bebê: o que é normal](/ganho-peso-bebe)
+- [Cólicas do bebê: causas e como aliviar](/colicas-do-bebe)
 
 ---
 

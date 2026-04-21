@@ -111,7 +111,7 @@ Nem toda vermelhidão é a mesma coisa. Identificar o tipo ajuda a escolher o tr
 A prevenção é mais eficaz que o tratamento. As medidas abaixo são recomendadas pela SBP e pela AAP:
 
 **1. Troque com frequência**
-A medida mais importante. Nos recém-nascidos, a [troca de fralda](/blog/troca-de-fraldas-guia-completo) deve ser feita a cada 2-3 horas e sempre que houver fezes. Quanto menos tempo a pele ficar em contato com urina e fezes, menor o risco.
+A medida mais importante. Nos recém-nascidos, a [troca de fralda](/troca-de-fraldas-guia-completo) deve ser feita a cada 2-3 horas e sempre que houver fezes. Quanto menos tempo a pele ficar em contato com urina e fezes, menor o risco.
 
 **2. Use creme de barreira em cada troca**
 Cremes à base de óxido de zinco ou petrolato (vaselina) criam uma barreira física entre a pele e a umidade. Aplique uma camada generosa a cada troca — não é necessário remover completamente o creme anterior.
@@ -191,15 +191,15 @@ Não aplique antifúngico por conta própria. Leve ao pediatra para confirmaçã
 - Suspeita de candidíase (descrita acima)
 - Assaduras recorrentes e frequentes
 
-O [banho do recém-nascido](/blog/banho-do-recem-nascido) com água morna e sabonete neutro, sem esfregar a região irritada, ajuda na higiene sem agravar o quadro.
+O [banho do recém-nascido](/banho-do-recem-nascido) com água morna e sabonete neutro, sem esfregar a região irritada, ajuda na higiene sem agravar o quadro.
 
 ---
 
 ### Leia também
 
-- [Troca de fraldas: guia completo](/blog/troca-de-fraldas-guia-completo)
-- [Banho do recém-nascido: passo a passo](/blog/banho-do-recem-nascido)
-- [Fraldas de pano vs. descartáveis: comparativo](/blog/fraldas-pano-vs-descartaveis)
+- [Troca de fraldas: guia completo](/troca-de-fraldas-guia-completo)
+- [Banho do recém-nascido: passo a passo](/banho-do-recem-nascido)
+- [Fraldas de pano vs. descartáveis: comparativo](/fraldas-pano-vs-descartaveis)
 
 ---
 

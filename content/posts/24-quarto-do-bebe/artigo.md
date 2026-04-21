@@ -109,7 +109,7 @@ As recomendações de sono seguro da AAP (atualizadas em 2022) e endossadas pela
 - Nada de posicionadores de sono ou ninhos — a CPSC e a AAP desaconselham explicitamente
 - Nada de cama compartilhada (bed sharing) — o quarto é compartilhado, a superfície de sono não
 
-Se você está montando o [enxoval](/blog/enxoval-bebe), use essa lista como filtro antes de comprar qualquer item relacionado a sono.
+Se você está montando o [enxoval](/enxoval-do-bebe-o-que-realmente-precisa), use essa lista como filtro antes de comprar qualquer item relacionado a sono.
 
 ## Quarto compartilhado vs quarto separado
 
@@ -124,7 +124,7 @@ Na prática, isso significa que o "quarto do bebê" montado durante a gestação
 
 A transição para o quarto do bebê acontece quando a família estiver pronta. Não há um prazo obrigatório. Para muitos, ocorre entre 4 e 8 meses.
 
-Entender o [sono do recém-nascido](/blog/sono-recem-nascido) ajuda a tomar essa decisão com mais tranquilidade.
+Entender o [sono do recém-nascido](/sono-do-recem-nascido) ajuda a tomar essa decisão com mais tranquilidade.
 
 ## O que é útil mas não obrigatório
 
@@ -177,7 +177,7 @@ Se decoração importa para você (e é válido que importe — é o espaço da 
 - **Troque decoração por funcionalidade.** O dinheiro do papel de parede compra a cortina blackout, o ruído branco e sobra
 - **Peça emprestado o que puder.** Mini berço, moisés, poltrona — itens usados por poucos meses são ótimos candidatos
 
-Se está planejando o enxoval completo, confira nossa lista de [itens realmente necessários para o enxoval](/blog/enxoval-bebe-o-que-realmente-precisa) — a mesma lógica de "essencial vs marketing" se aplica.
+Se está planejando o enxoval completo, confira nossa lista de [itens realmente necessários para o enxoval](/enxoval-do-bebe-o-que-realmente-precisa) — a mesma lógica de "essencial vs marketing" se aplica.
 
 ## Resumindo
 
@@ -192,9 +192,9 @@ Se está planejando o enxoval completo, confira nossa lista de [itens realmente 
 
 **Leia também:**
 
-- [Enxoval do Bebê: O Que Realmente Precisa](/blog/enxoval-bebe-o-que-realmente-precisa)
-- [Mala da Maternidade: Lista Completa](/blog/mala-maternidade)
-- [Sono do Recém-Nascido: Tudo o Que Você Precisa Saber](/blog/sono-recem-nascido)
+- [Enxoval do Bebê: O Que Realmente Precisa](/enxoval-do-bebe-o-que-realmente-precisa)
+- [Mala da Maternidade: Lista Completa](/mala-da-maternidade-lista-completa)
+- [Sono do Recém-Nascido: Tudo o Que Você Precisa Saber](/sono-do-recem-nascido)
 
 ---
 

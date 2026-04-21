@@ -122,7 +122,7 @@ Nenhuma opção é 100% ecológica. O estudo da Environment Agency (UK, 2008) �
 
 ## Saúde da pele
 
-A [dermatite de fralda](/blog/dermatite-de-fralda) pode acontecer com qualquer tipo de fralda. O fator determinante não é o material, mas a **frequência de troca** e a **higiene da região**.
+A [dermatite de fralda](/dermatite-de-fralda) pode acontecer com qualquer tipo de fralda. O fator determinante não é o material, mas a **frequência de troca** e a **higiene da região**.
 
 **Descartáveis:**
 - Alta capacidade de absorção — mantém a pele mais seca entre trocas
@@ -135,7 +135,7 @@ A [dermatite de fralda](/blog/dermatite-de-fralda) pode acontecer com qualquer t
 - Se não for trocada com frequência, a umidade aumenta o risco de assadura
 - Sabão com fragrância ou amaciante pode causar irritação — prefira sabão neutro
 
-A SBP reforça: o mais importante é trocar com frequência e usar creme de barreira. O tipo de fralda é secundário. Veja o [guia completo de troca de fraldas](/blog/troca-de-fraldas-guia-completo) para a técnica correta.
+A SBP reforça: o mais importante é trocar com frequência e usar creme de barreira. O tipo de fralda é secundário. Veja o [guia completo de troca de fraldas](/troca-de-fraldas-guia-completo) para a técnica correta.
 
 ## Praticidade no dia a dia
 
@@ -195,9 +195,9 @@ Se não aceitar, a abordagem híbrida resolve: pano em casa, descartável na cre
 
 ### Leia também
 
-- [Troca de fraldas: guia completo](/blog/troca-de-fraldas-guia-completo)
-- [Enxoval do bebê: o que realmente precisa](/blog/enxoval-do-bebe-o-que-realmente-precisa)
-- [Dermatite de fralda: prevenção e tratamento](/blog/dermatite-de-fralda)
+- [Troca de fraldas: guia completo](/troca-de-fraldas-guia-completo)
+- [Enxoval do bebê: o que realmente precisa](/enxoval-do-bebe-o-que-realmente-precisa)
+- [Dermatite de fralda: prevenção e tratamento](/dermatite-de-fralda)
 
 ---
 

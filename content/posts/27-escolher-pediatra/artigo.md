@@ -56,10 +56,10 @@ O terceiro trimestre é o momento ideal. Entre a **28ª e a 36ª semana**, você
 Por que não deixar para depois do nascimento?
 
 - O bebê precisa de consulta pediátrica nos **primeiros 7 a 10 dias de vida**.
-- Na maternidade, perguntas sobre amamentação, [testes neonatais](/blog/testes-do-recem-nascido) e cuidados iniciais já aparecem.
+- Na maternidade, perguntas sobre amamentação, [testes neonatais](/testes-do-recem-nascido) e cuidados iniciais já aparecem.
 - Se você já tiver um pediatra escolhido, pode pedir que ele acompanhe o bebê ainda no hospital (quando a maternidade permite).
 
-Não encontrou ninguém antes do parto? Tudo bem. Muitos pais escolhem após o nascimento. Mas ter alguém de confiança desde o início torna os [primeiros dias em casa](/blog/primeiros-dias-em-casa-com-recem-nascido) menos estressantes.
+Não encontrou ninguém antes do parto? Tudo bem. Muitos pais escolhem após o nascimento. Mas ter alguém de confiança desde o início torna os [primeiros dias em casa](/primeiros-dias-em-casa-com-recem-nascido) menos estressantes.
 
 ## O que avaliar ao escolher o pediatra
 
@@ -150,7 +150,7 @@ A SBP recomenda o seguinte calendário de acompanhamento:
 
 São pelo menos **9 consultas no primeiro ano**. Por isso a relação com o pediatra é tão importante — vocês vão se ver bastante.
 
-O acompanhamento do [ganho de peso do bebê](/blog/ganho-peso-bebe) é um dos elementos centrais dessas consultas. Ter os dados organizados facilita muito a conversa.
+O acompanhamento do [ganho de peso do bebê](/ganho-peso-bebe) é um dos elementos centrais dessas consultas. Ter os dados organizados facilita muito a conversa.
 
 ## Como se preparar para a primeira consulta
 
@@ -185,9 +185,9 @@ Independentemente do modelo, o mais importante é a qualidade do profissional e 
 
 ### Leia também
 
-- [Primeiros Dias em Casa com o Recém-Nascido](/blog/primeiros-dias-em-casa-com-recem-nascido)
-- [Testes do Recém-Nascido: Guia Completo](/blog/testes-do-recem-nascido)
-- [Ganho de Peso do Bebê: O Que Esperar](/blog/ganho-peso-bebe)
+- [Primeiros Dias em Casa com o Recém-Nascido](/primeiros-dias-em-casa-com-recem-nascido)
+- [Testes do Recém-Nascido: Guia Completo](/testes-do-recem-nascido)
+- [Ganho de Peso do Bebê: O Que Esperar](/ganho-peso-bebe)
 
 ---
 

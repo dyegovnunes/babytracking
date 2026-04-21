@@ -128,7 +128,7 @@ A depressão pós-parto pode acontecer com qualquer pessoa, independentemente de
 - Problemas financeiros ou no relacionamento
 - Histórico de abuso ou violência
 - Prematuridade ou internação do bebê
-- [Mudanças intensas no corpo](/blog/o-que-muda-no-corpo-depois-do-parto) que afetam a autoestima
+- [Mudanças intensas no corpo](/o-que-muda-no-corpo-depois-do-parto) que afetam a autoestima
 
 Ter fatores de risco não significa que você terá depressão pós-parto. E não ter nenhum fator de risco não significa imunidade. O cérebro e os hormônios são complexos. Não existe uma causa única.
 
@@ -182,7 +182,7 @@ Se você é parceiro, familiar ou amigo de alguém que pode estar com DPP:
 4. **Incentive a busca por ajuda profissional.** Ofereça-se para acompanhar à consulta, pesquisar profissionais, agendar.
 5. **Cuide-se também.** Apoiar alguém com depressão é desgastante. Você precisa estar bem para ajudar.
 
-Construir uma [rede de apoio sólida](/blog/rede-de-apoio-maternidade) é uma das formas mais eficazes de prevenir e enfrentar a DPP.
+Construir uma [rede de apoio sólida](/rede-de-apoio-maternidade) é uma das formas mais eficazes de prevenir e enfrentar a DPP.
 
 ## Onde buscar ajuda no Brasil?
 
@@ -191,7 +191,7 @@ Construir uma [rede de apoio sólida](/blog/rede-de-apoio-maternidade) é uma da
 - **UBS (Unidade Básica de Saúde):** o obstetra ou médico de família pode encaminhar para psicólogo e psiquiatra pelo SUS.
 - **Psicólogos e psiquiatras particulares ou por convênio.**
 - **Grupos de apoio:** existem grupos presenciais e online para mães com DPP. Redes sociais como o Instagram têm comunidades acolhedoras.
-- **Postinho de saúde:** nas consultas de puericultura dos [primeiros dias do bebê](/blog/primeiros-dias-em-casa-com-recem-nascido), profissionais de saúde devem perguntar como a mãe está se sentindo. Se não perguntaram, fale você.
+- **Postinho de saúde:** nas consultas de puericultura dos [primeiros dias do bebê](/primeiros-dias-em-casa-com-recem-nascido), profissionais de saúde devem perguntar como a mãe está se sentindo. Se não perguntaram, fale você.
 
 Procurar ajuda é o primeiro passo. E é um passo enorme. Se você chegou até aqui lendo esse texto e se identificou, já está no caminho certo.
 
@@ -208,9 +208,9 @@ Procurar ajuda é o primeiro passo. E é um passo enorme. Se você chegou até a
 
 ### Leia também
 
-- [O Que Muda no Corpo Depois do Parto](/blog/o-que-muda-no-corpo-depois-do-parto)
-- [Primeiros Dias em Casa com o Recém-Nascido](/blog/primeiros-dias-em-casa-com-recem-nascido)
-- [Rede de Apoio na Maternidade: Por Que Importa e Como Construir](/blog/rede-de-apoio-maternidade)
+- [O Que Muda no Corpo Depois do Parto](/o-que-muda-no-corpo-depois-do-parto)
+- [Primeiros Dias em Casa com o Recém-Nascido](/primeiros-dias-em-casa-com-recem-nascido)
+- [Rede de Apoio na Maternidade: Por Que Importa e Como Construir](/rede-de-apoio-maternidade)
 
 ---
 

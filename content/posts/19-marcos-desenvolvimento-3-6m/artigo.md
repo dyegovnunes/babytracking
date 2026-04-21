@@ -112,7 +112,7 @@ O bebê de 3 meses está saindo da fase de recém-nascido e entrando no mundo de
 
 ## 4 meses
 
-Aos 4 meses, o mundo fica muito mais interessante. O bebê descobre as mãos, ri alto e pode passar pela famosa [regressão do sono](/blog/regressao-sono-4-meses) — que, na verdade, é um sinal de amadurecimento cerebral.
+Aos 4 meses, o mundo fica muito mais interessante. O bebê descobre as mãos, ri alto e pode passar pela famosa [regressão do sono](/regressao-do-sono-4-meses) — que, na verdade, é um sinal de amadurecimento cerebral.
 
 ### Motor
 - **Sustenta a cabeça firmemente** sem apoio
@@ -138,7 +138,7 @@ Aos 4 meses, o mundo fica muito mais interessante. O bebê descobre as mãos, ri
 - Imita sons que ouve
 - Muda o tom da vocalização (como se "conversasse")
 
-> Saiba mais sobre o que acontece com o sono nessa fase no nosso guia sobre [saltos de desenvolvimento](/blog/saltos-desenvolvimento).
+> Saiba mais sobre o que acontece com o sono nessa fase no nosso guia sobre [saltos de desenvolvimento](/saltos-desenvolvimento).
 
 ---
 
@@ -258,9 +258,9 @@ Nenhum desses pontos isoladamente significa atraso. O pediatra avalia o quadro c
 ---
 
 **Leia também:**
-- [Saltos de Desenvolvimento: O Que São](/blog/saltos-desenvolvimento)
-- [Regressão do Sono aos 4 Meses](/blog/regressao-sono-4-meses)
-- [Primeiros Dias em Casa com o Recém-Nascido](/blog/primeiros-dias-em-casa)
+- [Saltos de Desenvolvimento: O Que São](/saltos-desenvolvimento)
+- [Regressão do Sono aos 4 Meses](/regressao-do-sono-4-meses)
+- [Primeiros Dias em Casa com o Recém-Nascido](/primeiros-dias-em-casa-com-recem-nascido)
 
 ---
 

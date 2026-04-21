@@ -140,7 +140,7 @@ A regra 5-1-1 é um guia prático recomendado pelo ACOG para saber quando ir ao 
 
 Algumas equipes médicas usam a regra 4-1-1 (contrações a cada 4 minutos), especialmente para gestantes que moram longe do hospital ou têm histórico de parto rápido.
 
-Converse com seu obstetra sobre qual regra seguir no seu caso. Se você já tem um [plano de parto](/blog/plano-de-parto), essa informação pode estar definida lá.
+Converse com seu obstetra sobre qual regra seguir no seu caso. Se você já tem um [plano de parto](/plano-de-parto), essa informação pode estar definida lá.
 
 ## Quando ir para o hospital?
 
@@ -158,7 +158,7 @@ Na dúvida, ligue para a maternidade. Nenhuma equipe médica vai julgar você po
 
 ## O que levar na mala da maternidade?
 
-Se ainda não montou a mala, este é o momento. Confira nosso [guia completo da mala da maternidade](/blog/mala-maternidade) com checklist detalhado. Os itens essenciais para o trabalho de parto incluem:
+Se ainda não montou a mala, este é o momento. Confira nosso [guia completo da mala da maternidade](/mala-da-maternidade-lista-completa) com checklist detalhado. Os itens essenciais para o trabalho de parto incluem:
 
 - Documentos (RG, cartão do convênio, cartão de pré-natal)
 - Roupas confortáveis para você e para o bebê
@@ -192,7 +192,7 @@ Enquanto espera o momento de ir ao hospital:
 - **Alimentação leve.** Frutas, torradas, água de coco. O trabalho de parto é um esforço físico — você vai precisar de energia.
 - **Companhia de confiança.** Parceiro, doula, mãe — alguém que transmita calma.
 
-Para conhecer os [tipos de parto](/blog/tipos-de-parto) e saber o que esperar de cada um, consulte nosso guia dedicado ao tema.
+Para conhecer os [tipos de parto](/tipos-de-parto) e saber o que esperar de cada um, consulte nosso guia dedicado ao tema.
 
 ## Resumindo
 
@@ -206,9 +206,9 @@ Para conhecer os [tipos de parto](/blog/tipos-de-parto) e saber o que esperar de
 ---
 
 **Leia também:**
-- [Tipos de Parto: Guia Completo](/blog/tipos-de-parto)
-- [Plano de Parto: Como Fazer o Seu](/blog/plano-de-parto)
-- [Primeiros Dias em Casa com o Recém-Nascido](/blog/primeiros-dias-em-casa)
+- [Tipos de Parto: Guia Completo](/tipos-de-parto)
+- [Plano de Parto: Como Fazer o Seu](/plano-de-parto)
+- [Primeiros Dias em Casa com o Recém-Nascido](/primeiros-dias-em-casa-com-recem-nascido)
 
 ---
 

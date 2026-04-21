@@ -128,7 +128,7 @@ O que fazer:
 - **Após o banho, seque muito bem a região do coto** com gaze ou pano limpo e macio, com toques suaves
 - Não cubra com faixa ou curativo depois
 
-Se você ainda está se adaptando ao [banho do recém-nascido](/blog/banho-recem-nascido), a dica é: o coto não impede o banho, só exige atenção extra na secagem.
+Se você ainda está se adaptando ao [banho do recém-nascido](/banho-do-recem-nascido), a dica é: o coto não impede o banho, só exige atenção extra na secagem.
 
 ---
 
@@ -149,7 +149,7 @@ Nunca puxe o coto. Mesmo que pareça "quase caindo", deixe que se solte naturalm
 **"Não pode molhar o coto de jeito nenhum"**
 Pode. O que importa é secar bem depois. Banho de imersão rápido é seguro, desde que a secagem seja cuidadosa.
 
-Nos [primeiros dias em casa](/blog/primeiros-dias-em-casa), o coto umbilical é só uma das novidades. Mas com essas orientações simples, ele não precisa ser motivo de preocupação.
+Nos [primeiros dias em casa](/primeiros-dias-em-casa-com-recem-nascido), o coto umbilical é só uma das novidades. Mas com essas orientações simples, ele não precisa ser motivo de preocupação.
 
 ![Mãos de cuidador secando delicadamente a região do umbigo do bebê após o banho](img16-2.png)
 
@@ -157,9 +157,9 @@ Nos [primeiros dias em casa](/blog/primeiros-dias-em-casa), o coto umbilical é 
 
 ## Leia também
 
-- [Banho do Recém-Nascido: Guia Passo a Passo](/blog/banho-recem-nascido)
-- [Primeiros Dias em Casa com o Bebê](/blog/primeiros-dias-em-casa)
-- [Icterícia Neonatal: O Que Saber](/blog/ictericia-neonatal)
+- [Banho do Recém-Nascido: Guia Passo a Passo](/banho-do-recem-nascido)
+- [Primeiros Dias em Casa com o Bebê](/primeiros-dias-em-casa-com-recem-nascido)
+- [Icterícia Neonatal: O Que Saber](/ictericia-neonatal)
 
 ---
 

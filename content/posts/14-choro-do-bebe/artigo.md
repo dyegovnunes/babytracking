@@ -135,7 +135,7 @@ A AAP e a SBP recomendam uma abordagem sistemática. Quando o choro começa, per
 
 O uso de sling ou canguru ergonômico pode ajudar muito: o bebê fica junto ao corpo, ouve os batimentos cardíacos e tem o movimento rítmico da caminhada. Muitos pais relatam que é a técnica mais eficaz nos primeiros meses.
 
-Se você já está nos [primeiros dias em casa](/blog/primeiros-dias-em-casa) e o choro parece constante, saiba que isso é esperado e tende a melhorar após as 8 semanas.
+Se você já está nos [primeiros dias em casa](/primeiros-dias-em-casa-com-recem-nascido) e o choro parece constante, saiba que isso é esperado e tende a melhorar após as 8 semanas.
 
 ---
 
@@ -162,7 +162,7 @@ A definição clássica de cólica (critérios de Wessel) é o choro que:
 - Acontece **mais de 3 dias por semana**
 - Persiste por **mais de 3 semanas**
 
-Se o choro do seu bebê se encaixa nesse padrão, pode ser [cólica](/blog/colicas-do-bebe). A cólica atinge cerca de 20% dos bebês, geralmente começa por volta das 2 semanas e melhora significativamente entre 3 e 4 meses.
+Se o choro do seu bebê se encaixa nesse padrão, pode ser [cólica](/colicas-do-bebe). A cólica atinge cerca de 20% dos bebês, geralmente começa por volta das 2 semanas e melhora significativamente entre 3 e 4 meses.
 
 A cólica não é doença — é um padrão de choro excessivo em um bebê que, fora isso, está saudável, ganhando peso e se desenvolvendo normalmente.
 
@@ -237,8 +237,8 @@ Estratégias que ajudam:
 
 ## Leia também
 
-- [Sono do Recém-Nascido: O Que Esperar](/blog/sono-recem-nascido)
-- [Primeiros Dias em Casa com o Bebê](/blog/primeiros-dias-em-casa)
+- [Sono do Recém-Nascido: O Que Esperar](/sono-do-recem-nascido)
+- [Primeiros Dias em Casa com o Bebê](/primeiros-dias-em-casa-com-recem-nascido)
 
 ---
 

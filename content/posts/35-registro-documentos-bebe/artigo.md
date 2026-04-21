@@ -115,7 +115,7 @@ O Cartão Nacional de Saúde (Cartão SUS) permite acesso a todos os serviços d
 
 **Prazo:** não tem prazo legal, mas é recomendável providenciar nas primeiras semanas, especialmente se o bebê fará acompanhamento pelo SUS.
 
-**Dica:** mesmo que a família tenha plano de saúde, o cartão SUS é útil — vacinação e [testes do recém-nascido](/blog/testes-do-recem-nascido) são geralmente feitos pelo SUS.
+**Dica:** mesmo que a família tenha plano de saúde, o cartão SUS é útil — vacinação e [testes do recém-nascido](/testes-do-recem-nascido) são geralmente feitos pelo SUS.
 
 ## Passo 5: Plano de saúde
 
@@ -186,9 +186,9 @@ Use esta lista para acompanhar o que já foi resolvido:
 
 ### Leia também
 
-- [Primeiros dias em casa com o recém-nascido](/blog/primeiros-dias-em-casa-com-recem-nascido)
-- [Licença-maternidade: direitos e organização](/blog/licenca-maternidade-direitos-organizacao)
-- [Testes do recém-nascido: quais são e para que servem](/blog/testes-do-recem-nascido)
+- [Primeiros dias em casa com o recém-nascido](/primeiros-dias-em-casa-com-recem-nascido)
+- [Licença-maternidade: direitos e organização](/licenca-maternidade-direitos-organizacao)
+- [Testes do recém-nascido: quais são e para que servem](/testes-do-recem-nascido)
 
 ---
 

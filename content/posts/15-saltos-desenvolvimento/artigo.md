@@ -185,7 +185,7 @@ Antes, o mundo do bebê era feito de "cenas estáticas". Agora ele percebe **tra
 - Cante com variações de ritmo e volume
 - Se o bebê está tentando rolar, dê espaço seguro no chão
 
-Essa é a fase em que começam a aparecer os primeiros [marcos de desenvolvimento dos 3-6 meses](/blog/marcos-desenvolvimento-3-6-meses).
+Essa é a fase em que começam a aparecer os primeiros [marcos de desenvolvimento dos 3-6 meses](/marcos-desenvolvimento-3-6-meses).
 
 ---
 
@@ -204,7 +204,7 @@ Este é o salto mais intenso do primeiro semestre. O bebê passa a compreender *
 - Apetite instável
 - Pode parecer um "retrocesso" em habilidades que já tinha
 
-A fase difícil desse salto frequentemente coincide com a chamada [regressão de sono dos 4 meses](/blog/regressao-sono-4-meses). Não são duas coisas separadas — é o mesmo processo neurológico visto por ângulos diferentes.
+A fase difícil desse salto frequentemente coincide com a chamada [regressão de sono dos 4 meses](/regressao-do-sono-4-meses). Não são duas coisas separadas — é o mesmo processo neurológico visto por ângulos diferentes.
 
 ### Novas habilidades que aparecem depois
 - Pega objetos com precisão e os examina
@@ -248,7 +248,7 @@ O bebê começa a entender **relações entre as coisas** — distância (perto/
 - Bate palma, acena (em alguns bebês, início desses gestos)
 
 ### Como ajudar
-- Ofereça [brincadeiras adequadas para 3-6 meses](/blog/brincadeiras-3-6-meses) — potes para colocar e tirar, brinquedos empilháveis
+- Ofereça [brincadeiras adequadas para 3-6 meses](/brincadeiras-bebe-3-6-meses) — potes para colocar e tirar, brinquedos empilháveis
 - Brinque de esconde-achou com objetos (esconda debaixo de um pano)
 - Nomeie os objetos e as posições ("olha, o brinquedo está dentro da caixa")
 - Respeite a ansiedade de separação — não force a ir para o colo de estranhos
@@ -317,9 +317,9 @@ Independentemente de qual salto seu bebê esteja vivendo, estas estratégias fun
 
 ## Leia também
 
-- [Marcos do Desenvolvimento: 3 a 6 Meses](/blog/marcos-desenvolvimento-3-6-meses)
-- [Regressão de Sono dos 4 Meses](/blog/regressao-sono-4-meses)
-- [Brincadeiras para Bebês de 3 a 6 Meses](/blog/brincadeiras-3-6-meses)
+- [Marcos do Desenvolvimento: 3 a 6 Meses](/marcos-desenvolvimento-3-6-meses)
+- [Regressão de Sono dos 4 Meses](/regressao-do-sono-4-meses)
+- [Brincadeiras para Bebês de 3 a 6 Meses](/brincadeiras-bebe-3-6-meses)
 
 ---
 
