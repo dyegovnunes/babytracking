@@ -14,6 +14,9 @@ import {
 import ReadingProgress from '../components/ReadingProgress.astro'
 import TableOfContents from '../components/TableOfContents.astro'
 import RelatedPosts from '../components/RelatedPosts.astro'
+import ShareButtons from '../components/ShareButtons.astro'
+import FeedbackBox from '../components/FeedbackBox.astro'
+import CorrectionLink from '../components/CorrectionLink.astro'
 
 export async function getStaticPaths() {
   const { data } = await supabase
@@ -145,7 +148,7 @@ const faqLd = post.schema_type === 'FAQPage' ? faqJsonLd(post) : null
         </p>
       )}
 
-      <div class="flex items-center gap-3 text-sm text-yaya-cloud/40 font-sans">
+      <div class="flex items-center gap-3 text-sm text-yaya-cloud/40 font-sans mb-6">
         {publishDate && (
           <time datetime={post.published_at ?? ''}>
             {publishDate}
@@ -160,6 +163,9 @@ const faqLd = post.schema_type === 'FAQPage' ? faqJsonLd(post) : null
           {readingMinutes} min de leitura
         </span>
       </div>
+
+      <!-- Share buttons no topo do artigo -->
+      <ShareButtons title={post.title} url={canonicalUrl} audience={post.audience} />
     </header>
 
     <!-- Imagem de capa -->
@@ -215,8 +221,20 @@ const faqLd = post.schema_type === 'FAQPage' ? faqJsonLd(post) : null
       </div>
     )}
 
+    <!-- Feedback (CSAT 👍/👎 + incentivo a compartilhar) -->
+    <FeedbackBox
+      slug={post.slug}
+      title={post.title}
+      url={canonicalUrl}
+      audience={post.audience}
+      relatedSlugs={post.related_slugs ?? []}
+    />
+
     <!-- Leia também: artigos relacionados (internal linking + retenção) -->
     <RelatedPosts posts={relatedPosts} />
+
+    <!-- Link de correção -->
+    <CorrectionLink title={post.title} url={canonicalUrl} />
   </article>
 </BlogLayout>
 

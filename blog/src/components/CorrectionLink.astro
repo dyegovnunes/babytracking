@@ -1,0 +1,28 @@
+---
+interface Props {
+  title: string
+  url: string
+}
+
+const { title, url } = Astro.props
+
+const subject = encodeURIComponent(`Inconsistência no artigo: ${title}`)
+const body = encodeURIComponent(
+  `Olá, equipe Yaya.\n\nEncontrei algo que pode estar incorreto ou desatualizado no artigo "${title}" (${url}).\n\nSeção: \nO que parece estar errado: \nFonte ou referência sugerida: \n\nObrigado!`,
+)
+const mailto = `mailto:editorial@yayababy.app?subject=${subject}&body=${body}`
+---
+
+<div class="mt-6 text-center">
+  <a
+    href={mailto}
+    class="inline-flex items-center gap-1.5 text-xs text-yaya-cloud/40 hover:text-yaya-cloud/70 font-sans transition-colors"
+  >
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="12" y1="8" x2="12" y2="12"></line>
+      <line x1="12" y1="16" x2="12.01" y2="16"></line>
+    </svg>
+    Encontrou alguma inconsistência? Nos avise
+  </a>
+</div>
