@@ -6,6 +6,8 @@ export type ContentCategory =
   | 'rotina'
   | 'marcos'
 
+export type Audience = 'gestante' | 'parent' | 'both'
+
 export interface BlogPost {
   id: string
   slug: string
@@ -14,6 +16,7 @@ export interface BlogPost {
   content_md: string
   keywords: string[] | null
   category: ContentCategory
+  audience: Audience
   target_week_start: number | null
   target_week_end: number | null
   image_url: string | null

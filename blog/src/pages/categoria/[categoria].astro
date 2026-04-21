@@ -1,40 +1,63 @@
 ---
-import BlogLayout from '../layouts/BlogLayout.astro'
-import { supabase } from '../lib/supabase'
-import type { BlogPost, ContentCategory } from '../types'
-import { CATEGORY_LABEL, CATEGORY_EMOJI } from '../types'
+import BlogLayout from '../../layouts/BlogLayout.astro'
+import { supabase } from '../../lib/supabase'
+import type { BlogPost, ContentCategory } from '../../types'
+import { CATEGORY_LABEL, CATEGORY_EMOJI } from '../../types'
+
+const CATEGORIES: ContentCategory[] = [
+  'alimentacao', 'sono', 'desenvolvimento', 'saude', 'rotina', 'marcos',
+]
+
+export async function getStaticPaths() {
+  const cats: ContentCategory[] = [
+    'alimentacao', 'sono', 'desenvolvimento', 'saude', 'rotina', 'marcos',
+  ]
+  return cats.map((c) => ({ params: { categoria: c } }))
+}
+
+const { categoria } = Astro.params
+const cat = categoria as ContentCategory
 
 const { data: posts, error } = await supabase
   .from('blog_posts')
-  .select('id, slug, title, meta_description, category, target_week_start, target_week_end, image_url, published_at')
+  .select('id, slug, title, meta_description, category, audience, target_week_start, target_week_end, image_url, published_at')
   .eq('status', 'published')
+  .eq('category', cat)
   .order('published_at', { ascending: false })
 
 const allPosts = (posts ?? []) as BlogPost[]
-
-const categories: ContentCategory[] = [
-  'alimentacao', 'sono', 'desenvolvimento', 'saude', 'rotina', 'marcos',
-]
 
 function formatWeekRange(start: number | null, end: number | null): string {
   if (!start) return ''
   if (!end || start === end) return `Semana ${start}`
   return `Semanas ${start}–${end}`
 }
+
+const catLabel = CATEGORY_LABEL[cat]
+const catEmoji = CATEGORY_EMOJI[cat]
+const canonicalUrl = `https://blog.yayababy.app/categoria/${cat}`
 ---
 
 <BlogLayout
-  title="Blog Yaya Baby — Companhia para a rotina do seu bebê"
-  description="Guias práticos sobre alimentação, sono, desenvolvimento e saúde. Baseados em evidências, escritos para pais reais."
+  title={`${catLabel} — Guias para pais | Yaya Baby`}
+  description={`Guias práticos sobre ${catLabel.toLowerCase()} do bebê. Conteúdo baseado em evidências, escrito pra pais reais.`}
+  canonicalUrl={canonicalUrl}
 >
-  <!-- Hero -->
-  <section class="max-w-3xl mx-auto px-4 pt-14 pb-10 text-center">
-    <h1 class="font-display text-4xl md:text-5xl font-extrabold text-yaya-cloud leading-tight mb-4 tracking-tight">
-      A rotina do seu bebê,<br class="hidden md:block" />
-      <span class="text-yaya-purple">explicada com calma.</span>
-    </h1>
-    <p class="text-yaya-cloud/70 text-lg max-w-xl mx-auto font-sans leading-relaxed">
-      Guias práticos sobre sono, alimentação, desenvolvimento e saúde do bebê — baseados em evidências, escritos pra pais reais.
+  <!-- Hero da categoria -->
+  <section class="max-w-3xl mx-auto px-4 pt-14 pb-10">
+    <nav class="text-sm text-yaya-cloud/50 mb-5 flex items-center gap-1.5 font-sans">
+      <a href="/" class="hover:text-yaya-cloud transition-colors">Blog</a>
+      <span class="text-yaya-cloud/30">›</span>
+      <span class="text-yaya-purple font-medium">{catLabel}</span>
+    </nav>
+    <div class="flex items-center gap-3 mb-4">
+      <span class="text-4xl">{catEmoji}</span>
+      <h1 class="font-display text-3xl md:text-4xl font-extrabold text-yaya-cloud tracking-tight">
+        {catLabel}
+      </h1>
+    </div>
+    <p class="text-yaya-cloud/70 text-lg max-w-xl font-sans leading-relaxed">
+      {allPosts.length} {allPosts.length === 1 ? 'guia' : 'guias'} sobre {catLabel.toLowerCase()} do bebê.
     </p>
   </section>
 
@@ -43,22 +66,27 @@ function formatWeekRange(start: number | null, end: number | null): string {
     <div class="flex flex-wrap gap-2">
       <a
         href="/"
-        class="px-3 py-1.5 rounded-md text-sm font-display font-bold bg-yaya-purple text-yaya-night"
+        class="px-3 py-1.5 rounded-md text-sm font-display font-bold bg-yaya-cloud/5 text-yaya-cloud/80 hover:bg-yaya-cloud/10 hover:text-yaya-cloud transition-colors"
       >
         Todos
       </a>
-      {categories.map((cat) => (
+      {CATEGORIES.map((c) => (
         <a
-          href={`/categoria/${cat}`}
-          class="px-3 py-1.5 rounded-md text-sm font-display font-bold bg-yaya-cloud/5 text-yaya-cloud/80 hover:bg-yaya-cloud/10 hover:text-yaya-cloud transition-colors"
+          href={`/categoria/${c}`}
+          class:list={[
+            'px-3 py-1.5 rounded-md text-sm font-display font-bold transition-colors',
+            c === cat
+              ? 'bg-yaya-purple text-yaya-night'
+              : 'bg-yaya-cloud/5 text-yaya-cloud/80 hover:bg-yaya-cloud/10 hover:text-yaya-cloud',
+          ]}
         >
-          {CATEGORY_EMOJI[cat]} {CATEGORY_LABEL[cat]}
+          {CATEGORY_EMOJI[c]} {CATEGORY_LABEL[c]}
         </a>
       ))}
     </div>
   </section>
 
-  <!-- Lista de artigos -->
+  <!-- Lista de artigos da categoria -->
   <section class="max-w-3xl mx-auto px-4 pb-20">
     {error && (
       <p class="text-yaya-cloud/50 text-center py-20 font-sans">Não conseguimos carregar os artigos agora. Tenta de novo em alguns instantes.</p>
@@ -67,8 +95,8 @@ function formatWeekRange(start: number | null, end: number | null): string {
     {!error && allPosts.length === 0 && (
       <div class="text-center py-24">
         <img src="/symbol.png" alt="Yaya" class="h-14 w-auto mx-auto mb-6 opacity-40" />
-        <p class="text-yaya-cloud/60 font-sans text-lg mb-2">Ainda estamos preparando os primeiros guias.</p>
-        <p class="text-yaya-cloud/40 font-sans text-sm">Volte em breve — conteúdo novo toda semana.</p>
+        <p class="text-yaya-cloud/60 font-sans text-lg mb-2">Ainda não temos guias nesta categoria.</p>
+        <a href="/" class="text-yaya-purple hover:text-yaya-glow font-sans text-sm">Ver todos os guias →</a>
       </div>
     )}
 
@@ -88,14 +116,14 @@ function formatWeekRange(start: number | null, end: number | null): string {
               />
             ) : (
               <div class="w-24 h-24 rounded-md bg-yaya-purple/10 border border-yaya-purple/15 flex items-center justify-center shrink-0">
-                <span class="text-3xl">{CATEGORY_EMOJI[post.category as ContentCategory]}</span>
+                <span class="text-3xl">{catEmoji}</span>
               </div>
             )}
 
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-2 mb-2">
                 <span class="text-[10px] font-display font-bold text-yaya-purple uppercase tracking-wider">
-                  {CATEGORY_LABEL[post.category as ContentCategory]}
+                  {catLabel}
                 </span>
                 {post.target_week_start && (
                   <span class="text-[10px] text-yaya-cloud/40 font-sans font-medium">
