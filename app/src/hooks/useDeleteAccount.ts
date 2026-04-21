@@ -49,22 +49,25 @@ export function useDeleteAccount() {
 
       // Sucesso — a conta já não existe no servidor. signOut com
       // scope='local' evita o 401 do /logout endpoint (que precisaria
-      // de user válido). Limpa storage manualmente antes do reload
-      // pra garantir que nenhum refresh_token sobrevive.
+      // de user válido).
       await supabase.auth.signOut({ scope: 'local' })
+
+      // Wipe TOTAL do storage. Em tentativas anteriores limpei só
+      // `sb-*`/`yaya_*` e o user ainda caía em onboarding — ou o
+      // refresh_token ficou em alguma chave que não cobrimos, ou o
+      // WebView do Capacitor persistiu algo. Clear() nuka tudo e
+      // garante que `/login` renderiza deslogado.
       try {
-        for (let i = localStorage.length - 1; i >= 0; i--) {
-          const key = localStorage.key(i)
-          if (!key) continue
-          if (key.startsWith('sb-') || key.startsWith('supabase.') || key.startsWith('yaya_')) {
-            localStorage.removeItem(key)
-          }
-        }
+        localStorage.clear()
         sessionStorage.clear()
       } catch { /* ignore */ }
+
       // Pequeno delay pro caller exibir toast de sucesso antes do reload.
+      // Usa href (não replace) porque em algumas versões do WebView
+      // iOS/Capacitor o replace é interceptado pelo React Router em
+      // vez de forçar reload de verdade. href garante navegação full.
       setTimeout(() => {
-        window.location.replace('/login')
+        window.location.href = '/login'
       }, 1200)
       return { ok: true }
     } catch (e) {

@@ -7,6 +7,7 @@ import Toast from '../../../components/ui/Toast'
 import { useBabyPremium } from '../../../hooks/useBabyPremium'
 import { useSheetBackClose } from '../../../hooks/useSheetBackClose'
 import { PaywallModal } from '../../../components/ui/PaywallModal'
+import { RewardedAdModal } from '../../../components/ui/RewardedAdModal'
 
 // Limite antes de abrir o ImageCropModal. Fotos HEIC/RAW > 15MB podem dar
 // OOM no FileReader em WebView Android — rejeitamos com mensagem clara
@@ -29,6 +30,7 @@ export default function BabyCard({ baby, onSave, canEdit = true }: Props) {
   const [showPhotoMenu, setShowPhotoMenu] = useState(false)
   const [photoError, setPhotoError] = useState<string | null>(null)
   const [showPaywall, setShowPaywall] = useState(false)
+  const [showUnlockModal, setShowUnlockModal] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
   useSheetBackClose(showPhotoMenu, () => setShowPhotoMenu(false))
   useSheetBackClose(editing, handleCancel)
@@ -73,10 +75,9 @@ export default function BabyCard({ baby, onSave, canEdit = true }: Props) {
   async function openFilePicker() {
     setShowPhotoMenu(false)
     if (!isPremium) {
-      // Feature gated pro Yaya+. Abre paywall direto — mesmo padrão que
-      // o limite de 5 registros. Ads ficam só como interstitial/banner
-      // de entrada, não como unlock de feature.
-      setShowPaywall(true)
+      // Free: modal de transição com 3 opções (ver ad / assinar / cancelar).
+      // Mesmo padrão do limite de 5 registros (RewardedAdModal).
+      setShowUnlockModal(true)
       return
     }
     setTimeout(() => fileRef.current?.click(), 100)
@@ -85,9 +86,7 @@ export default function BabyCard({ baby, onSave, canEdit = true }: Props) {
   function handlePhotoClick(e: React.MouseEvent) {
     e.stopPropagation()
     if (!isPremium) {
-      // Free user clica no círculo → abre paywall (não importa se já
-      // tem foto ou não — no free a foto está bloqueada).
-      setShowPaywall(true)
+      setShowUnlockModal(true)
       return
     }
     if (baby.photoUrl) {
@@ -95,6 +94,17 @@ export default function BabyCard({ baby, onSave, canEdit = true }: Props) {
     } else {
       openFilePicker()
     }
+  }
+
+  function handleAdRewarded() {
+    // Ad concluído — libera o file picker uma vez (não persiste unlock).
+    setShowUnlockModal(false)
+    setTimeout(() => fileRef.current?.click(), 150)
+  }
+
+  function handleUpgradeFromUnlock() {
+    // Usuário escolheu "Conhecer Yaya+" no modal de unlock → abre paywall.
+    setShowPaywall(true)
   }
 
   function handleSave() {
@@ -238,6 +248,18 @@ export default function BabyCard({ baby, onSave, canEdit = true }: Props) {
         onClose={() => setShowPaywall(false)}
         trigger="generic"
       />
+
+      <RewardedAdModal
+        isOpen={showUnlockModal}
+        onClose={() => setShowUnlockModal(false)}
+        onAdCompleted={handleAdRewarded}
+        onUpgrade={handleUpgradeFromUnlock}
+        icon="photo_camera"
+        title="Foto do bebê"
+        description="Personalize o perfil com uma foto. Assista um anúncio rápido pra liberar ou assine Yaya+ pra ter sempre."
+        adButtonLabel="Assistir vídeo e liberar foto"
+        upgradeButtonLabel="Conhecer Yaya+"
+      />
       </>
     )
   }
@@ -339,6 +361,18 @@ export default function BabyCard({ baby, onSave, canEdit = true }: Props) {
       isOpen={showPaywall}
       onClose={() => setShowPaywall(false)}
       trigger="generic"
+    />
+
+    <RewardedAdModal
+      isOpen={showUnlockModal}
+      onClose={() => setShowUnlockModal(false)}
+      onAdCompleted={handleAdRewarded}
+      onUpgrade={handleUpgradeFromUnlock}
+      icon="photo_camera"
+      title="Foto do bebê"
+      description="Personalize o perfil com uma foto. Assista um anúncio rápido pra liberar ou assine Yaya+ pra ter sempre."
+      adButtonLabel="Assistir vídeo e liberar foto"
+      upgradeButtonLabel="Conhecer Yaya+"
     />
     </>
   )

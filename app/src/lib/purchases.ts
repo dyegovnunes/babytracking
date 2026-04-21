@@ -104,27 +104,91 @@ export async function getSubscriptionInfo(): Promise<SubscriptionInfo> {
   }
 }
 
+// Estado do último fetch de offerings — exposto pro PaywallModal mostrar
+// "Debug info" quando a compra falha. Essencial pra debugar TestFlight
+// sem Safari Web Inspector.
+export interface OfferingsDiagnostic {
+  platform: string;
+  keyPrefix: string;
+  currentOfferingId: string | null;
+  allOfferingIds: string[];
+  currentPackageIds: string[];
+  hasMonthly: boolean;
+  hasAnnual: boolean;
+  hasLifetime: boolean;
+  error: string | null;
+}
+
+let lastDiagnostic: OfferingsDiagnostic | null = null;
+
+export function getLastOfferingsDiagnostic(): OfferingsDiagnostic | null {
+  return lastDiagnostic;
+}
+
 export async function getAvailablePackages(): Promise<{
   monthly: PurchasesPackage | null;
   annual: PurchasesPackage | null;
   lifetime: PurchasesPackage | null;
 }> {
+  const platform = Capacitor.getPlatform();
+  const apiKey = platform === 'ios'
+    ? import.meta.env.VITE_REVENUECAT_IOS_KEY
+    : import.meta.env.VITE_REVENUECAT_ANDROID_KEY;
+  const keyPrefix = apiKey ? String(apiKey).slice(0, 8) : 'UNDEFINED';
+
   try {
     const offerings = await Purchases.getOfferings();
     const current = offerings.current;
+    const allIds = Object.keys(offerings.all || {});
+
     if (!current) {
+      lastDiagnostic = {
+        platform,
+        keyPrefix,
+        currentOfferingId: null,
+        allOfferingIds: allIds,
+        currentPackageIds: [],
+        hasMonthly: false,
+        hasAnnual: false,
+        hasLifetime: false,
+        error: 'No current offering (products provavelmente não carregaram do StoreKit)',
+      };
       // eslint-disable-next-line no-console
-      console.warn('[RC] No current offering. All offering ids:', Object.keys(offerings.all || {}));
+      console.warn('[RC] diagnostic', lastDiagnostic);
       return { monthly: null, annual: null, lifetime: null };
     }
+
+    const packageIds = current.availablePackages?.map((p) => p.identifier) ?? [];
+    lastDiagnostic = {
+      platform,
+      keyPrefix,
+      currentOfferingId: current.identifier,
+      allOfferingIds: allIds,
+      currentPackageIds: packageIds,
+      hasMonthly: !!current.monthly,
+      hasAnnual: !!current.annual,
+      hasLifetime: !!current.lifetime,
+      error: null,
+    };
     // eslint-disable-next-line no-console
-    console.log('[RC] current offering=', current.identifier, 'packages=', current.availablePackages?.map((p) => p.identifier));
+    console.log('[RC] diagnostic', lastDiagnostic);
     return {
       monthly: current.monthly ?? null,
       annual: current.annual ?? null,
       lifetime: current.lifetime ?? null,
     };
-  } catch (err) {
+  } catch (err: any) {
+    lastDiagnostic = {
+      platform,
+      keyPrefix,
+      currentOfferingId: null,
+      allOfferingIds: [],
+      currentPackageIds: [],
+      hasMonthly: false,
+      hasAnnual: false,
+      hasLifetime: false,
+      error: err?.message || String(err),
+    };
     // eslint-disable-next-line no-console
     console.error('[RC] getOfferings failed:', err);
     return { monthly: null, annual: null, lifetime: null };

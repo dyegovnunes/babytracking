@@ -7,15 +7,44 @@ interface Props {
   onClose: () => void;
   onAdCompleted: () => void;
   onUpgrade: () => void;
-  recordsToday: number;
-  dailyLimit: number;
+  /** Usado no mode "daily_limit" para exibir "X de Y registros". */
+  recordsToday?: number;
+  dailyLimit?: number;
+  /**
+   * Override completo do conteúdo. Quando presente, ignora recordsToday/dailyLimit
+   * e usa os textos fornecidos. Permite reusar o modal pra qualquer feature
+   * que o free pode desbloquear temporariamente com ad.
+   */
+  title?: string;
+  description?: string;
+  adButtonLabel?: string;
+  upgradeButtonLabel?: string;
+  icon?: string;
 }
 
-export function RewardedAdModal({ isOpen, onClose, onAdCompleted, onUpgrade, recordsToday, dailyLimit }: Props) {
+export function RewardedAdModal({
+  isOpen,
+  onClose,
+  onAdCompleted,
+  onUpgrade,
+  recordsToday,
+  dailyLimit,
+  title,
+  description,
+  adButtonLabel,
+  upgradeButtonLabel,
+  icon = 'videocam',
+}: Props) {
   const [watching, setWatching] = useState(false);
   useSheetBackClose(isOpen, onClose);
 
   if (!isOpen) return null;
+
+  const resolvedTitle = title ?? 'Limite de registros';
+  const resolvedDescription = description ??
+    `Você já fez ${recordsToday ?? 0} de ${dailyLimit ?? 5} registros hoje. Assista um vídeo curto para liberar mais 2.`;
+  const resolvedAdLabel = adButtonLabel ?? 'Assistir vídeo (+2 registros)';
+  const resolvedUpgradeLabel = upgradeButtonLabel ?? 'Conhecer Yaya+ — Registros ilimitados';
 
   const handleWatchAd = async () => {
     setWatching(true);
@@ -29,14 +58,14 @@ export function RewardedAdModal({ isOpen, onClose, onAdCompleted, onUpgrade, rec
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="w-[calc(100%-2.5rem)] max-w-sm rounded-3xl bg-[#181538] border border-[#474464]/50 p-6 animate-fade-in">
+      <div className="w-[calc(100%-2.5rem)] max-w-sm rounded-md bg-surface-container border border-outline-variant/50 p-6 animate-fade-in">
         <div className="text-center mb-5">
-          <div className="w-14 h-14 rounded-full bg-[#b79fff]/10 flex items-center justify-center mx-auto mb-3">
-            <span className="material-symbols-outlined text-[#b79fff] text-2xl">videocam</span>
+          <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
+            <span className="material-symbols-outlined text-primary text-2xl">{icon}</span>
           </div>
-          <h3 className="text-lg font-bold text-[#e7e2ff] mb-1">Limite de registros</h3>
-          <p className="text-sm text-[#e7e2ff]/60">
-            Você já fez {recordsToday} de {dailyLimit} registros hoje. Assista um vídeo curto para liberar mais 2.
+          <h3 className="text-lg font-bold text-on-surface mb-1">{resolvedTitle}</h3>
+          <p className="text-sm text-on-surface/60">
+            {resolvedDescription}
           </p>
         </div>
 
@@ -44,22 +73,22 @@ export function RewardedAdModal({ isOpen, onClose, onAdCompleted, onUpgrade, rec
           <button
             onClick={handleWatchAd}
             disabled={watching}
-            className="w-full py-3.5 rounded-2xl bg-[#b79fff]/15 text-[#b79fff] font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-50"
+            className="w-full py-3.5 rounded-md bg-primary/15 text-primary font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-50"
           >
             <span className="material-symbols-outlined text-base">play_circle</span>
-            {watching ? 'Carregando anúncio...' : 'Assistir vídeo (+2 registros)'}
+            {watching ? 'Carregando anúncio...' : resolvedAdLabel}
           </button>
 
           <button
             onClick={() => { onUpgrade(); onClose(); }}
-            className="w-full py-3.5 rounded-2xl bg-[#b79fff] text-[#0d0a27] font-bold text-sm"
+            className="w-full py-3.5 rounded-md bg-primary text-on-primary font-bold text-sm"
           >
-            Conhecer Yaya+ — Registros ilimitados
+            {resolvedUpgradeLabel}
           </button>
 
           <button
             onClick={onClose}
-            className="w-full text-center text-xs text-[#e7e2ff]/40 hover:text-[#e7e2ff]/70 py-2"
+            className="w-full text-center text-xs text-on-surface/40 hover:text-on-surface/70 py-2"
           >
             Cancelar
           </button>
