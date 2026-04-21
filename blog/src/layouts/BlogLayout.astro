@@ -1,4 +1,6 @@
 ---
+import CookieConsent from '../components/CookieConsent.astro'
+
 interface Props {
   title: string
   description?: string
@@ -8,6 +10,10 @@ interface Props {
 
 const { title, description, image, canonicalUrl } = Astro.props
 const fullTitle = title.includes('Yaya') ? title : `${title} | Yaya Baby`
+
+// GA4 measurement ID via env var. Se não estiver definido (dev local sem
+// .env configurado), o script é completamente omitido.
+const GA_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID as string | undefined
 ---
 
 <!doctype html>
@@ -46,6 +52,40 @@ const fullTitle = title.includes('Yaya') ? title : `${title} | Yaya Baby`
       href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+
+    {GA_ID && (
+      <>
+        <!-- Google Consent Mode v2 — default denied até o usuário consentir -->
+        <script is:inline>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){window.dataLayer.push(arguments);}
+          window.gtag = gtag;
+
+          // Lê consentimento salvo. Default denied se nunca consentiu ou analytics=false.
+          var __consent = { analytics: false };
+          try {
+            var saved = localStorage.getItem('yb_consent_v1');
+            if (saved) {
+              var parsed = JSON.parse(saved);
+              if (parsed && parsed.version === 1) __consent = parsed;
+            }
+          } catch(e) {}
+
+          gtag('consent', 'default', {
+            analytics_storage: __consent.analytics ? 'granted' : 'denied',
+            ad_storage: 'denied',
+            ad_user_data: 'denied',
+            ad_personalization: 'denied',
+            wait_for_update: 500,
+          });
+          gtag('js', new Date());
+        </script>
+        <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}></script>
+        <script is:inline define:vars={{ gaId: GA_ID }}>
+          gtag('config', gaId, { send_page_view: true });
+        </script>
+      </>
+    )}
   </head>
   <body class="bg-yaya-night text-yaya-cloud font-sans antialiased min-h-screen flex flex-col">
     <!-- Smart banner: convite calmo pra baixar o app -->
@@ -101,11 +141,21 @@ const fullTitle = title.includes('Yaya') ? title : `${title} | Yaya Baby`
           <a href="https://yayababy.app" class="hover:text-yaya-cloud transition-colors">Abrir app</a>
           {' · '}
           <a href="https://yayababy.app/privacidade" class="hover:text-yaya-cloud transition-colors">Privacidade</a>
+          {' · '}
+          <button
+            type="button"
+            onclick="window.ybOpenCookiePrefs && window.ybOpenCookiePrefs()"
+            class="hover:text-yaya-cloud transition-colors underline-offset-2 hover:underline cursor-pointer"
+          >
+            Preferências de cookies
+          </button>
         </p>
         <p class="text-xs text-yaya-cloud/40 font-sans leading-relaxed max-w-md mx-auto">
           Conteúdo educativo que acolhe sem substituir orientação médica. Consulte sempre o pediatra do seu bebê.
         </p>
       </div>
     </footer>
+
+    <CookieConsent />
   </body>
 </html>
