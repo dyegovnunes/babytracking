@@ -93,6 +93,11 @@ export function articleJsonLd(post: BlogPost): object {
     datePublished: post.published_at,
     dateModified: post.published_at,
     mainEntityOfPage: { '@type': 'WebPage', '@id': `${SITE}/${post.slug}` },
+    author: {
+      '@type': 'Organization',
+      name: 'Equipe editorial Yaya Baby',
+      url: APP_SITE,
+    },
     publisher: {
       '@type': 'Organization',
       name: 'Yaya Baby',
