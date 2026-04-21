@@ -9,7 +9,11 @@ import {
   articleJsonLd,
   howToJsonLd,
   faqJsonLd,
+  slugifyHeading,
 } from '../lib/jsonld'
+import ReadingProgress from '../components/ReadingProgress.astro'
+import TableOfContents from '../components/TableOfContents.astro'
+import RelatedPosts from '../components/RelatedPosts.astro'
 
 export async function getStaticPaths() {
   const { data } = await supabase
@@ -36,7 +40,43 @@ if (error || !data) {
 const post = data as BlogPost
 
 marked.setOptions({ breaks: true })
-const contentHtml = await marked(post.content_md)
+const rawHtml = await marked(post.content_md)
+
+// Adiciona id="..." em cada <h2> para as âncoras do TOC funcionarem
+const contentHtml = rawHtml.replace(
+  /<h2>(.+?)<\/h2>/g,
+  (_, inner) => {
+    const text = inner.replace(/<[^>]+>/g, '')
+    return `<h2 id="${slugifyHeading(text)}">${inner}</h2>`
+  },
+)
+
+// Extrai lista de headings H2 para o TOC
+const h2Headings: string[] = (post.content_md.match(/^## (.+)$/gm) ?? []).map(
+  (l) => l.replace(/^## /, '').trim(),
+)
+
+// Reading time — baseado em palavras / 200wpm (leitura média em PT-BR)
+const wordCount = post.content_md
+  .replace(/[#*`>\-_\[\]()]/g, '')
+  .split(/\s+/)
+  .filter(Boolean).length
+const readingMinutes = Math.max(1, Math.ceil(wordCount / 200))
+
+// Related posts — busca dados básicos dos slugs marcados + preserva ordem editorial
+let relatedPosts: BlogPost[] = []
+if (post.related_slugs && post.related_slugs.length > 0) {
+  const { data: related } = await supabase
+    .from('blog_posts')
+    .select('slug, title, meta_description, category, image_url')
+    .in('slug', post.related_slugs.slice(0, 3))
+    .eq('status', 'published')
+  const byslug = new Map((related ?? []).map((r: any) => [r.slug, r as BlogPost]))
+  relatedPosts = post.related_slugs
+    .slice(0, 3)
+    .map((s) => byslug.get(s))
+    .filter((p): p is BlogPost => !!p)
+}
 
 function formatWeekRange(start: number | null, end: number | null): string {
   if (!start) return ''
@@ -68,6 +108,9 @@ const faqLd = post.schema_type === 'FAQPage' ? faqJsonLd(post) : null
   <script type="application/ld+json" set:html={JSON.stringify(articleLd)} />
   {howToLd && <script type="application/ld+json" set:html={JSON.stringify(howToLd)} />}
   {faqLd && <script type="application/ld+json" set:html={JSON.stringify(faqLd)} />}
+
+  <!-- Barra de progresso da leitura -->
+  <ReadingProgress />
 
   <article class="max-w-2xl mx-auto px-4 py-12">
 
@@ -102,11 +145,21 @@ const faqLd = post.schema_type === 'FAQPage' ? faqJsonLd(post) : null
         </p>
       )}
 
-      {publishDate && (
-        <time class="text-sm text-yaya-cloud/40 font-sans" datetime={post.published_at ?? ''}>
-          Publicado em {publishDate}
-        </time>
-      )}
+      <div class="flex items-center gap-3 text-sm text-yaya-cloud/40 font-sans">
+        {publishDate && (
+          <time datetime={post.published_at ?? ''}>
+            {publishDate}
+          </time>
+        )}
+        <span class="text-yaya-cloud/20">·</span>
+        <span class="flex items-center gap-1">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          {readingMinutes} min de leitura
+        </span>
+      </div>
     </header>
 
     <!-- Imagem de capa -->
@@ -119,6 +172,9 @@ const faqLd = post.schema_type === 'FAQPage' ? faqJsonLd(post) : null
         />
       </div>
     )}
+
+    <!-- Tabela de conteúdo (só em artigos com 6+ seções) -->
+    <TableOfContents headings={h2Headings} />
 
     <!-- Corpo do artigo -->
     <div class="prose-yaya" set:html={contentHtml} />
@@ -158,6 +214,9 @@ const faqLd = post.schema_type === 'FAQPage' ? faqJsonLd(post) : null
         <p class="text-yaya-cloud/40 text-xs mt-3 font-sans">Grátis · Android e iOS</p>
       </div>
     )}
+
+    <!-- Leia também: artigos relacionados (internal linking + retenção) -->
+    <RelatedPosts posts={relatedPosts} />
   </article>
 </BlogLayout>
 

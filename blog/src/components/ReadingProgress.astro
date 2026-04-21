@@ -1,0 +1,26 @@
+---
+// Barra de progresso sticky no topo da viewport.
+// Client-side only: atualiza via scroll event em um <div> com transform.
+---
+
+<div
+  id="reading-progress"
+  class="fixed top-0 left-0 right-0 h-[3px] bg-yaya-purple/60 origin-left z-[60] pointer-events-none"
+  style="transform: scaleX(0)"
+  aria-hidden="true"
+></div>
+
+<script>
+  const bar = document.getElementById('reading-progress')
+  if (bar) {
+    const update = () => {
+      const scrollTop = window.scrollY
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight
+      const pct = docHeight > 0 ? Math.min(scrollTop / docHeight, 1) : 0
+      bar.style.transform = `scaleX(${pct})`
+    }
+    update()
+    window.addEventListener('scroll', update, { passive: true })
+    window.addEventListener('resize', update, { passive: true })
+  }
+</script>

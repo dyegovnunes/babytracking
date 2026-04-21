@@ -1,0 +1,42 @@
+---
+import { slugifyHeading } from '../lib/jsonld'
+
+interface Props {
+  headings: string[]
+}
+
+const { headings } = Astro.props
+
+// Filtra seções meta como "Fontes", "Referências", "Resumindo"
+const skip = ['Fontes', 'Referências', 'Resumindo', 'Neste guia']
+const filtered = headings.filter((h) => !skip.some((k) => h.startsWith(k)))
+
+// Só renderiza se tiver 6+ seções relevantes
+const shouldRender = filtered.length >= 6
+---
+
+{shouldRender && (
+  <nav
+    aria-label="Índice do artigo"
+    class="mb-10 p-5 rounded-md bg-yaya-cloud/[0.03] border border-yaya-cloud/10"
+  >
+    <p class="font-display text-xs font-bold uppercase tracking-wider text-yaya-purple mb-3">
+      Neste guia
+    </p>
+    <ol class="space-y-1.5 font-sans">
+      {filtered.map((heading, idx) => (
+        <li class="flex gap-2 items-start">
+          <span class="text-yaya-cloud/40 text-sm font-medium shrink-0 tabular-nums">
+            {String(idx + 1).padStart(2, '0')}
+          </span>
+          <a
+            href={`#${slugifyHeading(heading)}`}
+            class="text-sm text-yaya-cloud/80 hover:text-yaya-purple transition-colors leading-snug"
+          >
+            {heading}
+          </a>
+        </li>
+      ))}
+    </ol>
+  </nav>
+)}

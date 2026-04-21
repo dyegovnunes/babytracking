@@ -1,0 +1,54 @@
+---
+import type { BlogPost, ContentCategory } from '../types'
+import { CATEGORY_LABEL, CATEGORY_EMOJI } from '../types'
+
+interface Props {
+  posts: BlogPost[]
+}
+
+const { posts } = Astro.props
+---
+
+{posts.length > 0 && (
+  <section class="mt-12 pt-10 border-t border-yaya-cloud/10">
+    <h2 class="font-display text-xl font-bold text-yaya-cloud mb-1 tracking-tight">
+      Leia também
+    </h2>
+    <p class="font-sans text-sm text-yaya-cloud/50 mb-6">
+      Outros guias que podem te ajudar agora
+    </p>
+
+    <div class="space-y-3">
+      {posts.map((p) => (
+        <a
+          href={`/${p.slug}`}
+          class="group flex gap-3 items-center p-3 rounded-md bg-yaya-cloud/[0.03] border border-yaya-cloud/10 hover:border-yaya-purple/40 hover:bg-yaya-cloud/[0.06] transition-all"
+        >
+          {p.image_url ? (
+            <img
+              src={p.image_url}
+              alt={p.title}
+              class="w-14 h-14 rounded-md object-cover shrink-0"
+              loading="lazy"
+            />
+          ) : (
+            <div class="w-14 h-14 rounded-md bg-yaya-purple/10 border border-yaya-purple/15 flex items-center justify-center shrink-0">
+              <span class="text-xl">{CATEGORY_EMOJI[p.category as ContentCategory]}</span>
+            </div>
+          )}
+
+          <div class="flex-1 min-w-0">
+            <span class="font-display text-[9px] font-bold text-yaya-purple uppercase tracking-wider">
+              {CATEGORY_LABEL[p.category as ContentCategory]}
+            </span>
+            <p class="font-display font-bold text-yaya-cloud text-sm leading-snug group-hover:text-yaya-purple transition-colors mt-0.5">
+              {p.title}
+            </p>
+          </div>
+
+          <span class="text-yaya-cloud/30 group-hover:text-yaya-purple transition-colors shrink-0">→</span>
+        </a>
+      ))}
+    </div>
+  </section>
+)}
