@@ -189,6 +189,14 @@ passam por `usePremium()` mas hoje retornam sempre `true`.
    linear — não use `slice(i+1).find(wake)` (causa double-counting).
 6. **Streak**: `lib/streak.ts` + `streak-checker` edge function — timezone
    sensitive, teste com timezone local.
+7. **Super Relatório**: link compartilhável em `/r/:token` + senha, servido
+   por `SharedReportPage.tsx` + edge function `report-view`. Tem 3 públicos
+   (`audience`: pediatrician/caregiver/family) escolhidos na criação,
+   imutáveis — mudam seções e CTA. Senha em bcrypt com rate limit (5
+   falhas → 15min lock); links antigos SHA-256 migram transparentemente no
+   primeiro acesso. `babies.quiet_hours_start/end` é a fonte única pro
+   conceito noturno/diurno nessa página. **NÃO existe PDF** — pra PDF é
+   `window.print()`.
 
 ---
 
@@ -207,8 +215,10 @@ passam por `usePremium()` mas hoje retornam sempre `true`.
 
 ## O que NÃO fazer
 
-- ❌ Editar `generatePDF.ts` sem testar visual do PDF (ele é sensível a
-  fontes e medidas).
+- ❌ Editar `app/src/lib/generatePDF.ts` — é **legado**, não faz mais parte
+  do produto. O "relatório pro pediatra" virou o link web em
+  `SharedReportPage.tsx` (PDF agora é `window.print()` da própria página).
+  Candidato a deletar numa task futura.
 - ❌ Mexer em `AppContext.tsx` sem rodar `npm run build` — o reducer é
   longo e fácil de quebrar cast de tipo.
 - ❌ Commit com `git add -A` ou `git add .` (há PDFs e specs soltos na
