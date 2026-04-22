@@ -76,22 +76,30 @@ export function PurchaseProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    if (isTestAccount) {
-      setIsPremium(true);
-      setSubscriptionPlan('lifetime');
-      setSubscriptionStatus('active');
-      setIsLoading(false);
-      return;
-    }
-
     const init = async () => {
       setIsLoading(true);
       try {
+        // SEMPRE inicializa os SDKs nativos (RevenueCat + AdMob) em
+        // dispositivo, mesmo na conta de teste. Antes tinha early
+        // return que pulava essa parte pra teste@yayababy.app —
+        // resultado: SDKs nunca iniciavam, nenhum ad carregava,
+        // paywall não tinha offerings. Esse early return era o
+        // motivo de "AdMob/IAP não funcionam no iOS" nos testes.
         if (Capacitor.getPlatform() !== 'web') {
-          await initializePurchases(user.id);
-          await initAdMob();
+          try { await initializePurchases(user.id); } catch (e) { console.error('[RC init] fail', e); }
+          try { await initAdMob(); } catch (e) { console.error('[AdMob init] fail', e); }
         }
-        await refresh();
+
+        // Depois da init, aplica o override de conta de teste se for o caso.
+        // Mantém a conveniência de testar features premium sem IAP real,
+        // mas os SDKs estão prontos pra exibir paywall/ads pro reviewer.
+        if (isTestAccount) {
+          setIsPremium(true);
+          setSubscriptionPlan('lifetime');
+          setSubscriptionStatus('active');
+        } else {
+          await refresh();
+        }
       } finally {
         setIsLoading(false);
       }

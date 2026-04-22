@@ -26,8 +26,14 @@ export function AdBanner() {
 
   useEffect(() => {
     const root = document.documentElement;
+    // Modo de teste de ads: força o banner a aparecer mesmo pra
+    // premium. Permite validar integração AdMob no TestFlight sem
+    // precisar de conta free. Liga via Settings (7 taps no título).
+    const testAds = (() => {
+      try { return localStorage.getItem('yaya_test_ads') === '1'; } catch { return false; }
+    })();
 
-    if (isPremium || !Capacitor.isNativePlatform()) {
+    if ((isPremium && !testAds) || !Capacitor.isNativePlatform()) {
       hideBanner();
       root.style.removeProperty('--yaya-ad-offset');
       return;

@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Toast from '../components/ui/Toast'
+import { getAvailablePackages, getLastOfferingsDiagnostic } from '../lib/purchases'
 import { useBathHours } from './settings/useBathHours'
 import { useNotificationPrefs } from './settings/useNotificationPrefs'
 import IntervalsSection from './settings/sections/IntervalsSection'
@@ -47,6 +48,22 @@ export default function SettingsPage() {
     } catch { /* ignore */ }
     setTestAdsOn(next)
     setToast(next ? 'Test ads ON — reinicie o app' : 'Test ads OFF — reinicie o app')
+  }
+  const [rcDiag, setRcDiag] = useState<string | null>(null)
+  async function testRevenueCat() {
+    setRcDiag('Consultando...')
+    await getAvailablePackages().catch(() => {})
+    const d = getLastOfferingsDiagnostic()
+    if (!d) { setRcDiag('Sem diagnóstico disponível.'); return }
+    setRcDiag(
+      `platform: ${d.platform}\n` +
+      `key: ${d.keyPrefix}...\n` +
+      `current: ${d.currentOfferingId ?? 'null'}\n` +
+      `offerings: ${d.allOfferingIds.join(', ') || '(vazio)'}\n` +
+      `packages: ${d.currentPackageIds.join(', ') || '(vazio)'}\n` +
+      `monthly: ${d.hasMonthly ? '✓' : '✗'}  annual: ${d.hasAnnual ? '✓' : '✗'}  lifetime: ${d.hasLifetime ? '✓' : '✗'}\n` +
+      `error: ${d.error ?? '(nenhum)'}`
+    )
   }
 
   const handleToggleExpanded = useCallback((cat: string) => {
@@ -132,24 +149,41 @@ export default function SettingsPage() {
         <AccountSection onToast={setToast} />
 
         {showDebug && (
-          <div className="bg-surface-container rounded-md p-4 border border-primary/20">
-            <p className="font-label text-xs font-bold text-primary uppercase tracking-wider mb-2">
+          <div className="bg-surface-container rounded-md p-4 border border-primary/20 space-y-3">
+            <p className="font-label text-xs font-bold text-primary uppercase tracking-wider">
               Debug (interno)
             </p>
-            <button
-              onClick={toggleTestAds}
-              className={`w-full py-2.5 rounded-md font-label text-sm font-semibold ${
-                testAdsOn
-                  ? 'bg-primary text-on-primary'
-                  : 'bg-surface-container-high text-on-surface'
-              }`}
-            >
-              {testAdsOn ? '✓ Test ads ON' : 'Test ads OFF'}
-            </button>
-            <p className="text-[10px] text-on-surface/50 mt-2 leading-relaxed">
-              Usa IDs de teste do Google (fill 100%) pra validar integração AdMob.
-              <strong> Reinicie o app após alternar.</strong> Desligar antes de submeter à loja.
-            </p>
+            <div>
+              <button
+                onClick={toggleTestAds}
+                className={`w-full py-2.5 rounded-md font-label text-sm font-semibold ${
+                  testAdsOn
+                    ? 'bg-primary text-on-primary'
+                    : 'bg-surface-container-high text-on-surface'
+                }`}
+              >
+                {testAdsOn ? '✓ Test ads ON' : 'Test ads OFF'}
+              </button>
+              <p className="text-[10px] text-on-surface/50 mt-2 leading-relaxed">
+                Usa IDs de teste do Google (fill 100%). Quando ON, banner aparece
+                mesmo pra premium. <strong>Reinicie o app após alternar.</strong>
+                Desligar antes de submeter à loja.
+              </p>
+            </div>
+
+            <div>
+              <button
+                onClick={testRevenueCat}
+                className="w-full py-2.5 rounded-md font-label text-sm font-semibold bg-surface-container-high text-on-surface"
+              >
+                Testar RevenueCat
+              </button>
+              {rcDiag && (
+                <pre className="text-[10px] text-on-surface/70 mt-2 bg-surface rounded-md p-2 whitespace-pre-wrap break-all">
+{rcDiag}
+                </pre>
+              )}
+            </div>
           </div>
         )}
 
