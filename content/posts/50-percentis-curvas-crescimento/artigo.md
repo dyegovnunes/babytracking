@@ -28,7 +28,11 @@ related_slugs:
   - amamentacao-sob-demanda
 schema: FAQPage
 audience: parent
-affiliate_products: null
+affiliate_products:
+  - tipo: saúde
+    nome: balança digital para bebê
+  - tipo: organização
+    nome: caderneta de saúde personalizada
 lead_magnet: false
 seo:
   h1_chars: 72
@@ -39,8 +43,8 @@ seo:
 sources:
   - name: "OMS. Child Growth Standards. WHO Multicentre Growth Reference Study."
     url: "https://www.who.int/tools/child-growth-standards"
-  - name: "SBP. Avaliação Nutricional da Criança e do Adolescente. Manual de Orientação."
-    url: "https://www.sbp.com.br/departamentos/nutrologia/"
+  - name: "SBP. Manual de Avaliação Nutricional da Criança e do Adolescente. 2ª ed. atualizada. Departamento Científico de Nutrologia. 2021."
+    url: "https://www.sbp.com.br/fileadmin/user_upload/_22962f-ManAval_Nutricional_-_2Ed_Atualizada_SITE.pdf"
   - name: "Ministério da Saúde. Caderneta da Criança. 2024."
     url: "https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/s/saude-da-crianca/caderneta"
 images:
@@ -208,7 +212,7 @@ A investigação pode incluir exames de sangue, avaliação nutricional, avalia�
 **Fontes:**
 
 1. OMS. Child Growth Standards. WHO Multicentre Growth Reference Study. Disponível em: [who.int](https://www.who.int/tools/child-growth-standards)
-2. SBP. Avaliação Nutricional da Criança e do Adolescente. Manual de Orientação. Disponível em: [sbp.com.br](https://www.sbp.com.br/departamentos/nutrologia/)
+2. SBP. Manual de Avaliação Nutricional da Criança e do Adolescente. 2ª ed. atualizada. Departamento Científico de Nutrologia. 2021. Disponível em: [sbp.com.br](https://www.sbp.com.br/fileadmin/user_upload/_22962f-ManAval_Nutricional_-_2Ed_Atualizada_SITE.pdf)
 3. Ministério da Saúde. Caderneta da Criança. 2024. Disponível em: [gov.br](https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/s/saude-da-crianca/caderneta)
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*

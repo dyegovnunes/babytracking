@@ -43,8 +43,8 @@ seo:
 sources:
   - name: "Environment Agency (UK). Life Cycle Assessment of Disposable and Reusable Nappies. 2008."
     url: "https://www.gov.uk/government/publications/an-updated-lifecycle-assessment-for-disposable-and-reusable-nappies"
-  - name: "SBP. Dermatite da Área das Fraldas. Documento Científico. 2021."
-    url: "https://www.sbp.com.br/departamentos/dermatologia/"
+  - name: "SBP. Dermatite da Área das Fraldas — Diagnóstico Diferencial. Departamento de Dermatologia."
+    url: "https://www.sbp.com.br/fileadmin/user_upload/publicacoes/Dermatologia-Dermatite-da-rea-das-fraldas.pdf"
 images:
   hero: img36-1.png
   complementar: img36-2.png
@@ -203,7 +203,7 @@ Se não aceitar, a abordagem híbrida resolve: pano em casa, descartável na cre
 
 **Fontes:**
 1. [Environment Agency (UK). Life Cycle Assessment of Disposable and Reusable Nappies. 2008.](https://www.gov.uk/government/publications/an-updated-lifecycle-assessment-for-disposable-and-reusable-nappies)
-2. [SBP. Dermatite da Área das Fraldas. Documento Científico. 2021.](https://www.sbp.com.br/departamentos/dermatologia/)
+2. [SBP. Dermatite da Área das Fraldas — Diagnóstico Diferencial. Departamento de Dermatologia.](https://www.sbp.com.br/fileadmin/user_upload/publicacoes/Dermatologia-Dermatite-da-rea-das-fraldas.pdf)
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*
 

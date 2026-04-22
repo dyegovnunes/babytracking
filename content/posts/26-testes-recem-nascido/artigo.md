@@ -32,7 +32,11 @@ related_slugs:
   - registro-bebe-documentos
 schema: FAQPage
 audience: both
-affiliate_products: []
+affiliate_products:
+  - tipo: organização
+    nome: pasta/organizador para documentos do bebê
+  - tipo: saúde
+    nome: termômetro digital para bebê
 lead_magnet: false
 seo:
   h1_chars: 53
@@ -41,8 +45,8 @@ seo:
   snippet_type: faq
   snippet_section: "Quais são os testes obrigatórios do recém-nascido?"
 sources:
-  - name: "SBP — Triagem Neonatal: orientações para profissionais de saúde"
-    url: "https://www.sbp.com.br/departamentos/neonatologia/"
+  - name: "SBP. Triagem Auditiva Neonatal. Departamento Científico de Otorrinolaringologia. 2017."
+    url: "https://www.sbp.com.br/fileadmin/user_upload/2017/03/C-Doc-Cientifico-Otorrinolaringologia-.pdf"
   - name: "Ministério da Saúde — Programa Nacional de Triagem Neonatal (PNTN)"
     url: "https://www.gov.br/saude/pt-br/composicao/saes/triagem-neonatal"
   - name: "Lei 14.154/2021 — Ampliação da Triagem Neonatal no SUS"
@@ -50,6 +54,8 @@ sources:
 images:
   hero: img26-1.png
   complementar: img26-2.png
+image_url: "https://blog.yayababy.app/posts/testes-do-recem-nascido/hero.png"
+image_alt: "Testes do Recem-Nascido: Pezinho, Olhinho e Orelhinha"
 ---
 
 Nos primeiros dias de vida, antes mesmo de sair da maternidade, o recém-nascido passa por uma bateria de exames que podem parecer assustadores à primeira vista — mas são rápidos, seguros e essenciais. Esses testes de triagem neonatal existem para detectar precocemente condições que, se identificadas cedo, podem ser tratadas antes de causar danos.
@@ -203,9 +209,9 @@ Mantenha o cartão de triagem neonatal guardado junto ao cartão de vacinação.
 ---
 
 **Fontes:**
-- SBP — Triagem Neonatal: orientações para profissionais de saúde
-- Ministério da Saúde — Programa Nacional de Triagem Neonatal (PNTN)
-- Lei 14.154/2021 — Ampliação da Triagem Neonatal no SUS
+1. [SBP. Triagem Auditiva Neonatal. Departamento Científico de Otorrinolaringologia. 2017.](https://www.sbp.com.br/fileadmin/user_upload/2017/03/C-Doc-Cientifico-Otorrinolaringologia-.pdf)
+2. [Ministério da Saúde — Programa Nacional de Triagem Neonatal (PNTN)](https://www.gov.br/saude/pt-br/composicao/saes/triagem-neonatal)
+3. [Lei 14.154/2021 — Ampliação da Triagem Neonatal no SUS](https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2021/lei/l14154.htm)
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*
 

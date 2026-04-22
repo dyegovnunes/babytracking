@@ -52,7 +52,27 @@ related_slugs:
 schema: FAQPage
 meta_description: "Entenda a amamentação sob demanda: como funciona, sinais de fome do bebê, frequência normal e quando procurar ajuda. Guia baseado na OMS e SBP."
 audience: parent
-affiliate_products: []
+affiliate_products:
+  - tipo: amamentação
+    nome: Bola de Pilates 65cm Muvin Antiestouro com Bomba
+    asin: B07FYQXMDQ
+    url: https://www.amazon.com.br/dp/B07FYQXMDQ?tag=yaya090-20
+  - tipo: amamentação
+    nome: Bola de Pilates Overball Muvin 25cm Soft Gym
+    asin: B07FYPC9YY
+    url: https://www.amazon.com.br/dp/B07FYPC9YY?tag=yaya090-20
+  - tipo: amamentação
+    nome: Almofada de Amamentação Chevron Cinza Bebê Querido
+    asin: B0CCFX6PK5
+    url: https://www.amazon.com.br/dp/B0CCFX6PK5?tag=yaya090-20
+  - tipo: amamentação
+    nome: Almofada para Amamentação Copespuma My Baby Branco
+    asin: B07J2TN5KX
+    url: https://www.amazon.com.br/dp/B07J2TN5KX?tag=yaya090-20
+  - tipo: amamentação
+    nome: Almofada de Amamentação MyBaby Rosa
+    asin: B07J2WBRJM
+    url: https://www.amazon.com.br/dp/B07J2WBRJM?tag=yaya090-20
 lead_magnet: false
 ---
 

@@ -27,7 +27,11 @@ related_slugs:
   - cordao-umbilical
 schema: Article
 audience: parent
-affiliate_products: null
+affiliate_products:
+  - tipo: higiene
+    nome: álcool gel
+  - tipo: higiene
+    nome: máscara descartável
 lead_magnet: false
 seo:
   h1_chars: 55
@@ -36,8 +40,8 @@ seo:
   snippet_type: lista
   snippet_section: "Regras de higiene para visitas"
 sources:
-  - name: "SBP. Cuidados com o Recém-Nascido. Departamento de Neonatologia. 2022."
-    url: "https://www.sbp.com.br/departamentos/neonatologia/"
+  - name: "SBP. Recomendações para alta hospitalar do Recém-Nascido Termo Potencialmente Saudável. Departamento Científico de Neonatologia. 2020."
+    url: "https://www.sbp.com.br/fileadmin/user_upload/22649c-DC_-_Recom_Alta_hospitalar_RN_TermoPotenc_Saudavel.pdf"
   - name: "AAP. Caring for Your Newborn. HealthyChildren.org."
     url: "https://www.healthychildren.org/English/ages-stages/baby/Pages/Bringing-Baby-Home.aspx"
 images:
@@ -168,7 +172,7 @@ A avó que chega, pega o bebê e diz "vai dormir, eu cuido" é ouro. O primo que
 ---
 
 **Fontes:**
-1. [SBP. Cuidados com o Recém-Nascido. Departamento de Neonatologia. 2022.](https://www.sbp.com.br/departamentos/neonatologia/)
+1. [SBP. Recomendações para alta hospitalar do Recém-Nascido Termo Potencialmente Saudável. Departamento Científico de Neonatologia. 2020.](https://www.sbp.com.br/fileadmin/user_upload/22649c-DC_-_Recom_Alta_hospitalar_RN_TermoPotenc_Saudavel.pdf)
 2. [AAP. Your Newborn's First Week. HealthyChildren.org.](https://www.healthychildren.org/English/ages-stages/baby/Pages/Bringing-Baby-Home.aspx)
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*

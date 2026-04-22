@@ -48,13 +48,15 @@ seo:
 sources:
   - name: "OMS. Breastfeeding counselling: a training course. 2022."
     url: "https://www.who.int/publications/i/item/9789241550468"
-  - name: "SBP. Guia Prático de Aleitamento Materno. 2020."
-    url: "https://www.sbp.com.br/departamentos/aleitamento-materno/"
+  - name: "SBP. Guia Prático de Aleitamento Materno. Departamento Científico de Aleitamento Materno. 2021."
+    url: "https://www.sbp.com.br/fileadmin/user_upload/24585d-GPRATICO-GuiaPratico_de_AM-Atualizacao.pdf"
   - name: "La Leche League International. Positioning and Latch."
     url: "https://www.llli.org/breastfeeding-info/positioning/"
 images:
   hero: img22-1.png
   complementar: img22-2.png
+image_url: "https://blog.yayababy.app/posts/pega-correta-posicoes-amamentacao/hero.png"
+image_alt: "Pega Correta na Amamentacao"
 ---
 
 A pega é o fundamento da amamentação. Quando está correta, o leite flui bem, o bebê ganha peso e a experiência não causa dor. Quando está errada, surgem fissuras, baixa transferência de leite e frustração para todo mundo. A boa notícia: pega se aprende e se corrige.
@@ -207,7 +209,7 @@ Bancos de leite humano do SUS oferecem apoio gratuito à amamentação. Ligue pa
 **Fontes:**
 
 1. [OMS. Breastfeeding counselling: a training course. 2022.](https://www.who.int/publications/i/item/9789241550468)
-2. [SBP. Guia Prático de Aleitamento Materno. 2020.](https://www.sbp.com.br/departamentos/aleitamento-materno/)
+2. [SBP. Guia Prático de Aleitamento Materno. Departamento Científico de Aleitamento Materno. 2021.](https://www.sbp.com.br/fileadmin/user_upload/24585d-GPRATICO-GuiaPratico_de_AM-Atualizacao.pdf)
 3. [La Leche League International. Positioning and Latch.](https://www.llli.org/breastfeeding-info/positioning/)
 
 *Este conteúdo é informativo e não substitui orientação de profissional de saúde ou consultora de lactação.*

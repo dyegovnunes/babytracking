@@ -45,8 +45,8 @@ seo:
 sources:
   - name: "AAP. Sleep Hygiene for Infants and Toddlers. HealthyChildren.org."
     url: "https://www.healthychildren.org/English/healthy-living/sleep/Pages/Healthy-Sleep-Habits-How-Many-Hours-Does-Your-Child-Need.aspx"
-  - name: "SBP. Sono na Infância. Departamento de Neurologia."
-    url: "https://www.sbp.com.br/departamentos/neurologia/"
+  - name: "SBP. Síndrome da Morte Súbita do Lactente e Sono Seguro. Departamento Científico de Medicina do Sono. 2018."
+    url: "https://www.sbp.com.br/fileadmin/user_upload/20226d-DocCient_-_Sindrome_Morte_Subita_do_Lactente.pdf"
   - name: "Mindell JA et al. A Nightly Bedtime Routine: Impact on Sleep in Young Children and Maternal Mood. Sleep, 2009."
     url: "https://pubmed.ncbi.nlm.nih.gov/19480226/"
 images:
@@ -168,7 +168,7 @@ Com o tempo, o próprio bebê vai "pedir" a rotina — vai bocejar quando ouvir 
 **Fontes:**
 
 1. AAP. Sleep Hygiene for Infants and Toddlers. HealthyChildren.org. Disponível em: [healthychildren.org](https://www.healthychildren.org/English/healthy-living/sleep/Pages/Healthy-Sleep-Habits-How-Many-Hours-Does-Your-Child-Need.aspx)
-2. SBP. Sono na Infância. Departamento de Neurologia. Disponível em: [sbp.com.br](https://www.sbp.com.br/departamentos/neurologia/)
+2. SBP. Síndrome da Morte Súbita do Lactente e Sono Seguro. Departamento Científico de Medicina do Sono. 2018. Disponível em: [sbp.com.br](https://www.sbp.com.br/fileadmin/user_upload/20226d-DocCient_-_Sindrome_Morte_Subita_do_Lactente.pdf)
 3. Mindell JA et al. A Nightly Bedtime Routine: Impact on Sleep in Young Children and Maternal Mood. Sleep, 2009. Disponível em: [pubmed.ncbi.nlm.nih.gov](https://pubmed.ncbi.nlm.nih.gov/19480226/)
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*

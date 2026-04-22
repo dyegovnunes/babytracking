@@ -41,8 +41,8 @@ seo:
 sources:
   - name: "AAP. Hearing Language Development: 1 to 12 Months Making Sounds: Your Baby's Milestones. HealthyChildren.org."
     url: "https://www.healthychildren.org/English/ages-stages/baby/Pages/Hearing-and-Making-Sounds.aspx"
-  - name: "SBP. Desenvolvimento da Linguagem na Primeira Infância. Departamento de Pediatria do Desenvolvimento e Comportamento."
-    url: "https://www.sbp.com.br/departamentos/pediatria-do-desenvolvimento-e-comportamento/"
+  - name: "SBP. Cartilha de Desenvolvimento: dos 2 meses aos 5 anos. Departamento Científico de Pediatria do Desenvolvimento e Comportamento."
+    url: "https://www.sbp.com.br/fileadmin/user_upload/_24327e-Cartilha_de_Desenvolvimento-2m-5anos_compressed.pdf"
   - name: "ASHA. How Does Your Child Hear and Talk? Birth to One Year."
     url: "https://www.asha.org/public/developmental-milestones/communication-milestones-birth-to-1-year/"
 images:
@@ -201,7 +201,7 @@ O primeiro passo costuma ser o pediatra, que pode encaminhar para o fonoaudiólo
 **Fontes:**
 
 1. AAP. Hearing Language Development: 1 to 12 Months Making Sounds: Your Baby's Milestones. HealthyChildren.org. Disponível em: [healthychildren.org](https://www.healthychildren.org/English/ages-stages/baby/Pages/Hearing-and-Making-Sounds.aspx)
-2. SBP. Desenvolvimento da Linguagem na Primeira Infância. Departamento de Pediatria do Desenvolvimento e Comportamento. Disponível em: [sbp.com.br](https://www.sbp.com.br/departamentos/pediatria-do-desenvolvimento-e-comportamento/)
+2. SBP. Cartilha de Desenvolvimento: dos 2 meses aos 5 anos. Departamento Científico de Pediatria do Desenvolvimento e Comportamento. Disponível em: [sbp.com.br](https://www.sbp.com.br/fileadmin/user_upload/_24327e-Cartilha_de_Desenvolvimento-2m-5anos_compressed.pdf)
 3. ASHA. How Does Your Child Hear and Talk? Birth to One Year. Disponível em: [asha.org](https://www.asha.org/public/developmental-milestones/communication-milestones-birth-to-1-year/)
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*

@@ -48,7 +48,27 @@ related_slugs:
 schema: HowTo
 meta_description: "Lista completa da mala da maternidade: o que levar para você e o bebê, organizado por categoria. Sem exageros, só o essencial."
 audience: gestante
-affiliate_products: []
+affiliate_products:
+  - tipo: roupas
+    nome: Kit 3 Macacões Bebê Amore Vira Pé com Zíper Menina
+    asin: B0G87CDXWW
+    url: https://www.amazon.com.br/dp/B0G87CDXWW?tag=yaya090-20
+  - tipo: roupas
+    nome: Kit 3 Macacões Bebê Amore Vira Pé com Zíper Menino
+    asin: B0G8KRFJYR
+    url: https://www.amazon.com.br/dp/B0G8KRFJYR?tag=yaya090-20
+  - tipo: banho
+    nome: Toalha de Banho Soft Karinho com Capuz 80x80cm
+    asin: B0BV386QWT
+    url: https://www.amazon.com.br/dp/B0BV386QWT?tag=yaya090-20
+  - tipo: banho
+    nome: Toalha de Banho Soft Papi Friends com Capuz 90x75cm
+    asin: B09YVPFL3L
+    url: https://www.amazon.com.br/dp/B09YVPFL3L?tag=yaya090-20
+  - tipo: banho
+    nome: Toalha de Banho Papi Malhas Forrada com Capuz 94x70cm
+    asin: B07XHN65NS
+    url: https://www.amazon.com.br/dp/B07XHN65NS?tag=yaya090-20
 lead_magnet: true
 lead_magnet_type: checklist
 ---

@@ -31,7 +31,11 @@ related_slugs:
   - voltar-trabalho-amamentacao
 schema: FAQPage
 audience: gestante
-affiliate_products: []
+affiliate_products:
+  - tipo: organização
+    nome: agenda/planner para gestante e mãe
+  - tipo: leitura
+    nome: livro sobre direitos trabalhistas da gestante
 lead_magnet: false
 seo:
   h1_chars: 55
@@ -51,6 +55,8 @@ sources:
 images:
   hero: img25-1.png
   complementar: img25-2.png
+image_url: "https://blog.yayababy.app/posts/licenca-maternidade-direitos-organizacao/hero.png"
+image_alt: "Licenca-Maternidade: Direitos e Organizacao"
 ---
 
 Descobrir que está grávida traz uma avalanche de emoções — e também de dúvidas práticas. Uma das primeiras costuma ser: "como funciona a licença-maternidade?". A boa notícia é que a legislação brasileira garante proteções importantes. A parte complicada é que as regras mudam conforme o tipo de vínculo, e nem sempre o RH explica tudo. Vamos descomplicar.

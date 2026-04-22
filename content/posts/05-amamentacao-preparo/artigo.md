@@ -49,7 +49,23 @@ related_slugs:
 schema: Article
 meta_description: "Como se preparar para a amamentação durante a gestação: o que o corpo faz, mitos, pega correta e o que esperar nos primeiros dias."
 audience: gestante
-affiliate_products: []
+affiliate_products:
+  - tipo: transporte
+    nome: NUK Canguru 3 em 1 Ergonômico Comfort Cinza
+    asin: B09YJ1NY2W
+    url: https://www.amazon.com.br/dp/B09YJ1NY2W?tag=yaya090-20
+  - tipo: transporte
+    nome: Canguru Ergonômico Bebê 12 Posições Cinza 3 em 1
+    asin: B0CCYR4JT4
+    url: https://www.amazon.com.br/dp/B0CCYR4JT4?tag=yaya090-20
+  - tipo: transporte
+    nome: Wrap Sling de Bebê Carregador de Amarrar Little Beni Preto
+    asin: B0F254TBP2
+    url: https://www.amazon.com.br/dp/B0F254TBP2?tag=yaya090-20
+  - tipo: saúde
+    nome: Chupeta Dupla Ultra Air Philips Avent Recém Nascido 0-6M
+    asin: B0DH9DYX5Y
+    url: https://www.amazon.com.br/dp/B0DH9DYX5Y?tag=yaya090-20
 lead_magnet: false
 ---
 

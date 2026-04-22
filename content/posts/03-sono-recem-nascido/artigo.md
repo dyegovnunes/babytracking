@@ -52,7 +52,27 @@ related_slugs:
 schema: Article
 meta_description: "Sono do recém-nascido: quanto dorme, ciclos, diferença dia e noite e como criar boas práticas desde o início. Guia baseado em evidências."
 audience: parent
-affiliate_products: []
+affiliate_products:
+  - tipo: amamentação
+    nome: Lanolina HPA Lansinoh
+    asin: B077PRNTMF
+    url: https://www.amazon.com.br/dp/B077PRNTMF?tag=yaya090-20
+  - tipo: amamentação
+    nome: Pomada de Lanolina Medela Purelan 2.0 37g
+    asin: B08HDGKR5B
+    url: https://www.amazon.com.br/dp/B08HDGKR5B?tag=yaya090-20
+  - tipo: amamentação
+    nome: Absorvente para Seios Ultimate Protection Lansinoh
+    asin: B09CFTM4LP
+    url: https://www.amazon.com.br/dp/B09CFTM4LP?tag=yaya090-20
+  - tipo: amamentação
+    nome: Absorvente para Seios Cremer 30 unidades
+    asin: B0CD8T9Q45
+    url: https://www.amazon.com.br/dp/B0CD8T9Q45?tag=yaya090-20
+  - tipo: amamentação
+    nome: Kit Absorvente Descartável para Seios Avent 2 peças
+    asin: B08L9LR8RT
+    url: https://www.amazon.com.br/dp/B08L9LR8RT?tag=yaya090-20
 lead_magnet: false
 ---
 

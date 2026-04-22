@@ -45,8 +45,8 @@ seo:
 sources:
   - name: "Código de Trânsito Brasileiro (CTB), Art. 64"
     url: "https://www.planalto.gov.br/ccivil_03/leis/l9503compilado.htm"
-  - name: "CONTRAN — Resolução 277/2008 (Dispositivos de Retenção)"
-    url: "https://www.normasbrasil.com.br/norma/resolucao-277-2008_108349.html"
+  - name: "CONTRAN — Resolução 277/2008 (Dispositivos de Retenção para Crianças)"
+    url: "https://www.gov.br/transportes/pt-br/assuntos/transito/conteudo-contran/resolucoes/resolucao_contran_277.pdf"
   - name: "INMETRO — Dispositivos de Retenção para Crianças"
     url: "https://www.gov.br/inmetro/pt-br/acesso-a-informacao/perguntas-frequentes/avaliacao-da-conformidade/dispositivos-de-retencao-para-criancas"
   - name: "AAP — Car Seats: Information for Families"
@@ -54,6 +54,8 @@ sources:
 images:
   hero: img30-1.png
   complementar: img30-2.png
+image_url: "https://blog.yayababy.app/posts/cadeirinha-bebe-carro/hero.png"
+image_alt: "Cadeirinha do Carro: Como Escolher e Instalar"
 ---
 
 A cadeirinha do carro é, provavelmente, o item de segurança mais importante que você vai comprar para o seu bebê. E também um dos que mais gera dúvidas: qual grupo? Virada para trás até quando? ISOFIX ou cinto? Usada pode? A quantidade de opções e regras confunde — mas errar nessa escolha pode ter consequências graves.

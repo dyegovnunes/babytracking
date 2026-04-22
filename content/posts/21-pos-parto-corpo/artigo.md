@@ -49,15 +49,17 @@ seo:
 sources:
   - name: "ACOG. Optimizing Postpartum Care. Committee Opinion No. 736. 2018."
     url: "https://www.acog.org/clinical/clinical-guidance/committee-opinion/articles/2018/05/optimizing-postpartum-care"
-  - name: "SBP. Cuidados no Puerpério: orientações para a família. 2022."
-    url: "https://www.sbp.com.br/especiais/pediatria-para-familias/"
+  - name: "SBP. Guia Prático de Aleitamento Materno. Departamento Científico de Aleitamento Materno. 2021."
+    url: "https://www.sbp.com.br/fileadmin/user_upload/24585d-GPRATICO-GuiaPratico_de_AM-Atualizacao.pdf"
   - name: "OMS. WHO recommendations on postnatal care of the mother and newborn. 2013."
     url: "https://www.who.int/publications/i/item/9789241506649"
-  - name: "Ministério da Saúde. Caderneta da Gestante. 2023."
-    url: "https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/s/saude-da-mulher"
+  - name: "Ministério da Saúde. Atenção ao Pré-natal de Baixo Risco — Cadernos de Atenção Básica nº 32. 2013."
+    url: "https://bvsms.saude.gov.br/bvs/publicacoes/cadernos_atencao_basica_32_prenatal.pdf"
 images:
   hero: img21-1.png
   complementar: img21-2.png
+image_url: "https://blog.yayababy.app/posts/o-que-muda-no-corpo-depois-do-parto/hero.png"
+image_alt: "O Que Muda no Corpo Depois do Parto"
 ---
 
 O parto aconteceu. O bebê está nos seus braços. E o seu corpo? Ele acabou de completar uma das transformações mais intensas que o organismo humano faz. Agora começa outra: a volta. Não é instantânea, não é linear, e nem sempre é como você imaginou. Este guia explica o que esperar, etapa por etapa.
@@ -252,9 +254,9 @@ Os [primeiros dias em casa](/primeiros-dias-em-casa-com-recem-nascido) são de a
 **Fontes:**
 
 1. [ACOG. Optimizing Postpartum Care. Committee Opinion No. 736. 2018.](https://www.acog.org/clinical/clinical-guidance/committee-opinion/articles/2018/05/optimizing-postpartum-care)
-2. [SBP. Cuidados no Puerpério: orientações para a família. 2022.](https://www.sbp.com.br/especiais/pediatria-para-familias/)
+2. [SBP. Guia Prático de Aleitamento Materno. Departamento Científico de Aleitamento Materno. 2021.](https://www.sbp.com.br/fileadmin/user_upload/24585d-GPRATICO-GuiaPratico_de_AM-Atualizacao.pdf)
 3. [OMS. WHO recommendations on postnatal care of the mother and newborn. 2013.](https://www.who.int/publications/i/item/9789241506649)
-4. [Ministério da Saúde. Caderneta da Gestante. 2023.](https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/s/saude-da-mulher)
+4. [Ministério da Saúde. Atenção ao Pré-natal de Baixo Risco — Cadernos de Atenção Básica nº 32. 2013.](https://bvsms.saude.gov.br/bvs/publicacoes/cadernos_atencao_basica_32_prenatal.pdf)
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o seu obstetra ou profissional de saúde.*
 

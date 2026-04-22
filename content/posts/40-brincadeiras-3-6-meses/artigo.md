@@ -46,8 +46,8 @@ seo:
 sources:
   - name: "AAP — Playing With Your Baby: Activities for 4 to 7 Months"
     url: "https://www.healthychildren.org/English/ages-stages/baby/Pages/Playing-With-Your-Baby.aspx"
-  - name: "SBP — Estimulação do desenvolvimento infantil"
-    url: "https://www.sbp.com.br/especiais/pediatria-para-familias/desenvolvimento/"
+  - name: "SBP. Cartilha de Desenvolvimento: dos 2 meses aos 5 anos. Departamento Científico de Pediatria do Desenvolvimento e Comportamento."
+    url: "https://www.sbp.com.br/fileadmin/user_upload/_24327e-Cartilha_de_Desenvolvimento-2m-5anos_compressed.pdf"
   - name: "CDC — Milestone Moments: Learn the Signs, Act Early"
     url: "https://www.cdc.gov/act-early/milestones/index.html"
 images:
@@ -217,7 +217,7 @@ A partir dos 4 meses, o bebê começa a entender que suas ações geram resultad
 **Fontes:**
 
 1. AAP — Playing With Your Baby: Activities for 4 to 7 Months. Disponível em: [healthychildren.org](https://www.healthychildren.org/English/ages-stages/baby/Pages/Playing-With-Your-Baby.aspx)
-2. SBP — Estimulação do desenvolvimento infantil. Disponível em: [sbp.com.br](https://www.sbp.com.br/especiais/pediatria-para-familias/desenvolvimento/)
+2. SBP — Cartilha de Desenvolvimento: dos 2 meses aos 5 anos. Departamento Científico de Pediatria do Desenvolvimento e Comportamento. Disponível em: [sbp.com.br](https://www.sbp.com.br/fileadmin/user_upload/_24327e-Cartilha_de_Desenvolvimento-2m-5anos_compressed.pdf)
 3. CDC — Milestone Moments: Learn the Signs, Act Early. Disponível em: [cdc.gov](https://www.cdc.gov/act-early/milestones/index.html)
 
 ---

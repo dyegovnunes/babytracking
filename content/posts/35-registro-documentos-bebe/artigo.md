@@ -28,7 +28,11 @@ related_slugs:
   - testes-do-recem-nascido
 schema: HowTo
 audience: parent
-affiliate_products: null
+affiliate_products:
+  - tipo: organização
+    nome: pasta organizadora de documentos
+  - tipo: organização
+    nome: caderneta de saúde personalizada
 lead_magnet: false
 seo:
   h1_chars: 53

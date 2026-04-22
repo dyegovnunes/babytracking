@@ -29,7 +29,11 @@ related_slugs:
   - percentis-curvas-crescimento-bebe
 schema: Article
 audience: gestante
-affiliate_products: []
+affiliate_products:
+  - tipo: organização
+    nome: caderneta de saúde/vacinas personalizada
+  - tipo: saúde
+    nome: termômetro digital para bebê
 lead_magnet: false
 seo:
   h1_chars: 40
@@ -38,13 +42,15 @@ seo:
   snippet_type: lista
   snippet_section: "O que avaliar ao escolher o pediatra"
 sources:
-  - name: "SBP — Consultas Pediátricas: Calendário de Acompanhamento"
-    url: "https://www.sbp.com.br/departamentos/pediatria-ambulatorial/"
+  - name: "SBP. Consulta Pediátrica Pré-Natal — Atualização 2023. Departamento Científico de Pediatria Ambulatorial."
+    url: "https://www.sbp.com.br/fileadmin/user_upload/24121d-DC_ConsultaPediatria_PreNatal-Atualiz2023.pdf"
   - name: "AAP — Finding a Pediatrician"
     url: "https://www.healthychildren.org/English/ages-stages/prenatal/decisions-to-make/Pages/finding-a-pediatrician.aspx"
 images:
   hero: img27-1.png
   complementar: img27-2.png
+image_url: "https://blog.yayababy.app/posts/como-escolher-pediatra/hero.png"
+image_alt: "Como Escolher o Pediatra do Seu Bebe"
 ---
 
 Escolher o pediatra do seu bebê é uma daquelas decisões que parecem simples até você começar a pesquisar. De repente surgem dezenas de opções, indicações conflitantes e dúvidas que você nem sabia que tinha. A verdade é que o "melhor pediatra" não existe em abstrato — existe o melhor pediatra para a sua família.

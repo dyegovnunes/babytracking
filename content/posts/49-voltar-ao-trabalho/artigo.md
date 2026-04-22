@@ -44,8 +44,8 @@ seo:
 sources:
   - name: "CLT, Art. 396. Intervalos para amamentação."
     url: "https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm"
-  - name: "SBP. Aleitamento Materno e Trabalho da Mulher. Departamento de Aleitamento Materno."
-    url: "https://www.sbp.com.br/departamentos/aleitamento-materno/"
+  - name: "SBP. Guia Prático de Aleitamento Materno. Departamento Científico de Aleitamento Materno. 2021."
+    url: "https://www.sbp.com.br/fileadmin/user_upload/24585d-GPRATICO-GuiaPratico_de_AM-Atualizacao.pdf"
   - name: "OMS. Breastfeeding. Fact sheet."
     url: "https://www.who.int/news-room/fact-sheets/detail/infant-and-young-child-feeding"
 images:
@@ -204,7 +204,7 @@ Peça ajuda. Delegar não é falhar — é necessidade.
 **Fontes:**
 
 1. CLT, Art. 396. Intervalos para amamentação. Disponível em: [planalto.gov.br](https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm)
-2. SBP. Aleitamento Materno e Trabalho da Mulher. Departamento de Aleitamento Materno. Disponível em: [sbp.com.br](https://www.sbp.com.br/departamentos/aleitamento-materno/)
+2. SBP. Guia Prático de Aleitamento Materno. Departamento Científico de Aleitamento Materno. 2021. Disponível em: [sbp.com.br](https://www.sbp.com.br/fileadmin/user_upload/24585d-GPRATICO-GuiaPratico_de_AM-Atualizacao.pdf)
 3. OMS. Breastfeeding. Fact sheet. Disponível em: [who.int](https://www.who.int/news-room/fact-sheets/detail/infant-and-young-child-feeding)
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*

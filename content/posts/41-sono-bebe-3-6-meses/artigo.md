@@ -45,8 +45,8 @@ seo:
 sources:
   - name: "AAP — Healthy Sleep Habits for Infants 4-7 Months"
     url: "https://www.healthychildren.org/English/ages-stages/baby/sleep/Pages/default.aspx"
-  - name: "SBP — Sono na infância: recomendações"
-    url: "https://www.sbp.com.br/especiais/pediatria-para-familias/cuidados-com-o-bebe/sono/"
+  - name: "SBP. Síndrome da Morte Súbita do Lactente e Sono Seguro. Departamento Científico de Medicina do Sono. 2018."
+    url: "https://www.sbp.com.br/fileadmin/user_upload/20226d-DocCient_-_Sindrome_Morte_Subita_do_Lactente.pdf"
   - name: "Mindell JA et al. A nightly bedtime routine: impact on sleep in young children. Sleep. 2009;32(5):599-606."
     url: "https://pubmed.ncbi.nlm.nih.gov/19480226/"
 images:
@@ -240,7 +240,7 @@ Este guia não defende nenhum método específico. O importante é que a famíli
 **Fontes:**
 
 1. AAP — Healthy Sleep Habits for Infants. Disponível em: [healthychildren.org](https://www.healthychildren.org/English/ages-stages/baby/sleep/Pages/default.aspx)
-2. SBP — Sono na infância: recomendações. Disponível em: [sbp.com.br](https://www.sbp.com.br/especiais/pediatria-para-familias/cuidados-com-o-bebe/sono/)
+2. SBP — Síndrome da Morte Súbita do Lactente e Sono Seguro. Departamento Científico de Medicina do Sono. 2018. Disponível em: [sbp.com.br](https://www.sbp.com.br/fileadmin/user_upload/20226d-DocCient_-_Sindrome_Morte_Subita_do_Lactente.pdf)
 3. [Mindell JA et al. A nightly bedtime routine: impact on sleep in young children. Sleep. 2009;32(5):599-606.](https://pubmed.ncbi.nlm.nih.gov/19480226/)
 
 ---

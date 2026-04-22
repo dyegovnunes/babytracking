@@ -33,7 +33,11 @@ related_slugs:
   - rotina-sono-bebe
 schema: Article
 audience: parent
-affiliate_products: []
+affiliate_products:
+  - tipo: sono
+    nome: saco de dormir bebê
+  - tipo: estimulação
+    nome: tapete de atividades
 lead_magnet: false
 seo:
   h1_chars: 58
@@ -44,11 +48,13 @@ seo:
 sources:
   - name: "AAP. Healthy Sleep Habits: How Many Hours Does Your Child Need?. HealthyChildren.org."
     url: "https://www.healthychildren.org/English/ages-stages/baby/sleep/Pages/healthy-sleep-habits-how-many-hours-does-your-child-need.aspx"
-  - name: "SBP. Documento Científico: Sono na Infância. 2020."
-    url: "https://www.sbp.com.br/departamentos/neurologia/documentos-cientificos/"
+  - name: "SBP. Síndrome da Morte Súbita do Lactente e Sono Seguro. Departamento Científico de Medicina do Sono. 2018."
+    url: "https://www.sbp.com.br/fileadmin/user_upload/20226d-DocCient_-_Sindrome_Morte_Subita_do_Lactente.pdf"
 images:
   hero: img23-1.png
   complementar: img23-2.png
+image_url: "https://blog.yayababy.app/posts/rotina-bebe-3-4-meses/hero.png"
+image_alt: "Rotina do Bebe aos 3-4 Meses"
 ---
 
 Até os 2 meses, a rotina do bebê era basicamente: comer, dormir, trocar fralda, repetir. Sem horários, sem padrão, sem previsibilidade. Aos 3-4 meses, algo começa a mudar. O bebê fica mais tempo acordado, as amamentações espaçam um pouco, as sonecas começam a se organizar. Não é uma rotina de relógio — mas já dá para enxergar um esboço.
@@ -221,7 +227,7 @@ Ter esses dados torna a rotina algo que você descobre, não algo que você imp�
 **Fontes:**
 
 1. [AAP. Healthy Sleep Habits: How Many Hours Does Your Child Need?. HealthyChildren.org.](https://www.healthychildren.org/English/ages-stages/baby/sleep/Pages/healthy-sleep-habits-how-many-hours-does-your-child-need.aspx)
-2. [SBP. Documento Científico: Sono na Infância. 2020.](https://www.sbp.com.br/departamentos/neurologia/documentos-cientificos/)
+2. [SBP. Síndrome da Morte Súbita do Lactente e Sono Seguro. Departamento Científico de Medicina do Sono. 2018.](https://www.sbp.com.br/fileadmin/user_upload/20226d-DocCient_-_Sindrome_Morte_Subita_do_Lactente.pdf)
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*
 

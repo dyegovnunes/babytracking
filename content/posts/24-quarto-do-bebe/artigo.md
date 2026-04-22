@@ -52,13 +52,15 @@ seo:
 sources:
   - name: "AAP. Safe Sleep: Recommendations. Updated 2022."
     url: "https://publications.aap.org/pediatrics/article/150/1/e2022057990/188304/Sleep-Related-Infant-Deaths-Updated-2022"
-  - name: "SBP. Sono seguro para o lactente: recomendações. 2021."
-    url: "https://www.sbp.com.br/departamentos/neonatologia/"
+  - name: "SBP. Síndrome da Morte Súbita do Lactente e Sono Seguro. Departamento Científico de Medicina do Sono. 2018."
+    url: "https://www.sbp.com.br/fileadmin/user_upload/20226d-DocCient_-_Sindrome_Morte_Subita_do_Lactente.pdf"
   - name: "CPSC. Safe Sleep for Babies."
     url: "https://www.cpsc.gov/SafeSleep"
 images:
   hero: img24-1.png
   complementar: img24-2.png
+image_url: "https://blog.yayababy.app/posts/quarto-do-bebe-o-que-e-essencial/hero.png"
+image_alt: "Quarto do Bebe: O Que E Essencial"
 ---
 
 O Pinterest mostra quartos de bebê dignos de capa de revista. A realidade é que seu recém-nascido não se importa com a paleta de cores, o papel de parede botânico ou o móbile de macramê. Ele precisa de um lugar seguro para dormir. O resto é decisão sua — e boa parte é marketing.
@@ -201,7 +203,7 @@ Se está planejando o enxoval completo, confira nossa lista de [itens realmente 
 **Fontes:**
 
 1. [AAP. Safe Sleep: Recommendations. Updated 2022.](https://publications.aap.org/pediatrics/article/150/1/e2022057990/188304/Sleep-Related-Infant-Deaths-Updated-2022)
-2. [SBP. Sono seguro para o lactente: recomendações. 2021.](https://www.sbp.com.br/departamentos/neonatologia/)
+2. [SBP. Síndrome da Morte Súbita do Lactente e Sono Seguro. Departamento Científico de Medicina do Sono. 2018.](https://www.sbp.com.br/fileadmin/user_upload/20226d-DocCient_-_Sindrome_Morte_Subita_do_Lactente.pdf)
 3. [CPSC. Safe Sleep for Babies.](https://www.cpsc.gov/SafeSleep)
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*

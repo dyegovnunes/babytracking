@@ -52,7 +52,19 @@ related_slugs:
 schema: Article
 meta_description: "Tipos de parto: diferenças entre normal, cesárea e humanizado. Recuperação, riscos e como escolher com seu obstetra."
 audience: gestante
-affiliate_products: []
+affiliate_products:
+  - tipo: sono
+    nome: Buba Saco de Dormir Baby Super Soft Azul
+    asin: B07RRLVKMX
+    url: https://www.amazon.com.br/dp/B07RRLVKMX?tag=yaya090-20
+  - tipo: sono
+    nome: Aparelho de Som Ruído Branco Útero Ninar Acalmar Bebê
+    asin: B0D61ZTXG9
+    url: https://www.amazon.com.br/dp/B0D61ZTXG9?tag=yaya090-20
+  - tipo: sono
+    nome: Máquina de Som Ruído Branco 20 Sons com Luz Noturna LED
+    asin: B0FD3S8NPY
+    url: https://www.amazon.com.br/dp/B0FD3S8NPY?tag=yaya090-20
 lead_magnet: false
 ---
 

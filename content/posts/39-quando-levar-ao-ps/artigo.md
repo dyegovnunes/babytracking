@@ -28,7 +28,11 @@ related_slugs:
   - colicas-do-bebe
 schema: Article
 audience: parent
-affiliate_products: []
+affiliate_products:
+  - tipo: saúde
+    nome: termômetro digital para bebê
+  - tipo: saúde
+    nome: oxímetro de pulso portátil
 lead_magnet: false
 seo:
   h1_chars: 55
@@ -37,8 +41,8 @@ seo:
   snippet_type: lista
   snippet_section: "Checklist: vá ao pronto-socorro agora"
 sources:
-  - name: "SBP — Urgências e emergências pediátricas"
-    url: "https://www.sbp.com.br/departamentos/emergencia/"
+  - name: "SBP — Documentos Científicos: Urgências e Emergências Pediátricas. Departamento Científico de Emergência."
+    url: "https://www.sbp.com.br/departamentos/emergencia/documentos-cientificos/"
   - name: "AAP — When to Call the Pediatrician"
     url: "https://www.healthychildren.org/English/health-issues/conditions/fever/Pages/When-to-Call-the-Pediatrician.aspx"
   - name: "Nelson Textbook of Pediatrics, 21st edition — Kliegman et al., Elsevier, 2020"
@@ -266,7 +270,7 @@ Os **registros de temperatura e sintomas com horários** são um diferencial na 
 
 **Fontes:**
 
-1. SBP — Urgências e emergências pediátricas. Disponível em: [sbp.com.br](https://www.sbp.com.br/departamentos/emergencia/)
+1. SBP — Documentos Científicos: Urgências e Emergências Pediátricas. Disponível em: [sbp.com.br](https://www.sbp.com.br/departamentos/emergencia/documentos-cientificos/)
 2. AAP — When to Call the Pediatrician. Disponível em: [healthychildren.org](https://www.healthychildren.org/English/health-issues/conditions/fever/Pages/When-to-Call-the-Pediatrician.aspx)
 3. [Nelson Textbook of Pediatrics, 21st edition. Kliegman et al., Elsevier, 2020.](https://shop.elsevier.com/books/nelson-textbook-of-pediatrics-2-volume-set/kliegman/978-0-323-52950-1)
 

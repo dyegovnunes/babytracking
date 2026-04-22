@@ -44,8 +44,8 @@ seo:
 sources:
   - name: "OMS. Infant and young child feeding. Fact sheet. 2024."
     url: "https://www.who.int/news-room/fact-sheets/detail/infant-and-young-child-feeding"
-  - name: "SBP. Manual de Alimentação da Infância à Adolescência. Departamento de Nutrologia. 2021."
-    url: "https://www.sbp.com.br/departamentos/nutrologia/documentos-cientificos/"
+  - name: "SBP. Guia Prático de Alimentação da Criança de 0 a 5 Anos. Departamentos de Nutrologia e Pediatria Ambulatorial. 2022."
+    url: "https://www.sbp.com.br/fileadmin/user_upload/23148cf-GPrat_Aliment_Crc_0-5_anos_SITE.pdf"
   - name: "CODEX Alimentarius. Standard for Infant Formula and Formulas for Special Medical Purposes. CXS 72-1981."
     url: "https://www.fao.org/fao-who-codexalimentarius/codex-texts/list-standards/en/"
   - name: "AAP. Choosing an Infant Formula. HealthyChildren.org."
@@ -197,7 +197,7 @@ Não. A água deve ser fervida. Água mineral não é estéril, e água de filtr
 
 **Fontes:**
 1. [OMS. Infant and young child feeding. Fact sheet. 2024.](https://www.who.int/news-room/fact-sheets/detail/infant-and-young-child-feeding)
-2. [SBP. Manual de Alimentação da Infância à Adolescência. Departamento de Nutrologia. 2021.](https://www.sbp.com.br/departamentos/nutrologia/documentos-cientificos/)
+2. [SBP. Guia Prático de Alimentação da Criança de 0 a 5 Anos. Departamentos de Nutrologia e Pediatria Ambulatorial. 2022.](https://www.sbp.com.br/fileadmin/user_upload/23148cf-GPrat_Aliment_Crc_0-5_anos_SITE.pdf)
 3. [CODEX Alimentarius. Standard for Infant Formula. CXS 72-1981.](https://www.fao.org/fao-who-codexalimentarius/codex-texts/list-standards/en/)
 4. [AAP. Choosing an Infant Formula. HealthyChildren.org.](https://www.healthychildren.org/English/ages-stages/baby/formula-feeding/Pages/Choosing-an-Infant-Formula.aspx)
 

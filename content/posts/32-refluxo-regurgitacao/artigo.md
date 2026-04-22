@@ -28,7 +28,11 @@ related_slugs:
   - colicas-do-bebe
 schema: FAQPage
 audience: parent
-affiliate_products: null
+affiliate_products:
+  - tipo: saúde
+    nome: travesseiro anti-refluxo para bebê
+  - tipo: higiene
+    nome: babador impermeável
 lead_magnet: false
 seo:
   h1_chars: 64

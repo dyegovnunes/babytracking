@@ -29,7 +29,11 @@ related_slugs:
   - sono-do-recem-nascido
 schema: Article
 audience: parent
-affiliate_products: []
+affiliate_products:
+  - tipo: estimulação
+    nome: tapete de atividades
+  - tipo: sono
+    nome: saco de dormir bebê
 lead_magnet: false
 seo:
   h1_chars: 47
@@ -40,8 +44,8 @@ seo:
 sources:
   - name: "AAP — Motor Development Milestones"
     url: "https://www.healthychildren.org/English/ages-stages/baby/Pages/Movement-4-to-7-Months.aspx"
-  - name: "SBP — Marcos do desenvolvimento infantil"
-    url: "https://www.sbp.com.br/especiais/pediatria-para-familias/desenvolvimento/"
+  - name: "SBP. Cartilha de Desenvolvimento: dos 2 meses aos 5 anos. Departamento Científico de Pediatria do Desenvolvimento e Comportamento."
+    url: "https://www.sbp.com.br/fileadmin/user_upload/_24327e-Cartilha_de_Desenvolvimento-2m-5anos_compressed.pdf"
   - name: "WHO Multicentre Growth Reference Study — Motor Development Milestones"
     url: "https://www.who.int/tools/child-growth-standards/standards/motor-development-milestones"
 images:
@@ -180,7 +184,7 @@ Cada conquista é construída sobre a anterior. O tummy time que pareceu tão di
 **Fontes:**
 
 1. AAP — Movement: 4 to 7 Months. Disponível em: [healthychildren.org](https://www.healthychildren.org/English/ages-stages/baby/Pages/Movement-4-to-7-Months.aspx)
-2. SBP — Marcos do desenvolvimento infantil. Disponível em: [sbp.com.br](https://www.sbp.com.br/especiais/pediatria-para-familias/desenvolvimento/)
+2. SBP — Cartilha de Desenvolvimento: dos 2 meses aos 5 anos. Departamento Científico de Pediatria do Desenvolvimento e Comportamento. Disponível em: [sbp.com.br](https://www.sbp.com.br/fileadmin/user_upload/_24327e-Cartilha_de_Desenvolvimento-2m-5anos_compressed.pdf)
 3. WHO Multicentre Growth Reference Study — Motor Development Milestones. Disponível em: [who.int](https://www.who.int/tools/child-growth-standards/standards/motor-development-milestones)
 
 ---

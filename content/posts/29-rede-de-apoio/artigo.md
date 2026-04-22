@@ -31,7 +31,11 @@ related_slugs:
   - voltar-trabalho-amamentacao
 schema: Article
 audience: both
-affiliate_products: []
+affiliate_products:
+  - tipo: bem-estar
+    nome: diário/journal de maternidade
+  - tipo: casa
+    nome: lista de tarefas para organizar ajuda (quadro magnético)
 lead_magnet: false
 seo:
   h1_chars: 57
@@ -42,13 +46,15 @@ seo:
 sources:
   - name: "OMS — Recommendations on Maternal and Newborn Care for a Positive Postnatal Experience"
     url: "https://www.who.int/publications/i/item/9789240045989"
-  - name: "SBP — A importância do vínculo e do apoio familiar no puerpério"
-    url: "https://www.sbp.com.br/departamentos/grupos-trabalhos/saude-mental/"
-  - name: "AAP — The Importance of Social Support for New Parents"
-    url: "https://www.aap.org/"
+  - name: "SBP. O papel do pediatra na prevenção do estresse tóxico na primeira infância. Departamento Científico de Pediatria do Desenvolvimento e Comportamento. 2017."
+    url: "https://www.sbp.com.br/fileadmin/user_upload/2017/06/Ped.-Desenv.-Comp.-MOrient-Papel-pediatra-prev-estresse.pdf"
+  - name: "AAP. Caring for Your Baby and Young Child: Birth to Age 5. HealthyChildren.org."
+    url: "https://www.healthychildren.org/English/family-life/family-dynamics/Pages/Support-for-Families.aspx"
 images:
   hero: img29-1.png
   complementar: img29-2.png
+image_url: "https://blog.yayababy.app/posts/rede-de-apoio-maternidade/hero.png"
+image_alt: "Rede de Apoio na Maternidade"
 ---
 
 "É preciso uma aldeia para criar uma criança." Esse provérbio africano nunca fez tanto sentido quanto nas primeiras semanas com um recém-nascido. O problema é que a maioria das famílias modernas não tem uma aldeia pronta — precisa construí-la.

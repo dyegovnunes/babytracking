@@ -41,8 +41,8 @@ seo:
 sources:
   - name: "AAP — Developmental Milestones: 7 Months"
     url: "https://www.healthychildren.org/English/ages-stages/baby/Pages/Developmental-Milestones-7-Months.aspx"
-  - name: "SBP — Desenvolvimento infantil: marcos e estimulação"
-    url: "https://www.sbp.com.br/especiais/pediatria-para-familias/desenvolvimento/"
+  - name: "SBP. Cartilha de Desenvolvimento: dos 2 meses aos 5 anos. Departamento Científico de Pediatria do Desenvolvimento e Comportamento."
+    url: "https://www.sbp.com.br/fileadmin/user_upload/_24327e-Cartilha_de_Desenvolvimento-2m-5anos_compressed.pdf"
   - name: "Piaget J. The Origin of Intelligence in the Child. Routledge, 1953."
     url: "https://www.routledge.com/The-Origin-of-Intelligence-in-the-Child/Piaget/p/book/9780415513623"
 images:
@@ -216,7 +216,7 @@ Para a grande maioria dos bebês, a fase oral é uma etapa saudável e passageir
 **Fontes:**
 
 1. AAP — Developmental Milestones: 7 Months. Disponível em: [healthychildren.org](https://www.healthychildren.org/English/ages-stages/baby/Pages/Developmental-Milestones-7-Months.aspx)
-2. SBP — Desenvolvimento infantil: marcos e estimulação. Disponível em: [sbp.com.br](https://www.sbp.com.br/especiais/pediatria-para-familias/desenvolvimento/)
+2. SBP — Cartilha de Desenvolvimento: dos 2 meses aos 5 anos. Departamento Científico de Pediatria do Desenvolvimento e Comportamento. Disponível em: [sbp.com.br](https://www.sbp.com.br/fileadmin/user_upload/_24327e-Cartilha_de_Desenvolvimento-2m-5anos_compressed.pdf)
 3. [Piaget J. The Origin of Intelligence in the Child. Routledge, 1953.](https://www.routledge.com/The-Origin-of-Intelligence-in-the-Child/Piaget/p/book/9780415513623)
 
 ---
