@@ -9,7 +9,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'Content-Type',
+  'Access-Control-Allow-Headers': 'Content-Type, apikey, authorization',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
@@ -59,10 +59,11 @@ serve(async (req) => {
     }
 
     // 5. Verificar senha — aceita bcrypt (novo) e sha256 (legado, migra no sucesso).
+    //    Usa versões *Sync do bcrypt para evitar Worker (não suportado em Edge Functions).
     const algo = report.password_algo ?? 'sha256';
     let passwordOk = false;
     if (algo === 'bcrypt') {
-      passwordOk = await bcrypt.compare(password, report.password_hash);
+      passwordOk = bcrypt.compareSync(password, report.password_hash);
     } else {
       const sha = await sha256Hex(password);
       passwordOk = sha === report.password_hash;
@@ -88,7 +89,7 @@ serve(async (req) => {
       last_accessed_at: new Date().toISOString(),
     };
     if (algo === 'sha256') {
-      updatePatch.password_hash = await bcrypt.hash(password);
+      updatePatch.password_hash = bcrypt.hashSync(password);
       updatePatch.password_algo = 'bcrypt';
     }
     await supabase.from('shared_reports').update(updatePatch).eq('id', report.id);
