@@ -27,6 +27,9 @@ function computePhase(): string {
 
 const phase = computePhase()
 const publishedAt = post.published_at ?? '1970-01-01'
+const postNumberLabel = post.post_number != null
+  ? `#${String(post.post_number).padStart(2, '0')}`
+  : null
 ---
 
 <article
@@ -62,9 +65,12 @@ const publishedAt = post.published_at ?? '1970-01-01'
       )}
 
       <div class="p-4">
-        <span class="text-[10px] font-display font-bold text-yaya-purple uppercase tracking-wider">
-          {CATEGORY_LABEL[post.category as ContentCategory]}
-        </span>
+        <div class="flex items-center gap-1.5 text-[10px] font-display font-bold uppercase tracking-wider">
+          <span class="text-yaya-purple">{CATEGORY_LABEL[post.category as ContentCategory]}</span>
+          {postNumberLabel && (
+            <span class="text-yaya-cloud/40 tabular-nums">· {postNumberLabel}</span>
+          )}
+        </div>
         <h2 class="font-display font-bold text-yaya-cloud text-base leading-snug group-hover:text-yaya-purple transition-colors mt-1.5">
           {post.title}
         </h2>
@@ -87,9 +93,12 @@ const publishedAt = post.published_at ?? '1970-01-01'
       )}
 
       <div class="flex-1 min-w-0">
-        <span class="text-[10px] font-display font-bold text-yaya-purple uppercase tracking-wider">
-          {CATEGORY_LABEL[post.category as ContentCategory]}
-        </span>
+        <div class="flex items-center gap-1.5 text-[10px] font-display font-bold uppercase tracking-wider">
+          <span class="text-yaya-purple">{CATEGORY_LABEL[post.category as ContentCategory]}</span>
+          {postNumberLabel && (
+            <span class="text-yaya-cloud/40 tabular-nums">· {postNumberLabel}</span>
+          )}
+        </div>
         <h2 class="font-display font-bold text-yaya-cloud text-base leading-snug group-hover:text-yaya-purple transition-colors mt-1 mb-1.5">
           {post.title}
         </h2>

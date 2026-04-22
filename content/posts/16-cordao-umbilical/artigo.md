@@ -32,8 +32,8 @@ seo:
   snippet_section: "Como cuidar do coto umbilical"
 sources:
   - "OMS — WHO recommendations on postnatal care of the mother and newborn (2013): https://www.who.int/publications/i/item/9789241506649"
-  - "OMS — Cord care: clean, dry cord care (2018 update): https://www.who.int/teams/maternal-newborn-child-adolescent-health-and-ageing"
-  - "SBP — Cuidados com o recém-nascido: https://www.sbp.com.br/especiais/pediatria-para-familias/cuidados-com-o-bebe/"
+  - "OMS — Recommendations on newborn health: Guidelines approved by WGAG (2017): https://cdn.who.int/media/docs/default-source/sexual-health/stillbirth/who-mca-17-07-eng.pdf"
+  - "SBP — Recomendações para alta hospitalar do Recém-Nascido Termo Potencialmente Saudável. Departamento Científico de Neonatologia. 2020: https://www.sbp.com.br/fileadmin/user_upload/22649c-DC_-_Recom_Alta_hospitalar_RN_TermoPotenc_Saudavel.pdf"
   - "AAP — Umbilical Cord Care: https://www.healthychildren.org/English/ages-stages/baby/bathing-skin-care/Pages/Umbilical-Cord-Care.aspx"
 images:
   hero: img16-1.png
@@ -166,8 +166,8 @@ Nos [primeiros dias em casa](/primeiros-dias-em-casa-com-recem-nascido), o coto 
 **Fontes:**
 
 1. [OMS. WHO recommendations on postnatal care of the mother and newborn. 2013.](https://www.who.int/publications/i/item/9789241506649)
-2. [OMS. Cord care: clean, dry cord care. 2018.](https://www.who.int/teams/maternal-newborn-child-adolescent-health-and-ageing)
-3. [SBP. Cuidados com o recém-nascido.](https://www.sbp.com.br/especiais/pediatria-para-familias/cuidados-com-o-bebe/)
+2. [OMS. Recommendations on newborn health: Guidelines approved by WGAG. 2017.](https://cdn.who.int/media/docs/default-source/sexual-health/stillbirth/who-mca-17-07-eng.pdf)
+3. [SBP. Recomendações para alta hospitalar do Recém-Nascido Termo Potencialmente Saudável. Departamento Científico de Neonatologia. 2020.](https://www.sbp.com.br/fileadmin/user_upload/22649c-DC_-_Recom_Alta_hospitalar_RN_TermoPotenc_Saudavel.pdf)
 4. [AAP. Umbilical Cord Care.](https://www.healthychildren.org/English/ages-stages/baby/bathing-skin-care/Pages/Umbilical-Cord-Care.aspx)
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*

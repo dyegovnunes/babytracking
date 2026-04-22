@@ -98,7 +98,8 @@ if (post.related_slugs && post.related_slugs.length > 0) {
 }
 
 function formatWeekRange(start: number | null, end: number | null): string {
-  if (!start) return ''
+  // Esconde quando start é 0, null ou inválido (evita "Semanas 0–X")
+  if (!start || start <= 0) return ''
   if (!end || start === end) return `Semana ${start}`
   return `Semanas ${start}–${end}`
 }
@@ -142,12 +143,17 @@ const faqLd = post.schema_type === 'FAQPage' ? faqJsonLd(post) : null
 
     <!-- Header do artigo -->
     <header class="mb-10">
-      <div class="flex items-center gap-3 mb-5">
+      <div class="flex items-center gap-3 mb-5 flex-wrap">
         <span class="text-2xl">{CATEGORY_EMOJI[post.category as ContentCategory]}</span>
         <span class="text-xs font-display font-bold text-yaya-purple uppercase tracking-wider">
           {CATEGORY_LABEL[post.category as ContentCategory]}
         </span>
-        {post.target_week_start && (
+        {post.post_number != null && (
+          <span class="text-xs text-yaya-cloud/40 font-sans tabular-nums">
+            · #{String(post.post_number).padStart(2, '0')}
+          </span>
+        )}
+        {formatWeekRange(post.target_week_start, post.target_week_end) && (
           <span class="text-xs text-yaya-cloud/40 font-sans">
             · {formatWeekRange(post.target_week_start, post.target_week_end)}
           </span>

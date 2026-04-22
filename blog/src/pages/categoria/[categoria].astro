@@ -23,7 +23,7 @@ const cat = categoria as ContentCategory
 // Busca todos os posts (pra counts da sidebar) + filtra pela categoria
 const { data: allPostsData, error } = await supabase
   .from('blog_posts')
-  .select('id, slug, title, meta_description, content_md, keywords, category, audience, pillar, role, related_slugs, schema_type, affiliate_products, premium_teaser, target_week_start, target_week_end, image_url, image_alt, published_at')
+  .select('id, slug, title, meta_description, content_md, keywords, category, audience, pillar, role, related_slugs, schema_type, affiliate_products, premium_teaser, target_week_start, target_week_end, image_url, image_alt, published_at, post_number')
   .eq('status', 'published')
   .order('published_at', { ascending: false })
 

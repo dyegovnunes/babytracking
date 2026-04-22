@@ -44,8 +44,8 @@ seo:
 sources:
   - name: "OMS. WHO Child Growth Standards: Length/height-for-age, weight-for-age. 2006."
     url: "https://www.who.int/tools/child-growth-standards/standards"
-  - name: "SBP. Avaliação Nutricional da Criança e do Adolescente. Manual de Orientação. 2021."
-    url: "https://www.sbp.com.br/departamentos/nutrologia/documentos-cientificos/"
+  - name: "SBP. Manual de Avaliação Nutricional da Criança e do Adolescente. 2ª ed. atualizada. Departamento Científico de Nutrologia. 2021."
+    url: "https://www.sbp.com.br/fileadmin/user_upload/_22962e-ManAval_Nutricional_-_2Ed_Atualizada_SITE.pdf"
   - name: "AAP. Amount and Schedule of Baby Formula Feedings. HealthyChildren.org."
     url: "https://www.healthychildren.org/English/ages-stages/baby/formula-feeding/Pages/Amount-and-Schedule-of-Formula-Feedings.aspx"
 images:
@@ -220,7 +220,7 @@ O pediatra vai pesar o bebê, avaliar a curva de crescimento, investigar possív
 **Fontes:**
 
 1. [OMS. WHO Child Growth Standards: Length/height-for-age, weight-for-age. 2006.](https://www.who.int/tools/child-growth-standards/standards)
-2. [SBP. Avaliação Nutricional da Criança e do Adolescente. Manual de Orientação. 2021.](https://www.sbp.com.br/departamentos/nutrologia/documentos-cientificos/)
+2. [SBP. Manual de Avaliação Nutricional da Criança e do Adolescente. 2ª ed. atualizada. Departamento Científico de Nutrologia. 2021.](https://www.sbp.com.br/fileadmin/user_upload/_22962e-ManAval_Nutricional_-_2Ed_Atualizada_SITE.pdf)
 3. [AAP. Amount and Schedule of Baby Formula Feedings. HealthyChildren.org.](https://www.healthychildren.org/English/ages-stages/baby/formula-feeding/Pages/Amount-and-Schedule-of-Formula-Feedings.aspx)
 
 *Este conteúdo é informativo e não substitui acompanhamento pediátrico. O ganho de peso deve ser avaliado pelo pediatra no contexto individual do bebê, considerando idade gestacional, tipo de alimentação e histórico familiar.*

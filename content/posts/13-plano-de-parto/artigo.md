@@ -35,7 +35,7 @@ sources:
   - "OMS — Recomendações sobre cuidados intraparto para uma experiência positiva de parto (2018): https://www.who.int/publications/i/item/9789241550215"
   - "Ministério da Saúde — Caderneta da Gestante: https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/g/gravidez/publicacoes"
   - "SBP — Assistência ao recém-nascido na sala de parto: https://www.sbp.com.br/especiais/reanimacao-neonatal/"
-  - "Lei nº 17.137/2019 (SP) — Direito ao plano de parto: https://www.al.sp.gov.br/"
+  - "Lei nº 17.137/2019 (SP) — Direito ao plano de parto: https://www.al.sp.gov.br/legislacao/lei/17137"
 images:
   hero: img13-1.png
   complementar: img13-2.png
@@ -233,7 +233,7 @@ Quando estiver com o plano pronto, é hora de montar a [mala da maternidade](/ma
 1. [OMS. Recomendações sobre cuidados intraparto para uma experiência positiva de parto. 2018.](https://www.who.int/publications/i/item/9789241550215)
 2. [Ministério da Saúde. Caderneta da Gestante.](https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/g/gravidez/publicacoes)
 3. [SBP. Assistência ao recém-nascido na sala de parto.](https://www.sbp.com.br/especiais/reanimacao-neonatal/)
-4. [Lei nº 17.137/2019 (SP). Direito ao plano de parto.](https://www.al.sp.gov.br/)
+4. [Lei nº 17.137/2019 (SP). Direito ao plano de parto.](https://www.al.sp.gov.br/legislacao/lei/17137)
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*
 

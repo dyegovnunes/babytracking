@@ -35,7 +35,7 @@ seo:
   snippet_section: "Por que o bebê chora tanto?"
 sources:
   - "AAP — Responding to Your Baby's Cries: https://www.healthychildren.org/English/ages-stages/baby/crying-colic/Pages/Responding-to-Your-Babys-Cries.aspx"
-  - "SBP — Cólica do lactente: https://www.sbp.com.br/especiais/pediatria-para-familias/cuidados-com-o-bebe/colica-do-lactente/"
+  - "SBP — Cólica do lactente: https://www.sbp.com.br/pediatria-para-familias/primeira-infancia/colica-do-lactente/"
   - "AAP — Abusive Head Trauma (Shaken Baby Syndrome): https://www.healthychildren.org/English/safety-prevention/at-home/Pages/Abusive-Head-Trauma-Shaken-Baby-Syndrome.aspx"
   - "Barr RG — The Normal Crying Curve (PURPLE Crying): https://dontshake.org/purple-crying"
 images:
@@ -245,7 +245,7 @@ Estratégias que ajudam:
 **Fontes:**
 
 1. [AAP. Responding to Your Baby's Cries.](https://www.healthychildren.org/English/ages-stages/baby/crying-colic/Pages/Responding-to-Your-Babys-Cries.aspx)
-2. [SBP. Cólica do lactente.](https://www.sbp.com.br/especiais/pediatria-para-familias/cuidados-com-o-bebe/colica-do-lactente/)
+2. [SBP. Cólica do lactente.](https://www.sbp.com.br/pediatria-para-familias/primeira-infancia/colica-do-lactente/)
 3. [AAP. Abusive Head Trauma (Shaken Baby Syndrome).](https://www.healthychildren.org/English/safety-prevention/at-home/Pages/Abusive-Head-Trauma-Shaken-Baby-Syndrome.aspx)
 4. [Barr RG. The Normal Crying Curve (PURPLE Crying).](https://dontshake.org/purple-crying)
 

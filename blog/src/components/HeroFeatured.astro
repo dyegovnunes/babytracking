@@ -1,0 +1,60 @@
+---
+import type { BlogPost, ContentCategory } from '../types'
+import { CATEGORY_LABEL, CATEGORY_EMOJI } from '../types'
+
+interface Props {
+  posts: BlogPost[]
+}
+
+const { posts } = Astro.props
+---
+
+{posts.length > 0 && (
+  <section class="max-w-5xl mx-auto px-4 pb-10">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {posts.map((post, idx) => (
+        <a
+          href={`/${post.slug}`}
+          class:list={[
+            'group relative flex flex-col rounded-md overflow-hidden border border-yaya-cloud/10 hover:border-yaya-purple/40 transition-all',
+            idx === 0
+              ? 'bg-gradient-to-br from-yaya-purple/15 to-yaya-blush/10 border-yaya-purple/25'
+              : 'bg-yaya-cloud/[0.03] hover:bg-yaya-cloud/[0.06]',
+          ]}
+        >
+          {post.image_url ? (
+            <div class="aspect-[16/10] overflow-hidden bg-yaya-purple/5">
+              <img
+                src={post.image_url}
+                alt={post.image_alt ?? post.title}
+                class="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
+                loading="eager"
+              />
+            </div>
+          ) : (
+            <div class="aspect-[16/10] bg-yaya-purple/10 border-b border-yaya-purple/15 flex items-center justify-center">
+              <span class="text-5xl opacity-70">{CATEGORY_EMOJI[post.category as ContentCategory]}</span>
+            </div>
+          )}
+
+          <div class="flex-1 p-4 flex flex-col">
+            {idx === 0 && (
+              <p class="text-[10px] font-display font-bold text-yaya-purple uppercase tracking-wider mb-2">
+                ✨ Em destaque
+              </p>
+            )}
+            <div class="flex items-center gap-1.5 text-[10px] font-display font-bold uppercase tracking-wider">
+              <span class="text-yaya-purple">{CATEGORY_LABEL[post.category as ContentCategory]}</span>
+              {post.post_number != null && (
+                <span class="text-yaya-cloud/40 tabular-nums">· #{String(post.post_number).padStart(2, '0')}</span>
+              )}
+            </div>
+            <h3 class="font-display font-bold text-yaya-cloud text-base leading-snug group-hover:text-yaya-purple transition-colors mt-1.5">
+              {post.title}
+            </h3>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+)}

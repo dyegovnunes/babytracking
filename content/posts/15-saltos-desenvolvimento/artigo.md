@@ -39,7 +39,7 @@ seo:
 sources:
   - "Van de Rijt H, Plooij F — The Wonder Weeks (6th edition, 2019). Kiddy World Publishing."
   - "Plooij FX — The behavioral development of free-living chimpanzee babies and infants (base da pesquisa original)"
-  - "SBP — Marcos do desenvolvimento infantil: https://www.sbp.com.br/especiais/pediatria-para-familias/desenvolvimento/"
+  - "SBP — Cartilha de Desenvolvimento: dos 2 meses aos 5 anos. Departamento Científico de Pediatria do Desenvolvimento e Comportamento: https://www.sbp.com.br/fileadmin/user_upload/_24327e-Cartilha_de_Desenvolvimento-2m-5anos_compressed.pdf"
   - "WHO — Child Growth Standards: Motor Development Milestones: https://www.who.int/tools/child-growth-standards"
 images:
   hero: img15-1.png
@@ -327,7 +327,7 @@ Independentemente de qual salto seu bebê esteja vivendo, estas estratégias fun
 
 1. [Van de Rijt H, Plooij F. The Wonder Weeks (6th edition, 2019). Kiddy World Publishing.](https://thewonderweeks.com/the-wonder-weeks-book/)
 2. [Plooij FX. The behavioral development of free-living chimpanzee babies and infants (base da pesquisa original).](https://thewonderweeks.com/about-us/history/)
-3. [SBP. Marcos do desenvolvimento infantil.](https://www.sbp.com.br/especiais/pediatria-para-familias/desenvolvimento/)
+3. [SBP. Cartilha de Desenvolvimento: dos 2 meses aos 5 anos. Departamento Científico de Pediatria do Desenvolvimento e Comportamento.](https://www.sbp.com.br/fileadmin/user_upload/_24327e-Cartilha_de_Desenvolvimento-2m-5anos_compressed.pdf)
 4. [WHO. Child Growth Standards: Motor Development Milestones.](https://www.who.int/tools/child-growth-standards)
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*

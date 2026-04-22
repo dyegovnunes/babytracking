@@ -6,10 +6,11 @@ import CategorySidebar from '../components/CategorySidebar.astro'
 import PhaseChips from '../components/PhaseChips.astro'
 import FilterToolbar from '../components/FilterToolbar.astro'
 import PostCard from '../components/PostCard.astro'
+import HeroFeatured from '../components/HeroFeatured.astro'
 
 const { data: postsData, error } = await supabase
   .from('blog_posts')
-  .select('id, slug, title, meta_description, content_md, keywords, category, audience, pillar, role, related_slugs, schema_type, affiliate_products, premium_teaser, target_week_start, target_week_end, image_url, image_alt, published_at')
+  .select('id, slug, title, meta_description, content_md, keywords, category, audience, pillar, role, related_slugs, schema_type, affiliate_products, premium_teaser, target_week_start, target_week_end, image_url, image_alt, published_at, post_number')
   .eq('status', 'published')
   .order('published_at', { ascending: false })
 
@@ -47,6 +48,26 @@ for (const p of allPosts) {
   const ph = phaseOf(p)
   countsByPhase[ph] = (countsByPhase[ph] ?? 0) + 1
 }
+
+// Featured posts no hero — 3 posts priorizando COM imagem, ordenados por views
+// (views usa count de content_feedback como proxy enquanto GA4 não integra).
+// Fallback: se não tiver posts com imagem suficientes, completa com posts
+// mais recentes sem imagem.
+const postsWithImage = allPosts.filter((p) => p.image_url)
+const postsWithoutImage = allPosts.filter((p) => !p.image_url)
+
+function viewsOf(slug: string): number {
+  return feedbackStats[slug]?.total ?? 0
+}
+const sortedByViews = [...postsWithImage].sort((a, b) => {
+  const diff = viewsOf(b.slug) - viewsOf(a.slug)
+  if (diff !== 0) return diff
+  return (b.published_at ?? '').localeCompare(a.published_at ?? '')
+})
+const featuredPosts = [
+  ...sortedByViews.slice(0, 3),
+  ...postsWithoutImage.slice(0, Math.max(0, 3 - sortedByViews.length)),
+].slice(0, 3)
 ---
 
 <BlogLayout
@@ -54,12 +75,15 @@ for (const p of allPosts) {
   description="Guias sobre sono, alimentação, desenvolvimento e saúde do bebê. Baseados em evidências, escritos para pais reais."
 >
   <!-- Hero compacto -->
-  <section class="max-w-5xl mx-auto px-4 pt-12 pb-4 text-center">
+  <section class="max-w-5xl mx-auto px-4 pt-12 pb-8 text-center">
     <h1 class="font-display text-4xl md:text-5xl font-extrabold text-yaya-cloud leading-tight tracking-tight">
       A rotina do seu bebê,<br class="hidden md:block" />
       <span class="text-yaya-purple">explicada com calma.</span>
     </h1>
   </section>
+
+  <!-- Posts em destaque (3 posts, priorizando com imagem + mais vistos) -->
+  <HeroFeatured posts={featuredPosts} />
 
   <!-- Chips de fase do bebê -->
   <PhaseChips counts={countsByPhase} />

@@ -28,8 +28,8 @@ seo:
   snippet_type: paragrafo
   snippet_section: "O que é icterícia neonatal"
 sources:
-  - name: "SBP. Documento Científico: Icterícia no Recém-Nascido. 2021."
-    url: "https://www.sbp.com.br/departamentos/neonatologia/documentos-cientificos/"
+  - name: "SBP. Icterícia no Recém-Nascido. Departamento Científico de Neonatologia. 2012."
+    url: "https://www.sbp.com.br/fileadmin/user_upload/pdfs/Ictericia_sem-DeptoNeoSBP-11nov12.pdf"
   - name: "AAP. Clinical Practice Guideline: Management of Hyperbilirubinemia in the Newborn. Pediatrics. 2022."
     url: "https://publications.aap.org/pediatrics/article/150/3/e2022058859/188726/Clinical-Practice-Guideline-Revision-Management-of"
   - name: "OMS. WHO recommendations on newborn health. 2017."
@@ -92,7 +92,7 @@ O pediatra avalia a icterícia pelo exame clínico e, quando necessário, com do
 
 **Fontes:**
 
-1. [SBP. Documento Científico: Icterícia no Recém-Nascido. 2021.](https://www.sbp.com.br/departamentos/neonatologia/documentos-cientificos/)
+1. [SBP. Icterícia no Recém-Nascido. Departamento Científico de Neonatologia. 2012.](https://www.sbp.com.br/fileadmin/user_upload/pdfs/Ictericia_sem-DeptoNeoSBP-11nov12.pdf)
 2. [AAP. Clinical Practice Guideline: Management of Hyperbilirubinemia. Pediatrics. 2022.](https://publications.aap.org/pediatrics/article/150/3/e2022058859/188726/Clinical-Practice-Guideline-Revision-Management-of)
 3. [OMS. WHO recommendations on newborn health. 2017.](https://www.who.int/publications/i/item/WHO-MCA-17.07)
 

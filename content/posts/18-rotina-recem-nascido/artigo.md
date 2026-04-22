@@ -44,8 +44,8 @@ seo:
 sources:
   - name: "AAP. Stages of Newborn Sleep. HealthyChildren.org."
     url: "https://www.healthychildren.org/English/ages-stages/baby/sleep/Pages/phases-of-sleep.aspx"
-  - name: "SBP. Documento Científico: Sono na Infância. 2020."
-    url: "https://www.sbp.com.br/departamentos/neurologia/documentos-cientificos/"
+  - name: "SBP. Síndrome da Morte Súbita do Lactente e Sono Seguro. Departamento Científico de Medicina do Sono. 2018."
+    url: "https://www.sbp.com.br/fileadmin/user_upload/20226d-DocCient_-_Sindrome_Morte_Subita_do_Lactente.pdf"
 images:
   hero: img18-1.png
   complementar: img18-2.png
@@ -193,7 +193,7 @@ Para entender como o [sono do recém-nascido](/sono-do-recem-nascido) funciona e
 **Fontes:**
 
 1. [AAP. Stages of Newborn Sleep. HealthyChildren.org.](https://www.healthychildren.org/English/ages-stages/baby/sleep/Pages/phases-of-sleep.aspx)
-2. [SBP. Documento Científico: Sono na Infância. 2020.](https://www.sbp.com.br/departamentos/neurologia/documentos-cientificos/)
+2. [SBP. Síndrome da Morte Súbita do Lactente e Sono Seguro. Departamento Científico de Medicina do Sono. 2018.](https://www.sbp.com.br/fileadmin/user_upload/20226d-DocCient_-_Sindrome_Morte_Subita_do_Lactente.pdf)
 
 *Este conteúdo é informativo e não substitui orientação do pediatra. Cada bebê tem seu ritmo — os padrões descritos aqui são referências, não regras.*
 

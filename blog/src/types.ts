@@ -46,6 +46,7 @@ export interface BlogPost {
   image_url: string | null
   image_alt: string | null
   published_at: string | null
+  post_number: number | null
 }
 
 export const CATEGORY_LABEL: Record<ContentCategory, string> = {

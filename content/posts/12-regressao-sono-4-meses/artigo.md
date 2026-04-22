@@ -30,8 +30,8 @@ seo:
 sources:
   - name: "Mindell JA, Owens JA. A Clinical Guide to Pediatric Sleep. Lippincott. 2015."
     url: "https://shop.lww.com/a-clinical-guide-to-pediatric-sleep/p/9781451193008"
-  - name: "SBP. Documento Científico: Sono na Infância. 2020."
-    url: "https://www.sbp.com.br/departamentos/neurologia/documentos-cientificos/"
+  - name: "SBP. Síndrome da Morte Súbita do Lactente e Sono Seguro. Departamento Científico de Medicina do Sono. 2018."
+    url: "https://www.sbp.com.br/fileadmin/user_upload/20226d-DocCient_-_Sindrome_Morte_Subita_do_Lactente.pdf"
   - name: "Galland BC, et al. Normal sleep patterns in infants and children: a systematic review. Sleep Medicine Reviews. 2012."
     url: "https://pubmed.ncbi.nlm.nih.gov/21784676/"
 images:
@@ -96,7 +96,7 @@ Se a privação de sono estiver afetando a saúde mental dos cuidadores, busque 
 **Fontes:**
 
 1. [Mindell JA, Owens JA. A Clinical Guide to Pediatric Sleep. Lippincott. 2015.](https://shop.lww.com/a-clinical-guide-to-pediatric-sleep/p/9781451193008)
-2. [SBP. Documento Científico: Sono na Infância. 2020.](https://www.sbp.com.br/departamentos/neurologia/documentos-cientificos/)
+2. [SBP. Síndrome da Morte Súbita do Lactente e Sono Seguro. Departamento Científico de Medicina do Sono. 2018.](https://www.sbp.com.br/fileadmin/user_upload/20226d-DocCient_-_Sindrome_Morte_Subita_do_Lactente.pdf)
 3. [Galland BC, et al. Normal sleep patterns in infants and children. Sleep Medicine Reviews. 2012.](https://pubmed.ncbi.nlm.nih.gov/21784676/)
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*

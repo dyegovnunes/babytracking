@@ -113,6 +113,13 @@ interface ExistingPost {
   image_alt: string | null
   status: string
   published_at: string | null
+  post_number: number | null
+}
+
+// Extrai número do nome da pasta (ex: "13-plano-de-parto" → 13)
+function folderNumber(folder: string): number | null {
+  const match = folder.match(/^(\d+)-/)
+  return match ? parseInt(match[1], 10) : null
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────
@@ -270,11 +277,16 @@ function diffField(label: string, before: any, after: any): string | null {
 // ─── Build upsert objects ─────────────────────────────────────────────────
 
 function buildUpsertObject(post: ParsedPost, existing: ExistingPost | undefined) {
-  const { fm, body } = post
+  const { fm, body, folder } = post
   const now = new Date().toISOString()
+
+  // post_number vem do prefixo numérico da pasta (ex: "13-plano-de-parto" → 13)
+  // Preserva o valor do DB se não for detectável no disco
+  const numFromFolder = folderNumber(folder)
 
   return {
     slug: fm.slug!,
+    post_number: numFromFolder ?? existing?.post_number ?? null,
     title: pick(fm.title, existing?.title, fm.slug!),
     meta_description: pick(fm.description, existing?.meta_description, null),
     content_md: body,
