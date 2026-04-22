@@ -165,7 +165,7 @@ A AAP reforça que ansiedade de separação intensa e persistente na idade pré-
 
 ---
 
-**Fontes consultadas:**
+**Fontes:**
 
 1. AAP. Emotional and Social Development: 8 to 12 Months. HealthyChildren.org. Disponível em: [healthychildren.org](https://www.healthychildren.org/English/ages-stages/baby/Pages/Emotional-and-Social-Development-8-12-Months.aspx)
 2. SBP. Desenvolvimento do Lactente. Departamento de Pediatria do Desenvolvimento e Comportamento. Disponível em: [sbp.com.br](https://www.sbp.com.br/departamentos-cientificos/pediatria-do-desenvolvimento-e-comportamento/)

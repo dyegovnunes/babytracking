@@ -59,11 +59,11 @@ O bebê que só dorme com barulho. O ventilador que virou peça obrigatória do 
 - [Por que o ruído branco acalma bebês?](#por-que-o-ruído-branco-acalma-bebês)
 - [O que dizem os estudos?](#o-que-dizem-os-estudos)
 - [Qual o volume seguro de ruído branco para bebê?](#qual-o-volume-seguro-de-ruído-branco-para-bebê)
-- [Máquinas de ruído branco são seguras?](#máquinas-de-ruído-branco-são-seguras)
+- [Máquinas de ruído branco são seguras?](#maquinas-de-ruido-branco-sao-seguras)
 - [Quais os tipos de som e qual funciona melhor?](#quais-os-tipos-de-som-e-qual-funciona-melhor)
 - [Quando usar e quando não usar?](#quando-usar-e-quando-não-usar)
-- [Ruído branco cria dependência?](#ruído-branco-cria-dependência)
-- [Até quando usar ruído branco?](#até-quando-usar-ruído-branco)
+- [Ruído branco cria dependência?](#ruido-branco-cria-dependencia)
+- [Até quando usar ruído branco?](#ate-quando-usar-ruido-branco)
 - [Resumindo](#resumindo)
 
 ## O que é ruído branco?

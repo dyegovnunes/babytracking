@@ -70,8 +70,8 @@ A boa notícia: essa fase tem explicação, tem padrão e tem o que fazer. Não 
 - [A regressão dos 4 meses: o que realmente está acontecendo](#a-regressão-dos-4-meses-o-que-realmente-está-acontecendo)
 - [Janelas de sono por mês](#janelas-de-sono-por-mês)
 - [Sonecas: de 4 para 3 (e às vezes para 2)](#sonecas-de-4-para-3-e-às-vezes-para-2)
-- [Sessões noturnas de amamentação: ainda são normais](#sessões-noturnas-de-amamentação-ainda-são-normais)
-- [Associações de sono: o que são e quando importam](#associações-de-sono-o-que-são-e-quando-importam)
+- [Sessões noturnas de amamentação: ainda são normais](#sessoes-noturnas-de-amamentacao-ainda-sao-normais)
+- [Associações de sono: o que são e quando importam](#associacoes-de-sono-o-que-sao-e-quando-importam)
 - [Abordagens gentis para noites melhores](#abordagens-gentis-para-noites-melhores)
 - [O ambiente ideal para o sono](#o-ambiente-ideal-para-o-sono)
 - [Treino de sono: uma palavra sobre o tema](#treino-de-sono-uma-palavra-sobre-o-tema)
@@ -237,7 +237,7 @@ Este guia não defende nenhum método específico. O importante é que a famíli
 
 ---
 
-### Fontes
+**Fontes:**
 
 1. AAP — Healthy Sleep Habits for Infants. Disponível em: [healthychildren.org](https://www.healthychildren.org/English/ages-stages/baby/sleep/Pages/default.aspx)
 2. SBP — Sono na infância: recomendações. Disponível em: [sbp.com.br](https://www.sbp.com.br/especiais/pediatria-para-familias/cuidados-com-o-bebe/sono/)

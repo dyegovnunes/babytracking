@@ -64,7 +64,7 @@ Nem toda família amamenta exclusivamente — e tudo bem. A fórmula infantil ex
 - [Como escolher: o que observar](#como-escolher-o-que-observar)
 - [Como preparar a fórmula com segurança](#como-preparar-a-fórmula-com-segurança)
 - [Quanto oferecer por idade](#quanto-oferecer-por-idade)
-- [Alimentação mista: fórmula e leite materno](#alimentação-mista-fórmula-e-leite-materno)
+- [Alimentação mista: fórmula e leite materno](#alimentacao-mista-formula-e-leite-materno)
 - [Armazenamento e validade](#armazenamento-e-validade)
 - [Mitos e verdades](#mitos-e-verdades)
 - [Resumindo](#resumindo)

@@ -65,7 +65,7 @@ A pega é o fundamento da amamentação. Quando está correta, o leite flui bem,
 - [Como é a pega correta](#como-é-a-pega-correta)
 - [Sinais de pega inadequada](#sinais-de-pega-inadequada)
 - [Passo a passo para conseguir a pega correta](#passo-a-passo-para-conseguir-a-pega-correta)
-- [Posições para amamentar](#posições-para-amamentar)
+- [Posições para amamentar](#posicoes-para-amamentar)
 - [Problemas comuns e como resolver](#problemas-comuns-e-como-resolver)
 - [Quando procurar ajuda profissional](#quando-procurar-ajuda-profissional)
 

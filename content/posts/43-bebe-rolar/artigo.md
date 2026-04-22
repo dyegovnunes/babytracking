@@ -177,7 +177,7 @@ Cada conquista é construída sobre a anterior. O tummy time que pareceu tão di
 
 ---
 
-### Fontes
+**Fontes:**
 
 1. AAP — Movement: 4 to 7 Months. Disponível em: [healthychildren.org](https://www.healthychildren.org/English/ages-stages/baby/Pages/Movement-4-to-7-Months.aspx)
 2. SBP — Marcos do desenvolvimento infantil. Disponível em: [sbp.com.br](https://www.sbp.com.br/especiais/pediatria-para-familias/desenvolvimento/)

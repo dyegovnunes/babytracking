@@ -198,7 +198,7 @@ O primeiro passo costuma ser o pediatra, que pode encaminhar para o fonoaudiólo
 
 ---
 
-**Fontes consultadas:**
+**Fontes:**
 
 1. AAP. Language Development: 1 to 12 Months. HealthyChildren.org. Disponível em: [healthychildren.org](https://www.healthychildren.org/English/ages-stages/baby/Pages/Language-Development-1-to-12-Months.aspx)
 2. SBP. Desenvolvimento da Linguagem na Primeira Infância. Departamento de Pediatria do Desenvolvimento e Comportamento. Disponível em: [sbp.com.br](https://www.sbp.com.br/departamentos-cientificos/pediatria-do-desenvolvimento-e-comportamento/)

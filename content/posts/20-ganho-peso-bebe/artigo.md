@@ -57,11 +57,11 @@ images:
 
 ## Sumário
 
-- [É normal o bebê perder peso após nascer?](#é-normal-o-bebê-perder-peso-após-nascer)
+- [É normal o bebê perder peso após nascer?](#e-normal-o-bebe-perder-peso-apos-nascer)
 - [Quanto peso o bebê ganha por mês?](#quanto-peso-o-bebê-ganha-por-mês)
 - [O que são curvas de crescimento e percentis?](#o-que-são-curvas-de-crescimento-e-percentis)
 - [Percentil baixo significa problema?](#percentil-baixo-significa-problema)
-- [Bebê amamentado e bebê em fórmula ganham peso igual?](#bebê-amamentado-e-bebê-em-fórmula-ganham-peso-igual)
+- [Bebê amamentado e bebê em fórmula ganham peso igual?](#bebe-amamentado-e-bebe-em-formula-ganham-peso-igual)
 - [Como saber se o bebê está mamando o suficiente?](#como-saber-se-o-bebê-está-mamando-o-suficiente)
 - [Quando o ganho de peso é uma preocupação real?](#quando-o-ganho-de-peso-é-uma-preocupação-real)
 - [Quando procurar o pediatra?](#quando-procurar-o-pediatra)
@@ -216,6 +216,12 @@ O pediatra vai pesar o bebê, avaliar a curva de crescimento, investigar possív
 - [Sono do Recém-Nascido: O Que Esperar](/sono-do-recem-nascido)
 
 ---
+
+**Fontes:**
+
+1. [OMS. WHO Child Growth Standards: Length/height-for-age, weight-for-age. 2006.](https://www.who.int/tools/child-growth-standards/standards)
+2. [SBP. Avaliação Nutricional da Criança e do Adolescente. Manual de Orientação. 2021.](https://www.sbp.com.br/departamentos-cientificos/nutrologia/documentos-cientificos/)
+3. [AAP. Amount and Schedule of Baby Formula Feedings. HealthyChildren.org.](https://www.healthychildren.org/English/ages-stages/baby/formula-feeding/Pages/Amount-and-Schedule-of-Formula-Feedings.aspx)
 
 *Este conteúdo é informativo e não substitui acompanhamento pediátrico. O ganho de peso deve ser avaliado pelo pediatra no contexto individual do bebê, considerando idade gestacional, tipo de alimentação e histórico familiar.*
 

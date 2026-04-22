@@ -66,9 +66,9 @@ O parto aconteceu. O bebê está nos seus braços. E o seu corpo? Ele acabou de 
 
 - [O útero: involução e lóquios](#o-útero-involução-e-lóquios)
 - [Mamas: ingurgitamento e apojadura](#mamas-ingurgitamento-e-apojadura)
-- [Recuperação perineal (parto vaginal)](#recuperação-perineal-parto-vaginal)
-- [Recuperação da cesariana](#recuperação-da-cesariana)
-- [Mudanças hormonais e queda de cabelo](#mudanças-hormonais-e-queda-de-cabelo)
+- [Recuperação perineal (parto vaginal)](#recuperacao-perineal-parto-vaginal)
+- [Recuperação da cesariana](#recuperacao-da-cesariana)
+- [Mudanças hormonais e queda de cabelo](#mudancas-hormonais-e-queda-de-cabelo)
 - [Assoalho pélvico: por que você precisa cuidar](#assoalho-pélvico-por-que-você-precisa-cuidar)
 - [Como é a linha do tempo de recuperação pós-parto](#como-é-a-linha-do-tempo-de-recuperação-pós-parto)
 - [Quando posso voltar a fazer exercício](#quando-posso-voltar-a-fazer-exercício)

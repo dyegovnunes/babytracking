@@ -228,6 +228,13 @@ Quando estiver com o plano pronto, é hora de montar a [mala da maternidade](/ma
 
 ---
 
+**Fontes:**
+
+1. [OMS. Recomendações sobre cuidados intraparto para uma experiência positiva de parto. 2018.](https://www.who.int/reproductivehealth/publications/intrapartum-care-guidelines/en/)
+2. [Ministério da Saúde. Caderneta da Gestante.](https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/g/gestante)
+3. [SBP. Assistência ao recém-nascido na sala de parto.](https://www.sbp.com.br/especiais/reanimacao-neonatal/)
+4. [Lei nº 17.137/2019 (SP). Direito ao plano de parto.](https://www.al.sp.gov.br/)
+
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*
 
 ---

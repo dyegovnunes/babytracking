@@ -264,6 +264,12 @@ Nenhum desses pontos isoladamente significa atraso. O pediatra avalia o quadro c
 
 ---
 
+**Fontes:**
+
+1. [SBP. Caderneta da Criança — Marcos do Desenvolvimento. 2024.](https://www.gov.br/saude/pt-br/composicao/saps/caderneta-da-crianca)
+2. [OMS. Child growth standards: Motor development milestones.](https://www.who.int/tools/child-growth-standards/standards/motor-development-milestones)
+3. [CDC. Milestone Moments — Learn the Signs. Act Early. 2023.](https://www.cdc.gov/ncbddd/actearly/milestones/index.html)
+
 *Este conteúdo é informativo e não substitui avaliação pediátrica. Os marcos descritos são referências populacionais. Prematuros devem usar a idade corrigida. Sempre converse com o pediatra do seu bebê sobre o desenvolvimento individual.*
 
 ---

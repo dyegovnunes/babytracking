@@ -58,7 +58,7 @@ Na consulta com o pediatra, você ouve: "Seu bebê está no percentil 25 de peso
 - [Quais curvas existem?](#quais-curvas-existem)
 - [Como ler o gráfico de crescimento?](#como-ler-o-gráfico-de-crescimento)
 - [O que significa cruzar linhas de percentil?](#o-que-significa-cruzar-linhas-de-percentil)
-- [Bebê amamentado cresce diferente?](#bebê-amamentado-cresce-diferente)
+- [Bebê amamentado cresce diferente?](#bebe-amamentado-cresce-diferente)
 - [E o bebê prematuro?](#e-o-bebê-prematuro)
 - [A Caderneta da Criança](#a-caderneta-da-criança)
 - [Mitos comuns sobre percentis](#mitos-comuns-sobre-percentis)
@@ -205,7 +205,7 @@ A investigação pode incluir exames de sangue, avaliação nutricional, avalia�
 
 ---
 
-**Fontes consultadas:**
+**Fontes:**
 
 1. OMS. Child Growth Standards. WHO Multicentre Growth Reference Study. Disponível em: [who.int](https://www.who.int/tools/child-growth-standards)
 2. SBP. Avaliação Nutricional da Criança e do Adolescente. Manual de Orientação. Disponível em: [sbp.com.br](https://www.sbp.com.br/departamentos-cientificos/nutrologia/)

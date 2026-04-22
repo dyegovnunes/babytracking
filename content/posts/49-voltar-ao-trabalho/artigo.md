@@ -61,8 +61,8 @@ O fim da licença-maternidade se aproxima e, junto com ele, um turbilhão de sen
 - [Planejando a volta: comece 2-3 semanas antes](#planejando-a-volta-comece-2-3-semanas-antes)
 - [Como manter a produção de leite](#como-manter-a-produção-de-leite)
 - [Ordenha no trabalho: onde, como e armazenamento](#ordenha-no-trabalho-onde-como-e-armazenamento)
-- [Alimentação mista: quando e como introduzir](#alimentação-mista-quando-e-como-introduzir)
-- [Adaptação do bebê ao cuidador](#adaptação-do-bebê-ao-cuidador)
+- [Alimentação mista: quando e como introduzir](#alimentacao-mista-quando-e-como-introduzir)
+- [Adaptação do bebê ao cuidador](#adaptacao-do-bebe-ao-cuidador)
 - [A parte emocional: culpa, luto e ajuste](#a-parte-emocional-culpa-luto-e-ajuste)
 - [O papel da rede de apoio](#o-papel-da-rede-de-apoio)
 - [Cronograma prático: semana a semana](#cronograma-prático-semana-a-semana)
@@ -201,7 +201,7 @@ Peça ajuda. Delegar não é falhar — é necessidade.
 
 ---
 
-**Fontes consultadas:**
+**Fontes:**
 
 1. CLT, Art. 396. Intervalos para amamentação. Disponível em: [planalto.gov.br](https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm)
 2. SBP. Aleitamento Materno e Trabalho da Mulher. Departamento de Aleitamento Materno. Disponível em: [sbp.com.br](https://www.sbp.com.br/departamentos-cientificos/aleitamento-materno/)

@@ -70,7 +70,7 @@ O Pinterest mostra quartos de bebê dignos de capa de revista. A realidade é qu
 - [Quarto compartilhado vs quarto separado](#quarto-compartilhado-vs-quarto-separado)
 - [O que é útil mas não obrigatório](#o-que-é-útil-mas-não-obrigatório)
 - [O que é marketing (e às vezes perigoso)](#o-que-é-marketing-e-às-vezes-perigoso)
-- [Decoração com praticidade](#decoração-com-praticidade)
+- [Decoração com praticidade](#decoracao-com-praticidade)
 - [Como montar o quarto gastando menos](#como-montar-o-quarto-gastando-menos)
 
 ---

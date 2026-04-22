@@ -242,6 +242,13 @@ Estratégias que ajudam:
 
 ---
 
+**Fontes:**
+
+1. [AAP. Responding to Your Baby's Cries.](https://www.healthychildren.org/English/ages-stages/baby/crying-colic/Pages/Responding-to-Your-Babys-Cries.aspx)
+2. [SBP. Cólica do lactente.](https://www.sbp.com.br/especiais/pediatria-para-familias/cuidados-com-o-bebe/colica-do-lactente/)
+3. [AAP. Abusive Head Trauma (Shaken Baby Syndrome).](https://www.healthychildren.org/English/safety-prevention/at-home/Pages/Abusive-Head-Trauma-Shaken-Baby-Syndrome.aspx)
+4. [Barr RG. The Normal Crying Curve (PURPLE Crying).](http://www.purplecrying.info/)
+
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*
 
 ---

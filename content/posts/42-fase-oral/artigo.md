@@ -213,7 +213,7 @@ Para a grande maioria dos bebês, a fase oral é uma etapa saudável e passageir
 
 ---
 
-### Fontes
+**Fontes:**
 
 1. AAP — Developmental Milestones: 4-7 Months. Disponível em: [healthychildren.org](https://www.healthychildren.org/English/ages-stages/baby/Pages/Developmental-Milestones-4-to-7-Months.aspx)
 2. SBP — Desenvolvimento infantil: marcos e estimulação. Disponível em: [sbp.com.br](https://www.sbp.com.br/especiais/pediatria-para-familias/desenvolvimento/)

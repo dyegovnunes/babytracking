@@ -58,11 +58,11 @@ Fralda de pano ou descartável? A pergunta parece simples, mas envolve custo, pr
 - [Tipos de fralda de pano](#tipos-de-fralda-de-pano)
 - [Custo: projeção em 2 anos](#custo-projeção-em-2-anos)
 - [Impacto ambiental](#impacto-ambiental)
-- [Saúde da pele](#saúde-da-pele)
+- [Saúde da pele](#saude-da-pele)
 - [Praticidade no dia a dia](#praticidade-no-dia-a-dia)
 - [Comparativo direto](#comparativo-direto)
 - [A abordagem híbrida](#a-abordagem-híbrida)
-- [Considerações sobre creche](#considerações-sobre-creche)
+- [Considerações sobre creche](#consideracoes-sobre-creche)
 - [Resumindo](#resumindo)
 
 ## A fralda de pano moderna não é a da sua avó

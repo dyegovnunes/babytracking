@@ -69,10 +69,10 @@ Você não precisa de brinquedos caros ou técnicas elaboradas. Precisa de prese
 
 - [Como funciona o desenvolvimento de 3 a 6 meses](#como-funciona-o-desenvolvimento-de-3-a-6-meses)
 - [Brincadeiras por mês](#brincadeiras-por-mês)
-- [Estímulo motor: fortalecer e explorar](#estímulo-motor-fortalecer-e-explorar)
-- [Estímulo sensorial: texturas, sons e cores](#estímulo-sensorial-texturas-sons-e-cores)
-- [Estímulo cognitivo: causa e efeito](#estímulo-cognitivo-causa-e-efeito)
-- [Estímulo social: vínculos e comunicação](#estímulo-social-vínculos-e-comunicação)
+- [Estímulo motor: fortalecer e explorar](#estimulo-motor-fortalecer-e-explorar)
+- [Estímulo sensorial: texturas, sons e cores](#estimulo-sensorial-texturas-sons-e-cores)
+- [Estímulo cognitivo: causa e efeito](#estimulo-cognitivo-causa-e-efeito)
+- [Estímulo social: vínculos e comunicação](#estimulo-social-vinculos-e-comunicacao)
 - [Brinquedos úteis (e itens de casa que funcionam)](#brinquedos-úteis-e-itens-de-casa-que-funcionam)
 - [O que evitar](#o-que-evitar)
 - [Resumindo](#resumindo)
@@ -214,7 +214,7 @@ A partir dos 4 meses, o bebê começa a entender que suas ações geram resultad
 
 ---
 
-### Fontes
+**Fontes:**
 
 1. AAP — Playing With Your Baby: Activities for 4 to 7 Months. Disponível em: [healthychildren.org](https://www.healthychildren.org/English/ages-stages/baby/Pages/Playing-With-Your-Baby.aspx)
 2. SBP — Estimulação do desenvolvimento infantil. Disponível em: [sbp.com.br](https://www.sbp.com.br/especiais/pediatria-para-familias/desenvolvimento/)

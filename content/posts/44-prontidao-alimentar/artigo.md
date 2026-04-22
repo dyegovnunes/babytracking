@@ -231,7 +231,7 @@ A evidência atual (AAP, ESPGHAN, SBP):
 
 ---
 
-### Fontes
+**Fontes:**
 
 1. OMS — Complementary Feeding: Report of the Global Consultation. Disponível em: [who.int](https://www.who.int/publications/i/item/924154614X)
 2. SBP — Manual de Alimentação: da infância à adolescência, 4ª ed., 2018. Disponível em: [sbp.com.br](https://www.sbp.com.br/fileadmin/user_upload/publicacoes/Manual_de_Alimentacao.pdf)

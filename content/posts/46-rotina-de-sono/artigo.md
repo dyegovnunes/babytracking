@@ -67,7 +67,7 @@ Se tem um assunto que domina os grupos de pais é o sono do bebê. E junto com e
 - [E as sonecas? Precisam de rotina também?](#e-as-sonecas-precisam-de-rotina-também)
 - [Quando a rotina quebra](#quando-a-rotina-quebra)
 - [Adaptando a rotina por idade](#adaptando-a-rotina-por-idade)
-- [Consistência importa mais que perfeição](#consistência-importa-mais-que-perfeição)
+- [Consistência importa mais que perfeição](#consistencia-importa-mais-que-perfeicao)
 
 ## Por que rotinas funcionam?
 
@@ -165,7 +165,7 @@ Com o tempo, o próprio bebê vai "pedir" a rotina — vai bocejar quando ouvir 
 
 ---
 
-**Fontes consultadas:**
+**Fontes:**
 
 1. AAP. Sleep Hygiene for Infants and Toddlers. HealthyChildren.org. Disponível em: [healthychildren.org](https://www.healthychildren.org/English/healthy-living/sleep/Pages/Healthy-Sleep-Habits-How-Many-Hours-Does-Your-Child-Need.aspx)
 2. SBP. Sono na Infância. Departamento de Neurologia. Disponível em: [sbp.com.br](https://www.sbp.com.br/departamentos-cientificos/neurologia/)

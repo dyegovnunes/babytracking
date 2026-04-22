@@ -63,7 +63,7 @@ Este checklist organiza os sinais de alerta **por sistema**, para que você cons
 - [Regra número 1: febre em menores de 3 meses](#regra-número-1-febre-em-menores-de-3-meses)
 - [Checklist: vá ao pronto-socorro agora](#checklist-vá-ao-pronto-socorro-agora)
 - [Sinais respiratórios que exigem atendimento](#sinais-respiratórios-que-exigem-atendimento)
-- [Desidratação: como identificar](#desidratação-como-identificar)
+- [Desidratação: como identificar](#desidratacao-como-identificar)
 - [Sinais neurológicos](#sinais-neurológicos)
 - [Sinais gastrointestinais de alerta](#sinais-gastrointestinais-de-alerta)
 - [Pele e aparência geral](#pele-e-aparência-geral)
@@ -264,7 +264,7 @@ Os **registros de temperatura e sintomas com horários** são um diferencial na 
 
 ---
 
-### Fontes
+**Fontes:**
 
 1. SBP — Urgências e emergências pediátricas. Disponível em: [sbp.com.br](https://www.sbp.com.br/especiais/pediatria-para-familias/cuidados-com-o-bebe/urgencias-e-emergencias/)
 2. AAP — When to Call the Pediatrician. Disponível em: [healthychildren.org](https://www.healthychildren.org/English/health-issues/conditions/fever/Pages/When-to-Call-the-Pediatrician.aspx)

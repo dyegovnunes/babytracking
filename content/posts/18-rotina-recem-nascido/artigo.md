@@ -57,7 +57,7 @@ A resposta curta: sim, é possível ter rotina com recém-nascido. Mas não o ti
 
 ## Sumário
 
-- [É possível ter rotina com recém-nascido?](#é-possível-ter-rotina-com-recém-nascido)
+- [É possível ter rotina com recém-nascido?](#e-possivel-ter-rotina-com-recem-nascido)
 - [Qual a diferença entre rotina e horário fixo?](#qual-a-diferença-entre-rotina-e-horário-fixo)
 - [Como é o dia de um bebê de 0 a 4 semanas?](#como-é-o-dia-de-um-bebê-de-0-a-4-semanas)
 - [O que muda entre 4 e 8 semanas?](#o-que-muda-entre-4-e-8-semanas)
@@ -189,6 +189,11 @@ Para entender como o [sono do recém-nascido](/sono-do-recem-nascido) funciona e
 - [Primeiros Dias em Casa com o Recém-Nascido](/primeiros-dias-em-casa-com-recem-nascido)
 
 ---
+
+**Fontes:**
+
+1. [AAP. Sleep and Your Newborn. HealthyChildren.org.](https://www.healthychildren.org/English/ages-stages/baby/sleep/Pages/Sleep-and-Your-Newborn.aspx)
+2. [SBP. Documento Científico: Sono na Infância. 2020.](https://www.sbp.com.br/departamentos-cientificos/neurologia/documentos-cientificos/)
 
 *Este conteúdo é informativo e não substitui orientação do pediatra. Cada bebê tem seu ritmo — os padrões descritos aqui são referências, não regras.*
 
