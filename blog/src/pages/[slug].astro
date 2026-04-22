@@ -44,15 +44,17 @@ if (error || !data) {
 
 const post = data as BlogPost
 
-// Remove a seção "## Leia também" do markdown (vamos renderizar separadamente
-// via componente RelatedPosts com cards completos). Pega da headline
-// "## Leia também" até o próximo separador "---" (inclusive).
-const cleanedMd = post.content_md.replace(
-  /##\s*Leia também[\s\S]*?\n---\n/gi,
-  '',
-)
+// Pre-processa markdown:
+// - Remove "## Leia também" (renderizado via componente RelatedPosts com cards)
+// - Remove "## Sumário" (renderizado via TableOfContents auto-gerado)
+const cleanedMd = post.content_md
+  .replace(/##\s*Leia também[\s\S]*?\n---\n/gi, '')
+  .replace(/##\s*Sumário[\s\S]*?(?=\n##\s)/gi, '')
 
-marked.setOptions({ breaks: true })
+// gfm: true (padrão) habilita tabelas, strikethrough, etc.
+// breaks: false (removido) permite parsing correto de listas e tabelas
+// mesmo quando precedidas por texto sem linha em branco.
+marked.setOptions({ gfm: true })
 const rawHtml = await marked(cleanedMd)
 
 // 1) Adiciona id="..." em cada <h2> para as âncoras do TOC funcionarem
@@ -272,7 +274,12 @@ const faqLd = post.schema_type === 'FAQPage' ? faqJsonLd(post) : null
     color: rgb(var(--yaya-cloud) / 0.85);
     line-height: 1.75;
     font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-    font-size: 1rem;
+    font-size: 0.95rem;
+  }
+  @media (min-width: 640px) {
+    .prose-yaya {
+      font-size: 1rem;
+    }
   }
   .prose-yaya h2 {
     color: rgb(var(--yaya-cloud));
@@ -345,5 +352,45 @@ const faqLd = post.schema_type === 'FAQPage' ? faqJsonLd(post) : null
     border-radius: 4px;
     font-size: 0.9em;
     color: rgb(var(--yaya-blush));
+  }
+
+  /* ── Tabelas ─────────────────────────────────────────────── */
+  /* Wrapper p/ scroll horizontal quando a tabela é larga demais pra mobile */
+  .prose-yaya table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem 0;
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid rgb(var(--yaya-cloud) / 0.1);
+    border-radius: 6px;
+  }
+  .prose-yaya thead {
+    background: rgb(var(--yaya-cloud) / 0.05);
+  }
+  .prose-yaya th {
+    color: rgb(var(--yaya-cloud));
+    font-family: 'Manrope', system-ui, sans-serif;
+    font-weight: 700;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 0.7rem 0.9rem;
+    text-align: left;
+    border-bottom: 1px solid rgb(var(--yaya-cloud) / 0.15);
+    white-space: nowrap;
+  }
+  .prose-yaya td {
+    padding: 0.7rem 0.9rem;
+    font-size: 0.9rem;
+    border-bottom: 1px solid rgb(var(--yaya-cloud) / 0.07);
+    vertical-align: top;
+  }
+  .prose-yaya tbody tr:last-child td {
+    border-bottom: none;
+  }
+  .prose-yaya tbody tr:hover {
+    background: rgb(var(--yaya-cloud) / 0.03);
   }
 </style>

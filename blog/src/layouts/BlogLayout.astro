@@ -117,17 +117,17 @@ const GA_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID as string | undefined
     <!-- Header -->
     <header class="border-b border-yaya-cloud/5 bg-yaya-night/90 backdrop-blur-sm sticky top-0 z-10">
       <div class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
-        <a href="/" class="flex items-center gap-2" aria-label="Yaya Baby — Blog">
+        <a href="/" class="flex items-center gap-2 min-w-0" aria-label="Yaya Baby — Blog">
           <img
             src="/heart.png"
             alt=""
-            class="h-7 w-7"
+            class="h-7 w-7 shrink-0"
             width="28"
             height="28"
           />
-          <span class="font-display text-lg font-extrabold tracking-tight">
+          <span class="font-display text-lg font-extrabold tracking-tight whitespace-nowrap">
             <span class="text-yaya-cloud">Ya</span><span class="text-yaya-purple">ya</span>
-            <span class="text-yaya-purple font-bold ml-1">blog</span>
+            <span class="text-yaya-purple font-bold ml-1 hidden min-[400px]:inline">blog</span>
           </span>
         </a>
         <div class="flex items-center gap-2">

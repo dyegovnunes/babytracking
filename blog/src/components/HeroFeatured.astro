@@ -23,7 +23,7 @@ const { posts } = Astro.props
           ]}
         >
           {post.image_url ? (
-            <div class="aspect-[16/10] overflow-hidden bg-yaya-purple/5">
+            <div class="aspect-[16/9] md:aspect-[16/10] overflow-hidden bg-yaya-purple/5">
               <img
                 src={post.image_url}
                 alt={post.image_alt ?? post.title}
@@ -32,7 +32,7 @@ const { posts } = Astro.props
               />
             </div>
           ) : (
-            <div class="aspect-[16/10] bg-yaya-purple/10 border-b border-yaya-purple/15 flex items-center justify-center">
+            <div class="aspect-[16/9] md:aspect-[16/10] bg-yaya-purple/10 border-b border-yaya-purple/15 flex items-center justify-center">
               <span class="text-5xl opacity-70">{CATEGORY_EMOJI[post.category as ContentCategory]}</span>
             </div>
           )}
@@ -49,7 +49,7 @@ const { posts } = Astro.props
                 <span class="text-yaya-cloud/40 tabular-nums">· #{String(post.post_number).padStart(2, '0')}</span>
               )}
             </div>
-            <h3 class="font-display font-bold text-yaya-cloud text-base leading-snug group-hover:text-yaya-purple transition-colors mt-1.5">
+            <h3 class="font-display font-bold text-yaya-cloud text-base leading-snug group-hover:text-yaya-purple transition-colors mt-1.5 line-clamp-2">
               {post.title}
             </h3>
           </div>

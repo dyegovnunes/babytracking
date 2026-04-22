@@ -3,14 +3,14 @@
 // Estado persistido em localStorage e sincronizado com URL via script de blogFilters.
 ---
 
-<div class="mb-5 flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-yaya-cloud/10">
+<div class="mb-5 flex flex-col sm:flex-row sm:flex-wrap sm:items-center sm:justify-between gap-3 pb-4 border-b border-yaya-cloud/10">
   <div class="flex items-center gap-1.5">
     <span id="filter-count" class="text-xs text-yaya-cloud/50 font-sans tabular-nums">
       Carregando…
     </span>
   </div>
 
-  <div class="flex flex-wrap items-center gap-4">
+  <div class="flex flex-wrap items-center gap-3 sm:gap-4">
     <!-- View toggle -->
     <div class="flex items-center gap-1" role="group" aria-label="Visualização">
       <button
@@ -47,10 +47,11 @@
 
     <!-- Pagination -->
     <label class="flex items-center gap-1.5 text-xs text-yaya-cloud/60 font-sans">
-      <span>Mostrar</span>
+      <span class="hidden sm:inline">Mostrar</span>
       <select
         id="filter-limit"
         class="bg-yaya-cloud/5 border border-yaya-cloud/10 rounded-md px-2 py-1 text-yaya-cloud font-medium cursor-pointer focus:outline-none focus:border-yaya-purple/40"
+        aria-label="Quantidade por página"
       >
         <option value="36">36</option>
         <option value="48">48</option>
@@ -60,10 +61,11 @@
 
     <!-- Sort -->
     <label class="flex items-center gap-1.5 text-xs text-yaya-cloud/60 font-sans">
-      <span>Ordenar por</span>
+      <span class="hidden sm:inline">Ordenar por</span>
       <select
         id="filter-sort"
         class="bg-yaya-cloud/5 border border-yaya-cloud/10 rounded-md px-2 py-1 text-yaya-cloud font-medium cursor-pointer focus:outline-none focus:border-yaya-purple/40"
+        aria-label="Ordenar por"
       >
         <option value="recent">Mais recentes</option>
         <option value="views">Mais vistos</option>
