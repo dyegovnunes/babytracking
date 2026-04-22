@@ -30,6 +30,7 @@ const YayaPlusPage = lazy(() => import('./features/referral/YayaPlusPage'))
 const InviteLandingPage = lazy(() => import('./pages/InviteLandingPage'))
 const PrivacyPage = lazy(() => import('./pages/PrivacyPage'))
 const SharedReportPage = lazy(() => import('./pages/SharedReportPage'))
+const DeletedAccountPage = lazy(() => import('./pages/DeletedAccountPage'))
 
 function RouteFallback() {
   // Skeleton genérico — aparece enquanto o chunk JS da rota baixa.
@@ -153,6 +154,16 @@ function AppRoutes() {
     return (
       <Suspense fallback={<RouteFallback />}>
         <SharedReportPage />
+      </Suspense>
+    )
+  }
+
+  // Tela pública pós-exclusão de conta — capturada ANTES de AuthenticatedRoutes
+  // para evitar o race condition needsOnboarding=true → OnboardingPage aparecer.
+  if (location.pathname === '/conta-excluida') {
+    return (
+      <Suspense fallback={<RouteFallback />}>
+        <DeletedAccountPage />
       </Suspense>
     )
   }

@@ -47,10 +47,9 @@ export default function DeleteAccountModal({ isOpen, onClose, onToast }: Props) 
       onToast(res.error ?? 'Erro ao excluir conta')
       return
     }
-    // Sucesso: hook agenda o reload em 1.2s. Mostra toast pro usuário
-    // antes da tela recarregar pra /login (evita confusão de cair
-    // "do nada" em outra página).
-    onToast('Conta excluída com sucesso.')
+    // Sucesso: hook navega imediatamente pra /conta-excluida (tela de
+    // adeus com countdown). Não precisa de toast aqui — o feedback
+    // visual está na DeletedAccountPage.
   }
 
   function handleClose() {
@@ -65,7 +64,7 @@ export default function DeleteAccountModal({ isOpen, onClose, onToast }: Props) 
       onClick={handleClose}
     >
       <div
-        className="bg-surface-container w-full max-w-sm rounded-t-md sm:rounded-md p-5 sm:mx-4"
+        className="bg-surface-container w-full max-w-sm rounded-t-md sm:rounded-md pt-5 px-5 pb-sheet-sm sm:mx-4 sm:pb-5"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center gap-2 mb-3">

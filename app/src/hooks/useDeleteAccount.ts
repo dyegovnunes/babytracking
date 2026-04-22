@@ -62,13 +62,12 @@ export function useDeleteAccount() {
         sessionStorage.clear()
       } catch { /* ignore */ }
 
-      // Pequeno delay pro caller exibir toast de sucesso antes do reload.
-      // Usa href (não replace) porque em algumas versões do WebView
-      // iOS/Capacitor o replace é interceptado pelo React Router em
-      // vez de forçar reload de verdade. href garante navegação full.
-      setTimeout(() => {
-        window.location.href = '/login'
-      }, 1200)
+      // Navega direto pra tela de adeus (rota pública, sem auth).
+      // Sem delay — o feedback visual está na DeletedAccountPage.
+      // Usa href pra forçar reload completo do WebView; evita que o
+      // React Router intercepte e mantenha AppContext em memória
+      // (causaria needsOnboarding=true → OnboardingPage aparecer).
+      window.location.href = '/conta-excluida'
       return { ok: true }
     } catch (e) {
       return {
