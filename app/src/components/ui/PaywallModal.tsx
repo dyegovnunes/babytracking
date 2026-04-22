@@ -261,9 +261,12 @@ export function PaywallModal({ isOpen, onClose, trigger = 'generic' }: PaywallMo
 {`platform: ${diag.platform}
 key: ${diag.keyPrefix}...
 current: ${diag.currentOfferingId ?? 'null'}
-all offerings: ${diag.allOfferingIds.join(', ') || '(vazio)'}
-packages: ${diag.currentPackageIds.join(', ') || '(vazio)'}
-monthly: ${diag.hasMonthly ? '✓' : '✗'} · annual: ${diag.hasAnnual ? '✓' : '✗'} · lifetime: ${diag.hasLifetime ? '✓' : '✗'}
+offerings: ${diag.allOfferingIds.join(', ') || '(vazio)'}
+
+packages do offering current:
+${diag.packageDetails.length ? diag.packageDetails.join('\n') : '(vazio)'}
+
+match: monthly=${diag.hasMonthly ? '✓' : '✗'} annual=${diag.hasAnnual ? '✓' : '✗'} lifetime=${diag.hasLifetime ? '✓' : '✗'}
 error: ${diag.error ?? '(nenhum)'}`}
                   </pre>
                 );

@@ -60,8 +60,9 @@ export default function SettingsPage() {
       `key: ${d.keyPrefix}...\n` +
       `current: ${d.currentOfferingId ?? 'null'}\n` +
       `offerings: ${d.allOfferingIds.join(', ') || '(vazio)'}\n` +
-      `packages: ${d.currentPackageIds.join(', ') || '(vazio)'}\n` +
-      `monthly: ${d.hasMonthly ? '✓' : '✗'}  annual: ${d.hasAnnual ? '✓' : '✗'}  lifetime: ${d.hasLifetime ? '✓' : '✗'}\n` +
+      `\n-- packages do offering current --\n` +
+      (d.packageDetails.length ? d.packageDetails.join('\n') : '(vazio)') +
+      `\n\nmatch: monthly=${d.hasMonthly ? '✓' : '✗'} annual=${d.hasAnnual ? '✓' : '✗'} lifetime=${d.hasLifetime ? '✓' : '✗'}\n` +
       `error: ${d.error ?? '(nenhum)'}`
     )
   }

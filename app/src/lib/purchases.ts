@@ -113,6 +113,8 @@ export interface OfferingsDiagnostic {
   currentOfferingId: string | null;
   allOfferingIds: string[];
   currentPackageIds: string[];
+  /** Detalhe por package: identifier:type:productId — mostra tudo o que o RC devolveu. */
+  packageDetails: string[];
   hasMonthly: boolean;
   hasAnnual: boolean;
   hasLifetime: boolean;
@@ -148,6 +150,7 @@ export async function getAvailablePackages(): Promise<{
         currentOfferingId: null,
         allOfferingIds: allIds,
         currentPackageIds: [],
+        packageDetails: [],
         hasMonthly: false,
         hasAnnual: false,
         hasLifetime: false,
@@ -158,25 +161,44 @@ export async function getAvailablePackages(): Promise<{
       return { monthly: null, annual: null, lifetime: null };
     }
 
-    const packageIds = current.availablePackages?.map((p) => p.identifier) ?? [];
+    const packages = current.availablePackages ?? [];
+    const packageIds = packages.map((p) => p.identifier);
+
+    // Fallback multi-strategy: além dos getters current.monthly/annual/lifetime
+    // (que só funcionam se o offering no RC usar identifiers $rc_monthly/annual/lifetime),
+    // procura também por:
+    //  a) packageType === MONTHLY/ANNUAL/LIFETIME (funciona mesmo com custom identifiers)
+    //  b) product identifier batendo com os IDs do App Store Connect / Play Console
+    //
+    // Isso protege de configurações do RC onde os packages foram criados com
+    // identifiers custom (sem o prefixo $rc_*), o que é comum.
+    const findByType = (typeStr: string, productIdContains: string): PurchasesPackage | null => {
+      return (
+        packages.find((p) => String(p.packageType) === typeStr) ??
+        packages.find((p) => p.product?.identifier?.includes(productIdContains)) ??
+        null
+      );
+    };
+
+    const monthly = current.monthly ?? findByType('MONTHLY', '.monthly');
+    const annual = current.annual ?? findByType('ANNUAL', '.annual');
+    const lifetime = current.lifetime ?? findByType('LIFETIME', '.lifetime');
+
     lastDiagnostic = {
       platform,
       keyPrefix,
       currentOfferingId: current.identifier,
       allOfferingIds: allIds,
       currentPackageIds: packageIds,
-      hasMonthly: !!current.monthly,
-      hasAnnual: !!current.annual,
-      hasLifetime: !!current.lifetime,
+      packageDetails: packages.map(p => `${p.identifier}:${p.packageType}:${p.product?.identifier ?? '?'}`),
+      hasMonthly: !!monthly,
+      hasAnnual: !!annual,
+      hasLifetime: !!lifetime,
       error: null,
     };
     // eslint-disable-next-line no-console
-    console.log('[RC] diagnostic', lastDiagnostic);
-    return {
-      monthly: current.monthly ?? null,
-      annual: current.annual ?? null,
-      lifetime: current.lifetime ?? null,
-    };
+    console.log('[RC] diagnostic', lastDiagnostic, 'types=', packages.map(p => `${p.identifier}:${p.packageType}:${p.product?.identifier}`));
+    return { monthly, annual, lifetime };
   } catch (err: any) {
     lastDiagnostic = {
       platform,
@@ -184,6 +206,7 @@ export async function getAvailablePackages(): Promise<{
       currentOfferingId: null,
       allOfferingIds: [],
       currentPackageIds: [],
+      packageDetails: [],
       hasMonthly: false,
       hasAnnual: false,
       hasLifetime: false,
