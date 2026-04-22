@@ -15,8 +15,10 @@ export type Pillar = 'gestacao' | 'amamentacao' | 'sono' | 'primeiros-dias' | st
 export type Role = 'pilar' | 'cluster'
 
 export interface AffiliateProduct {
-  name: string
-  context: string
+  tipo: string
+  nome: string
+  asin: string
+  url: string
 }
 
 export interface PremiumTeaserData {

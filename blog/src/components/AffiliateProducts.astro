@@ -1,0 +1,54 @@
+---
+import type { AffiliateProduct } from '../types'
+
+interface Props {
+  products: AffiliateProduct[]
+}
+
+const { products } = Astro.props
+
+if (!products || products.length === 0) {
+  return
+}
+---
+
+<section class="mt-12 mb-2">
+  <div class="flex items-center gap-3 mb-1">
+    <h2 class="font-display text-lg font-bold text-yaya-cloud">Produtos que podem ajudar</h2>
+  </div>
+  <p class="text-xs text-yaya-cloud/40 font-sans mb-5">
+    Links com comissão da Amazon — sem custo extra para você
+  </p>
+
+  <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+    {products.map((p) => (
+      <a
+        href={p.url}
+        target="_blank"
+        rel="noopener noreferrer sponsored"
+        class="group flex flex-col rounded-md border border-yaya-cloud/10 bg-yaya-cloud/[0.03] hover:border-yaya-purple/40 hover:bg-yaya-purple/5 transition-colors overflow-hidden"
+      >
+        <div class="bg-white flex items-center justify-center p-2 h-28">
+          <img
+            src={`https://images-na.ssl-images-amazon.com/images/P/${p.asin}.01._SX200_QL70_.jpg`}
+            alt={p.nome}
+            class="max-h-24 max-w-full object-contain"
+            loading="lazy"
+            onerror="this.style.display='none'"
+          />
+        </div>
+        <div class="p-3 flex flex-col gap-1 flex-1">
+          <span class="text-[10px] font-bold uppercase tracking-wider text-yaya-purple/70 font-sans">
+            {p.tipo}
+          </span>
+          <span class="text-xs text-yaya-cloud/80 font-sans leading-snug line-clamp-3">
+            {p.nome}
+          </span>
+          <span class="mt-auto pt-2 text-xs font-display font-bold text-yaya-purple group-hover:text-yaya-glow transition-colors">
+            Ver na Amazon →
+          </span>
+        </div>
+      </a>
+    ))}
+  </div>
+</section>

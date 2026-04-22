@@ -19,6 +19,7 @@ import FeedbackBox from '../components/FeedbackBox.astro'
 import CorrectionLink from '../components/CorrectionLink.astro'
 import PremiumTeaser from '../components/PremiumTeaser.astro'
 import NewsletterSignup from '../components/NewsletterSignup.astro'
+import AffiliateProducts from '../components/AffiliateProducts.astro'
 
 export async function getStaticPaths() {
   const { data } = await supabase
@@ -208,6 +209,9 @@ const faqLd = post.schema_type === 'FAQPage' ? faqJsonLd(post) : null
 
     <!-- Corpo do artigo -->
     <div class="prose-yaya" set:html={contentHtml} />
+
+    <!-- Produtos afiliados (só aparece quando o post tem produtos cadastrados) -->
+    <AffiliateProducts products={post.affiliate_products ?? []} />
 
     <!-- Leia também: logo após o corpo do artigo, formato em cards -->
     <RelatedPosts posts={relatedPosts} />
