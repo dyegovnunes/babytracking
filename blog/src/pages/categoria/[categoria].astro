@@ -4,11 +4,7 @@ import { supabase } from '../../lib/supabase'
 import type { BlogPost, ContentCategory } from '../../types'
 import { CATEGORY_LABEL, CATEGORY_EMOJI } from '../../types'
 import { categoryBreadcrumbJsonLd } from '../../lib/jsonld'
-
-const CATEGORIES: ContentCategory[] = [
-  'gestacao', 'alimentacao', 'amamentacao', 'sono',
-  'rotina', 'saude', 'seguranca', 'desenvolvimento', 'marcos',
-]
+import CategorySidebar from '../../components/CategorySidebar.astro'
 
 export async function getStaticPaths() {
   const cats: ContentCategory[] = [
@@ -21,19 +17,19 @@ export async function getStaticPaths() {
 const { categoria } = Astro.params
 const cat = categoria as ContentCategory
 
-const { data: posts, error } = await supabase
+// Busca todos os posts (pra contagem da sidebar) + filtra localmente
+const { data: allPostsData, error } = await supabase
   .from('blog_posts')
-  .select('id, slug, title, meta_description, category, audience, target_week_start, target_week_end, image_url, published_at')
+  .select('id, slug, title, meta_description, category, audience, target_week_start, target_week_end, image_url, image_alt, published_at')
   .eq('status', 'published')
-  .eq('category', cat)
   .order('published_at', { ascending: false })
 
-const allPosts = (posts ?? []) as BlogPost[]
+const allPosts = (allPostsData ?? []) as BlogPost[]
+const posts = allPosts.filter((p) => p.category === cat)
 
-function formatWeekRange(start: number | null, end: number | null): string {
-  if (!start) return ''
-  if (!end || start === end) return `Semana ${start}`
-  return `Semanas ${start}–${end}`
+const countsByCategory: Record<string, number> = {}
+for (const p of allPosts) {
+  countsByCategory[p.category] = (countsByCategory[p.category] ?? 0) + 1
 }
 
 const catLabel = CATEGORY_LABEL[cat]
@@ -48,108 +44,80 @@ const breadcrumbLd = categoryBreadcrumbJsonLd(cat)
   canonicalUrl={canonicalUrl}
 >
   <script type="application/ld+json" set:html={JSON.stringify(breadcrumbLd)} />
-  <!-- Hero da categoria -->
-  <section class="max-w-3xl mx-auto px-4 pt-14 pb-10">
+
+  <!-- Hero compacto da categoria -->
+  <section class="max-w-5xl mx-auto px-4 pt-12 pb-8">
     <nav class="text-sm text-yaya-cloud/50 mb-5 flex items-center gap-1.5 font-sans">
       <a href="/" class="hover:text-yaya-cloud transition-colors">Blog</a>
       <span class="text-yaya-cloud/30">›</span>
       <span class="text-yaya-purple font-medium">{catLabel}</span>
     </nav>
-    <div class="flex items-center gap-3 mb-4">
+    <div class="flex items-center gap-3">
       <span class="text-4xl">{catEmoji}</span>
-      <h1 class="font-display text-3xl md:text-4xl font-extrabold text-yaya-cloud tracking-tight">
-        {catLabel}
-      </h1>
-    </div>
-    <p class="text-yaya-cloud/70 text-lg max-w-xl font-sans leading-relaxed">
-      {allPosts.length} {allPosts.length === 1 ? 'guia' : 'guias'} sobre {catLabel.toLowerCase()} do bebê.
-    </p>
-  </section>
-
-  <!-- Filtro por categoria -->
-  <section class="max-w-3xl mx-auto px-4 mb-10">
-    <div class="flex flex-wrap gap-2">
-      <a
-        href="/"
-        class="px-3 py-1.5 rounded-md text-sm font-display font-bold bg-yaya-cloud/5 text-yaya-cloud/80 hover:bg-yaya-cloud/10 hover:text-yaya-cloud transition-colors"
-      >
-        Todos
-      </a>
-      {CATEGORIES.map((c) => (
-        <a
-          href={`/categoria/${c}`}
-          class:list={[
-            'px-3 py-1.5 rounded-md text-sm font-display font-bold transition-colors',
-            c === cat
-              ? 'bg-yaya-purple text-yaya-night'
-              : 'bg-yaya-cloud/5 text-yaya-cloud/80 hover:bg-yaya-cloud/10 hover:text-yaya-cloud',
-          ]}
-        >
-          {CATEGORY_EMOJI[c]} {CATEGORY_LABEL[c]}
-        </a>
-      ))}
-    </div>
-  </section>
-
-  <!-- Lista de artigos da categoria -->
-  <section class="max-w-3xl mx-auto px-4 pb-20">
-    {error && (
-      <p class="text-yaya-cloud/50 text-center py-20 font-sans">Não conseguimos carregar os artigos agora. Tenta de novo em alguns instantes.</p>
-    )}
-
-    {!error && allPosts.length === 0 && (
-      <div class="text-center py-24">
-        <img src="/symbol.png" alt="Yaya" class="h-14 w-auto mx-auto mb-6 opacity-40" />
-        <p class="text-yaya-cloud/60 font-sans text-lg mb-2">Ainda não temos guias nesta categoria.</p>
-        <a href="/" class="text-yaya-purple hover:text-yaya-glow font-sans text-sm">Ver todos os guias →</a>
+      <div>
+        <h1 class="font-display text-3xl md:text-4xl font-extrabold text-yaya-cloud tracking-tight">
+          {catLabel}
+        </h1>
+        <p class="text-yaya-cloud/50 text-sm font-sans mt-1">
+          {posts.length} {posts.length === 1 ? 'guia' : 'guias'}
+        </p>
       </div>
-    )}
+    </div>
+  </section>
 
-    <div class="space-y-4">
-      {allPosts.map((post) => (
-        <a
-          href={`/${post.slug}`}
-          class="group block bg-yaya-cloud/[0.03] rounded-md overflow-hidden border border-yaya-cloud/10 hover:border-yaya-purple/40 hover:bg-yaya-cloud/[0.06] transition-all"
-        >
-          <div class="flex gap-4 p-5">
+  <div class="max-w-5xl mx-auto px-4 pb-20 md:flex md:gap-10 md:items-start">
+
+    <CategorySidebar counts={countsByCategory} activeCategory={cat} />
+
+    <!-- Main: grid de posts da categoria -->
+    <main class="flex-1 min-w-0">
+      {error && (
+        <p class="text-yaya-cloud/50 text-center py-20 font-sans">
+          Não conseguimos carregar os artigos agora. Tenta de novo em alguns instantes.
+        </p>
+      )}
+
+      {!error && posts.length === 0 && (
+        <div class="text-center py-20">
+          <img src="/symbol.png" alt="" class="h-12 w-auto mx-auto mb-5 opacity-40" />
+          <p class="text-yaya-cloud/60 font-sans mb-2">Ainda não temos guias nesta categoria.</p>
+          <a href="/" class="text-yaya-purple hover:text-yaya-glow font-sans text-sm">Ver todos os guias →</a>
+        </div>
+      )}
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {posts.map((post) => (
+          <a
+            href={`/${post.slug}`}
+            class="group flex flex-col bg-yaya-cloud/[0.03] rounded-md overflow-hidden border border-yaya-cloud/10 hover:border-yaya-purple/40 hover:bg-yaya-cloud/[0.06] transition-all"
+          >
             {post.image_url ? (
-              <img
-                src={post.image_url}
-                alt={post.title}
-                class="w-24 h-24 rounded-md object-cover shrink-0"
-                loading="lazy"
-              />
+              <div class="aspect-[16/10] overflow-hidden bg-yaya-purple/5">
+                <img
+                  src={post.image_url}
+                  alt={post.image_alt ?? post.title}
+                  class="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
+                  loading="lazy"
+                />
+              </div>
             ) : (
-              <div class="w-24 h-24 rounded-md bg-yaya-purple/10 border border-yaya-purple/15 flex items-center justify-center shrink-0">
-                <span class="text-3xl">{catEmoji}</span>
+              <div class="aspect-[16/10] bg-yaya-purple/10 border-b border-yaya-purple/15 flex items-center justify-center">
+                <span class="text-5xl opacity-70">{catEmoji}</span>
               </div>
             )}
 
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center gap-2 mb-2">
-                <span class="text-[10px] font-display font-bold text-yaya-purple uppercase tracking-wider">
-                  {catLabel}
-                </span>
-                {post.target_week_start && (
-                  <span class="text-[10px] text-yaya-cloud/40 font-sans font-medium">
-                    · {formatWeekRange(post.target_week_start, post.target_week_end)}
-                  </span>
-                )}
-              </div>
+            <div class="flex-1 p-4 flex flex-col">
+              <span class="text-[10px] font-display font-bold text-yaya-purple uppercase tracking-wider mb-1.5">
+                {catLabel}
+              </span>
 
-              <h2 class="font-display font-bold text-yaya-cloud text-base leading-snug mb-2 group-hover:text-yaya-purple transition-colors">
+              <h2 class="font-display font-bold text-yaya-cloud text-base leading-snug group-hover:text-yaya-purple transition-colors">
                 {post.title}
               </h2>
-
-              {post.meta_description && (
-                <p class="text-yaya-cloud/60 text-sm line-clamp-2 leading-relaxed font-sans">
-                  {post.meta_description}
-                </p>
-              )}
             </div>
-          </div>
-        </a>
-      ))}
-    </div>
-  </section>
+          </a>
+        ))}
+      </div>
+    </main>
+  </div>
 </BlogLayout>

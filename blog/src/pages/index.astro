@@ -3,8 +3,7 @@ import BlogLayout from '../layouts/BlogLayout.astro'
 import { supabase } from '../lib/supabase'
 import type { BlogPost, ContentCategory } from '../types'
 import { CATEGORY_LABEL, CATEGORY_EMOJI } from '../types'
-import FeaturedPost from '../components/FeaturedPost.astro'
-import CategoryGrid from '../components/CategoryGrid.astro'
+import CategorySidebar from '../components/CategorySidebar.astro'
 
 const { data: posts, error } = await supabase
   .from('blog_posts')
@@ -14,109 +13,77 @@ const { data: posts, error } = await supabase
 
 const allPosts = (posts ?? []) as BlogPost[]
 
-// Featured: primeiro post (o mais recente). Rest: todos os outros.
-const featured = allPosts[0]
-const rest = allPosts.slice(1)
-
-// Counts por categoria para o grid
+// Counts por categoria para a sidebar
 const countsByCategory: Record<string, number> = {}
 for (const p of allPosts) {
   countsByCategory[p.category] = (countsByCategory[p.category] ?? 0) + 1
 }
-
-function formatWeekRange(start: number | null, end: number | null): string {
-  if (!start) return ''
-  if (!end || start === end) return `Semana ${start}`
-  return `Semanas ${start}–${end}`
-}
 ---
 
 <BlogLayout
-  title="Blog Yaya Baby — Companhia para a rotina do seu bebê"
-  description="Guias práticos sobre alimentação, sono, desenvolvimento e saúde. Baseados em evidências, escritos para pais reais."
+  title="Blog Yaya Baby — Rotina do seu bebê, com calma"
+  description="Guias sobre sono, alimentação, desenvolvimento e saúde do bebê. Baseados em evidências, escritos para pais reais."
 >
   <!-- Hero compacto -->
-  <section class="max-w-3xl mx-auto px-4 pt-14 pb-12 text-center">
-    <h1 class="font-display text-4xl md:text-5xl font-extrabold text-yaya-cloud leading-tight mb-4 tracking-tight">
+  <section class="max-w-5xl mx-auto px-4 pt-12 pb-10 text-center">
+    <h1 class="font-display text-4xl md:text-5xl font-extrabold text-yaya-cloud leading-tight tracking-tight">
       A rotina do seu bebê,<br class="hidden md:block" />
       <span class="text-yaya-purple">explicada com calma.</span>
     </h1>
-    <p class="text-yaya-cloud/70 text-lg max-w-xl mx-auto font-sans leading-relaxed">
-      Guias práticos sobre sono, alimentação, desenvolvimento e saúde — baseados em evidências, escritos pra pais reais.
-    </p>
   </section>
 
-  {error && (
-    <p class="text-yaya-cloud/50 text-center py-20 font-sans">Não conseguimos carregar os artigos agora. Tenta de novo em alguns instantes.</p>
-  )}
+  <div class="max-w-5xl mx-auto px-4 pb-20 md:flex md:gap-10 md:items-start">
 
-  {!error && allPosts.length === 0 && (
-    <div class="text-center py-24">
-      <img src="/symbol.png" alt="Yaya" class="h-14 w-auto mx-auto mb-6 opacity-40" />
-      <p class="text-yaya-cloud/60 font-sans text-lg mb-2">Ainda estamos preparando os primeiros guias.</p>
-      <p class="text-yaya-cloud/40 font-sans text-sm">Volte em breve — conteúdo novo toda semana.</p>
-    </div>
-  )}
+    <CategorySidebar counts={countsByCategory} />
 
-  {featured && <FeaturedPost post={featured} />}
+    <!-- Main: grid de posts -->
+    <main class="flex-1 min-w-0">
+      {error && (
+        <p class="text-yaya-cloud/50 text-center py-20 font-sans">
+          Não conseguimos carregar os artigos agora. Tenta de novo em alguns instantes.
+        </p>
+      )}
 
-  <CategoryGrid counts={countsByCategory} />
+      {!error && allPosts.length === 0 && (
+        <div class="text-center py-20">
+          <img src="/symbol.png" alt="" class="h-12 w-auto mx-auto mb-5 opacity-40" />
+          <p class="text-yaya-cloud/60 font-sans">Ainda estamos preparando os primeiros guias.</p>
+        </div>
+      )}
 
-  {rest.length > 0 && (
-    <section class="max-w-3xl mx-auto px-4 pb-20">
-      <h2 class="font-display text-xl font-bold text-yaya-cloud mb-1 tracking-tight">
-        Mais guias recentes
-      </h2>
-      <p class="font-sans text-sm text-yaya-cloud/50 mb-6">
-        Publicações recentes no blog
-      </p>
-
-      <div class="space-y-4">
-        {rest.map((post) => (
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {allPosts.map((post) => (
           <a
             href={`/${post.slug}`}
-            class="group block bg-yaya-cloud/[0.03] rounded-md overflow-hidden border border-yaya-cloud/10 hover:border-yaya-purple/40 hover:bg-yaya-cloud/[0.06] transition-all"
+            class="group flex flex-col bg-yaya-cloud/[0.03] rounded-md overflow-hidden border border-yaya-cloud/10 hover:border-yaya-purple/40 hover:bg-yaya-cloud/[0.06] transition-all"
           >
-            <div class="flex gap-4 p-5">
-              {post.image_url ? (
+            {post.image_url ? (
+              <div class="aspect-[16/10] overflow-hidden bg-yaya-purple/5">
                 <img
                   src={post.image_url}
                   alt={post.image_alt ?? post.title}
-                  class="w-24 h-24 rounded-md object-cover shrink-0"
+                  class="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
                   loading="lazy"
                 />
-              ) : (
-                <div class="w-24 h-24 rounded-md bg-yaya-purple/10 border border-yaya-purple/15 flex items-center justify-center shrink-0">
-                  <span class="text-3xl">{CATEGORY_EMOJI[post.category as ContentCategory]}</span>
-                </div>
-              )}
-
-              <div class="flex-1 min-w-0">
-                <div class="flex items-center gap-2 mb-2">
-                  <span class="text-[10px] font-display font-bold text-yaya-purple uppercase tracking-wider">
-                    {CATEGORY_LABEL[post.category as ContentCategory]}
-                  </span>
-                  {post.target_week_start && (
-                    <span class="text-[10px] text-yaya-cloud/40 font-sans font-medium">
-                      · {formatWeekRange(post.target_week_start, post.target_week_end)}
-                    </span>
-                  )}
-                </div>
-
-                <h3 class="font-display font-bold text-yaya-cloud text-base leading-snug mb-2 group-hover:text-yaya-purple transition-colors">
-                  {post.title}
-                </h3>
-
-                {post.meta_description && (
-                  <p class="text-yaya-cloud/60 text-sm line-clamp-2 leading-relaxed font-sans">
-                    {post.meta_description}
-                  </p>
-                )}
               </div>
+            ) : (
+              <div class="aspect-[16/10] bg-yaya-purple/10 border-b border-yaya-purple/15 flex items-center justify-center">
+                <span class="text-5xl opacity-70">{CATEGORY_EMOJI[post.category as ContentCategory]}</span>
+              </div>
+            )}
+
+            <div class="flex-1 p-4 flex flex-col">
+              <span class="text-[10px] font-display font-bold text-yaya-purple uppercase tracking-wider mb-1.5">
+                {CATEGORY_LABEL[post.category as ContentCategory]}
+              </span>
+
+              <h2 class="font-display font-bold text-yaya-cloud text-base leading-snug group-hover:text-yaya-purple transition-colors">
+                {post.title}
+              </h2>
             </div>
           </a>
         ))}
       </div>
-    </section>
-  )}
+    </main>
+  </div>
 </BlogLayout>
