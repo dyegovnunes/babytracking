@@ -211,6 +211,61 @@ function makeIsNight(start: number, end: number): (ts: number) => boolean {
   };
 }
 
+/**
+ * Constrói pares de início/fim de sono a partir dos logs brutos do relatório.
+ * Espelha computeSleepPairs de insightRules.ts:
+ * 1. Logs com duration explícita → par direto (start = timestamp − duration*60s).
+ * 2. Toggle (sleep/wake sem duration) → máquina de estado linear, evita double-counting.
+ * 3. Ainda dormindo (sem wake) → fecha o par com Date.now().
+ */
+function computeReportSleepPairs(
+  allLogs: ReportData['logs'],
+): { start: number; end: number }[] {
+  const pairs: { start: number; end: number }[] = [];
+
+  // 1. Duration-based sleeps
+  allLogs
+    .filter(
+      (l) =>
+        (l.event_id === 'sleep' || l.event_id === 'sleep_nap') &&
+        typeof l.duration === 'number' &&
+        l.duration > 0,
+    )
+    .forEach((l) => {
+      pairs.push({ start: l.timestamp - l.duration! * 60000, end: l.timestamp });
+    });
+
+  // 2. Toggle mode — state machine linear
+  const sorted = [...allLogs]
+    .filter((l) => {
+      if (l.event_id === 'wake' || l.event_id === 'sleep_awake' || l.event_id === 'sleep_end')
+        return true;
+      if (l.event_id === 'sleep' || l.event_id === 'sleep_nap' || l.event_id === 'sleep_start')
+        return !(typeof l.duration === 'number' && l.duration > 0);
+      return false;
+    })
+    .sort((a, b) => a.timestamp - b.timestamp);
+
+  let current: number | null = null;
+  for (const l of sorted) {
+    const isSleep =
+      l.event_id === 'sleep' || l.event_id === 'sleep_nap' || l.event_id === 'sleep_start';
+    if (isSleep) {
+      if (current === null) current = l.timestamp; // ignora sleep duplicado
+    } else {
+      if (current !== null) {
+        if (l.timestamp > current) pairs.push({ start: current, end: l.timestamp });
+        current = null;
+      }
+      // wake órfão (sem sleep anterior) → descartado
+    }
+  }
+  // Ainda dormindo → fecha com "agora"
+  if (current !== null) pairs.push({ start: current, end: Date.now() });
+
+  return pairs;
+}
+
 function computeStats(data: ReportData, startTs: number, endTs: number, nightStart: number, nightEnd: number): Stats {
   const isNight = makeIsNight(nightStart, nightEnd);
   const logs = data.logs.filter(l => l.timestamp >= startTs && l.timestamp <= endTs);
@@ -238,38 +293,35 @@ function computeStats(data: ReportData, startTs: number, endTs: number, nightSta
     feedDaily.push({ date: dayLabel(ds), count: feedLogs.filter(l => l.timestamp >= ds && l.timestamp < de).length });
   }
 
-  // Sleep
-  const sleepStartIds = new Set(['sleep', 'sleep_start']);
-  const sleepEndIds = new Set(['wake', 'sleep_end']);
-  const sleepLogs = logs.filter(l => sleepStartIds.has(l.event_id) || sleepEndIds.has(l.event_id)).sort((a, b) => a.timestamp - b.timestamp);
-  // State machine: evita double-counting quando há dois 'sleep' sem 'wake' entre eles,
-  // que era a causa de dias com sono noturno zerado no gráfico.
-  const pairs: { start: number; end: number }[] = [];
-  let sleepStart: number | null = null;
-  for (const log of sleepLogs) {
-    if (sleepStartIds.has(log.event_id)) {
-      if (sleepStart === null) sleepStart = log.timestamp; // ignora sleep duplicado
-    } else {
-      if (sleepStart !== null) {
-        pairs.push({ start: sleepStart, end: log.timestamp });
-        sleepStart = null;
-      }
-      // wake sem sleep anterior é ignorado
-    }
+  // Sleep — usa TODOS os logs (não só do período filtrado) para construir os pares,
+  // depois clipa à janela selecionada. Espelha computeSleepPairsInWindow de insightRules.ts.
+  // Evita perder sonecas noturnas cujo 'wake' cai fora do filtro (ex: dormiu 23h ontem,
+  // acordou 7h hoje → sem essa estratégia o par some no filtro 'ontem').
+  const allSleepPairs = computeReportSleepPairs(data.logs);
+
+  // Pares clippados à janela → para totais, médias e bloco máximo
+  const windowPairs: { start: number; end: number }[] = [];
+  for (const p of allSleepPairs) {
+    const s = Math.max(p.start, startTs);
+    const e = Math.min(p.end, endTs);
+    if (e > s) windowPairs.push({ start: s, end: e });
   }
-  const noctPairs = pairs.filter(p => isNight(p.start));
-  const diurPairs = pairs.filter(p => !isNight(p.start));
-  const totalNoct = noctPairs.reduce((s, p) => s + (p.end - p.start) / 60000, 0);
-  const totalDiur = diurPairs.reduce((s, p) => s + (p.end - p.start) / 60000, 0);
-  const longestBlock = pairs.length > 0 ? Math.max(...pairs.map(p => (p.end - p.start) / 60000)) : 0;
-  // Distribui cada sessão pelos dias em que ela ocorre via sobreposição de intervalos.
-  // Garante que sono noturno que termina de manhã apareça corretamente no dia seguinte.
+  const totalNoct = windowPairs
+    .filter((p) => isNight(p.start))
+    .reduce((s, p) => s + (p.end - p.start) / 60000, 0);
+  const totalDiur = windowPairs
+    .filter((p) => !isNight(p.start))
+    .reduce((s, p) => s + (p.end - p.start) / 60000, 0);
+  const longestBlock =
+    windowPairs.length > 0 ? Math.max(...windowPairs.map((p) => (p.end - p.start) / 60000)) : 0;
+
+  // Gráfico diário — usa todos os pares; cada dia clipa naturalmente no loop.
   const sleepDaily: { date: string; noct: number; diur: number }[] = [];
   for (let d = 0; d < chartDays; d++) {
     const ds = chartStart + d * 86400000;
     const de = ds + 86400000;
     let noct = 0, diur = 0;
-    for (const p of pairs) {
+    for (const p of allSleepPairs) {
       if (p.end <= ds || p.start >= de) continue;
       const oStart = Math.max(p.start, ds);
       const oEnd = Math.min(p.end, de);
