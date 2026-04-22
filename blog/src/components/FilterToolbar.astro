@@ -1,0 +1,74 @@
+---
+// Barra de filtros de exibição: visualização + paginação + ordenação.
+// Estado persistido em localStorage e sincronizado com URL via script de blogFilters.
+---
+
+<div class="mb-5 flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-yaya-cloud/10">
+  <div class="flex items-center gap-1.5">
+    <span id="filter-count" class="text-xs text-yaya-cloud/50 font-sans tabular-nums">
+      Carregando…
+    </span>
+  </div>
+
+  <div class="flex flex-wrap items-center gap-4">
+    <!-- View toggle -->
+    <div class="flex items-center gap-1" role="group" aria-label="Visualização">
+      <button
+        type="button"
+        class="view-btn p-1.5 rounded-md text-yaya-cloud/60 hover:text-yaya-cloud hover:bg-yaya-cloud/5 transition-colors data-[active=true]:bg-yaya-cloud/10 data-[active=true]:text-yaya-purple"
+        data-view="grid"
+        data-active="true"
+        aria-label="Visualização em grade"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7" rx="1"/>
+          <rect x="14" y="3" width="7" height="7" rx="1"/>
+          <rect x="3" y="14" width="7" height="7" rx="1"/>
+          <rect x="14" y="14" width="7" height="7" rx="1"/>
+        </svg>
+      </button>
+      <button
+        type="button"
+        class="view-btn p-1.5 rounded-md text-yaya-cloud/60 hover:text-yaya-cloud hover:bg-yaya-cloud/5 transition-colors data-[active=true]:bg-yaya-cloud/10 data-[active=true]:text-yaya-purple"
+        data-view="list"
+        data-active="false"
+        aria-label="Visualização em lista"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="8" y1="6" x2="21" y2="6"/>
+          <line x1="8" y1="12" x2="21" y2="12"/>
+          <line x1="8" y1="18" x2="21" y2="18"/>
+          <circle cx="4" cy="6" r="1"/>
+          <circle cx="4" cy="12" r="1"/>
+          <circle cx="4" cy="18" r="1"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Pagination -->
+    <label class="flex items-center gap-1.5 text-xs text-yaya-cloud/60 font-sans">
+      <span>Mostrar</span>
+      <select
+        id="filter-limit"
+        class="bg-yaya-cloud/5 border border-yaya-cloud/10 rounded-md px-2 py-1 text-yaya-cloud font-medium cursor-pointer focus:outline-none focus:border-yaya-purple/40"
+      >
+        <option value="36">36</option>
+        <option value="48">48</option>
+        <option value="all">Todos</option>
+      </select>
+    </label>
+
+    <!-- Sort -->
+    <label class="flex items-center gap-1.5 text-xs text-yaya-cloud/60 font-sans">
+      <span>Ordenar por</span>
+      <select
+        id="filter-sort"
+        class="bg-yaya-cloud/5 border border-yaya-cloud/10 rounded-md px-2 py-1 text-yaya-cloud font-medium cursor-pointer focus:outline-none focus:border-yaya-purple/40"
+      >
+        <option value="recent">Mais recentes</option>
+        <option value="views">Mais vistos</option>
+        <option value="approval">Mais avaliados</option>
+      </select>
+    </label>
+  </div>
+</div>

@@ -5,6 +5,9 @@ import type { BlogPost, ContentCategory } from '../../types'
 import { CATEGORY_LABEL, CATEGORY_EMOJI } from '../../types'
 import { categoryBreadcrumbJsonLd } from '../../lib/jsonld'
 import CategorySidebar from '../../components/CategorySidebar.astro'
+import PhaseChips from '../../components/PhaseChips.astro'
+import FilterToolbar from '../../components/FilterToolbar.astro'
+import PostCard from '../../components/PostCard.astro'
 
 export async function getStaticPaths() {
   const cats: ContentCategory[] = [
@@ -17,19 +20,48 @@ export async function getStaticPaths() {
 const { categoria } = Astro.params
 const cat = categoria as ContentCategory
 
-// Busca todos os posts (pra contagem da sidebar) + filtra localmente
+// Busca todos os posts (pra counts da sidebar) + filtra pela categoria
 const { data: allPostsData, error } = await supabase
   .from('blog_posts')
-  .select('id, slug, title, meta_description, category, audience, target_week_start, target_week_end, image_url, image_alt, published_at')
+  .select('id, slug, title, meta_description, content_md, keywords, category, audience, pillar, role, related_slugs, schema_type, affiliate_products, premium_teaser, target_week_start, target_week_end, image_url, image_alt, published_at')
   .eq('status', 'published')
   .order('published_at', { ascending: false })
 
 const allPosts = (allPostsData ?? []) as BlogPost[]
 const posts = allPosts.filter((p) => p.category === cat)
 
+const { data: feedbackData } = await supabase
+  .from('content_feedback')
+  .select('post_slug, sentiment')
+
+const feedbackStats: Record<string, { total: number; helpful: number; approval: number }> = {}
+for (const row of feedbackData ?? []) {
+  const s = row.post_slug as string
+  if (!feedbackStats[s]) feedbackStats[s] = { total: 0, helpful: 0, approval: 0 }
+  feedbackStats[s].total++
+  if (row.sentiment === 'helpful') feedbackStats[s].helpful++
+}
+for (const s in feedbackStats) {
+  feedbackStats[s].approval =
+    feedbackStats[s].total > 0 ? feedbackStats[s].helpful / feedbackStats[s].total : 0
+}
+
 const countsByCategory: Record<string, number> = {}
+const countsByPhase: Record<string, number> = {}
+function phaseOf(p: BlogPost): string {
+  if (p.audience === 'gestante') return 'gestante'
+  const w = p.target_week_start ?? 0
+  if (w <= 12) return '0-3m'
+  if (w <= 26) return '3-6m'
+  return '6m+'
+}
 for (const p of allPosts) {
   countsByCategory[p.category] = (countsByCategory[p.category] ?? 0) + 1
+}
+// Phase counts usa só posts da categoria ativa (pra chips refletirem scope atual)
+for (const p of posts) {
+  const ph = phaseOf(p)
+  countsByPhase[ph] = (countsByPhase[ph] ?? 0) + 1
 }
 
 const catLabel = CATEGORY_LABEL[cat]
@@ -46,7 +78,7 @@ const breadcrumbLd = categoryBreadcrumbJsonLd(cat)
   <script type="application/ld+json" set:html={JSON.stringify(breadcrumbLd)} />
 
   <!-- Hero compacto da categoria -->
-  <section class="max-w-5xl mx-auto px-4 pt-12 pb-8">
+  <section class="max-w-5xl mx-auto px-4 pt-12 pb-4">
     <nav class="text-sm text-yaya-cloud/50 mb-5 flex items-center gap-1.5 font-sans">
       <a href="/" class="hover:text-yaya-cloud transition-colors">Blog</a>
       <span class="text-yaya-cloud/30">›</span>
@@ -65,12 +97,15 @@ const breadcrumbLd = categoryBreadcrumbJsonLd(cat)
     </div>
   </section>
 
+  <PhaseChips counts={countsByPhase} />
+
   <div class="max-w-5xl mx-auto px-4 pb-20 md:flex md:gap-10 md:items-start">
 
     <CategorySidebar counts={countsByCategory} activeCategory={cat} />
 
-    <!-- Main: grid de posts da categoria -->
     <main class="flex-1 min-w-0">
+      <FilterToolbar />
+
       {error && (
         <p class="text-yaya-cloud/50 text-center py-20 font-sans">
           Não conseguimos carregar os artigos agora. Tenta de novo em alguns instantes.
@@ -85,39 +120,23 @@ const breadcrumbLd = categoryBreadcrumbJsonLd(cat)
         </div>
       )}
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {posts.map((post) => (
-          <a
-            href={`/${post.slug}`}
-            class="group flex flex-col bg-yaya-cloud/[0.03] rounded-md overflow-hidden border border-yaya-cloud/10 hover:border-yaya-purple/40 hover:bg-yaya-cloud/[0.06] transition-all"
-          >
-            {post.image_url ? (
-              <div class="aspect-[16/10] overflow-hidden bg-yaya-purple/5">
-                <img
-                  src={post.image_url}
-                  alt={post.image_alt ?? post.title}
-                  class="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
-                  loading="lazy"
-                />
-              </div>
-            ) : (
-              <div class="aspect-[16/10] bg-yaya-purple/10 border-b border-yaya-purple/15 flex items-center justify-center">
-                <span class="text-5xl opacity-70">{catEmoji}</span>
-              </div>
-            )}
-
-            <div class="flex-1 p-4 flex flex-col">
-              <span class="text-[10px] font-display font-bold text-yaya-purple uppercase tracking-wider mb-1.5">
-                {catLabel}
-              </span>
-
-              <h2 class="font-display font-bold text-yaya-cloud text-base leading-snug group-hover:text-yaya-purple transition-colors">
-                {post.title}
-              </h2>
-            </div>
-          </a>
-        ))}
+      <div id="posts-root" data-view="grid">
+        {posts.map((post) => {
+          const stats = feedbackStats[post.slug] ?? { total: 0, helpful: 0, approval: 0 }
+          return (
+            <PostCard
+              post={post}
+              viewsCount={stats.total}
+              feedbackTotal={stats.total}
+              feedbackApproval={stats.approval}
+            />
+          )
+        })}
       </div>
     </main>
   </div>
 </BlogLayout>
+
+<script>
+  import '../../scripts/blogFilters'
+</script>

@@ -1,0 +1,37 @@
+---
+interface Props {
+  counts: Record<string, number>
+}
+
+const { counts } = Astro.props
+
+const phases = [
+  { id: 'all', emoji: '📚', label: 'Todos' },
+  { id: 'gestante', emoji: '🤰', label: 'Gestante' },
+  { id: '0-3m', emoji: '👶', label: '0-3 meses' },
+  { id: '3-6m', emoji: '🌱', label: '3-6 meses' },
+  { id: '6m+', emoji: '🚼', label: '6 meses +' },
+] as const
+---
+
+<div class="max-w-5xl mx-auto px-4 pb-8">
+  <p class="text-center font-sans text-sm text-yaya-cloud/60 mb-4">
+    Onde você está na jornada?
+  </p>
+  <div class="flex flex-wrap justify-center gap-2">
+    {phases.map((p) => (
+      <button
+        type="button"
+        class="phase-chip flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-display font-bold bg-yaya-cloud/5 text-yaya-cloud/80 hover:bg-yaya-cloud/10 hover:text-yaya-cloud transition-colors data-[active=true]:bg-yaya-purple data-[active=true]:text-yaya-night"
+        data-phase={p.id}
+        data-active={p.id === 'all' ? 'true' : 'false'}
+      >
+        <span>{p.emoji}</span>
+        <span>{p.label}</span>
+        {p.id !== 'all' && counts[p.id] !== undefined && (
+          <span class="text-[10px] tabular-nums opacity-60">({counts[p.id]})</span>
+        )}
+      </button>
+    ))}
+  </div>
+</div>

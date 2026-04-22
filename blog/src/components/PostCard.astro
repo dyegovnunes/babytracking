@@ -1,0 +1,104 @@
+---
+import type { BlogPost, ContentCategory } from '../types'
+import { CATEGORY_LABEL, CATEGORY_EMOJI } from '../types'
+
+interface Props {
+  post: BlogPost
+  // Data agregado pro ordering client-side (passado via data-* attrs)
+  viewsCount?: number
+  feedbackTotal?: number
+  feedbackApproval?: number
+}
+
+const { post, viewsCount = 0, feedbackTotal = 0, feedbackApproval = 0 } = Astro.props
+
+// Calcula "phase" para filtro de fase do bebê (chips no hero)
+// gestante: audience=gestante
+// 0-3m: audience=parent AND target_week_start <= 12
+// 3-6m: audience=parent AND target_week_start 13..26
+// 6m+: audience=parent AND target_week_start > 26
+function computePhase(): string {
+  if (post.audience === 'gestante') return 'gestante'
+  const w = post.target_week_start ?? 0
+  if (w <= 12) return '0-3m'
+  if (w <= 26) return '3-6m'
+  return '6m+'
+}
+
+const phase = computePhase()
+const publishedAt = post.published_at ?? '1970-01-01'
+---
+
+<article
+  class="post-card group"
+  data-slug={post.slug}
+  data-category={post.category}
+  data-audience={post.audience}
+  data-phase={phase}
+  data-published-at={publishedAt}
+  data-views={viewsCount}
+  data-feedback-total={feedbackTotal}
+  data-feedback-approval={feedbackApproval.toFixed(3)}
+>
+  <a
+    href={`/${post.slug}`}
+    class="block bg-yaya-cloud/[0.03] rounded-md overflow-hidden border border-yaya-cloud/10 hover:border-yaya-purple/40 hover:bg-yaya-cloud/[0.06] transition-all"
+  >
+    <!-- ── GRADE (default) ────────────────────────────────── -->
+    <div class="view-grid flex flex-col">
+      {post.image_url ? (
+        <div class="aspect-[16/10] overflow-hidden bg-yaya-purple/5">
+          <img
+            src={post.image_url}
+            alt={post.image_alt ?? post.title}
+            class="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
+            loading="lazy"
+          />
+        </div>
+      ) : (
+        <div class="aspect-[16/10] bg-yaya-purple/10 border-b border-yaya-purple/15 flex items-center justify-center">
+          <span class="text-5xl opacity-70">{CATEGORY_EMOJI[post.category as ContentCategory]}</span>
+        </div>
+      )}
+
+      <div class="p-4">
+        <span class="text-[10px] font-display font-bold text-yaya-purple uppercase tracking-wider">
+          {CATEGORY_LABEL[post.category as ContentCategory]}
+        </span>
+        <h2 class="font-display font-bold text-yaya-cloud text-base leading-snug group-hover:text-yaya-purple transition-colors mt-1.5">
+          {post.title}
+        </h2>
+      </div>
+    </div>
+
+    <!-- ── LISTA (alternativo) ────────────────────────────── -->
+    <div class="view-list hidden flex-row gap-4 p-4">
+      {post.image_url ? (
+        <img
+          src={post.image_url}
+          alt={post.image_alt ?? post.title}
+          class="w-24 h-24 rounded-md object-cover shrink-0"
+          loading="lazy"
+        />
+      ) : (
+        <div class="w-24 h-24 rounded-md bg-yaya-purple/10 border border-yaya-purple/15 flex items-center justify-center shrink-0">
+          <span class="text-3xl">{CATEGORY_EMOJI[post.category as ContentCategory]}</span>
+        </div>
+      )}
+
+      <div class="flex-1 min-w-0">
+        <span class="text-[10px] font-display font-bold text-yaya-purple uppercase tracking-wider">
+          {CATEGORY_LABEL[post.category as ContentCategory]}
+        </span>
+        <h2 class="font-display font-bold text-yaya-cloud text-base leading-snug group-hover:text-yaya-purple transition-colors mt-1 mb-1.5">
+          {post.title}
+        </h2>
+        {post.meta_description && (
+          <p class="text-yaya-cloud/60 text-sm line-clamp-2 leading-relaxed font-sans">
+            {post.meta_description}
+          </p>
+        )}
+      </div>
+    </div>
+  </a>
+</article>

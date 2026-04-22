@@ -1,22 +1,51 @@
 ---
 import BlogLayout from '../layouts/BlogLayout.astro'
 import { supabase } from '../lib/supabase'
-import type { BlogPost, ContentCategory } from '../types'
-import { CATEGORY_LABEL, CATEGORY_EMOJI } from '../types'
+import type { BlogPost } from '../types'
 import CategorySidebar from '../components/CategorySidebar.astro'
+import PhaseChips from '../components/PhaseChips.astro'
+import FilterToolbar from '../components/FilterToolbar.astro'
+import PostCard from '../components/PostCard.astro'
 
-const { data: posts, error } = await supabase
+const { data: postsData, error } = await supabase
   .from('blog_posts')
-  .select('id, slug, title, meta_description, category, audience, target_week_start, target_week_end, image_url, image_alt, published_at')
+  .select('id, slug, title, meta_description, content_md, keywords, category, audience, pillar, role, related_slugs, schema_type, affiliate_products, premium_teaser, target_week_start, target_week_end, image_url, image_alt, published_at')
   .eq('status', 'published')
   .order('published_at', { ascending: false })
 
-const allPosts = (posts ?? []) as BlogPost[]
+const allPosts = (postsData ?? []) as BlogPost[]
 
-// Counts por categoria para a sidebar
+// Agrega stats de feedback pra ordering client-side
+const { data: feedbackData } = await supabase
+  .from('content_feedback')
+  .select('post_slug, sentiment')
+
+const feedbackStats: Record<string, { total: number; helpful: number; approval: number }> = {}
+for (const row of feedbackData ?? []) {
+  const s = row.post_slug as string
+  if (!feedbackStats[s]) feedbackStats[s] = { total: 0, helpful: 0, approval: 0 }
+  feedbackStats[s].total++
+  if (row.sentiment === 'helpful') feedbackStats[s].helpful++
+}
+for (const s in feedbackStats) {
+  feedbackStats[s].approval =
+    feedbackStats[s].total > 0 ? feedbackStats[s].helpful / feedbackStats[s].total : 0
+}
+
+// Counts por categoria (pra sidebar) e por fase (pra chips)
 const countsByCategory: Record<string, number> = {}
+const countsByPhase: Record<string, number> = {}
+function phaseOf(p: BlogPost): string {
+  if (p.audience === 'gestante') return 'gestante'
+  const w = p.target_week_start ?? 0
+  if (w <= 12) return '0-3m'
+  if (w <= 26) return '3-6m'
+  return '6m+'
+}
 for (const p of allPosts) {
   countsByCategory[p.category] = (countsByCategory[p.category] ?? 0) + 1
+  const ph = phaseOf(p)
+  countsByPhase[ph] = (countsByPhase[ph] ?? 0) + 1
 }
 ---
 
@@ -25,19 +54,24 @@ for (const p of allPosts) {
   description="Guias sobre sono, alimentação, desenvolvimento e saúde do bebê. Baseados em evidências, escritos para pais reais."
 >
   <!-- Hero compacto -->
-  <section class="max-w-5xl mx-auto px-4 pt-12 pb-10 text-center">
+  <section class="max-w-5xl mx-auto px-4 pt-12 pb-4 text-center">
     <h1 class="font-display text-4xl md:text-5xl font-extrabold text-yaya-cloud leading-tight tracking-tight">
       A rotina do seu bebê,<br class="hidden md:block" />
       <span class="text-yaya-purple">explicada com calma.</span>
     </h1>
   </section>
 
+  <!-- Chips de fase do bebê -->
+  <PhaseChips counts={countsByPhase} />
+
   <div class="max-w-5xl mx-auto px-4 pb-20 md:flex md:gap-10 md:items-start">
 
     <CategorySidebar counts={countsByCategory} />
 
-    <!-- Main: grid de posts -->
+    <!-- Main: toolbar + grid de posts -->
     <main class="flex-1 min-w-0">
+      <FilterToolbar />
+
       {error && (
         <p class="text-yaya-cloud/50 text-center py-20 font-sans">
           Não conseguimos carregar os artigos agora. Tenta de novo em alguns instantes.
@@ -51,39 +85,23 @@ for (const p of allPosts) {
         </div>
       )}
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {allPosts.map((post) => (
-          <a
-            href={`/${post.slug}`}
-            class="group flex flex-col bg-yaya-cloud/[0.03] rounded-md overflow-hidden border border-yaya-cloud/10 hover:border-yaya-purple/40 hover:bg-yaya-cloud/[0.06] transition-all"
-          >
-            {post.image_url ? (
-              <div class="aspect-[16/10] overflow-hidden bg-yaya-purple/5">
-                <img
-                  src={post.image_url}
-                  alt={post.image_alt ?? post.title}
-                  class="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
-                  loading="lazy"
-                />
-              </div>
-            ) : (
-              <div class="aspect-[16/10] bg-yaya-purple/10 border-b border-yaya-purple/15 flex items-center justify-center">
-                <span class="text-5xl opacity-70">{CATEGORY_EMOJI[post.category as ContentCategory]}</span>
-              </div>
-            )}
-
-            <div class="flex-1 p-4 flex flex-col">
-              <span class="text-[10px] font-display font-bold text-yaya-purple uppercase tracking-wider mb-1.5">
-                {CATEGORY_LABEL[post.category as ContentCategory]}
-              </span>
-
-              <h2 class="font-display font-bold text-yaya-cloud text-base leading-snug group-hover:text-yaya-purple transition-colors">
-                {post.title}
-              </h2>
-            </div>
-          </a>
-        ))}
+      <div id="posts-root" data-view="grid">
+        {allPosts.map((post) => {
+          const stats = feedbackStats[post.slug] ?? { total: 0, helpful: 0, approval: 0 }
+          return (
+            <PostCard
+              post={post}
+              viewsCount={stats.total}
+              feedbackTotal={stats.total}
+              feedbackApproval={stats.approval}
+            />
+          )
+        })}
       </div>
     </main>
   </div>
 </BlogLayout>
+
+<script>
+  import '../scripts/blogFilters'
+</script>

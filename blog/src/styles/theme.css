@@ -101,6 +101,41 @@ html.theme-light .bg-black\/60 {
 
 /* ── ThemeToggle: alternância de ícones sol/lua ─────────────────── */
 
+/* ── Post cards: visualização grade/lista + filtros ─────────────── */
+
+/* Esconde cards filtrados por fase ou paginação */
+.post-card[data-hidden-by-filter="true"],
+.post-card[data-hidden-by-limit="true"] {
+  display: none !important;
+}
+
+/* Container #posts-root — layout muda conforme data-view */
+#posts-root[data-view="grid"] {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+@media (min-width: 640px) {
+  #posts-root[data-view="grid"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+#posts-root[data-view="list"] {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Dentro de cada card, mostra só a variante da view ativa */
+#posts-root[data-view="grid"] .view-list { display: none !important; }
+#posts-root[data-view="grid"] .view-grid { display: flex !important; }
+
+#posts-root[data-view="list"] .view-grid { display: none !important; }
+#posts-root[data-view="list"] .view-list { display: flex !important; }
+
+/* ── ThemeToggle: alternância de ícones sol/lua ─────────────────── */
+
 /* Default: dark → mostra sol (ação: ir pro light) */
 .theme-toggle-sun { display: block; }
 .theme-toggle-moon { display: none; }
