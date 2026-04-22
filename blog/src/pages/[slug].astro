@@ -44,17 +44,31 @@ if (error || !data) {
 
 const post = data as BlogPost
 
-marked.setOptions({ breaks: true })
-const rawHtml = await marked(post.content_md)
-
-// Adiciona id="..." em cada <h2> para as âncoras do TOC funcionarem
-const contentHtml = rawHtml.replace(
-  /<h2>(.+?)<\/h2>/g,
-  (_, inner) => {
-    const text = inner.replace(/<[^>]+>/g, '')
-    return `<h2 id="${slugifyHeading(text)}">${inner}</h2>`
-  },
+// Remove a seção "## Leia também" do markdown (vamos renderizar separadamente
+// via componente RelatedPosts com cards completos). Pega da headline
+// "## Leia também" até o próximo separador "---" (inclusive).
+const cleanedMd = post.content_md.replace(
+  /##\s*Leia também[\s\S]*?\n---\n/gi,
+  '',
 )
+
+marked.setOptions({ breaks: true })
+const rawHtml = await marked(cleanedMd)
+
+// 1) Adiciona id="..." em cada <h2> para as âncoras do TOC funcionarem
+// 2) Abre links externos (http/https) em nova aba com rel noopener
+const contentHtml = rawHtml
+  .replace(
+    /<h2>(.+?)<\/h2>/g,
+    (_, inner) => {
+      const text = inner.replace(/<[^>]+>/g, '')
+      return `<h2 id="${slugifyHeading(text)}">${inner}</h2>`
+    },
+  )
+  .replace(
+    /<a href="(https?:\/\/[^"]+)"/g,
+    '<a href="$1" target="_blank" rel="noopener noreferrer"',
+  )
 
 // Extrai lista de headings H2 para o TOC
 const h2Headings: string[] = (post.content_md.match(/^## (.+)$/gm) ?? []).map(
@@ -187,6 +201,9 @@ const faqLd = post.schema_type === 'FAQPage' ? faqJsonLd(post) : null
     <!-- Corpo do artigo -->
     <div class="prose-yaya" set:html={contentHtml} />
 
+    <!-- Leia também: logo após o corpo do artigo, formato em cards -->
+    <RelatedPosts posts={relatedPosts} />
+
     <!-- Premium teaser (opcional, editor marca no frontmatter) -->
     <PremiumTeaser teaser={post.premium_teaser} />
 
@@ -237,9 +254,6 @@ const faqLd = post.schema_type === 'FAQPage' ? faqJsonLd(post) : null
       audience={post.audience}
       relatedSlugs={post.related_slugs ?? []}
     />
-
-    <!-- Leia também: artigos relacionados (internal linking + retenção) -->
-    <RelatedPosts posts={relatedPosts} />
 
     <!-- Link de correção -->
     <CorrectionLink title={post.title} url={canonicalUrl} />
