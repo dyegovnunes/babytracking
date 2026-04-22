@@ -2,7 +2,6 @@ import { useState, useMemo, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAppState } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
-import { useBabyPremium } from '../../hooks/useBabyPremium'
 import { useMyRole } from '../../hooks/useMyRole'
 import { useMyCaregiverPermissions } from '../../hooks/useMyCaregiverPermissions'
 import { useMilestones } from './useMilestones'
@@ -23,7 +22,6 @@ import { PaywallModal } from '../../components/ui/PaywallModal'
 import Toast from '../../components/ui/Toast'
 import { hapticLight } from '../../lib/haptics'
 import { contractionDe } from '../../lib/genderUtils'
-import { maybeShowInterstitialOncePerDay } from '../../lib/admob'
 import { useSheetBackClose } from '../../hooks/useSheetBackClose'
 import { MilestonesSkeleton } from '../../components/ui/Skeleton'
 import { motion } from 'framer-motion'
@@ -54,7 +52,6 @@ export default function MilestonesPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const { baby } = useAppState()
   const { user } = useAuth()
-  const isPremium = useBabyPremium()
   const myRole = useMyRole()
   const perms = useMyCaregiverPermissions()
   const readOnly = myRole === 'caregiver'
@@ -90,12 +87,6 @@ export default function MilestonesPage() {
   const [showPaywall, setShowPaywall] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
 
-  // Interstitial skippable na primeira visita do dia (só free)
-  useEffect(() => {
-    if (!isPremium) {
-      maybeShowInterstitialOncePerDay('milestones').catch(() => {})
-    }
-  }, [isPremium])
 
   // Open detail from query param (?register=code) — mantido pra retrocompat
   // de deeplinks. Abre o detail com entry=null (não registrado).

@@ -17,7 +17,6 @@ import { hapticLight, hapticSuccess } from '../../lib/haptics'
 import { PaywallModal } from '../../components/ui/PaywallModal'
 import Toast from '../../components/ui/Toast'
 import { useSheetBackClose } from '../../hooks/useSheetBackClose'
-import { useVaccineUnlock } from './useVaccineUnlock'
 import VaccineRow from './components/VaccineRow'
 import VaccineDetailSheet from './components/VaccineDetailSheet'
 import VaccineApplySheet from './components/VaccineApplySheet'
@@ -92,7 +91,6 @@ export default function VaccinesPage() {
   const [selected, setSelected] = useState<Vaccine | null>(null)
   const [applySheetFor, setApplySheetFor] = useState<Vaccine | null>(null)
   const [showPaywall, setShowPaywall] = useState(false)
-  const { ensureUnlocked } = useVaccineUnlock(baby?.id)
   const [toast, setToast] = useState<string | null>(null)
 
   // Deep link: ?edit=CODE abre o detail sheet direto.
@@ -135,11 +133,6 @@ export default function VaccinesPage() {
   const handleMarkApplied = async () => {
     if (readOnly) return
     if (!selected) return
-    // Premium passa direto, free precisa ver rewarded ad (desbloqueia 10min)
-    if (!isPremium) {
-      const unlocked = await ensureUnlocked()
-      if (!unlocked) return
-    }
     // Fecha o detail sheet primeiro, depois abre o apply sheet em um novo
     // tick. Isso evita o conflito do `useSheetBackClose` — quando dois
     // sheets se trocam no mesmo ciclo de render, o `history.back()` do
@@ -156,10 +149,6 @@ export default function VaccinesPage() {
    */
   const handleCheckboxTap = async (vaccine: Vaccine) => {
     if (readOnly) return
-    if (!isPremium) {
-      const unlocked = await ensureUnlocked()
-      if (!unlocked) return
-    }
     hapticLight()
     const wasApplied = statusByCode.get(vaccine.code) === 'applied'
     const ok = await quickToggle(vaccine.code, user?.id)
@@ -172,10 +161,6 @@ export default function VaccinesPage() {
   const handleSkip = async () => {
     if (readOnly) return
     if (!selected) return
-    if (!isPremium) {
-      const unlocked = await ensureUnlocked()
-      if (!unlocked) return
-    }
     const name = selected.name
     const result = await skipVaccine(selected.code, user?.id)
     setSelected(null)

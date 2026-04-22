@@ -6,7 +6,6 @@ import { useMyRole } from '../../hooks/useMyRole'
 import { useMyCaregiverPermissions } from '../../hooks/useMyCaregiverPermissions'
 import { DEVELOPMENT_LEAPS, type DevelopmentLeap } from './developmentLeaps'
 import { contractionDe } from '../../lib/genderUtils'
-import { maybeShowInterstitialOncePerDay } from '../../lib/admob'
 import LeapTimeline from './components/LeapTimeline'
 
 type LeapStatus = 'past' | 'active' | 'upcoming' | 'future'
@@ -48,12 +47,6 @@ export default function LeapsPage() {
     }
   }, [myRole, perms.show_leaps, navigate])
 
-  // Interstitial skippable na primeira visita do dia (só free)
-  useEffect(() => {
-    if (!isPremium) {
-      maybeShowInterstitialOncePerDay('leaps').catch(() => {})
-    }
-  }, [isPremium])
 
   const leapsWithStatus = useMemo(() => {
     if (!baby?.birthDate) return []
