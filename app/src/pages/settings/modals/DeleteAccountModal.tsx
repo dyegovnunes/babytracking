@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useSheetBackClose } from '../../../hooks/useSheetBackClose'
 import { useDeleteAccount } from '../../../hooks/useDeleteAccount'
 import { hapticMedium } from '../../../lib/haptics'
@@ -16,27 +16,70 @@ interface Props {
  * criação de conta precisa oferecer exclusão dentro do próprio app,
  * sem redirecionar pra um site.
  *
- * UX defensiva:
- *  - Aviso vermelho enorme listando o que será apagado
- *  - Input exige digitar "EXCLUIR" em maiúsculas pra habilitar o botão
- *  - Botão de ação só fica enabled quando o texto bate
- *  - Loading state durante a chamada da edge function
- *  - Em sucesso, `useDeleteAccount` já chama `signOut()` e o AuthProvider
- *    deslogando automaticamente leva pro LoginPage
+ * Fluxo:
+ *  1. Usuário digita "EXCLUIR" e confirma
+ *  2. Edge function deleta a conta + signOut local + localStorage.clear()
+ *  3. Modal troca pra tela de adeus com countdown de 10s (React state,
+ *     sem navegação — evita o problema do Capacitor Android interceptar
+ *     window.location.href como client-side nav e preservar estado stale)
+ *  4. Countdown ou botão dispara window.location.reload(), que força
+ *     reload verdadeiro. Com localStorage limpo, Supabase não acha sessão
+ *     → user = null → AuthenticatedRoutes renderiza LoginPage corretamente.
  */
 export default function DeleteAccountModal({ isOpen, onClose, onToast }: Props) {
   const [confirmText, setConfirmText] = useState('')
+  const [deleted, setDeleted] = useState(false)
+  const [seconds, setSeconds] = useState(10)
   const { deleteAccount, loading } = useDeleteAccount()
 
-  useSheetBackClose(isOpen, () => {
+  // Impede fechar com back gesture após deletar (já não há conta)
+  useSheetBackClose(isOpen && !deleted, () => {
     if (!loading) {
       setConfirmText('')
       onClose()
     }
   })
 
+  // Countdown pós-exclusão
+  useEffect(() => {
+    if (!deleted) return
+    if (seconds <= 0) { window.location.reload(); return }
+    const t = setTimeout(() => setSeconds((s) => s - 1), 1000)
+    return () => clearTimeout(t)
+  }, [deleted, seconds])
+
   if (!isOpen) return null
 
+  // ── Tela de adeus ──────────────────────────────────────────────────────
+  if (deleted) {
+    return (
+      <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center gap-6 px-8 text-center bg-surface">
+        <span className="material-symbols-outlined text-on-surface/25" style={{ fontSize: 72 }}>
+          heart_broken
+        </span>
+        <div className="space-y-2">
+          <h1 className="font-headline text-2xl font-bold text-on-surface">
+            Sua conta foi excluída
+          </h1>
+          <p className="font-body text-sm text-on-surface-variant leading-relaxed max-w-xs mx-auto">
+            Lamentamos ver você partir. Todos os seus dados foram
+            removidos com segurança dos nossos servidores.
+          </p>
+        </div>
+        <p className="text-xs text-on-surface/40">
+          Redirecionando em {seconds}s…
+        </p>
+        <button
+          onClick={() => window.location.reload()}
+          className="px-6 py-3 rounded-md bg-primary text-on-primary font-label font-semibold text-sm"
+        >
+          Ir para o login agora
+        </button>
+      </div>
+    )
+  }
+
+  // ── Tela de confirmação ────────────────────────────────────────────────
   const canDelete = confirmText === 'EXCLUIR' && !loading
 
   async function handleConfirm() {
@@ -47,9 +90,9 @@ export default function DeleteAccountModal({ isOpen, onClose, onToast }: Props) 
       onToast(res.error ?? 'Erro ao excluir conta')
       return
     }
-    // Sucesso: hook navega imediatamente pra /conta-excluida (tela de
-    // adeus com countdown). Não precisa de toast aqui — o feedback
-    // visual está na DeletedAccountPage.
+    // Conta deletada — mostra tela de adeus sem navegar.
+    // A navegação real acontece via window.location.reload() no countdown.
+    setDeleted(true)
   }
 
   function handleClose() {

@@ -62,12 +62,11 @@ export function useDeleteAccount() {
         sessionStorage.clear()
       } catch { /* ignore */ }
 
-      // Navega direto pra tela de adeus (rota pública, sem auth).
-      // Sem delay — o feedback visual está na DeletedAccountPage.
-      // Usa href pra forçar reload completo do WebView; evita que o
-      // React Router intercepte e mantenha AppContext em memória
-      // (causaria needsOnboarding=true → OnboardingPage aparecer).
-      window.location.href = '/conta-excluida'
+      // Retorna ok: true. O caller (DeleteAccountModal) mostra a tela
+      // de adeus via React state e depois dispara window.location.reload()
+      // para forçar reload verdadeiro — evita o problema do Capacitor
+      // Android interceptar window.location.href como navegação React
+      // Router, que preservaria o AppContext stale e mostraria Onboarding.
       return { ok: true }
     } catch (e) {
       return {
