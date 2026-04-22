@@ -31,12 +31,12 @@ seo:
 sources:
   - name: "OMS. WHO recommendations: intrapartum care for a positive childbirth experience. 2018."
     url: "https://www.who.int/publications/i/item/9789241550215"
-  - name: "SBP. Documento Científico: Assistência ao Recém-Nascido na Sala de Parto. 2022."
+  - name: "SBP. A Importância do Pediatra na Assistência Perinatal. Departamento Científico de Neonatologia. 2023."
     url: "https://www.sbp.com.br/departamentos/neonatologia/documentos-cientificos/"
-  - name: "Ministério da Saúde. Diretrizes de Atenção à Gestante: Cesárea. 2016."
+  - name: "Ministério da Saúde. Diretrizes de Atenção à Gestante: operação cesariana. 2016."
     url: "https://bvsms.saude.gov.br/bvs/publicacoes/diretrizes_atencao_gestante_operacao_cesariana_relatorio_recomendacao.pdf"
-  - name: "ACOG. Safe Prevention of the Primary Cesarean Delivery. Obstetric Care Consensus. 2019."
-    url: "https://www.acog.org/clinical/clinical-guidance/obstetric-care-consensus/articles/2019/03/safe-prevention-of-the-primary-cesarean-delivery"
+  - name: "ACOG. Safe Prevention of the Primary Cesarean Delivery. Obstetric Care Consensus. 2014."
+    url: "https://www.acog.org/clinical/clinical-guidance/obstetric-care-consensus/articles/2014/03/safe-prevention-of-the-primary-cesarean-delivery"
 images:
   hero: img4-1.png
   complementar: img4-2.png
@@ -131,9 +131,9 @@ Converse sobre ele com seu obstetra no terceiro trimestre, não na hora do parto
 **Fontes:**
 
 1. [OMS. WHO recommendations: intrapartum care for a positive childbirth experience. 2018.](https://www.who.int/publications/i/item/9789241550215)
-2. [SBP. Documento Científico: Assistência ao Recém-Nascido na Sala de Parto. 2022.](https://www.sbp.com.br/departamentos/neonatologia/documentos-cientificos/)
-3. [Ministério da Saúde. Diretrizes de Atenção à Gestante: Cesárea. 2016.](https://bvsms.saude.gov.br/bvs/publicacoes/diretrizes_atencao_gestante_operacao_cesariana_relatorio_recomendacao.pdf)
-4. [ACOG. Safe Prevention of the Primary Cesarean Delivery. 2019.](https://www.acog.org/clinical/clinical-guidance/obstetric-care-consensus/articles/2019/03/safe-prevention-of-the-primary-cesarean-delivery)
+2. [SBP. A Importância do Pediatra na Assistência Perinatal. Departamento Científico de Neonatologia. 2023.](https://www.sbp.com.br/departamentos/neonatologia/documentos-cientificos/)
+3. [Ministério da Saúde. Diretrizes de Atenção à Gestante: operação cesariana. 2016.](https://bvsms.saude.gov.br/bvs/publicacoes/diretrizes_atencao_gestante_operacao_cesariana_relatorio_recomendacao.pdf)
+4. [ACOG. Safe Prevention of the Primary Cesarean Delivery. Obstetric Care Consensus. 2014.](https://www.acog.org/clinical/clinical-guidance/obstetric-care-consensus/articles/2014/03/safe-prevention-of-the-primary-cesarean-delivery)
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o obstetra que acompanha a sua gestação.*
 

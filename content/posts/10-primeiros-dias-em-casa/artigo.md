@@ -28,10 +28,10 @@ seo:
   snippet_type: paragrafo
   snippet_section: "O que esperar dos primeiros dias"
 sources:
-  - name: "SBP. Cuidados com o Recém-Nascido: orientações para a família. 2022."
-    url: "https://www.sbp.com.br/especiais/pediatria-para-familias/cuidados-com-o-bebe/cuidados-com-o-recem-nascido/"
-  - name: "AAP. Your Newborn's First Week: How to Prepare. HealthyChildren.org."
-    url: "https://www.healthychildren.org/English/ages-stages/baby/Pages/Bringing-Baby-Home.aspx"
+  - name: "SBP. Recomendações para alta hospitalar do Recém-Nascido Termo Potencialmente Saudável. Departamento Científico de Neonatologia. 2020."
+    url: "https://www.sbp.com.br/fileadmin/user_upload/22649c-DC_-_Recom_Alta_hospitalar_RN_TermoPotenc_Saudavel.pdf"
+  - name: "AAP. Bringing Baby Home: What to Do Before Leaving the Hospital. HealthyChildren.org."
+    url: "https://www.healthychildren.org/English/ages-stages/prenatal/delivery-beyond/Pages/bringing-baby-home-what-to-do-before-leaving-the-hospital.aspx"
   - name: "OMS. WHO recommendations on postnatal care of the mother and newborn. 2013."
     url: "https://www.who.int/publications/i/item/9789241506649"
 images:
@@ -113,8 +113,8 @@ O puerpério é um período de recuperação física e emocional intenso. Baby b
 
 **Fontes:**
 
-1. [SBP. Cuidados com o Recém-Nascido: orientações para a família. 2022.](https://www.sbp.com.br/especiais/pediatria-para-familias/cuidados-com-o-bebe/cuidados-com-o-recem-nascido/)
-2. [AAP. Your Newborn's First Week: How to Prepare. HealthyChildren.org.](https://www.healthychildren.org/English/ages-stages/baby/Pages/Bringing-Baby-Home.aspx)
+1. [SBP. Recomendações para alta hospitalar do Recém-Nascido Termo Potencialmente Saudável. Departamento Científico de Neonatologia. 2020.](https://www.sbp.com.br/fileadmin/user_upload/22649c-DC_-_Recom_Alta_hospitalar_RN_TermoPotenc_Saudavel.pdf)
+2. [AAP. Bringing Baby Home: What to Do Before Leaving the Hospital. HealthyChildren.org.](https://www.healthychildren.org/English/ages-stages/prenatal/delivery-beyond/Pages/bringing-baby-home-what-to-do-before-leaving-the-hospital.aspx)
 3. [OMS. WHO recommendations on postnatal care of the mother and newborn. 2013.](https://www.who.int/publications/i/item/9789241506649)
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*

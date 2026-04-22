@@ -27,11 +27,11 @@ seo:
   snippet_type: lista
   snippet_section: "O que levar na mala da maternidade"
 sources:
-  - name: "SBP. Cuidados com o Recém-Nascido: orientações para a família. 2022."
-    url: "https://www.sbp.com.br/especiais/pediatria-para-familias/cuidados-com-o-bebe/cuidados-com-o-recem-nascido/"
-  - name: "Ministério da Saúde. Caderneta da Gestante. 2023."
+  - name: "SBP. Recomendações para alta hospitalar do Recém-Nascido Termo Potencialmente Saudável. Departamento Científico de Neonatologia. 2020."
+    url: "https://www.sbp.com.br/fileadmin/user_upload/22649c-DC_-_Recom_Alta_hospitalar_RN_TermoPotenc_Saudavel.pdf"
+  - name: "Ministério da Saúde. Caderneta da Gestante. 8ª ed. 2023."
     url: "https://bvsms.saude.gov.br/bvs/publicacoes/caderneta_gestante_8ed_rev.pdf"
-  - name: "OMS. WHO recommendations on maternal and newborn care. 2022."
+  - name: "OMS. WHO recommendations on maternal health. 2017."
     url: "https://www.who.int/publications/i/item/WHO-MCA-17.10"
 images:
   hero: img1-1.png
@@ -57,7 +57,7 @@ A mala da maternidade não precisa parecer uma mudança. A maioria das maternida
 
 ## Quando montar
 
-Entre a 32ª e a 36ª semana. Não precisa resolver tudo em um dia, mas até a 37ª semana é bom que esteja pronta e acessível. Cerca de 12% dos partos no Brasil acontecem antes de 37 semanas (Ministério da Saúde), e ter a mala fechada elimina uma preocupação a menos nesse momento.
+Entre a 32ª e a 36ª semana. Não precisa resolver tudo em um dia, mas até a 37ª semana é bom que esteja pronta e acessível. Cerca de 12% dos partos no Brasil acontecem antes de 37 semanas, e ter a mala fechada elimina uma preocupação a menos nesse momento.
 
 Antes de comprar qualquer coisa, ligue para a maternidade e pergunte o que eles já fornecem. Muitas oferecem fraldas, toalhas e produtos de higiene do bebê.
 
@@ -133,9 +133,9 @@ Roupas do bebê em excesso (você vai trocar mais fraldas do que roupas), banhei
 
 **Fontes:**
 
-1. [SBP. Cuidados com o Recém-Nascido: orientações para a família. 2022.](https://www.sbp.com.br/especiais/pediatria-para-familias/cuidados-com-o-bebe/cuidados-com-o-recem-nascido/)
-2. [Ministério da Saúde. Caderneta da Gestante. 2023.](https://bvsms.saude.gov.br/bvs/publicacoes/caderneta_gestante_8ed_rev.pdf)
-3. [OMS. WHO recommendations on maternal and newborn care. 2022.](https://www.who.int/publications/i/item/WHO-MCA-17.10)
+1. [SBP. Recomendações para alta hospitalar do Recém-Nascido Termo Potencialmente Saudável. Departamento Científico de Neonatologia. 2020.](https://www.sbp.com.br/fileadmin/user_upload/22649c-DC_-_Recom_Alta_hospitalar_RN_TermoPotenc_Saudavel.pdf)
+2. [Ministério da Saúde. Caderneta da Gestante. 8ª ed. 2023.](https://bvsms.saude.gov.br/bvs/publicacoes/caderneta_gestante_8ed_rev.pdf)
+3. [OMS. WHO recommendations on maternal health. 2017.](https://www.who.int/publications/i/item/WHO-MCA-17.10)
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o profissional que acompanha a sua gestação.*
 

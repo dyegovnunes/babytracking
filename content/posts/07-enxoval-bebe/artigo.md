@@ -28,8 +28,8 @@ seo:
   snippet_type: lista
   snippet_section: "Enxoval essencial do bebê"
 sources:
-  - name: "SBP. Cuidados com o Recém-Nascido: orientações para a família. 2022."
-    url: "https://www.sbp.com.br/especiais/pediatria-para-familias/cuidados-com-o-bebe/cuidados-com-o-recem-nascido/"
+  - name: "SBP. Recomendações para alta hospitalar do Recém-Nascido Termo Potencialmente Saudável. Departamento Científico de Neonatologia. 2020."
+    url: "https://www.sbp.com.br/fileadmin/user_upload/22649c-DC_-_Recom_Alta_hospitalar_RN_TermoPotenc_Saudavel.pdf"
   - name: "Ministério da Saúde. Caderneta da Gestante. 2023."
     url: "https://bvsms.saude.gov.br/bvs/publicacoes/caderneta_gestante_8ed_rev.pdf"
 images:
@@ -123,7 +123,7 @@ Ninho redutor, almofada anti-refluxo, posicionador de berço: além de desnecess
 
 **Fontes:**
 
-1. [SBP. Cuidados com o Recém-Nascido: orientações para a família. 2022.](https://www.sbp.com.br/especiais/pediatria-para-familias/cuidados-com-o-bebe/cuidados-com-o-recem-nascido/)
+1. [SBP. Recomendações para alta hospitalar do Recém-Nascido Termo Potencialmente Saudável. Departamento Científico de Neonatologia. 2020.](https://www.sbp.com.br/fileadmin/user_upload/22649c-DC_-_Recom_Alta_hospitalar_RN_TermoPotenc_Saudavel.pdf)
 2. [Ministério da Saúde. Caderneta da Gestante. 2023.](https://bvsms.saude.gov.br/bvs/publicacoes/caderneta_gestante_8ed_rev.pdf)
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*

@@ -30,8 +30,8 @@ seo:
 sources:
   - name: "OMS. Protecting, promoting and supporting breastfeeding in facilities providing maternity and newborn services. 2017."
     url: "https://www.who.int/publications/i/item/9789241550086"
-  - name: "SBP. Documento Científico: Aleitamento Materno. 2021."
-    url: "https://www.sbp.com.br/departamentos/aleitamento-materno/"
+  - name: "SBP. Guia Prático de Aleitamento Materno. Departamento Científico de Aleitamento Materno. Atualizado."
+    url: "https://www.sbp.com.br/fileadmin/user_upload/24585d-GPRATICO-GuiaPratico_de_AM-Atualizacao.pdf"
   - name: "La Leche League International. The Womanly Art of Breastfeeding. 8th ed."
     url: "https://llli.org/resources/womanly-art-breastfeeding/"
 images:
@@ -100,7 +100,7 @@ Se amamentar não for possível ou não for a sua escolha, tudo bem. A decisão 
 **Fontes:**
 
 1. [OMS. Protecting, promoting and supporting breastfeeding. 2017.](https://www.who.int/publications/i/item/9789241550086)
-2. [SBP. Documento Científico: Aleitamento Materno. 2021.](https://www.sbp.com.br/departamentos/aleitamento-materno/)
+2. [SBP. Guia Prático de Aleitamento Materno. Departamento Científico de Aleitamento Materno. Atualizado.](https://www.sbp.com.br/fileadmin/user_upload/24585d-GPRATICO-GuiaPratico_de_AM-Atualizacao.pdf)
 3. [La Leche League International. The Womanly Art of Breastfeeding. 8th ed.](https://llli.org/resources/womanly-art-breastfeeding/)
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o obstetra que acompanha a sua gestação.*

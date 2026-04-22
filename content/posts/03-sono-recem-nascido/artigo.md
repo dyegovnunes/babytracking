@@ -31,8 +31,8 @@ seo:
 sources:
   - name: "AAP. Sleep-Related Infant Deaths: Updated 2022 Recommendations. Pediatrics. 2022."
     url: "https://publications.aap.org/pediatrics/article/150/1/e2022057990/188304/Sleep-Related-Infant-Deaths-Updated-2022"
-  - name: "SBP. Documento Científico: Sono na Infância. 2020."
-    url: "https://www.sbp.com.br/departamentos/neurologia/documentos-cientificos/"
+  - name: "SBP. Síndrome da Morte Súbita do Lactente. Departamento Científico de Medicina do Sono. 2018."
+    url: "https://www.sbp.com.br/fileadmin/user_upload/20226d-DocCient_-_Sindrome_Morte_Subita_do_Lactente.pdf"
   - name: "Mindell JA, Owens JA. A Clinical Guide to Pediatric Sleep. Lippincott. 2015."
     url: "https://shop.lww.com/a-clinical-guide-to-pediatric-sleep/p/9781451193008"
   - name: "National Sleep Foundation. Sleep Duration Recommendations. 2015."
@@ -113,7 +113,7 @@ Baseado nas recomendações da AAP (2022):
 **Fontes:**
 
 1. [AAP. Sleep-Related Infant Deaths: Updated 2022 Recommendations. Pediatrics. 2022.](https://publications.aap.org/pediatrics/article/150/1/e2022057990/188304/Sleep-Related-Infant-Deaths-Updated-2022)
-2. [SBP. Documento Científico: Sono na Infância. 2020.](https://www.sbp.com.br/departamentos/neurologia/documentos-cientificos/)
+2. [SBP. Síndrome da Morte Súbita do Lactente. Departamento Científico de Medicina do Sono. 2018.](https://www.sbp.com.br/fileadmin/user_upload/20226d-DocCient_-_Sindrome_Morte_Subita_do_Lactente.pdf)
 3. [Mindell JA, Owens JA. A Clinical Guide to Pediatric Sleep. Lippincott. 2015.](https://shop.lww.com/a-clinical-guide-to-pediatric-sleep/p/9781451193008)
 4. [National Sleep Foundation. Sleep Duration Recommendations. 2015.](https://www.sleepfoundation.org/how-sleep-works/how-much-sleep-do-we-really-need)
 

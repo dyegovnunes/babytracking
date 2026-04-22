@@ -28,8 +28,8 @@ seo:
   snippet_type: paragrafo
   snippet_section: "O que são cólicas do bebê"
 sources:
-  - name: "SBP. Documento Científico: Cólica do Lactente. 2020."
-    url: "https://www.sbp.com.br/departamentos/gastroenterologia/"
+  - name: "SBP. Distúrbios Gastrointestinais Funcionais no Lactente. Departamento Científico de Gastroenterologia."
+    url: "https://www.sbp.com.br/fileadmin/user_upload/Manual_Disturbios_GI_funcionais_no_lactente_versao_site.pdf"
   - name: "AAP. Colic Relief Tips for Parents. HealthyChildren.org."
     url: "https://www.healthychildren.org/English/ages-stages/baby/crying-colic/Pages/Colic.aspx"
   - name: "Zeevenhooven J, et al. The New Rome IV Criteria for Functional Gastrointestinal Disorders in Infants and Toddlers. Pediatr Gastroenterol Nutr. 2017."
@@ -109,7 +109,7 @@ Cólica é exaustivo para quem cuida. Se você sentir que está no limite, coloq
 
 **Fontes:**
 
-1. [SBP. Documento Científico: Cólica do Lactente. 2020.](https://www.sbp.com.br/departamentos/gastroenterologia/)
+1. [SBP. Distúrbios Gastrointestinais Funcionais no Lactente. Departamento Científico de Gastroenterologia.](https://www.sbp.com.br/fileadmin/user_upload/Manual_Disturbios_GI_funcionais_no_lactente_versao_site.pdf)
 2. [AAP. Colic Relief Tips for Parents. HealthyChildren.org.](https://www.healthychildren.org/English/ages-stages/baby/crying-colic/Pages/Colic.aspx)
 3. [Zeevenhooven J, et al. The New Rome IV Criteria. Pediatr Gastroenterol Nutr. 2017.](https://pubmed.ncbi.nlm.nih.gov/28401050/)
 

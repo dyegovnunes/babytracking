@@ -28,8 +28,8 @@ seo:
   snippet_type: paragrafo
   snippet_section: "Quantas fraldas o recém-nascido usa por dia"
 sources:
-  - name: "SBP. Cuidados com o Recém-Nascido: orientações para a família. 2022."
-    url: "https://www.sbp.com.br/especiais/pediatria-para-familias/cuidados-com-o-bebe/cuidados-com-o-recem-nascido/"
+  - name: "SBP. Consenso de Cuidado com a Pele do Recém-Nascido. Departamento Científico de Dermatologia Pediátrica."
+    url: "https://www.sbp.com.br/fileadmin/user_upload/flipping-book/consenso-cuidados-pele/cuidados-com-a-pele/assets/downloads/publication.pdf"
   - name: "AAP. Diaper Rash. HealthyChildren.org."
     url: "https://www.healthychildren.org/English/ages-stages/baby/diapers-clothing/Pages/Diaper-Rash.aspx"
 images:
@@ -110,7 +110,7 @@ Tamanho RN serve para bebês de 2-4,5kg, geralmente por 2-4 semanas. Se a fralda
 
 **Fontes:**
 
-1. [SBP. Cuidados com o Recém-Nascido: orientações para a família. 2022.](https://www.sbp.com.br/especiais/pediatria-para-familias/cuidados-com-o-bebe/cuidados-com-o-recem-nascido/)
+1. [SBP. Consenso de Cuidado com a Pele do Recém-Nascido. Departamento Científico de Dermatologia Pediátrica.](https://www.sbp.com.br/fileadmin/user_upload/flipping-book/consenso-cuidados-pele/cuidados-com-a-pele/assets/downloads/publication.pdf)
 2. [AAP. Diaper Rash. HealthyChildren.org.](https://www.healthychildren.org/English/ages-stages/baby/diapers-clothing/Pages/Diaper-Rash.aspx)
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*
