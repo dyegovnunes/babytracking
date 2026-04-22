@@ -75,6 +75,7 @@ interface Stats {
     weight: number | null; height: number | null;
     birthWeight: number | null; birthHeight: number | null;
     weightGain: number | null; heightGain: number | null;
+    weightSpanDays: number | null;
     weightHistory: { months: number; value: number }[];
   } | null;
   patterns: string[];
@@ -131,10 +132,11 @@ function trafficColor(status: 'green' | 'yellow' | 'red', c: Colors): string {
 }
 
 // ─── Date Filters ─────────────────────────────
-type FilterKey = 'today' | '7d' | '15d' | '30d' | 'month' | 'last_month' | 'all';
+type FilterKey = 'today' | 'yesterday' | '7d' | '15d' | '30d' | 'month' | 'last_month' | 'all';
 
 const FILTERS: { key: FilterKey; label: string; minDays: number }[] = [
   { key: 'today', label: 'Hoje', minDays: 0 },
+  { key: 'yesterday', label: 'Ontem', minDays: 0 },
   { key: '7d', label: 'Últimos 7 dias', minDays: 2 },
   { key: '15d', label: 'Últimos 15 dias', minDays: 8 },
   { key: '30d', label: 'Últimos 30 dias', minDays: 16 },
@@ -148,6 +150,11 @@ function getFilterRange(key: FilterKey): { start: number; end: number } {
   const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
   switch (key) {
     case 'today': return { start: todayStart.getTime(), end: now };
+    case 'yesterday': {
+      const y = new Date(todayStart); y.setDate(y.getDate() - 1);
+      const ye = new Date(y); ye.setHours(23, 59, 59, 999);
+      return { start: y.getTime(), end: ye.getTime() };
+    }
     case '7d': return { start: now - 7 * 86400000, end: now };
     case '15d': return { start: now - 15 * 86400000, end: now };
     case '30d': return { start: now - 30 * 86400000, end: now };
@@ -162,7 +169,7 @@ function getFilterRange(key: FilterKey): { start: number; end: number } {
 }
 
 function getFilterAvailability(logs: { timestamp: number }[]): Record<FilterKey, boolean> {
-  if (logs.length === 0) return { today: false, '7d': false, '15d': false, '30d': false, month: false, last_month: false, all: false };
+  if (logs.length === 0) return { today: false, yesterday: false, '7d': false, '15d': false, '30d': false, month: false, last_month: false, all: false };
   const now = Date.now();
   const oldest = Math.min(...logs.map(l => l.timestamp));
   const dataSpanDays = (now - oldest) / 86400000;
@@ -171,6 +178,9 @@ function getFilterAvailability(logs: { timestamp: number }[]): Record<FilterKey,
     if (f.key === 'today') {
       const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
       result[f.key] = logs.some(l => l.timestamp >= todayStart.getTime());
+    } else if (f.key === 'yesterday') {
+      const r = getFilterRange('yesterday');
+      result[f.key] = logs.some(l => l.timestamp >= r.start && l.timestamp <= r.end);
     } else if (f.key === 'month') {
       const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).getTime();
       result[f.key] = logs.some(l => l.timestamp >= monthStart);
@@ -232,11 +242,19 @@ function computeStats(data: ReportData, startTs: number, endTs: number, nightSta
   const sleepStartIds = new Set(['sleep', 'sleep_start']);
   const sleepEndIds = new Set(['wake', 'sleep_end']);
   const sleepLogs = logs.filter(l => sleepStartIds.has(l.event_id) || sleepEndIds.has(l.event_id)).sort((a, b) => a.timestamp - b.timestamp);
+  // State machine: evita double-counting quando há dois 'sleep' sem 'wake' entre eles,
+  // que era a causa de dias com sono noturno zerado no gráfico.
   const pairs: { start: number; end: number }[] = [];
-  for (let i = 0; i < sleepLogs.length; i++) {
-    if (sleepStartIds.has(sleepLogs[i].event_id)) {
-      const wake = sleepLogs.slice(i + 1).find(l => sleepEndIds.has(l.event_id));
-      if (wake) pairs.push({ start: sleepLogs[i].timestamp, end: wake.timestamp });
+  let sleepStart: number | null = null;
+  for (const log of sleepLogs) {
+    if (sleepStartIds.has(log.event_id)) {
+      if (sleepStart === null) sleepStart = log.timestamp; // ignora sleep duplicado
+    } else {
+      if (sleepStart !== null) {
+        pairs.push({ start: sleepStart, end: log.timestamp });
+        sleepStart = null;
+      }
+      // wake sem sleep anterior é ignorado
     }
   }
   const noctPairs = pairs.filter(p => isNight(p.start));
@@ -244,16 +262,21 @@ function computeStats(data: ReportData, startTs: number, endTs: number, nightSta
   const totalNoct = noctPairs.reduce((s, p) => s + (p.end - p.start) / 60000, 0);
   const totalDiur = diurPairs.reduce((s, p) => s + (p.end - p.start) / 60000, 0);
   const longestBlock = pairs.length > 0 ? Math.max(...pairs.map(p => (p.end - p.start) / 60000)) : 0;
+  // Distribui cada sessão pelos dias em que ela ocorre via sobreposição de intervalos.
+  // Garante que sono noturno que termina de manhã apareça corretamente no dia seguinte.
   const sleepDaily: { date: string; noct: number; diur: number }[] = [];
   for (let d = 0; d < chartDays; d++) {
     const ds = chartStart + d * 86400000;
     const de = ds + 86400000;
-    const dayPairs = pairs.filter(p => p.start >= ds && p.start < de);
-    sleepDaily.push({
-      date: dayLabel(ds),
-      noct: dayPairs.filter(p => isNight(p.start)).reduce((s, p) => s + (p.end - p.start) / 60000, 0),
-      diur: dayPairs.filter(p => !isNight(p.start)).reduce((s, p) => s + (p.end - p.start) / 60000, 0),
-    });
+    let noct = 0, diur = 0;
+    for (const p of pairs) {
+      if (p.end <= ds || p.start >= de) continue;
+      const oStart = Math.max(p.start, ds);
+      const oEnd = Math.min(p.end, de);
+      if (isNight(oStart)) noct += (oEnd - oStart) / 60000;
+      else diur += (oEnd - oStart) / 60000;
+    }
+    sleepDaily.push({ date: dayLabel(ds), noct, diur });
   }
 
   // Diapers
@@ -283,6 +306,9 @@ function computeStats(data: ReportData, startTs: number, endTs: number, nightSta
       birthHeight: heights.length > 0 ? Number(heights[heights.length - 1].value) : null,
       weightGain: weights.length >= 2 ? Number(weights[0].value) - Number(weights[weights.length - 1].value) : null,
       heightGain: heights.length >= 2 ? Number(heights[0].value) - Number(heights[heights.length - 1].value) : null,
+      weightSpanDays: weights.length >= 2
+        ? (new Date(weights[0].measured_at).getTime() - new Date(weights[weights.length - 1].measured_at).getTime()) / 86400000
+        : null,
       weightHistory: weights.map(w => ({ months: (new Date(w.measured_at).getTime() - birthDate.getTime()) / (30.44 * 86400000), value: Number(w.value) })).reverse(),
     };
   }
@@ -292,7 +318,12 @@ function computeStats(data: ReportData, startTs: number, endTs: number, nightSta
   const patterns: string[] = [];
   const totalSleepAvg = (totalNoct + totalDiur) / effectiveDays;
   if (trafficLight(feedAvg, ageRanges.feed[0], ageRanges.feed[1]) === 'green') patterns.push('Amamentações estáveis no período');
-  if (growth?.weightGain != null && growth.weightGain > 0) patterns.push(`Ganho de peso médio: ${Math.round((growth.weightGain / 4.3) * 1000)}g/semana`);
+  if (growth?.weightGain != null && growth.weightGain > 0 && growth.weightSpanDays != null && growth.weightSpanDays > 0) {
+    const gainG = Math.round(growth.weightGain * 1000);
+    const days = Math.round(growth.weightSpanDays);
+    const gPerWeek = Math.round(gainG / Math.max(1, growth.weightSpanDays / 7));
+    patterns.push(`Ganho de peso: +${gainG}g em ${days} dias (~${gPerWeek}g/semana)`);
+  }
   if (longestBlock >= 240) patterns.push(`Maior bloco de sono contínuo: ${Math.floor(longestBlock / 60)}h${Math.round(longestBlock % 60).toString().padStart(2, '0')}`);
   if (trafficLight(totalSleepAvg, ageRanges.sleep[0], ageRanges.sleep[1]) === 'green') patterns.push('Qualidade do sono excelente no período');
 
@@ -534,7 +565,7 @@ export default function SharedReportPage() {
 
   // Ordem de preferência para o default: o maior filtro com dados disponíveis.
   // Assim bebê novo (<2d) cai em "today"/"all" sem "7d" vazio.
-  const DEFAULT_PRIORITY: FilterKey[] = ['30d', '15d', '7d', 'today', 'all'];
+  const DEFAULT_PRIORITY: FilterKey[] = ['30d', '15d', '7d', 'today', 'yesterday', 'all'];
   const defaultFilter: FilterKey = DEFAULT_PRIORITY.find((k) => filterAvail[k]) ?? 'all';
   const activeFilter = filter ?? defaultFilter;
   const range = useMemo(() => getFilterRange(activeFilter), [activeFilter]);
@@ -994,9 +1025,24 @@ export default function SharedReportPage() {
             </Section>
           )}
 
-          {/* ── VACINAS (pediatra) ── */}
+          {/* ── PADRÕES (pediatra) — abaixo de Crescimento ── */}
+          {audience === 'pediatrician' && stats.patterns.length > 0 && (
+            <Section icon="insights" title="Padrões observados" c={c}>
+              <div className="rounded-md p-3 space-y-2" style={{ backgroundColor: c.greenBg, border: `1px solid ${c.greenBorder}` }}>
+                {stats.patterns.map((p, i) => (
+                  <div key={i} className="flex items-start gap-2 text-sm" style={{ color: c.text }}>
+                    <span className="text-xs mt-0.5 font-bold shrink-0" style={{ color: c.green }}>✓</span>
+                    {p}
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )}
+
+          {/* ── VACINAS (pediatra) — recolhido por padrão ── */}
           {audience === 'pediatrician' && vaccinesByAge.length > 0 && (
-            <Section icon="vaccines" title="Vacinas aplicadas" c={c}>
+            <CollapsibleSection icon="vaccines" title="Vacinas aplicadas"
+              badge={vaccinesByAge.reduce((n, g) => n + g.items.length, 0)} c={c}>
               <div className="space-y-2">
                 {vaccinesByAge.map((group) => (
                   <div key={group.label} className="rounded-md p-3" style={{ backgroundColor: c.card, border: `1px solid ${c.cardBorder}`, boxShadow: c.shadow }}>
@@ -1021,12 +1067,12 @@ export default function SharedReportPage() {
                   </div>
                 ))}
               </div>
-            </Section>
+            </CollapsibleSection>
           )}
 
-          {/* ── MARCOS ── */}
+          {/* ── MARCOS — recolhido por padrão ── */}
           {recentMilestones.length > 0 && (
-            <Section icon="flag" title="Marcos recentes" c={c}>
+            <CollapsibleSection icon="flag" title="Marcos recentes" badge={recentMilestones.length} c={c}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {recentMilestones.map((m, i) => (
                   <div key={`${m.code}-${i}`} className="flex gap-2.5 p-3 rounded-md"
@@ -1055,12 +1101,13 @@ export default function SharedReportPage() {
                   </div>
                 ))}
               </div>
-            </Section>
+            </CollapsibleSection>
           )}
 
-          {/* ── SALTOS (pediatra + cuidadora) ── */}
+          {/* ── SALTOS (pediatra + cuidadora) — recolhido por padrão ── */}
           {audience !== 'family' && (activeLeap || leapNotesResolved.length > 0) && (
-            <Section icon="trending_up" title="Saltos de desenvolvimento" c={c}>
+            <CollapsibleSection icon="trending_up" title="Saltos de desenvolvimento"
+              badge={(activeLeap ? 1 : 0) + Math.min(leapNotesResolved.length, 5)} c={c}>
               {activeLeap && (
                 <div className="rounded-md p-3 mb-2"
                   style={{ backgroundColor: c.cardHighlight, border: `1px solid ${c.cardBorder}` }}>
@@ -1089,12 +1136,12 @@ export default function SharedReportPage() {
                   ))}
                 </div>
               )}
-            </Section>
+            </CollapsibleSection>
           )}
 
-          {/* ── MEDICAMENTOS (pediatra + cuidadora) ── */}
+          {/* ── MEDICAMENTOS (pediatra + cuidadora) — recolhido por padrão ── */}
           {audience !== 'family' && medicationsWithNext.length > 0 && (
-            <Section icon="medication" title="Medicamentos ativos" c={c}>
+            <CollapsibleSection icon="medication" title="Medicamentos ativos" badge={medicationsWithNext.length} c={c}>
               <div className="space-y-2">
                 {medicationsWithNext.map((m) => (
                   <div key={m.id} className="p-3 rounded-md"
@@ -1123,21 +1170,7 @@ export default function SharedReportPage() {
                   </div>
                 ))}
               </div>
-            </Section>
-          )}
-
-          {/* ── PADRÕES (pediatra) ── */}
-          {audience === 'pediatrician' && stats.patterns.length > 0 && (
-            <Section icon="insights" title="Padrões observados" c={c}>
-              <div className="rounded-md p-3 space-y-2" style={{ backgroundColor: c.greenBg, border: `1px solid ${c.greenBorder}` }}>
-                {stats.patterns.map((p, i) => (
-                  <div key={i} className="flex items-start gap-2 text-sm" style={{ color: c.text }}>
-                    <span className="text-xs mt-0.5 font-bold shrink-0" style={{ color: c.green }}>✓</span>
-                    {p}
-                  </div>
-                ))}
-              </div>
-            </Section>
+            </CollapsibleSection>
           )}
 
           {/* ── CTA (varia por público) ── */}
@@ -1192,6 +1225,38 @@ function Section({ icon, title, children, c }: { icon: string; title: string; ch
         {title}
       </h2>
       {children}
+    </section>
+  );
+}
+
+/** Seção expansível — começa recolhida, o usuário clica pra ver detalhes. */
+function CollapsibleSection({ icon, title, badge, children, c }: {
+  icon: string; title: string; badge?: number; children: React.ReactNode; c: Colors;
+}) {
+  const [open, setOpen] = useState(false);
+  return (
+    <section>
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="w-full flex items-center justify-between mb-2 text-left"
+      >
+        <h2 className="font-bold text-sm flex items-center gap-2" style={{ fontFamily: 'Manrope, sans-serif', color: c.text }}>
+          <span className="material-symbols-outlined text-base" style={{ color: c.accent }}>{icon}</span>
+          {title}
+          {badge != null && badge > 0 && (
+            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center"
+              style={{ backgroundColor: c.cardHighlight, border: `1px solid ${c.cardBorder}`, color: c.accent }}>
+              {badge}
+            </span>
+          )}
+        </h2>
+        <span className="material-symbols-outlined text-sm flex-shrink-0"
+          style={{ color: c.muted, transform: open ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>
+          expand_more
+        </span>
+      </button>
+      {open && children}
     </section>
   );
 }
