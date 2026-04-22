@@ -37,12 +37,12 @@ seo:
   snippet_type: parágrafo
   snippet_section: "Golfada e vômito são a mesma coisa?"
 sources:
-  - name: "SBP. Doença do Refluxo Gastroesofágico em Lactentes. Documento Científico. 2020."
-    url: "https://www.sbp.com.br/departamentos/gastroenterologia/"
+  - name: "SBP. Regurgitação do Lactente (RGE Fisiológico) e Doença do RGE em Pediatria. Documento Científico."
+    url: "https://www.sbp.com.br/fileadmin/user_upload/20031c-DocCient_-_Regurg_lactente_RGEF_e_RGE.pdf"
   - name: "AAP. Gastroesophageal Reflux in Infants. HealthyChildren.org."
     url: "https://www.healthychildren.org/English/health-issues/conditions/abdominal/Pages/GERD-Reflux.aspx"
   - name: "NASPGHAN/ESPGHAN. Pediatric Gastroesophageal Reflux Clinical Practice Guidelines. JPGN, 2018."
-    url: "https://journals.lww.com/jpgn/fulltext/2018/01000/pediatric_gastroesophageal_reflux_clinical.28.aspx"
+    url: "https://journals.lww.com/jpgn/fulltext/2018/03000/Pediatric_Gastroesophageal_Reflux_Clinical.33.aspx"
 images:
   hero: img32-1.png
   complementar: img32-2.png
@@ -215,9 +215,9 @@ O amadurecimento do esfíncter esofágico, a mudança postural e a dieta mais es
 ---
 
 **Fontes:**
-1. [SBP. Doença do Refluxo Gastroesofágico em Lactentes. Documento Científico. 2020.](https://www.sbp.com.br/departamentos/gastroenterologia/)
+1. [SBP. Regurgitação do Lactente (RGE Fisiológico) e Doença do RGE em Pediatria. Documento Científico.](https://www.sbp.com.br/fileadmin/user_upload/20031c-DocCient_-_Regurg_lactente_RGEF_e_RGE.pdf)
 2. [AAP. Gastroesophageal Reflux in Infants. HealthyChildren.org.](https://www.healthychildren.org/English/health-issues/conditions/abdominal/Pages/GERD-Reflux.aspx)
-3. [NASPGHAN/ESPGHAN. Pediatric Gastroesophageal Reflux Clinical Practice Guidelines. JPGN, 2018.](https://journals.lww.com/jpgn/fulltext/2018/01000/pediatric_gastroesophageal_reflux_clinical.28.aspx)
+3. [NASPGHAN/ESPGHAN. Pediatric Gastroesophageal Reflux Clinical Practice Guidelines. JPGN, 2018.](https://journals.lww.com/jpgn/fulltext/2018/03000/Pediatric_Gastroesophageal_Reflux_Clinical.33.aspx)
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*
 

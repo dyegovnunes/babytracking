@@ -42,8 +42,8 @@ seo:
 sources:
   - name: "Hugh SC, Wolter NE, Engelen FA et al. Infant Sleep Machines and Hazardous Sound Pressure Levels. Pediatrics. 2014;133(4):677-681."
     url: "https://publications.aap.org/pediatrics/article/133/4/677/32749/Infant-Sleep-Machines-and-Hazardous-Sound-Pressure"
-  - name: "SBP. Manual de Orientação: Sono na Infância. 2022."
-    url: "https://www.sbp.com.br/departamentos/neurologia/"
+  - name: "SBP. Higiene do Sono. Documento Científico — Departamento de Medicina do Sono."
+    url: "https://www.sbp.com.br/fileadmin/user_upload/19807c-DocCient_-_Higiene_do_Sono.pdf"
   - name: "Spencer JA et al. White noise and sleep induction. Archives of Disease in Childhood. 1990;65(1):135-137."
     url: "https://adc.bmj.com/content/65/1/135"
 images:
@@ -206,7 +206,7 @@ Se o [quarto do bebê](/quarto-do-bebe-o-que-e-essencial) for naturalmente silen
 
 **Fontes:**
 1. [Hugh SC et al. Infant Sleep Machines and Hazardous Sound Pressure Levels. Pediatrics. 2014;133(4):677-681.](https://publications.aap.org/pediatrics/article/133/4/677/32749/Infant-Sleep-Machines-and-Hazardous-Sound-Pressure)
-2. [SBP. Manual de Orientação: Sono na Infância. 2022.](https://www.sbp.com.br/departamentos/neurologia/)
+2. [SBP. Higiene do Sono. Documento Científico — Departamento de Medicina do Sono.](https://www.sbp.com.br/fileadmin/user_upload/19807c-DocCient_-_Higiene_do_Sono.pdf)
 3. [Spencer JA et al. White noise and sleep induction. Archives of Disease in Childhood. 1990;65(1):135-137.](https://adc.bmj.com/content/65/1/135)
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*

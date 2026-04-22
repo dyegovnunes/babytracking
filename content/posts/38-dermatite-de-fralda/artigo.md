@@ -41,12 +41,12 @@ seo:
   snippet_type: lista
   snippet_section: "Como prevenir a dermatite de fralda"
 sources:
-  - name: "SBP. Dermatite da Área das Fraldas. Departamento de Dermatologia. 2021."
-    url: "https://www.sbp.com.br/departamentos/dermatologia/"
+  - name: "SBP. Dermatite da Área das Fraldas – Diagnóstico Diferencial. Departamento de Dermatologia."
+    url: "https://www.sbp.com.br/fileadmin/user_upload/publicacoes/Dermatologia-Dermatite-da-rea-das-fraldas.pdf"
   - name: "AAP. Diaper Rash. HealthyChildren.org."
     url: "https://www.healthychildren.org/English/ages-stages/baby/diapers-clothing/Pages/Diaper-Rash.aspx"
-  - name: "Cochrane. Topical treatments for diaper dermatitis in children. 2019."
-    url: "https://www.cochrane.org/CD004300/SKIN_vitamin-a-creams-and-lotions-for-nappy-diaper-rash"
+  - name: "Heimall LM et al. Beginning at the Bottom: Evidence-Based Care of Diaper Dermatitis. MCN Am J Matern Child Nurs. 2012."
+    url: "https://pubmed.ncbi.nlm.nih.gov/22072018/"
 images:
   hero: img38-1.png
   complementar: img38-2.png
@@ -204,9 +204,9 @@ O [banho do recém-nascido](/banho-do-recem-nascido) com água morna e sabonete 
 ---
 
 **Fontes:**
-1. [SBP. Dermatite da Área das Fraldas. Departamento de Dermatologia. 2021.](https://www.sbp.com.br/departamentos/dermatologia/)
+1. [SBP. Dermatite da Área das Fraldas – Diagnóstico Diferencial. Departamento de Dermatologia.](https://www.sbp.com.br/fileadmin/user_upload/publicacoes/Dermatologia-Dermatite-da-rea-das-fraldas.pdf)
 2. [AAP. Diaper Rash. HealthyChildren.org.](https://www.healthychildren.org/English/ages-stages/baby/diapers-clothing/Pages/Diaper-Rash.aspx)
-3. [Cochrane. Topical treatments for diaper dermatitis in children. 2019.](https://www.cochrane.org/CD004300/SKIN_vitamin-a-creams-and-lotions-for-nappy-diaper-rash)
+3. [Heimall LM et al. Beginning at the Bottom: Evidence-Based Care of Diaper Dermatitis. MCN Am J Matern Child Nurs. 2012.](https://pubmed.ncbi.nlm.nih.gov/22072018/)
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*
 
