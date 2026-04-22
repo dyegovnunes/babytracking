@@ -37,9 +37,9 @@ seo:
   snippet_section: "Regras de higiene para visitas"
 sources:
   - name: "SBP. Cuidados com o Recém-Nascido. Departamento de Neonatologia. 2022."
-    url: "https://www.sbp.com.br/departamentos-cientificos/neonatologia/"
+    url: "https://www.sbp.com.br/departamentos/neonatologia/"
   - name: "AAP. Caring for Your Newborn. HealthyChildren.org."
-    url: "https://www.healthychildren.org/English/ages-stages/baby/Pages/Caring-for-Your-Newborn.aspx"
+    url: "https://www.healthychildren.org/English/ages-stages/baby/Pages/Bringing-Baby-Home.aspx"
 images:
   hero: img34-1.png
   complementar: img34-2.png
@@ -168,8 +168,8 @@ A avó que chega, pega o bebê e diz "vai dormir, eu cuido" é ouro. O primo que
 ---
 
 **Fontes:**
-1. SBP. Cuidados com o Recém-Nascido. Departamento de Neonatologia. 2022.
-2. AAP. Caring for Your Newborn. HealthyChildren.org.
+1. [SBP. Cuidados com o Recém-Nascido. Departamento de Neonatologia. 2022.](https://www.sbp.com.br/departamentos/neonatologia/)
+2. [AAP. Your Newborn's First Week. HealthyChildren.org.](https://www.healthychildren.org/English/ages-stages/baby/Pages/Bringing-Baby-Home.aspx)
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*
 

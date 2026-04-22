@@ -40,9 +40,9 @@ sources:
   - name: "OMS. Child Growth Standards. WHO Multicentre Growth Reference Study."
     url: "https://www.who.int/tools/child-growth-standards"
   - name: "SBP. Avaliação Nutricional da Criança e do Adolescente. Manual de Orientação."
-    url: "https://www.sbp.com.br/departamentos-cientificos/nutrologia/"
+    url: "https://www.sbp.com.br/departamentos/nutrologia/"
   - name: "Ministério da Saúde. Caderneta da Criança. 2024."
-    url: "https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/c/caderneta-da-crianca"
+    url: "https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/s/saude-da-crianca/caderneta"
 images:
   hero: img50-1.png
   complementar: img50-2.png
@@ -208,8 +208,8 @@ A investigação pode incluir exames de sangue, avaliação nutricional, avalia�
 **Fontes:**
 
 1. OMS. Child Growth Standards. WHO Multicentre Growth Reference Study. Disponível em: [who.int](https://www.who.int/tools/child-growth-standards)
-2. SBP. Avaliação Nutricional da Criança e do Adolescente. Manual de Orientação. Disponível em: [sbp.com.br](https://www.sbp.com.br/departamentos-cientificos/nutrologia/)
-3. Ministério da Saúde. Caderneta da Criança. 2024. Disponível em: [gov.br](https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/c/caderneta-da-crianca)
+2. SBP. Avaliação Nutricional da Criança e do Adolescente. Manual de Orientação. Disponível em: [sbp.com.br](https://www.sbp.com.br/departamentos/nutrologia/)
+3. Ministério da Saúde. Caderneta da Criança. 2024. Disponível em: [gov.br](https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/s/saude-da-crianca/caderneta)
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*
 

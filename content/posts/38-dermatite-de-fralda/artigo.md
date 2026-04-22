@@ -42,11 +42,11 @@ seo:
   snippet_section: "Como prevenir a dermatite de fralda"
 sources:
   - name: "SBP. Dermatite da Área das Fraldas. Departamento de Dermatologia. 2021."
-    url: "https://www.sbp.com.br/departamentos-cientificos/dermatologia/"
+    url: "https://www.sbp.com.br/departamentos/dermatologia/"
   - name: "AAP. Diaper Rash. HealthyChildren.org."
     url: "https://www.healthychildren.org/English/ages-stages/baby/diapers-clothing/Pages/Diaper-Rash.aspx"
   - name: "Cochrane. Topical treatments for diaper dermatitis in children. 2019."
-    url: "https://www.cochrane.org/CD009751/SKIN_topical-treatments-nappy-rash-children"
+    url: "https://www.cochrane.org/CD004300/SKIN_vitamin-a-creams-and-lotions-for-nappy-diaper-rash"
 images:
   hero: img38-1.png
   complementar: img38-2.png
@@ -204,9 +204,9 @@ O [banho do recém-nascido](/banho-do-recem-nascido) com água morna e sabonete 
 ---
 
 **Fontes:**
-1. SBP. Dermatite da Área das Fraldas. Departamento de Dermatologia. 2021.
-2. AAP. Diaper Rash. HealthyChildren.org.
-3. Cochrane. Topical treatments for diaper dermatitis in children. 2019.
+1. [SBP. Dermatite da Área das Fraldas. Departamento de Dermatologia. 2021.](https://www.sbp.com.br/departamentos/dermatologia/)
+2. [AAP. Diaper Rash. HealthyChildren.org.](https://www.healthychildren.org/English/ages-stages/baby/diapers-clothing/Pages/Diaper-Rash.aspx)
+3. [Cochrane. Topical treatments for diaper dermatitis in children. 2019.](https://www.cochrane.org/CD004300/SKIN_vitamin-a-creams-and-lotions-for-nappy-diaper-rash)
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*
 

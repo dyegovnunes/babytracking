@@ -38,9 +38,9 @@ seo:
   snippet_section: "Golfada e vômito são a mesma coisa?"
 sources:
   - name: "SBP. Doença do Refluxo Gastroesofágico em Lactentes. Documento Científico. 2020."
-    url: "https://www.sbp.com.br/departamentos-cientificos/gastroenterologia/"
+    url: "https://www.sbp.com.br/departamentos/gastroenterologia/"
   - name: "AAP. Gastroesophageal Reflux in Infants. HealthyChildren.org."
-    url: "https://www.healthychildren.org/English/health-issues/conditions/abdominal/Pages/Gastroesophageal-Reflux-in-Infants.aspx"
+    url: "https://www.healthychildren.org/English/health-issues/conditions/abdominal/Pages/GERD-Reflux.aspx"
   - name: "NASPGHAN/ESPGHAN. Pediatric Gastroesophageal Reflux Clinical Practice Guidelines. JPGN, 2018."
     url: "https://journals.lww.com/jpgn/fulltext/2018/01000/pediatric_gastroesophageal_reflux_clinical.28.aspx"
 images:
@@ -215,9 +215,9 @@ O amadurecimento do esfíncter esofágico, a mudança postural e a dieta mais es
 ---
 
 **Fontes:**
-1. SBP. Doença do Refluxo Gastroesofágico em Lactentes. Documento Científico. 2020.
-2. AAP. Gastroesophageal Reflux in Infants. HealthyChildren.org.
-3. NASPGHAN/ESPGHAN. Pediatric Gastroesophageal Reflux Clinical Practice Guidelines. JPGN, 2018.
+1. [SBP. Doença do Refluxo Gastroesofágico em Lactentes. Documento Científico. 2020.](https://www.sbp.com.br/departamentos/gastroenterologia/)
+2. [AAP. Gastroesophageal Reflux in Infants. HealthyChildren.org.](https://www.healthychildren.org/English/health-issues/conditions/abdominal/Pages/GERD-Reflux.aspx)
+3. [NASPGHAN/ESPGHAN. Pediatric Gastroesophageal Reflux Clinical Practice Guidelines. JPGN, 2018.](https://journals.lww.com/jpgn/fulltext/2018/01000/pediatric_gastroesophageal_reflux_clinical.28.aspx)
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*
 

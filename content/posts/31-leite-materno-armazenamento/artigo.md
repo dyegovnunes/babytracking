@@ -45,7 +45,7 @@ seo:
   snippet_section: "Quanto tempo o leite materno dura?"
 sources:
   - name: "SBP — Aleitamento Materno: Orientações para Profissionais de Saúde"
-    url: "https://www.sbp.com.br/departamentos-cientificos/aleitamento-materno/"
+    url: "https://www.sbp.com.br/departamentos/aleitamento-materno/"
   - name: "OMS — Breastfeeding Recommendations"
     url: "https://www.who.int/health-topics/breastfeeding"
   - name: "Rede Brasileira de Bancos de Leite Humano (rBLH)"

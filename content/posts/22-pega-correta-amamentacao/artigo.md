@@ -47,9 +47,9 @@ seo:
   snippet_section: "Passo a passo para conseguir a pega correta"
 sources:
   - name: "OMS. Breastfeeding counselling: a training course. 2022."
-    url: "https://www.who.int/publications/i/item/9789240032729"
+    url: "https://www.who.int/publications/i/item/9789241550468"
   - name: "SBP. Guia Prático de Aleitamento Materno. 2020."
-    url: "https://www.sbp.com.br/departamentos-cientificos/aleitamento-materno/"
+    url: "https://www.sbp.com.br/departamentos/aleitamento-materno/"
   - name: "La Leche League International. Positioning and Latch."
     url: "https://www.llli.org/breastfeeding-info/positioning/"
 images:
@@ -206,8 +206,8 @@ Bancos de leite humano do SUS oferecem apoio gratuito à amamentação. Ligue pa
 
 **Fontes:**
 
-1. [OMS. Breastfeeding counselling: a training course. 2022.](https://www.who.int/publications/i/item/9789240032729)
-2. [SBP. Guia Prático de Aleitamento Materno. 2020.](https://www.sbp.com.br/departamentos-cientificos/aleitamento-materno/)
+1. [OMS. Breastfeeding counselling: a training course. 2022.](https://www.who.int/publications/i/item/9789241550468)
+2. [SBP. Guia Prático de Aleitamento Materno. 2020.](https://www.sbp.com.br/departamentos/aleitamento-materno/)
 3. [La Leche League International. Positioning and Latch.](https://www.llli.org/breastfeeding-info/positioning/)
 
 *Este conteúdo é informativo e não substitui orientação de profissional de saúde ou consultora de lactação.*

@@ -37,7 +37,7 @@ sources:
   - "AAP — Responding to Your Baby's Cries: https://www.healthychildren.org/English/ages-stages/baby/crying-colic/Pages/Responding-to-Your-Babys-Cries.aspx"
   - "SBP — Cólica do lactente: https://www.sbp.com.br/especiais/pediatria-para-familias/cuidados-com-o-bebe/colica-do-lactente/"
   - "AAP — Abusive Head Trauma (Shaken Baby Syndrome): https://www.healthychildren.org/English/safety-prevention/at-home/Pages/Abusive-Head-Trauma-Shaken-Baby-Syndrome.aspx"
-  - "Barr RG — The Normal Crying Curve (PURPLE Crying): http://www.purplecrying.info/"
+  - "Barr RG — The Normal Crying Curve (PURPLE Crying): https://dontshake.org/purple-crying"
 images:
   hero: img14-1.png
   complementar: img14-2.png
@@ -247,7 +247,7 @@ Estratégias que ajudam:
 1. [AAP. Responding to Your Baby's Cries.](https://www.healthychildren.org/English/ages-stages/baby/crying-colic/Pages/Responding-to-Your-Babys-Cries.aspx)
 2. [SBP. Cólica do lactente.](https://www.sbp.com.br/especiais/pediatria-para-familias/cuidados-com-o-bebe/colica-do-lactente/)
 3. [AAP. Abusive Head Trauma (Shaken Baby Syndrome).](https://www.healthychildren.org/English/safety-prevention/at-home/Pages/Abusive-Head-Trauma-Shaken-Baby-Syndrome.aspx)
-4. [Barr RG. The Normal Crying Curve (PURPLE Crying).](http://www.purplecrying.info/)
+4. [Barr RG. The Normal Crying Curve (PURPLE Crying).](https://dontshake.org/purple-crying)
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*
 

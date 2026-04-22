@@ -193,9 +193,9 @@ Use esta lista para acompanhar o que já foi resolvido:
 ---
 
 **Fontes:**
-1. Lei 6.015/73. Lei de Registros Públicos. Brasil.
-2. Lei 13.257/2016. Marco Legal da Primeira Infância. Brasil.
-3. Provimento CNJ 63/2017. Registro de nascimento.
+1. [Lei 6.015/73. Lei de Registros Públicos. Brasil.](https://www.planalto.gov.br/ccivil_03/leis/l6015compilada.htm)
+2. [Lei 13.257/2016. Marco Legal da Primeira Infância. Brasil.](https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2016/lei/l13257.htm)
+3. [Provimento CNJ 63/2017. Registro de nascimento.](https://atos.cnj.jus.br/atos/detalhar/2525)
 
 *Este conteúdo é informativo e não substitui orientação médica ou jurídica. Consulte sempre o pediatra do seu bebê e, em caso de dúvida legal, um advogado.*
 

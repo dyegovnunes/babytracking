@@ -38,11 +38,11 @@ seo:
   snippet_section: "Checklist: vá ao pronto-socorro agora"
 sources:
   - name: "SBP — Urgências e emergências pediátricas"
-    url: "https://www.sbp.com.br/especiais/pediatria-para-familias/cuidados-com-o-bebe/urgencias-e-emergencias/"
+    url: "https://www.sbp.com.br/departamentos/emergencia/"
   - name: "AAP — When to Call the Pediatrician"
     url: "https://www.healthychildren.org/English/health-issues/conditions/fever/Pages/When-to-Call-the-Pediatrician.aspx"
   - name: "Nelson Textbook of Pediatrics, 21st edition — Kliegman et al., Elsevier, 2020"
-    url: "https://www.elsevier.com/books/nelson-textbook-of-pediatrics/kliegman/978-0-323-52950-1"
+    url: "https://shop.elsevier.com/books/nelson-textbook-of-pediatrics-2-volume-set/kliegman/978-0-323-52950-1"
 images:
   hero: img39-1.png
   complementar: img39-2.png
@@ -266,9 +266,9 @@ Os **registros de temperatura e sintomas com horários** são um diferencial na 
 
 **Fontes:**
 
-1. SBP — Urgências e emergências pediátricas. Disponível em: [sbp.com.br](https://www.sbp.com.br/especiais/pediatria-para-familias/cuidados-com-o-bebe/urgencias-e-emergencias/)
+1. SBP — Urgências e emergências pediátricas. Disponível em: [sbp.com.br](https://www.sbp.com.br/departamentos/emergencia/)
 2. AAP — When to Call the Pediatrician. Disponível em: [healthychildren.org](https://www.healthychildren.org/English/health-issues/conditions/fever/Pages/When-to-Call-the-Pediatrician.aspx)
-3. Nelson Textbook of Pediatrics, 21st edition — Kliegman et al., Elsevier, 2020.
+3. [Nelson Textbook of Pediatrics, 21st edition. Kliegman et al., Elsevier, 2020.](https://shop.elsevier.com/books/nelson-textbook-of-pediatrics-2-volume-set/kliegman/978-0-323-52950-1)
 
 ---
 

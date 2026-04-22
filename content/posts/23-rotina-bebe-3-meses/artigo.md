@@ -42,10 +42,10 @@ seo:
   snippet_type: paragrafo
   snippet_section: "O que muda aos 3-4 meses"
 sources:
-  - name: "AAP. Sleep and Your 4- to 7-Month-Old. HealthyChildren.org."
-    url: "https://www.healthychildren.org/English/ages-stages/baby/sleep/Pages/Sleep-and-Your-4-to-7-Month-Old.aspx"
+  - name: "AAP. Healthy Sleep Habits: How Many Hours Does Your Child Need?. HealthyChildren.org."
+    url: "https://www.healthychildren.org/English/ages-stages/baby/sleep/Pages/healthy-sleep-habits-how-many-hours-does-your-child-need.aspx"
   - name: "SBP. Documento Científico: Sono na Infância. 2020."
-    url: "https://www.sbp.com.br/departamentos-cientificos/neurologia/documentos-cientificos/"
+    url: "https://www.sbp.com.br/departamentos/neurologia/documentos-cientificos/"
 images:
   hero: img23-1.png
   complementar: img23-2.png
@@ -220,8 +220,8 @@ Ter esses dados torna a rotina algo que você descobre, não algo que você imp�
 
 **Fontes:**
 
-1. [AAP. Sleep and Your 4- to 7-Month-Old. HealthyChildren.org.](https://www.healthychildren.org/English/ages-stages/baby/sleep/Pages/Sleep-and-Your-4-to-7-Month-Old.aspx)
-2. [SBP. Documento Científico: Sono na Infância. 2020.](https://www.sbp.com.br/departamentos-cientificos/neurologia/documentos-cientificos/)
+1. [AAP. Healthy Sleep Habits: How Many Hours Does Your Child Need?. HealthyChildren.org.](https://www.healthychildren.org/English/ages-stages/baby/sleep/Pages/healthy-sleep-habits-how-many-hours-does-your-child-need.aspx)
+2. [SBP. Documento Científico: Sono na Infância. 2020.](https://www.sbp.com.br/departamentos/neurologia/documentos-cientificos/)
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*
 

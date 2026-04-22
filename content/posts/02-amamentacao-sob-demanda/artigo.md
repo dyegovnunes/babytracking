@@ -32,7 +32,7 @@ sources:
   - name: "OMS. Exclusive breastfeeding for six months best for babies everywhere. 2011."
     url: "https://www.who.int/news/item/15-01-2011-exclusive-breastfeeding-for-six-months-best-for-babies-everywhere"
   - name: "SBP. Documento Científico: Aleitamento Materno. 2021."
-    url: "https://www.sbp.com.br/departamentos-cientificos/aleitamento-materno/"
+    url: "https://www.sbp.com.br/departamentos/aleitamento-materno/"
   - name: "AAP. Breastfeeding and the Use of Human Milk. Pediatrics. 2022."
     url: "https://publications.aap.org/pediatrics/article/150/1/e2022057988/188347/Breastfeeding-and-the-Use-of-Human-Milk"
   - name: "Ministério da Saúde. Guia Alimentar para Crianças Brasileiras Menores de 2 Anos. 2019."
@@ -125,7 +125,7 @@ Fissuras, dor na pega e insegurança com a produção são comuns no início e n
 **Fontes:**
 
 1. [OMS. Exclusive breastfeeding for six months best for babies everywhere. 2011.](https://www.who.int/news/item/15-01-2011-exclusive-breastfeeding-for-six-months-best-for-babies-everywhere)
-2. [SBP. Documento Científico: Aleitamento Materno. 2021.](https://www.sbp.com.br/departamentos-cientificos/aleitamento-materno/)
+2. [SBP. Documento Científico: Aleitamento Materno. 2021.](https://www.sbp.com.br/departamentos/aleitamento-materno/)
 3. [AAP. Breastfeeding and the Use of Human Milk. Pediatrics. 2022.](https://publications.aap.org/pediatrics/article/150/1/e2022057988/188347/Breastfeeding-and-the-Use-of-Human-Milk)
 4. [Ministério da Saúde. Guia Alimentar para Crianças Brasileiras Menores de 2 Anos. 2019.](https://bvsms.saude.gov.br/bvs/publicacoes/guia_alimentar_criancas_menores_2anos.pdf)
 

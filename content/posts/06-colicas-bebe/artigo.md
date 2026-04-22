@@ -29,11 +29,11 @@ seo:
   snippet_section: "O que são cólicas do bebê"
 sources:
   - name: "SBP. Documento Científico: Cólica do Lactente. 2020."
-    url: "https://www.sbp.com.br/departamentos-cientificos/gastroenterologia/"
+    url: "https://www.sbp.com.br/departamentos/gastroenterologia/"
   - name: "AAP. Colic Relief Tips for Parents. HealthyChildren.org."
     url: "https://www.healthychildren.org/English/ages-stages/baby/crying-colic/Pages/Colic.aspx"
   - name: "Zeevenhooven J, et al. The New Rome IV Criteria for Functional Gastrointestinal Disorders in Infants and Toddlers. Pediatr Gastroenterol Nutr. 2017."
-    url: "https://pubmed.ncbi.nlm.nih.gov/28644364/"
+    url: "https://pubmed.ncbi.nlm.nih.gov/28401050/"
 images:
   hero: img6-1.png
   complementar: img6-2.png
@@ -109,9 +109,9 @@ Cólica é exaustivo para quem cuida. Se você sentir que está no limite, coloq
 
 **Fontes:**
 
-1. [SBP. Documento Científico: Cólica do Lactente. 2020.](https://www.sbp.com.br/departamentos-cientificos/gastroenterologia/)
+1. [SBP. Documento Científico: Cólica do Lactente. 2020.](https://www.sbp.com.br/departamentos/gastroenterologia/)
 2. [AAP. Colic Relief Tips for Parents. HealthyChildren.org.](https://www.healthychildren.org/English/ages-stages/baby/crying-colic/Pages/Colic.aspx)
-3. [Zeevenhooven J, et al. The New Rome IV Criteria. Pediatr Gastroenterol Nutr. 2017.](https://pubmed.ncbi.nlm.nih.gov/28644364/)
+3. [Zeevenhooven J, et al. The New Rome IV Criteria. Pediatr Gastroenterol Nutr. 2017.](https://pubmed.ncbi.nlm.nih.gov/28401050/)
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*
 

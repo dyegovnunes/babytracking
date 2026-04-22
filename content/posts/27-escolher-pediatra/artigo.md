@@ -39,9 +39,9 @@ seo:
   snippet_section: "O que avaliar ao escolher o pediatra"
 sources:
   - name: "SBP — Consultas Pediátricas: Calendário de Acompanhamento"
-    url: "https://www.sbp.com.br/departamentos-cientificos/pediatria-ambulatorial/"
+    url: "https://www.sbp.com.br/departamentos/pediatria-ambulatorial/"
   - name: "AAP — Finding a Pediatrician"
-    url: "https://www.aap.org/en/patient-care/palliative-care-resources/finding-a-pediatrician/"
+    url: "https://www.healthychildren.org/English/ages-stages/prenatal/decisions-to-make/Pages/finding-a-pediatrician.aspx"
 images:
   hero: img27-1.png
   complementar: img27-2.png

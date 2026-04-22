@@ -48,7 +48,7 @@ sources:
   - name: "ACOG. How to Tell When Labor Begins. 2020."
     url: "https://www.acog.org/womens-health/faqs/how-to-tell-when-labor-begins"
   - name: "SBP/Febrasgo. Assistência ao Trabalho de Parto. 2021."
-    url: "https://www.febrasgo.org.br/pt/noticias/item/1197-recomendacoes-febrasgo-parto"
+    url: "https://www.febrasgo.org.br/pt/noticias/item/717-recomendacoes-febrasgo-parte-ii-cuidados-gerais-na-assistencia-ao-parto-assistencia-ao-nascimento-baseado-em-evidencias-e-no-respeito"
   - name: "OMS. WHO recommendations: intrapartum care for a positive childbirth experience. 2018."
     url: "https://www.who.int/publications/i/item/9789241550215"
 images:
@@ -215,7 +215,7 @@ Para conhecer os [tipos de parto](/tipos-de-parto) e saber o que esperar de cada
 **Fontes:**
 
 1. [ACOG. How to Tell When Labor Begins. 2020.](https://www.acog.org/womens-health/faqs/how-to-tell-when-labor-begins)
-2. [SBP/Febrasgo. Assistência ao Trabalho de Parto. 2021.](https://www.febrasgo.org.br/pt/noticias/item/1197-recomendacoes-febrasgo-parto)
+2. [SBP/Febrasgo. Assistência ao Trabalho de Parto. 2021.](https://www.febrasgo.org.br/pt/noticias/item/717-recomendacoes-febrasgo-parte-ii-cuidados-gerais-na-assistencia-ao-parto-assistencia-ao-nascimento-baseado-em-evidencias-e-no-respeito)
 3. [OMS. WHO recommendations: intrapartum care for a positive childbirth experience. 2018.](https://www.who.int/publications/i/item/9789241550215)
 
 *Este conteúdo é informativo e não substitui orientação médica. Cada gestação é única. Converse com seu obstetra sobre os sinais específicos do seu caso e o momento ideal para ir à maternidade.*

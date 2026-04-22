@@ -40,11 +40,11 @@ sources:
   - name: "AAP. Emotional and Social Development: 8 to 12 Months. HealthyChildren.org."
     url: "https://www.healthychildren.org/English/ages-stages/baby/Pages/Emotional-and-Social-Development-8-12-Months.aspx"
   - name: "SBP. Desenvolvimento do Lactente. Departamento de Pediatria do Desenvolvimento e Comportamento."
-    url: "https://www.sbp.com.br/departamentos-cientificos/pediatria-do-desenvolvimento-e-comportamento/"
+    url: "https://www.sbp.com.br/departamentos/pediatria-do-desenvolvimento-e-comportamento/"
   - name: "Bowlby, J. Attachment and Loss. Vol. 1: Attachment. Basic Books, 1969."
-    url: "https://en.wikipedia.org/wiki/Attachment_theory"
+    url: "https://pubmed.ncbi.nlm.nih.gov/7148988/"
   - name: "AAP. Separation Anxiety. HealthyChildren.org."
-    url: "https://www.healthychildren.org/English/ages-stages/toddler/Pages/Separation-Anxiety.aspx"
+    url: "https://www.healthychildren.org/English/ages-stages/toddler/Pages/Soothing-Your-Childs-Separation-Anxiety.aspx"
 images:
   hero: img45-1.png
   complementar: img45-2.png
@@ -168,9 +168,9 @@ A AAP reforça que ansiedade de separação intensa e persistente na idade pré-
 **Fontes:**
 
 1. AAP. Emotional and Social Development: 8 to 12 Months. HealthyChildren.org. Disponível em: [healthychildren.org](https://www.healthychildren.org/English/ages-stages/baby/Pages/Emotional-and-Social-Development-8-12-Months.aspx)
-2. SBP. Desenvolvimento do Lactente. Departamento de Pediatria do Desenvolvimento e Comportamento. Disponível em: [sbp.com.br](https://www.sbp.com.br/departamentos-cientificos/pediatria-do-desenvolvimento-e-comportamento/)
-3. Bowlby, J. Attachment and Loss. Vol. 1: Attachment. Basic Books, 1969.
-4. AAP. Separation Anxiety. HealthyChildren.org. Disponível em: [healthychildren.org](https://www.healthychildren.org/English/ages-stages/toddler/Pages/Separation-Anxiety.aspx)
+2. SBP. Desenvolvimento do Lactente. Departamento de Pediatria do Desenvolvimento e Comportamento. Disponível em: [sbp.com.br](https://www.sbp.com.br/departamentos/pediatria-do-desenvolvimento-e-comportamento/)
+3. [Bowlby, J. Attachment and loss: retrospect and prospect. American Journal of Orthopsychiatry. 1982.](https://pubmed.ncbi.nlm.nih.gov/7148988/)
+4. AAP. Separation Anxiety. HealthyChildren.org. Disponível em: [healthychildren.org](https://www.healthychildren.org/English/ages-stages/toddler/Pages/Soothing-Your-Childs-Separation-Anxiety.aspx)
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*
 

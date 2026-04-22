@@ -32,8 +32,8 @@ seo:
   snippet_type: how-to
   snippet_section: "Passo a passo para montar seu plano de parto"
 sources:
-  - "OMS — Recomendações sobre cuidados intraparto para uma experiência positiva de parto (2018): https://www.who.int/reproductivehealth/publications/intrapartum-care-guidelines/en/"
-  - "Ministério da Saúde — Caderneta da Gestante: https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/g/gestante"
+  - "OMS — Recomendações sobre cuidados intraparto para uma experiência positiva de parto (2018): https://www.who.int/publications/i/item/9789241550215"
+  - "Ministério da Saúde — Caderneta da Gestante: https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/g/gravidez/publicacoes"
   - "SBP — Assistência ao recém-nascido na sala de parto: https://www.sbp.com.br/especiais/reanimacao-neonatal/"
   - "Lei nº 17.137/2019 (SP) — Direito ao plano de parto: https://www.al.sp.gov.br/"
 images:
@@ -230,8 +230,8 @@ Quando estiver com o plano pronto, é hora de montar a [mala da maternidade](/ma
 
 **Fontes:**
 
-1. [OMS. Recomendações sobre cuidados intraparto para uma experiência positiva de parto. 2018.](https://www.who.int/reproductivehealth/publications/intrapartum-care-guidelines/en/)
-2. [Ministério da Saúde. Caderneta da Gestante.](https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/g/gestante)
+1. [OMS. Recomendações sobre cuidados intraparto para uma experiência positiva de parto. 2018.](https://www.who.int/publications/i/item/9789241550215)
+2. [Ministério da Saúde. Caderneta da Gestante.](https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/g/gravidez/publicacoes)
 3. [SBP. Assistência ao recém-nascido na sala de parto.](https://www.sbp.com.br/especiais/reanimacao-neonatal/)
 4. [Lei nº 17.137/2019 (SP). Direito ao plano de parto.](https://www.al.sp.gov.br/)
 

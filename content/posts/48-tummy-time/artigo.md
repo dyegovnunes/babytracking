@@ -42,7 +42,7 @@ sources:
   - name: "AAP. Back to Sleep, Tummy to Play. HealthyChildren.org."
     url: "https://www.healthychildren.org/English/ages-stages/baby/sleep/Pages/Back-to-Sleep-Tummy-to-Play.aspx"
   - name: "SBP. Atividade Física na Primeira Infância. Departamento de Pediatria do Desenvolvimento e Comportamento."
-    url: "https://www.sbp.com.br/departamentos-cientificos/pediatria-do-desenvolvimento-e-comportamento/"
+    url: "https://www.sbp.com.br/departamentos/pediatria-do-desenvolvimento-e-comportamento/"
   - name: "WHO. Guidelines on Physical Activity, Sedentary Behaviour and Sleep for Children Under 5 Years of Age. 2019."
     url: "https://www.who.int/publications/i/item/9789241550536"
 images:
@@ -193,7 +193,7 @@ O tummy time é o alicerce de uma cadeia de marcos motores. Veja como tudo se co
 **Fontes:**
 
 1. AAP. Back to Sleep, Tummy to Play. HealthyChildren.org. Disponível em: [healthychildren.org](https://www.healthychildren.org/English/ages-stages/baby/sleep/Pages/Back-to-Sleep-Tummy-to-Play.aspx)
-2. SBP. Atividade Física na Primeira Infância. Departamento de Pediatria do Desenvolvimento e Comportamento. Disponível em: [sbp.com.br](https://www.sbp.com.br/departamentos-cientificos/pediatria-do-desenvolvimento-e-comportamento/)
+2. SBP. Atividade Física na Primeira Infância. Departamento de Pediatria do Desenvolvimento e Comportamento. Disponível em: [sbp.com.br](https://www.sbp.com.br/departamentos/pediatria-do-desenvolvimento-e-comportamento/)
 3. WHO. Guidelines on Physical Activity, Sedentary Behaviour and Sleep for Children Under 5 Years of Age. 2019. Disponível em: [who.int](https://www.who.int/publications/i/item/9789241550536)
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*

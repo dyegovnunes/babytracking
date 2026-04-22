@@ -46,9 +46,9 @@ sources:
   - name: "AAP. Sleep Hygiene for Infants and Toddlers. HealthyChildren.org."
     url: "https://www.healthychildren.org/English/healthy-living/sleep/Pages/Healthy-Sleep-Habits-How-Many-Hours-Does-Your-Child-Need.aspx"
   - name: "SBP. Sono na Infância. Departamento de Neurologia."
-    url: "https://www.sbp.com.br/departamentos-cientificos/neurologia/"
+    url: "https://www.sbp.com.br/departamentos/neurologia/"
   - name: "Mindell JA et al. A Nightly Bedtime Routine: Impact on Sleep in Young Children and Maternal Mood. Sleep, 2009."
-    url: "https://pubmed.ncbi.nlm.nih.gov/19645971/"
+    url: "https://pubmed.ncbi.nlm.nih.gov/19480226/"
 images:
   hero: img46-1.png
   complementar: img46-2.png
@@ -168,8 +168,8 @@ Com o tempo, o próprio bebê vai "pedir" a rotina — vai bocejar quando ouvir 
 **Fontes:**
 
 1. AAP. Sleep Hygiene for Infants and Toddlers. HealthyChildren.org. Disponível em: [healthychildren.org](https://www.healthychildren.org/English/healthy-living/sleep/Pages/Healthy-Sleep-Habits-How-Many-Hours-Does-Your-Child-Need.aspx)
-2. SBP. Sono na Infância. Departamento de Neurologia. Disponível em: [sbp.com.br](https://www.sbp.com.br/departamentos-cientificos/neurologia/)
-3. Mindell JA et al. A Nightly Bedtime Routine: Impact on Sleep in Young Children and Maternal Mood. Sleep, 2009. Disponível em: [pubmed.ncbi.nlm.nih.gov](https://pubmed.ncbi.nlm.nih.gov/19645971/)
+2. SBP. Sono na Infância. Departamento de Neurologia. Disponível em: [sbp.com.br](https://www.sbp.com.br/departamentos/neurologia/)
+3. Mindell JA et al. A Nightly Bedtime Routine: Impact on Sleep in Young Children and Maternal Mood. Sleep, 2009. Disponível em: [pubmed.ncbi.nlm.nih.gov](https://pubmed.ncbi.nlm.nih.gov/19480226/)
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*
 

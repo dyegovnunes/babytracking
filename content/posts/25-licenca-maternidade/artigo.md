@@ -45,7 +45,7 @@ sources:
   - name: "Lei 11.770/2008 — Programa Empresa Cidadã"
     url: "https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2008/lei/l11770.htm"
   - name: "INSS — Salário-Maternidade"
-    url: "https://www.gov.br/inss/pt-br/saiba-mais/salario-maternidade"
+    url: "https://www.gov.br/inss/pt-br/direitos-e-deveres/salario-maternidade/salario-maternidade"
   - name: "Constituição Federal, Art. 7º, XVIII"
     url: "https://www.planalto.gov.br/ccivil_03/constituicao/constituicao.htm"
 images:

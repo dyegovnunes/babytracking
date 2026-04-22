@@ -325,8 +325,8 @@ Independentemente de qual salto seu bebê esteja vivendo, estas estratégias fun
 
 **Fontes:**
 
-1. Van de Rijt H, Plooij F. *The Wonder Weeks* (6th edition, 2019). Kiddy World Publishing.
-2. Plooij FX. *The behavioral development of free-living chimpanzee babies and infants* (base da pesquisa original).
+1. [Van de Rijt H, Plooij F. The Wonder Weeks (6th edition, 2019). Kiddy World Publishing.](https://thewonderweeks.com/the-wonder-weeks-book/)
+2. [Plooij FX. The behavioral development of free-living chimpanzee babies and infants (base da pesquisa original).](https://thewonderweeks.com/about-us/history/)
 3. [SBP. Marcos do desenvolvimento infantil.](https://www.sbp.com.br/especiais/pediatria-para-familias/desenvolvimento/)
 4. [WHO. Child Growth Standards: Motor Development Milestones.](https://www.who.int/tools/child-growth-standards)
 

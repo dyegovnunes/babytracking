@@ -45,7 +45,7 @@ sources:
   - name: "OMS. Infant and young child feeding. Fact sheet. 2024."
     url: "https://www.who.int/news-room/fact-sheets/detail/infant-and-young-child-feeding"
   - name: "SBP. Manual de Alimentação da Infância à Adolescência. Departamento de Nutrologia. 2021."
-    url: "https://www.sbp.com.br/departamentos-cientificos/nutrologia/documentos-cientificos/"
+    url: "https://www.sbp.com.br/departamentos/nutrologia/documentos-cientificos/"
   - name: "CODEX Alimentarius. Standard for Infant Formula and Formulas for Special Medical Purposes. CXS 72-1981."
     url: "https://www.fao.org/fao-who-codexalimentarius/codex-texts/list-standards/en/"
   - name: "AAP. Choosing an Infant Formula. HealthyChildren.org."
@@ -196,10 +196,10 @@ Não. A água deve ser fervida. Água mineral não é estéril, e água de filtr
 ---
 
 **Fontes:**
-1. OMS. Infant and young child feeding. Fact sheet. 2024.
-2. SBP. Manual de Alimentação da Infância à Adolescência. Departamento de Nutrologia. 2021.
-3. CODEX Alimentarius. Standard for Infant Formula. CXS 72-1981.
-4. AAP. Choosing an Infant Formula. HealthyChildren.org.
+1. [OMS. Infant and young child feeding. Fact sheet. 2024.](https://www.who.int/news-room/fact-sheets/detail/infant-and-young-child-feeding)
+2. [SBP. Manual de Alimentação da Infância à Adolescência. Departamento de Nutrologia. 2021.](https://www.sbp.com.br/departamentos/nutrologia/documentos-cientificos/)
+3. [CODEX Alimentarius. Standard for Infant Formula. CXS 72-1981.](https://www.fao.org/fao-who-codexalimentarius/codex-texts/list-standards/en/)
+4. [AAP. Choosing an Infant Formula. HealthyChildren.org.](https://www.healthychildren.org/English/ages-stages/baby/formula-feeding/Pages/Choosing-an-Infant-Formula.aspx)
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*
 

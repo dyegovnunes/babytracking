@@ -53,7 +53,7 @@ sources:
   - name: "AAP. Safe Sleep: Recommendations. Updated 2022."
     url: "https://publications.aap.org/pediatrics/article/150/1/e2022057990/188304/Sleep-Related-Infant-Deaths-Updated-2022"
   - name: "SBP. Sono seguro para o lactente: recomendações. 2021."
-    url: "https://www.sbp.com.br/departamentos-cientificos/neonatologia/"
+    url: "https://www.sbp.com.br/departamentos/neonatologia/"
   - name: "CPSC. Safe Sleep for Babies."
     url: "https://www.cpsc.gov/SafeSleep"
 images:
@@ -201,7 +201,7 @@ Se está planejando o enxoval completo, confira nossa lista de [itens realmente 
 **Fontes:**
 
 1. [AAP. Safe Sleep: Recommendations. Updated 2022.](https://publications.aap.org/pediatrics/article/150/1/e2022057990/188304/Sleep-Related-Infant-Deaths-Updated-2022)
-2. [SBP. Sono seguro para o lactente: recomendações. 2021.](https://www.sbp.com.br/departamentos-cientificos/neonatologia/)
+2. [SBP. Sono seguro para o lactente: recomendações. 2021.](https://www.sbp.com.br/departamentos/neonatologia/)
 3. [CPSC. Safe Sleep for Babies.](https://www.cpsc.gov/SafeSleep)
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*

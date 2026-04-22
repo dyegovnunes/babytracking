@@ -43,7 +43,7 @@ sources:
   - name: "OMS — Recommendations on Maternal and Newborn Care for a Positive Postnatal Experience"
     url: "https://www.who.int/publications/i/item/9789240045989"
   - name: "SBP — A importância do vínculo e do apoio familiar no puerpério"
-    url: "https://www.sbp.com.br/departamentos-cientificos/saude-mental/"
+    url: "https://www.sbp.com.br/departamentos/grupos-trabalhos/saude-mental/"
   - name: "AAP — The Importance of Social Support for New Parents"
     url: "https://www.aap.org/"
 images:

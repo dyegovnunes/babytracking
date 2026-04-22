@@ -42,9 +42,9 @@ seo:
   snippet_section: "Quais são os testes obrigatórios do recém-nascido?"
 sources:
   - name: "SBP — Triagem Neonatal: orientações para profissionais de saúde"
-    url: "https://www.sbp.com.br/departamentos-cientificos/neonatologia/"
+    url: "https://www.sbp.com.br/departamentos/neonatologia/"
   - name: "Ministério da Saúde — Programa Nacional de Triagem Neonatal (PNTN)"
-    url: "https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/t/triagem-neonatal"
+    url: "https://www.gov.br/saude/pt-br/composicao/saes/triagem-neonatal"
   - name: "Lei 14.154/2021 — Ampliação da Triagem Neonatal no SUS"
     url: "https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2021/lei/l14154.htm"
 images:

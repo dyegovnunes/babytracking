@@ -30,8 +30,8 @@ seo:
 sources:
   - name: "SBP. Cuidados com o Recém-Nascido: orientações para a família. 2022."
     url: "https://www.sbp.com.br/especiais/pediatria-para-familias/cuidados-com-o-bebe/cuidados-com-o-recem-nascido/"
-  - name: "AAP. Caring for Your Newborn. HealthyChildren.org."
-    url: "https://www.healthychildren.org/English/ages-stages/baby/Pages/Caring-for-Your-Newborn.aspx"
+  - name: "AAP. Your Newborn's First Week: How to Prepare. HealthyChildren.org."
+    url: "https://www.healthychildren.org/English/ages-stages/baby/Pages/Bringing-Baby-Home.aspx"
   - name: "OMS. WHO recommendations on postnatal care of the mother and newborn. 2013."
     url: "https://www.who.int/publications/i/item/9789241506649"
 images:
@@ -114,7 +114,7 @@ O puerpério é um período de recuperação física e emocional intenso. Baby b
 **Fontes:**
 
 1. [SBP. Cuidados com o Recém-Nascido: orientações para a família. 2022.](https://www.sbp.com.br/especiais/pediatria-para-familias/cuidados-com-o-bebe/cuidados-com-o-recem-nascido/)
-2. [AAP. Caring for Your Newborn. HealthyChildren.org.](https://www.healthychildren.org/English/ages-stages/baby/Pages/Caring-for-Your-Newborn.aspx)
+2. [AAP. Your Newborn's First Week: How to Prepare. HealthyChildren.org.](https://www.healthychildren.org/English/ages-stages/baby/Pages/Bringing-Baby-Home.aspx)
 3. [OMS. WHO recommendations on postnatal care of the mother and newborn. 2013.](https://www.who.int/publications/i/item/9789241506649)
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*

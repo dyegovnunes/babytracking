@@ -39,12 +39,12 @@ seo:
   snippet_type: faq
   snippet_section: "Por que o bebê coloca tudo na boca?"
 sources:
-  - name: "AAP — Developmental Milestones: 4-7 Months"
-    url: "https://www.healthychildren.org/English/ages-stages/baby/Pages/Developmental-Milestones-4-to-7-Months.aspx"
+  - name: "AAP — Developmental Milestones: 7 Months"
+    url: "https://www.healthychildren.org/English/ages-stages/baby/Pages/Developmental-Milestones-7-Months.aspx"
   - name: "SBP — Desenvolvimento infantil: marcos e estimulação"
     url: "https://www.sbp.com.br/especiais/pediatria-para-familias/desenvolvimento/"
   - name: "Piaget J. The Origin of Intelligence in the Child. Routledge, 1953."
-    url: "https://www.routledge.com/The-Origin-of-Intelligence-in-the-Child/Piaget/p/book/9781138913981"
+    url: "https://www.routledge.com/The-Origin-of-Intelligence-in-the-Child/Piaget/p/book/9780415513623"
 images:
   hero: img42-1.png
   complementar: img42-2.png
@@ -215,9 +215,9 @@ Para a grande maioria dos bebês, a fase oral é uma etapa saudável e passageir
 
 **Fontes:**
 
-1. AAP — Developmental Milestones: 4-7 Months. Disponível em: [healthychildren.org](https://www.healthychildren.org/English/ages-stages/baby/Pages/Developmental-Milestones-4-to-7-Months.aspx)
+1. AAP — Developmental Milestones: 7 Months. Disponível em: [healthychildren.org](https://www.healthychildren.org/English/ages-stages/baby/Pages/Developmental-Milestones-7-Months.aspx)
 2. SBP — Desenvolvimento infantil: marcos e estimulação. Disponível em: [sbp.com.br](https://www.sbp.com.br/especiais/pediatria-para-familias/desenvolvimento/)
-3. Piaget J. The Origin of Intelligence in the Child. Routledge, 1953.
+3. [Piaget J. The Origin of Intelligence in the Child. Routledge, 1953.](https://www.routledge.com/The-Origin-of-Intelligence-in-the-Child/Piaget/p/book/9780415513623)
 
 ---
 

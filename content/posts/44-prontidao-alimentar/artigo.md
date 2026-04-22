@@ -42,7 +42,7 @@ sources:
   - name: "OMS — Complementary Feeding: Report of the Global Consultation"
     url: "https://www.who.int/publications/i/item/924154614X"
   - name: "SBP — Manual de Alimentação: da infância à adolescência (4ª ed., 2018)"
-    url: "https://www.sbp.com.br/fileadmin/user_upload/publicacoes/Manual_de_Alimentacao.pdf"
+    url: "https://www.sbp.com.br/fileadmin/user_upload/user_upload/publicacoes/14617a-pdmanualnutrologia-alimentacao.pdf"
   - name: "AAP — Starting Solid Foods"
     url: "https://www.healthychildren.org/English/ages-stages/baby/feeding-nutrition/Pages/Starting-Solid-Foods.aspx"
   - name: "ESPGHAN — Complementary Feeding: A Position Paper (2017)"
@@ -234,9 +234,9 @@ A evidência atual (AAP, ESPGHAN, SBP):
 **Fontes:**
 
 1. OMS — Complementary Feeding: Report of the Global Consultation. Disponível em: [who.int](https://www.who.int/publications/i/item/924154614X)
-2. SBP — Manual de Alimentação: da infância à adolescência, 4ª ed., 2018. Disponível em: [sbp.com.br](https://www.sbp.com.br/fileadmin/user_upload/publicacoes/Manual_de_Alimentacao.pdf)
+2. SBP — Manual de Alimentação: da infância à adolescência, 4ª ed., 2018. Disponível em: [sbp.com.br](https://www.sbp.com.br/fileadmin/user_upload/user_upload/publicacoes/14617a-pdmanualnutrologia-alimentacao.pdf)
 3. AAP — Starting Solid Foods. Disponível em: [healthychildren.org](https://www.healthychildren.org/English/ages-stages/baby/feeding-nutrition/Pages/Starting-Solid-Foods.aspx)
-4. ESPGHAN — Complementary Feeding: A Position Paper. JPGN, 2017.
+4. [ESPGHAN. Complementary Feeding: A Position Paper. JPGN, 2017.](https://pubmed.ncbi.nlm.nih.gov/28027215/)
 
 ---
 

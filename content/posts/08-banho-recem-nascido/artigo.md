@@ -29,7 +29,7 @@ seo:
   snippet_section: "Passo a passo do banho do recém-nascido"
 sources:
   - name: "SBP. Manual de Orientação: Higiene da Criança. 2021."
-    url: "https://www.sbp.com.br/departamentos-cientificos/dermatologia/"
+    url: "https://www.sbp.com.br/departamentos/dermatologia/"
   - name: "AAP. Bathing Your Baby. HealthyChildren.org."
     url: "https://www.healthychildren.org/English/ages-stages/baby/bathing-skin-care/Pages/Bathing-Your-Newborn.aspx"
   - name: "OMS. WHO recommendations on newborn health. 2017."
@@ -104,7 +104,7 @@ O banho inteiro não precisa durar mais que 5-10 minutos.
 
 **Fontes:**
 
-1. [SBP. Manual de Orientação: Higiene da Criança. 2021.](https://www.sbp.com.br/departamentos-cientificos/dermatologia/)
+1. [SBP. Manual de Orientação: Higiene da Criança. 2021.](https://www.sbp.com.br/departamentos/dermatologia/)
 2. [AAP. Bathing Your Baby. HealthyChildren.org.](https://www.healthychildren.org/English/ages-stages/baby/bathing-skin-care/Pages/Bathing-Your-Newborn.aspx)
 3. [OMS. WHO recommendations on newborn health. 2017.](https://www.who.int/publications/i/item/WHO-MCA-17.07)
 

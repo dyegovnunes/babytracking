@@ -30,7 +30,7 @@ sources:
   - name: "SBP. Cuidados com o Recém-Nascido: orientações para a família. 2022."
     url: "https://www.sbp.com.br/especiais/pediatria-para-familias/cuidados-com-o-bebe/cuidados-com-o-recem-nascido/"
   - name: "Ministério da Saúde. Caderneta da Gestante. 2023."
-    url: "https://bvsms.saude.gov.br/bvs/publicacoes/caderneta_gestante_2023.pdf"
+    url: "https://bvsms.saude.gov.br/bvs/publicacoes/caderneta_gestante_8ed_rev.pdf"
   - name: "OMS. WHO recommendations on maternal and newborn care. 2022."
     url: "https://www.who.int/publications/i/item/WHO-MCA-17.10"
 images:
@@ -134,7 +134,7 @@ Roupas do bebê em excesso (você vai trocar mais fraldas do que roupas), banhei
 **Fontes:**
 
 1. [SBP. Cuidados com o Recém-Nascido: orientações para a família. 2022.](https://www.sbp.com.br/especiais/pediatria-para-familias/cuidados-com-o-bebe/cuidados-com-o-recem-nascido/)
-2. [Ministério da Saúde. Caderneta da Gestante. 2023.](https://bvsms.saude.gov.br/bvs/publicacoes/caderneta_gestante_2023.pdf)
+2. [Ministério da Saúde. Caderneta da Gestante. 2023.](https://bvsms.saude.gov.br/bvs/publicacoes/caderneta_gestante_8ed_rev.pdf)
 3. [OMS. WHO recommendations on maternal and newborn care. 2022.](https://www.who.int/publications/i/item/WHO-MCA-17.10)
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o profissional que acompanha a sua gestação.*

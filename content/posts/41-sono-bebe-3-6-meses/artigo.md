@@ -241,7 +241,7 @@ Este guia não defende nenhum método específico. O importante é que a famíli
 
 1. AAP — Healthy Sleep Habits for Infants. Disponível em: [healthychildren.org](https://www.healthychildren.org/English/ages-stages/baby/sleep/Pages/default.aspx)
 2. SBP — Sono na infância: recomendações. Disponível em: [sbp.com.br](https://www.sbp.com.br/especiais/pediatria-para-familias/cuidados-com-o-bebe/sono/)
-3. Mindell JA et al. A nightly bedtime routine: impact on sleep in young children. Sleep. 2009;32(5):599-606.
+3. [Mindell JA et al. A nightly bedtime routine: impact on sleep in young children. Sleep. 2009;32(5):599-606.](https://pubmed.ncbi.nlm.nih.gov/19480226/)
 
 ---
 

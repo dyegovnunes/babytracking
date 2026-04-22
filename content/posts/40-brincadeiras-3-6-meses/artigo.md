@@ -49,7 +49,7 @@ sources:
   - name: "SBP — Estimulação do desenvolvimento infantil"
     url: "https://www.sbp.com.br/especiais/pediatria-para-familias/desenvolvimento/"
   - name: "CDC — Milestone Moments: Learn the Signs, Act Early"
-    url: "https://www.cdc.gov/ncbddd/actearly/milestones/index.html"
+    url: "https://www.cdc.gov/act-early/milestones/index.html"
 images:
   hero: img40-1.png
   complementar: img40-2.png
@@ -218,7 +218,7 @@ A partir dos 4 meses, o bebê começa a entender que suas ações geram resultad
 
 1. AAP — Playing With Your Baby: Activities for 4 to 7 Months. Disponível em: [healthychildren.org](https://www.healthychildren.org/English/ages-stages/baby/Pages/Playing-With-Your-Baby.aspx)
 2. SBP — Estimulação do desenvolvimento infantil. Disponível em: [sbp.com.br](https://www.sbp.com.br/especiais/pediatria-para-familias/desenvolvimento/)
-3. CDC — Milestone Moments: Learn the Signs, Act Early. Disponível em: [cdc.gov](https://www.cdc.gov/ncbddd/actearly/milestones/index.html)
+3. CDC — Milestone Moments: Learn the Signs, Act Early. Disponível em: [cdc.gov](https://www.cdc.gov/act-early/milestones/index.html)
 
 ---
 

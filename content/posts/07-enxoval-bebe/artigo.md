@@ -31,7 +31,7 @@ sources:
   - name: "SBP. Cuidados com o Recém-Nascido: orientações para a família. 2022."
     url: "https://www.sbp.com.br/especiais/pediatria-para-familias/cuidados-com-o-bebe/cuidados-com-o-recem-nascido/"
   - name: "Ministério da Saúde. Caderneta da Gestante. 2023."
-    url: "https://bvsms.saude.gov.br/bvs/publicacoes/caderneta_gestante_2023.pdf"
+    url: "https://bvsms.saude.gov.br/bvs/publicacoes/caderneta_gestante_8ed_rev.pdf"
 images:
   hero: img7-1.png
   complementar: img7-2.png
@@ -124,7 +124,7 @@ Ninho redutor, almofada anti-refluxo, posicionador de berço: além de desnecess
 **Fontes:**
 
 1. [SBP. Cuidados com o Recém-Nascido: orientações para a família. 2022.](https://www.sbp.com.br/especiais/pediatria-para-familias/cuidados-com-o-bebe/cuidados-com-o-recem-nascido/)
-2. [Ministério da Saúde. Caderneta da Gestante. 2023.](https://bvsms.saude.gov.br/bvs/publicacoes/caderneta_gestante_2023.pdf)
+2. [Ministério da Saúde. Caderneta da Gestante. 2023.](https://bvsms.saude.gov.br/bvs/publicacoes/caderneta_gestante_8ed_rev.pdf)
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*
 

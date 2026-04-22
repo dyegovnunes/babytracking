@@ -42,7 +42,7 @@ sources:
   - name: "OMS — Maternal Mental Health"
     url: "https://www.who.int/teams/mental-health-and-substance-use/promotion-prevention/maternal-mental-health"
   - name: "SBP — Saúde Mental Materna e Desenvolvimento Infantil"
-    url: "https://www.sbp.com.br/departamentos-cientificos/saude-mental/"
+    url: "https://www.sbp.com.br/departamentos/grupos-trabalhos/saude-mental/"
   - name: "ACOG — Screening for Perinatal Depression. Committee Opinion 757"
     url: "https://www.acog.org/clinical/clinical-guidance/committee-opinion/articles/2018/11/screening-for-perinatal-depression"
   - name: "Edinburgh Postnatal Depression Scale (EPDS)"

@@ -31,9 +31,9 @@ sources:
   - name: "Mindell JA, Owens JA. A Clinical Guide to Pediatric Sleep. Lippincott. 2015."
     url: "https://shop.lww.com/a-clinical-guide-to-pediatric-sleep/p/9781451193008"
   - name: "SBP. Documento Científico: Sono na Infância. 2020."
-    url: "https://www.sbp.com.br/departamentos-cientificos/neurologia/documentos-cientificos/"
+    url: "https://www.sbp.com.br/departamentos/neurologia/documentos-cientificos/"
   - name: "Galland BC, et al. Normal sleep patterns in infants and children: a systematic review. Sleep Medicine Reviews. 2012."
-    url: "https://pubmed.ncbi.nlm.nih.gov/22079401/"
+    url: "https://pubmed.ncbi.nlm.nih.gov/21784676/"
 images:
   hero: img12-1.png
   complementar: img12-2.png
@@ -96,8 +96,8 @@ Se a privação de sono estiver afetando a saúde mental dos cuidadores, busque 
 **Fontes:**
 
 1. [Mindell JA, Owens JA. A Clinical Guide to Pediatric Sleep. Lippincott. 2015.](https://shop.lww.com/a-clinical-guide-to-pediatric-sleep/p/9781451193008)
-2. [SBP. Documento Científico: Sono na Infância. 2020.](https://www.sbp.com.br/departamentos-cientificos/neurologia/documentos-cientificos/)
-3. [Galland BC, et al. Normal sleep patterns in infants and children. Sleep Medicine Reviews. 2012.](https://pubmed.ncbi.nlm.nih.gov/22079401/)
+2. [SBP. Documento Científico: Sono na Infância. 2020.](https://www.sbp.com.br/departamentos/neurologia/documentos-cientificos/)
+3. [Galland BC, et al. Normal sleep patterns in infants and children. Sleep Medicine Reviews. 2012.](https://pubmed.ncbi.nlm.nih.gov/21784676/)
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*
 

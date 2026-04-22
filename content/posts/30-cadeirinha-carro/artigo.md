@@ -46,9 +46,9 @@ sources:
   - name: "Código de Trânsito Brasileiro (CTB), Art. 64"
     url: "https://www.planalto.gov.br/ccivil_03/leis/l9503compilado.htm"
   - name: "CONTRAN — Resolução 277/2008 (Dispositivos de Retenção)"
-    url: "https://www.gov.br/infraestrutura/pt-br/assuntos/transito/conteudo-contran/resolucoes/resolucao2772008.pdf"
+    url: "https://www.normasbrasil.com.br/norma/resolucao-277-2008_108349.html"
   - name: "INMETRO — Dispositivos de Retenção para Crianças"
-    url: "https://www.gov.br/inmetro/pt-br/assuntos/avaliacao-da-conformidade/produtos/dispositivos-de-retencao-para-criancas"
+    url: "https://www.gov.br/inmetro/pt-br/acesso-a-informacao/perguntas-frequentes/avaliacao-da-conformidade/dispositivos-de-retencao-para-criancas"
   - name: "AAP — Car Seats: Information for Families"
     url: "https://www.healthychildren.org/English/safety-prevention/on-the-go/Pages/Car-Safety-Seats-Information-for-Families.aspx"
 images:

@@ -47,11 +47,11 @@ seo:
   snippet_section: "3 meses"
 sources:
   - name: "SBP. Caderneta da Criança — Marcos do Desenvolvimento. 2024."
-    url: "https://www.gov.br/saude/pt-br/composicao/saps/caderneta-da-crianca"
+    url: "https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/s/saude-da-crianca/caderneta"
   - name: "OMS. Child growth standards: Motor development milestones."
     url: "https://www.who.int/tools/child-growth-standards/standards/motor-development-milestones"
   - name: "CDC. Milestone Moments — Learn the Signs. Act Early. 2023."
-    url: "https://www.cdc.gov/ncbddd/actearly/milestones/index.html"
+    url: "https://www.cdc.gov/act-early/milestones/index.html"
 images:
   hero: img19-1.png
   complementar: img19-2.png
@@ -266,9 +266,9 @@ Nenhum desses pontos isoladamente significa atraso. O pediatra avalia o quadro c
 
 **Fontes:**
 
-1. [SBP. Caderneta da Criança — Marcos do Desenvolvimento. 2024.](https://www.gov.br/saude/pt-br/composicao/saps/caderneta-da-crianca)
+1. [SBP. Caderneta da Criança — Marcos do Desenvolvimento. 2024.](https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/s/saude-da-crianca/caderneta)
 2. [OMS. Child growth standards: Motor development milestones.](https://www.who.int/tools/child-growth-standards/standards/motor-development-milestones)
-3. [CDC. Milestone Moments — Learn the Signs. Act Early. 2023.](https://www.cdc.gov/ncbddd/actearly/milestones/index.html)
+3. [CDC. Milestone Moments — Learn the Signs. Act Early. 2023.](https://www.cdc.gov/act-early/milestones/index.html)
 
 *Este conteúdo é informativo e não substitui avaliação pediátrica. Os marcos descritos são referências populacionais. Prematuros devem usar a idade corrigida. Sempre converse com o pediatra do seu bebê sobre o desenvolvimento individual.*
 

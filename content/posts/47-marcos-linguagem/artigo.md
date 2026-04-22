@@ -39,12 +39,12 @@ seo:
   snippet_type: lista
   snippet_section: "Timeline: do nascimento aos 12 meses"
 sources:
-  - name: "AAP. Language Development: 1 to 12 Months. HealthyChildren.org."
-    url: "https://www.healthychildren.org/English/ages-stages/baby/Pages/Language-Development-1-to-12-Months.aspx"
+  - name: "AAP. Hearing Language Development: 1 to 12 Months Making Sounds: Your Baby's Milestones. HealthyChildren.org."
+    url: "https://www.healthychildren.org/English/ages-stages/baby/Pages/Hearing-and-Making-Sounds.aspx"
   - name: "SBP. Desenvolvimento da Linguagem na Primeira Infância. Departamento de Pediatria do Desenvolvimento e Comportamento."
-    url: "https://www.sbp.com.br/departamentos-cientificos/pediatria-do-desenvolvimento-e-comportamento/"
+    url: "https://www.sbp.com.br/departamentos/pediatria-do-desenvolvimento-e-comportamento/"
   - name: "ASHA. How Does Your Child Hear and Talk? Birth to One Year."
-    url: "https://www.asha.org/public/speech/development/01/"
+    url: "https://www.asha.org/public/developmental-milestones/communication-milestones-birth-to-1-year/"
 images:
   hero: img47-1.png
   complementar: img47-2.png
@@ -200,9 +200,9 @@ O primeiro passo costuma ser o pediatra, que pode encaminhar para o fonoaudiólo
 
 **Fontes:**
 
-1. AAP. Language Development: 1 to 12 Months. HealthyChildren.org. Disponível em: [healthychildren.org](https://www.healthychildren.org/English/ages-stages/baby/Pages/Language-Development-1-to-12-Months.aspx)
-2. SBP. Desenvolvimento da Linguagem na Primeira Infância. Departamento de Pediatria do Desenvolvimento e Comportamento. Disponível em: [sbp.com.br](https://www.sbp.com.br/departamentos-cientificos/pediatria-do-desenvolvimento-e-comportamento/)
-3. ASHA. How Does Your Child Hear and Talk? Birth to One Year. Disponível em: [asha.org](https://www.asha.org/public/speech/development/01/)
+1. AAP. Hearing Language Development: 1 to 12 Months Making Sounds: Your Baby's Milestones. HealthyChildren.org. Disponível em: [healthychildren.org](https://www.healthychildren.org/English/ages-stages/baby/Pages/Hearing-and-Making-Sounds.aspx)
+2. SBP. Desenvolvimento da Linguagem na Primeira Infância. Departamento de Pediatria do Desenvolvimento e Comportamento. Disponível em: [sbp.com.br](https://www.sbp.com.br/departamentos/pediatria-do-desenvolvimento-e-comportamento/)
+3. ASHA. How Does Your Child Hear and Talk? Birth to One Year. Disponível em: [asha.org](https://www.asha.org/public/developmental-milestones/communication-milestones-birth-to-1-year/)
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*
 
