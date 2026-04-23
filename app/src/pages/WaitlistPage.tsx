@@ -88,6 +88,31 @@ const WAITLIST_CSS = `
   .wl-delay-3 { animation-delay: 350ms; }
   .wl-delay-4 { animation-delay: 450ms; }
 
+  /* Hero layout responsivo */
+  .wl-hero {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    align-items: center;
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
+  }
+  .wl-hero-text  { order: 1; width: 100%; }
+  .wl-hero-mockup { order: 2; width: 100%; display: flex; justify-content: center; align-items: center; position: relative; }
+  .wl-hero-mockup img { max-height: 380px; width: auto; object-fit: contain; filter: drop-shadow(0 24px 48px rgba(0,0,0,0.5)); }
+
+  @media (min-width: 768px) {
+    .wl-hero {
+      flex-direction: row;
+      align-items: center;
+      padding-top: 5rem;
+      padding-bottom: 3rem;
+    }
+    .wl-hero-text   { order: 2; flex: 1; }
+    .wl-hero-mockup { order: 1; flex: 1; }
+    .wl-hero-mockup img { max-height: 600px; }
+  }
+
   /* Benefit card border-left accent */
   .wl-benefit-card {
     position: relative;
@@ -486,16 +511,9 @@ export default function WaitlistPage() {
         </nav>
 
         {/* ── HERO ── */}
-        <section style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
-          gap: '1.5rem',
-          alignItems: 'center',
-          paddingTop: '4rem',
-          paddingBottom: '2.5rem',
-        }}>
-          {/* Mockup — oculto em mobile pequeno via inline media */}
-          <div className="wl-fade wl-delay-3" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
+        <section className="wl-hero">
+          {/* Mockup */}
+          <div className="wl-hero-mockup wl-fade wl-delay-3">
             <div aria-hidden style={{
               position: 'absolute', inset: 0, zIndex: -1, borderRadius: '50%',
               background: 'radial-gradient(circle, hsl(268 85% 60% / 0.55) 0%, hsl(268 80% 55% / 0.22) 45%, transparent 75%)',
@@ -504,13 +522,12 @@ export default function WaitlistPage() {
             <img
               src="/yaya-mockup.png"
               alt="App Yaya mostrando rotina do bebê"
-              style={{ maxHeight: 560, width: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 24px 48px rgba(0,0,0,0.5))' }}
               loading="eager"
             />
           </div>
 
           {/* Texto */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+          <div className="wl-hero-text" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
             {/* Logo + nome */}
             <div className="wl-fade" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem' }}>
               <img src="/logo-symbol-pink.png" alt="Yaya"
