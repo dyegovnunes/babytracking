@@ -102,7 +102,7 @@ workflows:
           # Bump aqui sempre que subir versão.
           PBXPROJ="app/ios/App/App.xcodeproj/project.pbxproj"
           sed -i '' 's/MARKETING_VERSION = [^;]*;/MARKETING_VERSION = 1.9.2;/g' "$PBXPROJ"
-          sed -i '' 's/CURRENT_PROJECT_VERSION = [^;]*;/CURRENT_PROJECT_VERSION = 54;/g' "$PBXPROJ"
+          sed -i '' 's/CURRENT_PROJECT_VERSION = [^;]*;/CURRENT_PROJECT_VERSION = 55;/g' "$PBXPROJ"
 
       - name: Use fetched profiles
         script: |
