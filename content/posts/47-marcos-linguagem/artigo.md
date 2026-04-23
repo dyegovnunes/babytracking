@@ -48,6 +48,8 @@ sources:
 images:
   hero: img47-1.png
   complementar: img47-2.png
+image_url: "https://blog.yayababy.app/posts/marcos-linguagem-bebe/hero.png"
+image_alt: "Balbucio, Risada e Primeiras Palavras"
 ---
 
 O primeiro sorriso social, o arrulho que parece uma conversa, aquele "da-da-da" que deixa todo mundo emocionado — o caminho até as primeiras palavras é uma aventura fascinante. E a boa notícia é que você, como pai ou mãe, é o principal "professor de línguas" do seu bebê, sem precisar de nenhum material especial. Só da sua voz.

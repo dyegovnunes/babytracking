@@ -52,6 +52,8 @@ sources:
 images:
   hero: img46-1.png
   complementar: img46-2.png
+image_url: "https://blog.yayababy.app/posts/rotina-sono-bebe/hero.png"
+image_alt: "Como Criar uma Rotina de Sono para o Bebê"
 ---
 
 Se tem um assunto que domina os grupos de pais é o sono do bebê. E junto com ele vem a dúvida mais repetida: "como faço meu bebê dormir melhor?" A resposta, respaldada por anos de pesquisa, é surpreendentemente simples — embora exija paciência: crie uma rotina. Não um ritual elaborado ou um cronograma rígido, mas uma sequência previsível de passos que sinalize ao cérebro do bebê que a hora de dormir chegou.

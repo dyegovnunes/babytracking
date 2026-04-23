@@ -50,6 +50,8 @@ sources:
 images:
   hero: img44-1.png
   complementar: img44-2.png
+image_url: "https://blog.yayababy.app/posts/sinais-prontidao-introducao-alimentar/hero.png"
+image_alt: "Sinais de Prontidão para Introdução Alimentar"
 ---
 
 # Sinais de Prontidão para Introdução Alimentar: Quando o Bebê Está Pronto

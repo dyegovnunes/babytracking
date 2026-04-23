@@ -48,6 +48,8 @@ sources:
 images:
   hero: img36-1.png
   complementar: img36-2.png
+image_url: "https://blog.yayababy.app/posts/fraldas-pano-vs-descartaveis/hero.png"
+image_alt: "Fraldas de Pano vs. Descartáveis"
 ---
 
 Fralda de pano ou descartável? A pergunta parece simples, mas envolve custo, praticidade, meio ambiente, saúde da pele e rotina da família. E a resposta não é única — depende do contexto de cada casa. Este comparativo traz dados concretos para ajudar na decisão, sem romantizar nenhuma das opções.

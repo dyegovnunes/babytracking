@@ -47,6 +47,8 @@ sources:
 images:
   hero: img34-1.png
   complementar: img34-2.png
+image_url: "https://blog.yayababy.app/posts/visitas-recem-nascido/hero.png"
+image_alt: "Visitas ao Recém-Nascido"
 ---
 
 O bebê nasceu e o mundo inteiro quer conhecê-lo. Avós, tios, amigos, colegas de trabalho, vizinhos. A intenção é boa, mas o timing raramente é ideal. Os primeiros dias com um recém-nascido são de adaptação, recuperação e descoberta — e merecem proteção. Este guia ajuda a equilibrar o carinho das visitas com a necessidade real de tranquilidade.

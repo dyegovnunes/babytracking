@@ -55,6 +55,8 @@ sources:
 images:
   hero: img31-1.png
   complementar: img31-2.png
+image_url: "https://blog.yayababy.app/posts/leite-materno-armazenamento/hero.png"
+image_alt: "Leite Materno"
 ---
 
 Uma das maiores preocupações de mães que amamentam é: "e quando eu não estiver por perto?". Seja para voltar ao trabalho, ter algumas horas livres ou simplesmente criar uma reserva de segurança, saber como extrair e armazenar o leite materno corretamente é fundamental. E a boa notícia é que não é complicado — basta seguir algumas regras.

@@ -50,6 +50,8 @@ sources:
 images:
   hero: img50-1.png
   complementar: img50-2.png
+image_url: "https://blog.yayababy.app/posts/percentis-curvas-crescimento-bebe/hero.png"
+image_alt: "Percentis e Curvas de Crescimento"
 ---
 
 Na consulta com o pediatra, você ouve: "Seu bebê está no percentil 25 de peso." E a primeira reação é: "Isso é bom? É ruim? Está abaixo da média?" As curvas de crescimento são uma das ferramentas mais importantes da pediatria, mas também uma das mais mal interpretadas pelos pais. Este guia explica o que são percentis, como ler os gráficos e, principalmente, quando um número é motivo de atenção — e quando não é.

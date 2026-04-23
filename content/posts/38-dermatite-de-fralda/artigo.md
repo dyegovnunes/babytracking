@@ -50,6 +50,8 @@ sources:
 images:
   hero: img38-1.png
   complementar: img38-2.png
+image_url: "https://blog.yayababy.app/posts/dermatite-de-fralda/hero.png"
+image_alt: "Dermatite de Fralda (Assadura)"
 ---
 
 A assadura é quase um rito de passagem: praticamente todo bebê terá pelo menos um episódio durante o período de uso de fraldas. Na maioria dos casos, é fácil de prevenir e de tratar. Mas quando a vermelhidão não melhora, se espalha ou muda de aspecto, pode ser algo além de uma assadura simples. Saber identificar o tipo faz diferença na conduta.

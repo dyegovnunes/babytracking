@@ -53,6 +53,8 @@ sources:
 images:
   hero: img33-1.png
   complementar: img33-2.png
+image_url: "https://blog.yayababy.app/posts/formula-infantil/hero.png"
+image_alt: "Fórmula Infantil"
 ---
 
 Nem toda família amamenta exclusivamente — e tudo bem. A fórmula infantil existe para garantir que o bebê receba os nutrientes necessários quando o leite materno não está disponível, não é suficiente ou quando a família faz essa escolha. Este guia traz informação prática, sem julgamento, sobre quando a fórmula é indicada, como escolher e como preparar com segurança.

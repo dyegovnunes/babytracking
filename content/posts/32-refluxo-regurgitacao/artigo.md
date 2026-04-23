@@ -50,6 +50,8 @@ sources:
 images:
   hero: img32-1.png
   complementar: img32-2.png
+image_url: "https://blog.yayababy.app/posts/refluxo-regurgitacao-bebe/hero.png"
+image_alt: "Bebê Regurgita Muito"
 ---
 
 Ver o bebê regurgitar leite após mamar é uma das cenas mais comuns das primeiras semanas — e uma das que mais causam ansiedade. A roupa suja de leite, o lençol molhado e a dúvida: "isso é normal ou preciso me preocupar?" A resposta curta é que, na maioria dos casos, a golfada é fisiológica e não indica nenhum problema. Mas entender os limites entre o normal e o patológico faz toda a diferença.

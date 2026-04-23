@@ -48,6 +48,8 @@ sources:
 images:
   hero: img42-1.png
   complementar: img42-2.png
+image_url: "https://blog.yayababy.app/posts/fase-oral-bebe/hero.png"
+image_alt: "Bebê Coloca Tudo na Boca"
 ---
 
 # Bebê Coloca Tudo na Boca: A Fase Oral e Como Lidar

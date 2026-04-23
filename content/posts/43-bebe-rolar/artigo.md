@@ -51,6 +51,8 @@ sources:
 images:
   hero: img43-1.png
   complementar: img43-2.png
+image_url: "https://blog.yayababy.app/posts/bebe-quando-comeca-rolar/hero.png"
+image_alt: "Quando o Bebê Começa a Rolar e Como Ajudar"
 ---
 
 # Quando o Bebê Começa a Rolar e Como Ajudar

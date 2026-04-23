@@ -50,6 +50,8 @@ sources:
 images:
   hero: img39-1.png
   complementar: img39-2.png
+image_url: "https://blog.yayababy.app/posts/quando-levar-bebe-pronto-socorro/hero.png"
+image_alt: "Quando Levar o Bebê ao Pronto-Socorro"
 ---
 
 # Quando Levar o Bebê ao Pronto-Socorro: Sinais de Alerta

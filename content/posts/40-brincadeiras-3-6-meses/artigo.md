@@ -53,6 +53,8 @@ sources:
 images:
   hero: img40-1.png
   complementar: img40-2.png
+image_url: "https://blog.yayababy.app/posts/brincadeiras-bebe-3-6-meses/hero.png"
+image_alt: "Brincadeiras para Bebê de 3 a 6 Meses"
 ---
 
 # Brincadeiras para Bebê de 3 a 6 Meses: Estímulo com Simplicidade

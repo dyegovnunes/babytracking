@@ -49,6 +49,8 @@ sources:
 images:
   hero: img37-1.png
   complementar: img37-2.png
+image_url: "https://blog.yayababy.app/posts/ruido-branco-bebe/hero.png"
+image_alt: "Ruído Branco para Bebê"
 ---
 
 O bebê que só dorme com barulho. O ventilador que virou peça obrigatória do quarto. O app de "sons para dormir" que roda a noite inteira. O ruído branco se popularizou entre famílias com recém-nascidos — e por bons motivos. Mas será que funciona de verdade? E mais importante: é seguro? Vamos ao que a ciência diz.

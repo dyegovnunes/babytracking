@@ -50,6 +50,8 @@ sources:
 images:
   hero: img35-1.png
   complementar: img35-2.png
+image_url: "https://blog.yayababy.app/posts/registro-bebe-documentos/hero.png"
+image_alt: "Registro do Bebê"
 ---
 
 O bebê nasceu e, junto com a emoção, chega uma lista de burocracias. Certidão de nascimento, CPF, cartão do SUS, plano de saúde — cada documento tem seu prazo e seu caminho. A boa notícia é que o processo ficou mais simples nos últimos anos, e boa parte pode ser resolvida ainda na maternidade. Este guia organiza tudo em ordem de prioridade.

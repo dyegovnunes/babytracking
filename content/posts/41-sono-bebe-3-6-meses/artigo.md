@@ -52,6 +52,8 @@ sources:
 images:
   hero: img41-1.png
   complementar: img41-2.png
+image_url: "https://blog.yayababy.app/posts/sono-bebe-3-6-meses/hero.png"
+image_alt: "Sono do Bebê de 3 a 6 Meses"
 ---
 
 # Sono do Bebê de 3 a 6 Meses: Transição de Ciclos e Noites Melhores

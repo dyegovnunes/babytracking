@@ -52,6 +52,8 @@ sources:
 images:
   hero: img45-1.png
   complementar: img45-2.png
+image_url: "https://blog.yayababy.app/posts/ansiedade-separacao-bebe/hero.png"
+image_alt: "Ansiedade de Separação no Bebê"
 ---
 
 Você sai do quarto por dois segundos e o choro começa. O bebê que antes ficava tranquilo no colo de qualquer pessoa agora só quer a mãe — ou o pai — e protesta com intensidade quando alguém tenta tirá-lo dali. Se essa cena virou rotina na sua casa, provavelmente o bebê entrou na fase de ansiedade de separação. E, por mais cansativa que seja, ela é uma excelente notícia sobre o desenvolvimento do seu filho.

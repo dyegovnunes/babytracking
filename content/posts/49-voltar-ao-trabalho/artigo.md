@@ -51,6 +51,8 @@ sources:
 images:
   hero: img49-1.png
   complementar: img49-2.png
+image_url: "https://blog.yayababy.app/posts/voltar-trabalho-amamentacao/hero.png"
+image_alt: "Voltar ao Trabalho Após a Licença"
 ---
 
 O fim da licença-maternidade se aproxima e, junto com ele, um turbilhão de sentimentos: ansiedade pela separação, preocupação com a amamentação, culpa por "deixar" o bebê e, ao mesmo tempo, em alguns casos, o alívio de retomar uma parte da identidade que ficou em pausa. Tudo isso é legítimo. E a boa notícia é que, com planejamento, é possível manter a amamentação, adaptar a rotina e atravessar essa transição com mais segurança.

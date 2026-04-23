@@ -48,6 +48,8 @@ sources:
 images:
   hero: img48-1.png
   complementar: img48-2.png
+image_url: "https://blog.yayababy.app/posts/tummy-time-como-fazer/hero.png"
+image_alt: "Tummy Time"
 ---
 
 "Barriga para baixo" não é só uma posição — é um dos exercícios mais importantes que o seu bebê pode fazer nos primeiros meses de vida. O tummy time fortalece pescoço, ombros, costas e tronco, e é pré-requisito para praticamente todos os marcos motores que vêm pela frente: rolar, sentar, engatinhar, andar. A melhor parte? Você pode começar desde o primeiro dia em casa.
