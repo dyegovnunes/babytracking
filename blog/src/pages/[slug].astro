@@ -293,6 +293,31 @@ const faqLd = post.schema_type === 'FAQPage' ? faqJsonLd(post) : null
   </article>
 </BlogLayout>
 
+<script>
+  // Rastreia cliques nos CTAs "Baixar app" (links para yayababy.app)
+  document.querySelectorAll<HTMLAnchorElement>('a[href="https://yayababy.app"]').forEach((link) => {
+    link.addEventListener('click', () => {
+      if (typeof gtag !== 'function') return
+
+      let ctaLocation = 'other'
+      const el: Element = link
+
+      if (el.closest('[data-smart-banner]')) {
+        ctaLocation = 'smart_banner'
+      } else if (el.closest('header')) {
+        ctaLocation = 'header'
+      } else if (el.closest('.mt-10')) {
+        ctaLocation = 'article_cta'
+      }
+
+      gtag('event', 'app_cta_click', {
+        cta_location: ctaLocation,
+        source_article: window.location.pathname,
+      })
+    })
+  })
+</script>
+
 <style is:global>
   /* Prose styles — usa CSS vars pra reagir ao light/dark mode */
   .prose-yaya {

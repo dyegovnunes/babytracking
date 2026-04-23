@@ -27,6 +27,9 @@ if (!products || products.length === 0) {
         target="_blank"
         rel="noopener noreferrer sponsored"
         class="group flex flex-col rounded-md border border-yaya-cloud/10 bg-yaya-cloud/[0.03] hover:border-yaya-purple/40 hover:bg-yaya-purple/5 transition-colors overflow-hidden"
+        data-asin={p.asin}
+        data-nome={p.nome}
+        data-tipo={p.tipo}
       >
         <div class="bg-white flex items-center justify-center p-2 h-28">
           <img
@@ -53,3 +56,17 @@ if (!products || products.length === 0) {
     ))}
   </div>
 </section>
+
+<script>
+  document.querySelectorAll<HTMLAnchorElement>('a[data-asin]').forEach((link) => {
+    link.addEventListener('click', () => {
+      if (typeof gtag !== 'function') return
+      gtag('event', 'affiliate_click', {
+        affiliate_asin: link.dataset.asin ?? '',
+        affiliate_product: link.dataset.nome ?? '',
+        affiliate_tipo: link.dataset.tipo ?? '',
+        article_slug: window.location.pathname,
+      })
+    })
+  })
+</script>
