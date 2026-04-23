@@ -2,21 +2,22 @@ import { useCallback, useState } from 'react'
 import { supabase } from '../lib/supabase'
 
 /**
- * Hook pra chamar a edge function `delete-account` e deslogar.
+ * Hook pra chamar a edge function `delete-account`.
  *
  * Fluxo:
- *   1. Pega session atual (precisamos do access_token pra Authorization)
- *   2. Invoca a edge function via `supabase.functions.invoke`
- *   3. Em sucesso: signOut LOCAL (scope='local' evita 401 do servidor
- *      já que o user foi apagado) + FULL RELOAD pra garantir que todo
- *      o AppContext volta a `initialState` e a UI aterrissa em LoginPage
- *      deslogado. Sem reload, o AppContext mantém `needsOnboarding=true`
- *      stale e App.tsx renderiza OnboardingPage por engano.
+ *   1. Invoca a edge function via `supabase.functions.invoke`
+ *   2. Em sucesso: limpa localStorage/sessionStorage (sem signOut!)
+ *      e retorna `{ ok: true }`.
+ *   3. O caller (DeleteAccountModal) exibe a tela de adeus via React
+ *      state e depois dispara `window.location.reload()`.
+ *      O reload força leitura do storage vazio → user=null → LoginPage. ✓
  *
- * Retorna `{ ok, error }` ao invés de throw, pra o caller exibir toast.
- * **Nota**: em sucesso, a função dispara `window.location.href = '/login'`
- * e nunca retorna de fato (navega fora), mas mantém a assinatura por
- * compat com o consumer.
+ * Por que NÃO fazemos signOut aqui:
+ *   signOut dispara onAuthStateChange → user=null → AppContext SET_NO_BABY
+ *   → needsOnboarding=true → AuthenticatedRoutes desmonta o modal antes
+ *   da tela de adeus aparecer. Usuário cai em OnboardingPage. Bug.
+ *   Solução: manter o React tree intacto durante a tela de adeus;
+ *   o reload que segue já garante sessão limpa.
  */
 export function useDeleteAccount() {
   const [loading, setLoading] = useState(false)
@@ -47,26 +48,24 @@ export function useDeleteAccount() {
         return { ok: false, error: data.error }
       }
 
-      // Sucesso — a conta já não existe no servidor. signOut com
-      // scope='local' evita o 401 do /logout endpoint (que precisaria
-      // de user válido).
-      await supabase.auth.signOut({ scope: 'local' })
-
-      // Wipe TOTAL do storage. Em tentativas anteriores limpei só
-      // `sb-*`/`yaya_*` e o user ainda caía em onboarding — ou o
-      // refresh_token ficou em alguma chave que não cobrimos, ou o
-      // WebView do Capacitor persistiu algo. Clear() nuka tudo e
-      // garante que `/login` renderiza deslogado.
+      // Sucesso — a conta já não existe no servidor.
+      //
+      // NÃO chamamos supabase.auth.signOut() aqui. Motivo: signOut dispara
+      // onAuthStateChange → user=null → AppContext dispatch SET_NO_BABY →
+      // needsOnboarding=true → AuthenticatedRoutes desmonta o SettingsPage
+      // → DeleteAccountModal some antes de renderizar a tela de adeus.
+      // Resultado: usuário cai em OnboardingPage, não em LoginPage.
+      //
+      // Solução: limpar o storage agora (sem signOut) e deixar o caller
+      // (DeleteAccountModal) mostrar a tela de adeus via React state.
+      // Quando o countdown chegar a 0, window.location.reload() força
+      // reload verdadeiro: Supabase lê localStorage vazio → user=null →
+      // LoginPage renderiza corretamente. Sem stale AppContext.
       try {
         localStorage.clear()
         sessionStorage.clear()
       } catch { /* ignore */ }
 
-      // Retorna ok: true. O caller (DeleteAccountModal) mostra a tela
-      // de adeus via React state e depois dispara window.location.reload()
-      // para forçar reload verdadeiro — evita o problema do Capacitor
-      // Android interceptar window.location.href como navegação React
-      // Router, que preservaria o AppContext stale e mostraria Onboarding.
       return { ok: true }
     } catch (e) {
       return {
