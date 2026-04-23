@@ -26,6 +26,7 @@ const LeapsPage = lazy(() => import('./features/milestones/LeapsPage'))
 const VaccinesPage = lazy(() => import('./features/vaccines/VaccinesPage'))
 const MedicationsPage = lazy(() => import('./features/medications/MedicationsPage'))
 const YayaPlusPage = lazy(() => import('./features/referral/YayaPlusPage'))
+const YaIAPage = lazy(() => import('./features/yaia/YaIAPage'))
 const InviteLandingPage = lazy(() => import('./pages/InviteLandingPage'))
 const PrivacyPage = lazy(() => import('./pages/PrivacyPage'))
 const SharedReportPage = lazy(() => import('./pages/SharedReportPage'))
@@ -107,6 +108,7 @@ function AuthenticatedRoutes() {
           <Route path="vacinas" element={<VaccinesPage />} />
           <Route path="medicamentos" element={<MedicationsPage />} />
           <Route path="yaya-plus" element={<YayaPlusPage />} />
+          <Route path="yaia" element={<YaIAPage />} />
           <Route path="profile" element={<ProfilePage />} />
           <Route path="settings" element={<SettingsPage />} />
           {/* Catch-all: any unknown route falls back to the tracker instead of rendering blank */}

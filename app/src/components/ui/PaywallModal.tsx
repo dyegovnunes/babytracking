@@ -7,7 +7,7 @@ import { Capacitor } from '@capacitor/core';
 interface PaywallModalProps {
   isOpen: boolean;
   onClose: () => void;
-  trigger?: 'history' | 'insights' | 'multi_caregiver' | 'multi_profile' | 'daily_limit' | 'generic' | 'shared_report' | 'medications';
+  trigger?: 'history' | 'insights' | 'multi_caregiver' | 'multi_profile' | 'daily_limit' | 'generic' | 'shared_report' | 'medications' | 'yaia';
 }
 
 const TRIGGER_MESSAGES: Record<string, { title: string; description: string }> = {
@@ -38,6 +38,10 @@ const TRIGGER_MESSAGES: Record<string, { title: string; description: string }> =
   medications: {
     title: 'Medicamentos ilimitados',
     description: 'Cadastre vários medicamentos, receba lembretes de horário e veja o histórico completo.',
+  },
+  yaia: {
+    title: 'yaIA sem limite',
+    description: 'Você usou suas 10 perguntas do mês para a yaIA. Com o Yaya+, pergunte à vontade.',
   },
   generic: {
     title: 'Yaya+',
