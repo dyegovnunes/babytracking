@@ -35,7 +35,17 @@ schema: Article
 audience: parent
 affiliate_products:
   - tipo: alimentação
-    produto: cadeira de alimentação
+    nome: Cadeirinha de Alimentação Refeição Bebê Portátil Dobrável com Pés Antiderrapantes e Bandeja Removível
+    asin: B0CHFZ4YRQ
+    url: https://www.amazon.com.br/dp/B0CHFZ4YRQ?tag=yaya090-20
+  - tipo: alimentação
+    nome: Freso Baby Babador Silicone Alimentação Bebê BLW Impermeável com Bolso Pega Migalhas Cinza
+    asin: B0C31GSX7K
+    url: https://www.amazon.com.br/dp/B0C31GSX7K?tag=yaya090-20
+  - tipo: saúde
+    nome: Balança Pediátrica Digital 30kg com Capa Welmy Branco
+    asin: B0DHH8BQVB
+    url: https://www.amazon.com.br/dp/B0DHH8BQVB?tag=yaya090-20
 lead_magnet: false
 seo:
   h1_chars: 67

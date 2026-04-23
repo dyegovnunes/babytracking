@@ -36,9 +36,17 @@ schema: Article
 audience: gestante
 affiliate_products:
   - tipo: organização
-    nome: caderneta de saúde/vacinas personalizada
+    nome: Caderneta de Vacinação do Bebê Modelo SUS Capa Dura Menino Aviador
+    asin: B0F7RNY89Z
+    url: https://www.amazon.com.br/dp/B0F7RNY89Z?tag=yaya090-20
   - tipo: saúde
-    nome: termômetro digital para bebê
+    nome: G-Tech Termômetro Infravermelho Sem Contato Easy Sensor
+    asin: B0DB6G98X5
+    url: https://www.amazon.com.br/dp/B0DB6G98X5?tag=yaya090-20
+  - tipo: saúde
+    nome: Termômetro Digital Infravermelho 3 em 1 com Alarme de Febre
+    asin: B0FQKX724V
+    url: https://www.amazon.com.br/dp/B0FQKX724V?tag=yaya090-20
 lead_magnet: false
 seo:
   h1_chars: 40

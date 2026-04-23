@@ -37,9 +37,17 @@ schema: Article
 audience: parent
 affiliate_products:
   - tipo: brinquedos
-    produto: mordedor
+    nome: Buba Ginásio de Atividades com Piano Safari Colorido
+    asin: B07XSPX2VW
+    url: https://www.amazon.com.br/dp/B07XSPX2VW?tag=yaya090-20
   - tipo: brinquedos
-    produto: tapete de atividades
+    nome: Tapete de Atividades Infantil Térmico Dupla Face 2,0x1,5m Trenzinho/Girafa
+    asin: B0DLPFFWS3
+    url: https://www.amazon.com.br/dp/B0DLPFFWS3?tag=yaya090-20
+  - tipo: brinquedos
+    nome: Mordedor para Bebê 3 Meses Chocalho Dentição
+    asin: B0DNTMGQNW
+    url: https://www.amazon.com.br/dp/B0DNTMGQNW?tag=yaya090-20
 lead_magnet: false
 seo:
   h1_chars: 59

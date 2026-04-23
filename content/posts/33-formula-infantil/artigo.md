@@ -35,9 +35,17 @@ schema: Article
 audience: parent
 affiliate_products:
   - tipo: alimentação
-    nome: mamadeira
+    nome: MAM Baby Kit 2 Mamadeiras Easy Start Starter Set Anticólica Autoesterilizável com Bico Skinsoft Verde
+    asin: B0882DBRN5
+    url: https://www.amazon.com.br/dp/B0882DBRN5?tag=yaya090-20
   - tipo: alimentação
-    nome: esterilizador
+    nome: Esterilizador Elétrico de Mamadeiras Philips Avent 127V Remove 99,9% das bactérias
+    asin: B09Q2P5J45
+    url: https://www.amazon.com.br/dp/B09Q2P5J45?tag=yaya090-20
+  - tipo: acessórios
+    nome: Chupeta Dupla Ultra Air Philips Avent Recém-Nascido 0-6M
+    asin: B0DH9DYX5Y
+    url: https://www.amazon.com.br/dp/B0DH9DYX5Y?tag=yaya090-20
 lead_magnet: false
 seo:
   h1_chars: 57

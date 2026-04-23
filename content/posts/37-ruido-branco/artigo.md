@@ -35,7 +35,17 @@ schema: FAQPage
 audience: parent
 affiliate_products:
   - tipo: eletrônicos
-    nome: máquina de ruído branco
+    nome: Aparelho de Som Ruído Branco Útero Ninar Acalmar Bebê
+    asin: B0D61ZTXG9
+    url: https://www.amazon.com.br/dp/B0D61ZTXG9?tag=yaya090-20
+  - tipo: eletrônicos
+    nome: Máquina de Som Ruído Branco 20 Sons com Luz Noturna LED
+    asin: B0FD3S8NPY
+    url: https://www.amazon.com.br/dp/B0FD3S8NPY?tag=yaya090-20
+  - tipo: sono
+    nome: Umidificador De Ar Silencioso Quarto Bebê Ultrassônico Led com Óleo Aromatizador Lavanda
+    asin: B08Z1LP7SZ
+    url: https://www.amazon.com.br/dp/B08Z1LP7SZ?tag=yaya090-20
 lead_magnet: false
 seo:
   h1_chars: 56

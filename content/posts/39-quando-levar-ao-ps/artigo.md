@@ -35,6 +35,18 @@ schema: Article
 audience: parent
 affiliate_products:
   - tipo: saúde
+    nome: G-Tech Termômetro Infravermelho Sem Contato Easy Sensor
+    asin: B0DB6G98X5
+    url: https://www.amazon.com.br/dp/B0DB6G98X5?tag=yaya090-20
+  - tipo: saúde
+    nome: Termômetro Digital Infravermelho 3 em 1 com Alarme de Febre
+    asin: B0FQKX724V
+    url: https://www.amazon.com.br/dp/B0FQKX724V?tag=yaya090-20
+  - tipo: saúde
+    nome: Buba Kit Aspirador Nasal de Sucção e Seringa
+    asin: B0BVG9B3NF
+    url: https://www.amazon.com.br/dp/B0BVG9B3NF?tag=yaya090-20
+  - tipo: saúde
     nome: termômetro digital para bebê
   - tipo: saúde
     nome: oxímetro de pulso portátil

@@ -35,9 +35,17 @@ schema: HowTo
 audience: parent
 affiliate_products:
   - tipo: organização
-    nome: pasta organizadora de documentos
+    nome: Caderneta de Vacinação do Bebê Modelo SUS Capa Dura Menino Aviador
+    asin: B0F7RNY89Z
+    url: https://www.amazon.com.br/dp/B0F7RNY89Z?tag=yaya090-20
   - tipo: organização
-    nome: caderneta de saúde personalizada
+    nome: Caderneta de Vacinação do Bebê Modelo SUS Capa Dura Menino Infância
+    asin: B0F7RZDR4L
+    url: https://www.amazon.com.br/dp/B0F7RZDR4L?tag=yaya090-20
+  - tipo: organização
+    nome: Planner da Gestação - Diário da Gestante - Caderno de Acompanhamento da Gravidez
+    asin: B0DFQK1M1T
+    url: https://www.amazon.com.br/dp/B0DFQK1M1T?tag=yaya090-20
 lead_magnet: false
 seo:
   h1_chars: 53

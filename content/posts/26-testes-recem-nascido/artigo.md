@@ -39,9 +39,17 @@ schema: FAQPage
 audience: both
 affiliate_products:
   - tipo: organização
-    nome: pasta/organizador para documentos do bebê
+    nome: Caderneta de Vacinação do Bebê Modelo SUS Capa Dura Menino Aviador
+    asin: B0F7RNY89Z
+    url: https://www.amazon.com.br/dp/B0F7RNY89Z?tag=yaya090-20
+  - tipo: organização
+    nome: Caderneta de Vacinação do Bebê Modelo SUS Capa Dura Menino Infância
+    asin: B0F7RZDR4L
+    url: https://www.amazon.com.br/dp/B0F7RZDR4L?tag=yaya090-20
   - tipo: saúde
-    nome: termômetro digital para bebê
+    nome: G-Tech Termômetro Infravermelho Sem Contato Easy Sensor
+    asin: B0DB6G98X5
+    url: https://www.amazon.com.br/dp/B0DB6G98X5?tag=yaya090-20
 lead_magnet: false
 seo:
   h1_chars: 53

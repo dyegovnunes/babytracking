@@ -35,9 +35,17 @@ schema: FAQPage
 audience: parent
 affiliate_products:
   - tipo: saúde
-    nome: travesseiro anti-refluxo para bebê
-  - tipo: higiene
-    nome: babador impermeável
+    nome: Travesseiro Antirrefluxo 2 Estágios Rampa Terapêutica para Refluxo Fibrasca Branco
+    asin: B0914P565D
+    url: https://www.amazon.com.br/dp/B0914P565D?tag=yaya090-20
+  - tipo: alimentação
+    nome: Freso Baby Babador Silicone Alimentação Bebê BLW Impermeável com Bolso Pega Migalhas Cinza
+    asin: B0C31GSX7K
+    url: https://www.amazon.com.br/dp/B0C31GSX7K?tag=yaya090-20
+  - tipo: transporte
+    nome: NUK Canguru 3 em 1 Ergonômico Comfort Cinza
+    asin: B09YJ1NY2W
+    url: https://www.amazon.com.br/dp/B09YJ1NY2W?tag=yaya090-20
 lead_magnet: false
 seo:
   h1_chars: 64

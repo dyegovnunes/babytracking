@@ -37,10 +37,18 @@ related_slugs:
 schema: Article
 audience: both
 affiliate_products:
-  - tipo: bem-estar
-    nome: diário/journal de maternidade
-  - tipo: casa
-    nome: lista de tarefas para organizar ajuda (quadro magnético)
+  - tipo: organização
+    nome: Planner Agenda Diário da Gestante
+    asin: B094RGZ7FL
+    url: https://www.amazon.com.br/dp/B094RGZ7FL?tag=yaya090-20
+  - tipo: organização
+    nome: Planner Da Gestante - Diário Da Minha Gestação - Capa Colors 15 x 21 cm
+    asin: B0C5B43DX6
+    url: https://www.amazon.com.br/dp/B0C5B43DX6?tag=yaya090-20
+  - tipo: transporte
+    nome: NUK Canguru 3 em 1 Ergonômico Comfort Cinza
+    asin: B09YJ1NY2W
+    url: https://www.amazon.com.br/dp/B09YJ1NY2W?tag=yaya090-20
 lead_magnet: false
 seo:
   h1_chars: 57

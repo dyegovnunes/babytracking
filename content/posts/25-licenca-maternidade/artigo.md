@@ -37,9 +37,17 @@ schema: FAQPage
 audience: gestante
 affiliate_products:
   - tipo: organização
-    nome: agenda/planner para gestante e mãe
-  - tipo: leitura
-    nome: livro sobre direitos trabalhistas da gestante
+    nome: Planner Da Gestante - Diário Da Minha Gestação - Capa Colors 15 x 21 cm
+    asin: B0C5B43DX6
+    url: https://www.amazon.com.br/dp/B0C5B43DX6?tag=yaya090-20
+  - tipo: organização
+    nome: Planner Agenda Diário da Gestante
+    asin: B094RGZ7FL
+    url: https://www.amazon.com.br/dp/B094RGZ7FL?tag=yaya090-20
+  - tipo: organização
+    nome: Planner da Gestação - Diário da Gestante - Caderno de Acompanhamento da Gravidez
+    asin: B0DFQK1M1T
+    url: https://www.amazon.com.br/dp/B0DFQK1M1T?tag=yaya090-20
 lead_magnet: false
 seo:
   h1_chars: 55

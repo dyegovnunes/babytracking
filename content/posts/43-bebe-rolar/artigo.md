@@ -35,9 +35,17 @@ schema: Article
 audience: parent
 affiliate_products:
   - tipo: estimulação
-    nome: tapete de atividades
+    nome: Buba Tapete Dobrável Baby Arco-Íris
+    asin: B09WQW79HF
+    url: https://www.amazon.com.br/dp/B09WQW79HF?tag=yaya090-20
+  - tipo: brinquedos
+    nome: Buba Ginásio de Atividades com Piano Safari Colorido
+    asin: B07XSPX2VW
+    url: https://www.amazon.com.br/dp/B07XSPX2VW?tag=yaya090-20
   - tipo: sono
-    nome: saco de dormir bebê
+    nome: Carter's Bolsa de Dormir Unissex Coala Cinza 6-9 meses
+    asin: B0DDZ6LTKY
+    url: https://www.amazon.com.br/dp/B0DDZ6LTKY?tag=yaya090-20
 lead_magnet: false
 seo:
   h1_chars: 47

@@ -39,9 +39,17 @@ schema: HowTo
 audience: parent
 affiliate_products:
   - tipo: alimentação
-    nome: almofada de amamentação
+    nome: Almofada de Amamentação Travesseiro Impermeável Fibrasca 50x50cm Branca
+    asin: B09V1XV4RJ
+    url: https://www.amazon.com.br/dp/B09V1XV4RJ?tag=yaya090-20
   - tipo: saúde
-    nome: pomada de lanolina
+    nome: Lanolina HPA Lansinoh Pomada para Mamilos 30g
+    asin: B077PRNTMF
+    url: https://www.amazon.com.br/dp/B077PRNTMF?tag=yaya090-20
+  - tipo: alimentação
+    nome: Bomba Tira-Leite Elétrica MAM 2 em 1
+    asin: B0B1NXNSHB
+    url: https://www.amazon.com.br/dp/B0B1NXNSHB?tag=yaya090-20
 lead_magnet: false
 seo:
   h1_chars: 57

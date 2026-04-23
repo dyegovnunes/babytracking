@@ -35,9 +35,17 @@ schema: FAQPage
 audience: parent
 affiliate_products:
   - tipo: saúde
-    nome: balança digital para bebê
+    nome: Balança Pediátrica Digital 30kg com Capa Welmy Branco
+    asin: B0DHH8BQVB
+    url: https://www.amazon.com.br/dp/B0DHH8BQVB?tag=yaya090-20
   - tipo: organização
-    nome: caderneta de saúde personalizada
+    nome: Caderneta de Vacinação do Bebê Modelo SUS Capa Dura Menino Aviador
+    asin: B0F7RNY89Z
+    url: https://www.amazon.com.br/dp/B0F7RNY89Z?tag=yaya090-20
+  - tipo: saúde
+    nome: G-Tech Termômetro Infravermelho Sem Contato Easy Sensor
+    asin: B0DB6G98X5
+    url: https://www.amazon.com.br/dp/B0DB6G98X5?tag=yaya090-20
 lead_magnet: false
 seo:
   h1_chars: 72

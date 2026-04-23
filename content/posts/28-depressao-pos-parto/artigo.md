@@ -35,10 +35,18 @@ related_slugs:
 schema: FAQPage
 audience: both
 affiliate_products:
-  - tipo: bem-estar
-    nome: diário/journal de maternidade
-  - tipo: leitura
-    nome: livro sobre saúde mental no pós-parto
+  - tipo: organização
+    nome: Planner Da Gestante - Diário Da Minha Gestação - Capa Colors 15 x 21 cm
+    asin: B0C5B43DX6
+    url: https://www.amazon.com.br/dp/B0C5B43DX6?tag=yaya090-20
+  - tipo: organização
+    nome: Planner da Gestação - Diário da Gestante - Caderno de Acompanhamento da Gravidez
+    asin: B0DFQK1M1T
+    url: https://www.amazon.com.br/dp/B0DFQK1M1T?tag=yaya090-20
+  - tipo: saúde
+    nome: Bolsa Térmica Faixa de Sementes e Ervas para Bebê Cólica Azul
+    asin: B0DMWMJMQ3
+    url: https://www.amazon.com.br/dp/B0DMWMJMQ3?tag=yaya090-20
 lead_magnet: false
 seo:
   h1_chars: 62

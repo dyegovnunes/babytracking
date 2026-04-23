@@ -39,13 +39,17 @@ schema: Article
 audience: gestante
 affiliate_products:
   - tipo: mobília
-    nome: berço
-  - tipo: mobília
-    nome: colchão firme
-  - tipo: sono
-    nome: saco de dormir
+    nome: Berço Portátil Infantil Cercado Desmontável Lune Maxi Baby Cinza
+    asin: B0FM9SBK4K
+    url: https://www.amazon.com.br/dp/B0FM9SBK4K?tag=yaya090-20
   - tipo: eletrônicos
-    nome: babá eletrônica
+    nome: TakTark Babá Eletrônica 4.3 Monitor de Bebê Sem WiFi com Câmera e Áudio
+    asin: B0G12JN553
+    url: https://www.amazon.com.br/dp/B0G12JN553?tag=yaya090-20
+  - tipo: sono
+    nome: Umidificador De Ar Silencioso Quarto Bebê Ultrassônico Led com Óleo Aromatizador Lavanda
+    asin: B08Z1LP7SZ
+    url: https://www.amazon.com.br/dp/B08Z1LP7SZ?tag=yaya090-20
 lead_magnet: false
 seo:
   h1_chars: 57

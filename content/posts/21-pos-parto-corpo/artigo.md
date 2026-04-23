@@ -41,9 +41,13 @@ schema: Article
 audience: gestante
 affiliate_products:
   - tipo: vestuário
-    nome: cinta pós-parto
+    nome: Cinta Abdominal Pós Parto New Form Com Fecho Lateral e Alça Destacável Cód. 60608
+    asin: B07S9GG1PQ
+    url: https://www.amazon.com.br/dp/B07S9GG1PQ?tag=yaya090-20
   - tipo: higiene
-    nome: absorvente noturno
+    nome: Mucambo Absorvente Geriátrico 50 Unidades Pós Parto Pós Operatório Incontinência Urinaria
+    asin: B0BHTMTK8J
+    url: https://www.amazon.com.br/dp/B0BHTMTK8J?tag=yaya090-20
 lead_magnet: false
 seo:
   h1_chars: 62

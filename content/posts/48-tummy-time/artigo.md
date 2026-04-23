@@ -35,7 +35,17 @@ schema: HowTo
 audience: parent
 affiliate_products:
   - tipo: brinquedos
-    nome: tapete de atividades
+    nome: Buba Tapete Dobrável Baby Arco-Íris
+    asin: B09WQW79HF
+    url: https://www.amazon.com.br/dp/B09WQW79HF?tag=yaya090-20
+  - tipo: brinquedos
+    nome: Buba Ginásio de Atividades com Piano Safari Colorido
+    asin: B07XSPX2VW
+    url: https://www.amazon.com.br/dp/B07XSPX2VW?tag=yaya090-20
+  - tipo: estimulação
+    nome: Luminária Projetor Musical Estrelas Bluetooth Controle
+    asin: B0B5FJBQ1Z
+    url: https://www.amazon.com.br/dp/B0B5FJBQ1Z?tag=yaya090-20
 lead_magnet: false
 seo:
   h1_chars: 48

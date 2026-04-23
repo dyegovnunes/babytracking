@@ -34,9 +34,17 @@ schema: Article
 audience: parent
 affiliate_products:
   - tipo: higiene
-    nome: fralda de pano moderna
+    nome: Fralda Pampers Premium Care Recém-Nascido RN 36 unidades
+    asin: B07GQB93FT
+    url: https://www.amazon.com.br/dp/B07GQB93FT?tag=yaya090-20
   - tipo: higiene
-    nome: fralda descartável
+    nome: Johnson's Baby Lenços Umedecidos Recém-Nascido 192 unidades
+    asin: B0F4G5NL2K
+    url: https://www.amazon.com.br/dp/B0F4G5NL2K?tag=yaya090-20
+  - tipo: higiene
+    nome: Hipoglós Creme Preventivo de Assaduras Transparente 120g
+    asin: B089YHCFGG
+    url: https://www.amazon.com.br/dp/B089YHCFGG?tag=yaya090-20
 lead_magnet: false
 seo:
   h1_chars: 52

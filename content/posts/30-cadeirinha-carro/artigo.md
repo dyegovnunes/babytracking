@@ -37,6 +37,18 @@ schema: Article
 audience: both
 affiliate_products:
   - tipo: transporte
+    nome: Burigotto Bebê Conforto Touring X Preto
+    asin: B088HZZ9R1
+    url: https://www.amazon.com.br/dp/B088HZZ9R1?tag=yaya090-20
+  - tipo: transporte
+    nome: Kit Espelho Retrovisor Traseiro Bebê Conforto Cadeirinha Carro com Espelho Dianteiro e Protetor Solar Buba
+    asin: B0CWVZ4Q4X
+    url: https://www.amazon.com.br/dp/B0CWVZ4Q4X?tag=yaya090-20
+  - tipo: transporte
+    nome: Wrap Sling de Bebê Carregador de Amarrar Little Beni Preto
+    asin: B0F254TBP2
+    url: https://www.amazon.com.br/dp/B0F254TBP2?tag=yaya090-20
+  - tipo: transporte
     nome: bebê conforto
   - tipo: transporte
     nome: cadeirinha grupo 0+1

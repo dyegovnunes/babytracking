@@ -37,9 +37,17 @@ schema: Article
 audience: parent
 affiliate_products:
   - tipo: sono
-    nome: saco de dormir
+    nome: Saco de Dormir para Bebê Menina Suedine Algodão Corações Rosa P
+    asin: B0C6X3DT56
+    url: https://www.amazon.com.br/dp/B0C6X3DT56?tag=yaya090-20
   - tipo: eletrônicos
-    nome: luz noturna
+    nome: Aparelho de Som Ruído Branco Útero Ninar Acalmar Bebê
+    asin: B0D61ZTXG9
+    url: https://www.amazon.com.br/dp/B0D61ZTXG9?tag=yaya090-20
+  - tipo: sono
+    nome: Umidificador De Ar Silencioso Quarto Bebê Ultrassônico Led com Óleo Aromatizador Lavanda
+    asin: B08Z1LP7SZ
+    url: https://www.amazon.com.br/dp/B08Z1LP7SZ?tag=yaya090-20
 lead_magnet: false
 seo:
   h1_chars: 46

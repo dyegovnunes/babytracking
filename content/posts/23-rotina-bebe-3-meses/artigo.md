@@ -40,9 +40,17 @@ schema: Article
 audience: parent
 affiliate_products:
   - tipo: sono
-    nome: saco de dormir bebê
+    nome: Saco de Dormir Para Bebê Verão 100% Algodão Comtac Kids 4256
+    asin: B084H2HB7B
+    url: https://www.amazon.com.br/dp/B084H2HB7B?tag=yaya090-20
   - tipo: estimulação
-    nome: tapete de atividades
+    nome: Luminária Projetor Musical Estrelas Bluetooth Controle
+    asin: B0B5FJBQ1Z
+    url: https://www.amazon.com.br/dp/B0B5FJBQ1Z?tag=yaya090-20
+  - tipo: sono
+    nome: Umidificador De Ar Silencioso Quarto Bebê Ultrassônico Led com Óleo Aromatizador Lavanda
+    asin: B08Z1LP7SZ
+    url: https://www.amazon.com.br/dp/B08Z1LP7SZ?tag=yaya090-20
 lead_magnet: false
 seo:
   h1_chars: 58

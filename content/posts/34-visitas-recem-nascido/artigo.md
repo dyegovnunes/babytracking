@@ -33,9 +33,17 @@ schema: Article
 audience: parent
 affiliate_products:
   - tipo: higiene
-    nome: álcool gel
-  - tipo: higiene
-    nome: máscara descartável
+    nome: Johnson's Baby Lenços Umedecidos Recém-Nascido 192 unidades
+    asin: B0F4G5NL2K
+    url: https://www.amazon.com.br/dp/B0F4G5NL2K?tag=yaya090-20
+  - tipo: vestuário
+    nome: Kit 2 Mantas Swaddle Premium Algodão e Bambu 100x100cm Bege
+    asin: B0GMDHTRSZ
+    url: https://www.amazon.com.br/dp/B0GMDHTRSZ?tag=yaya090-20
+  - tipo: organização
+    nome: Caderneta de Vacinação do Bebê Modelo SUS Capa Dura Menino Aviador
+    asin: B0F7RNY89Z
+    url: https://www.amazon.com.br/dp/B0F7RNY89Z?tag=yaya090-20
 lead_magnet: false
 seo:
   h1_chars: 55

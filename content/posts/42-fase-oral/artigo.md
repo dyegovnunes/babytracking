@@ -35,7 +35,17 @@ schema: FAQPage
 audience: parent
 affiliate_products:
   - tipo: brinquedos
-    produto: mordedor
+    nome: Mordedor para Bebê 3 Meses Chocalho Dentição
+    asin: B0DNTMGQNW
+    url: https://www.amazon.com.br/dp/B0DNTMGQNW?tag=yaya090-20
+  - tipo: brinquedos
+    nome: Kit Chocalho para Bebê 8 Peças Brinquedo Educativo Sensorial com Mordedor
+    asin: B0G2NTZQHC
+    url: https://www.amazon.com.br/dp/B0G2NTZQHC?tag=yaya090-20
+  - tipo: brinquedos
+    nome: Livro Macio de Alto Contraste Preto e Branco para Bebês
+    asin: B0DFG9CRST
+    url: https://www.amazon.com.br/dp/B0DFG9CRST?tag=yaya090-20
 lead_magnet: false
 seo:
   h1_chars: 51

@@ -37,9 +37,17 @@ schema: Article
 audience: parent
 affiliate_products:
   - tipo: sono
-    produto: saco de dormir
+    nome: Carter's Bolsa de Dormir Unissex Coala Cinza 6-9 meses
+    asin: B0DDZ6LTKY
+    url: https://www.amazon.com.br/dp/B0DDZ6LTKY?tag=yaya090-20
   - tipo: eletrônicos
-    produto: babá eletrônica
+    nome: Aparelho de Som Ruído Branco Útero Ninar Acalmar Bebê
+    asin: B0D61ZTXG9
+    url: https://www.amazon.com.br/dp/B0D61ZTXG9?tag=yaya090-20
+  - tipo: eletrônicos
+    nome: TakTark Babá Eletrônica 4.3 Monitor de Bebê Sem WiFi com Câmera e Áudio
+    asin: B0G12JN553
+    url: https://www.amazon.com.br/dp/B0G12JN553?tag=yaya090-20
 lead_magnet: false
 seo:
   h1_chars: 62
