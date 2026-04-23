@@ -123,4 +123,4 @@ Se amamentar não for possível ou não for a sua escolha, tudo bem. A decisão 
 
 ---
 
-*Quando o bebê nascer, registrar as amamentações vai ajudar a perceber os padrões. O [Yaya](https://yayababy.app) facilita esse acompanhamento desde o primeiro dia.*
+*Baixe o [Yaya](https://yayababy.app) antes do bebê nascer — quando ele chegar, registre cada amamentação com um toque e acompanhe os padrões desde o primeiro dia.*

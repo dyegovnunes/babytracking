@@ -141,4 +141,4 @@ Baseado nas recomendações da AAP (2022):
 
 ---
 
-*Registrar o sono do bebê ajuda a enxergar padrões que não são visíveis no dia a dia. O [Yaya](https://yayababy.app) faz isso de forma simples e mostra insights sobre os ciclos de sono.*
+*Baixe o [Yaya](https://yayababy.app) gratuitamente — registre cada soneca com um toque e veja os ciclos de sono do bebê aparecerem no app, com insights automáticos.*

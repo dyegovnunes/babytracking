@@ -74,7 +74,7 @@ const contentHtml = rawHtml
   )
 
 // Extrai lista de headings H2 para o TOC
-const h2Headings: string[] = (post.content_md.match(/^## (.+)$/gm) ?? []).map(
+const h2Headings: string[] = (cleanedMd.match(/^## (.+)$/gm) ?? []).map(
   (l) => l.replace(/^## /, '').trim(),
 )
 
@@ -232,7 +232,7 @@ const faqLd = post.schema_type === 'FAQPage' ? faqJsonLd(post) : null
       <div class="mt-10 p-6 rounded-md bg-gradient-to-br from-yaya-purple/15 to-yaya-blush/10 border border-yaya-purple/25 text-center">
         <p class="font-display text-lg font-bold text-yaya-cloud mb-2">Prepare-se pra chegada do bebê</p>
         <p class="text-yaya-cloud/70 text-sm mb-5 font-sans leading-relaxed">
-          Baixe o Yaya agora e tenha tudo pronto pro primeiro dia: rotina, amamentação, sono, marcos — com 1 toque, mesmo às 3 da manhã.
+          Baixe o Yaya agora e tenha tudo pronto pro primeiro dia: rotina, amamentação, sono, marcos — com 1 toque.
         </p>
         <a
           href="https://yayababy.app"
@@ -246,7 +246,7 @@ const faqLd = post.schema_type === 'FAQPage' ? faqJsonLd(post) : null
       <div class="mt-10 p-6 rounded-md bg-gradient-to-br from-yaya-purple/15 to-yaya-blush/10 border border-yaya-purple/25 text-center">
         <p class="font-display text-lg font-bold text-yaya-cloud mb-2">Organize a rotina do seu bebê</p>
         <p class="text-yaya-cloud/70 text-sm mb-5 font-sans leading-relaxed">
-          Registre amamentação, sono, fraldas e marcos com 1 toque — mesmo às 3 da manhã.
+          Registre amamentação, sono, fraldas e marcos com 1 toque.
         </p>
         <a
           href="https://yayababy.app"

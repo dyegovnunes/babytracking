@@ -153,4 +153,4 @@ Fissuras, dor na pega e insegurança com a produção são comuns no início e n
 
 ---
 
-*O [Yaya](https://yayababy.app) registra cada amamentação com um toque — horário, duração e lado. Os padrões aparecem ao longo dos dias.*
+*Baixe o [Yaya](https://yayababy.app) gratuitamente — registre cada amamentação com um toque e veja os padrões de horário, duração e lado aparecerem ao longo dos dias.*
