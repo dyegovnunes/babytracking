@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { usePurchase } from '../../contexts/PurchaseContext';
-import { getAvailablePackages, getLastOfferingsDiagnostic, type PlanType } from '../../lib/purchases';
+import { getAvailablePackages, type PlanType } from '../../lib/purchases';
 import { useSheetBackClose } from '../../hooks/useSheetBackClose';
 import { Capacitor } from '@capacitor/core';
 
@@ -80,7 +80,6 @@ export function PaywallModal({ isOpen, onClose, trigger = 'generic' }: PaywallMo
   const [error, setError] = useState<string | null>(null);
   const [selectedPlan, setSelectedPlan] = useState<PlanType>('annual');
   const [plans, setPlans] = useState<PlanOption[]>(FALLBACK_PLANS);
-  const [showDebug, setShowDebug] = useState(false);
 
   useSheetBackClose(isOpen, onClose);
 
@@ -140,8 +139,9 @@ export function PaywallModal({ isOpen, onClose, trigger = 'generic' }: PaywallMo
     try {
       const success = await purchase(selectedPlan);
       if (success) onClose();
-      else setError('Compra cancelada ou não disponível.');
+      // success=false sem exception = usuário cancelou — não mostrar nada
     } catch (e: any) {
+      // Só erros reais chegam aqui (pacote não encontrado, rede, etc.)
       setError(e?.message || 'Erro ao processar compra.');
     } finally {
       setLoading(false);
@@ -245,33 +245,7 @@ export function PaywallModal({ isOpen, onClose, trigger = 'generic' }: PaywallMo
         {/* Fixed bottom — CTA always visible */}
         <div className="px-5 pb-sheet-sm pt-2 border-t border-outline-variant/30 bg-surface">
           {error && (
-            <div className="mb-2">
-              <p className="text-center text-xs text-error">{error}</p>
-              <button
-                onClick={() => setShowDebug((s) => !s)}
-                className="w-full text-center text-[10px] text-on-surface/40 mt-1 underline"
-              >
-                {showDebug ? 'Ocultar diagnóstico' : 'Ver diagnóstico'}
-              </button>
-              {showDebug && (() => {
-                const diag = getLastOfferingsDiagnostic();
-                if (!diag) return <p className="text-[10px] text-on-surface/40 mt-1">Sem diagnóstico (ainda não tentou carregar).</p>;
-                return (
-                  <pre className="text-[10px] text-on-surface/60 mt-1 bg-surface-container rounded-md p-2 whitespace-pre-wrap break-all">
-{`platform: ${diag.platform}
-key: ${diag.keyPrefix}...
-current: ${diag.currentOfferingId ?? 'null'}
-offerings: ${diag.allOfferingIds.join(', ') || '(vazio)'}
-
-packages do offering current:
-${diag.packageDetails.length ? diag.packageDetails.join('\n') : '(vazio)'}
-
-match: monthly=${diag.hasMonthly ? '✓' : '✗'} annual=${diag.hasAnnual ? '✓' : '✗'} lifetime=${diag.hasLifetime ? '✓' : '✗'}
-error: ${diag.error ?? '(nenhum)'}`}
-                  </pre>
-                );
-              })()}
-            </div>
+            <p className="text-center text-xs text-error mb-2">{error}</p>
           )}
           <button
             onClick={handlePurchase}
