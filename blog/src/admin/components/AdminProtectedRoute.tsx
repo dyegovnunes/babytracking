@@ -9,20 +9,48 @@ export function AdminProtectedRoute({ children }: { children: React.ReactNode })
   const [status, setStatus] = useState<Status>('loading')
 
   useEffect(() => {
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (!session) { setStatus('not-logged'); return }
-      const ok = await isUserAdmin(session.user.id)
-      setStatus(ok ? 'authorized' : 'not-admin')
+    let resolved = false
+
+    // Timeout de segurança: se em 8s nada resolver, redireciona pro login
+    const timeout = setTimeout(() => {
+      if (!resolved) setStatus('not-logged')
+    }, 8000)
+
+    async function checkSession(session: { user: { id: string } } | null) {
+      if (!session) {
+        resolved = true
+        clearTimeout(timeout)
+        setStatus('not-logged')
+        return
+      }
+      try {
+        const ok = await isUserAdmin(session.user.id)
+        resolved = true
+        clearTimeout(timeout)
+        setStatus(ok ? 'authorized' : 'not-admin')
+      } catch {
+        resolved = true
+        clearTimeout(timeout)
+        setStatus('not-logged')
+      }
+    }
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!resolved) checkSession(session)
+    }).catch(() => {
+      resolved = true
+      clearTimeout(timeout)
+      setStatus('not-logged')
     })
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_, session) => {
-        if (!session) { setStatus('not-logged'); return }
-        const ok = await isUserAdmin(session.user.id)
-        setStatus(ok ? 'authorized' : 'not-admin')
-      }
-    )
-    return () => subscription.unsubscribe()
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
+      if (!resolved) checkSession(session)
+    })
+
+    return () => {
+      clearTimeout(timeout)
+      subscription.unsubscribe()
+    }
   }, [])
 
   if (status === 'loading') {
