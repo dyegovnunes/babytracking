@@ -17,7 +17,6 @@ import { RouteFallbackSkeleton } from './components/ui/Skeleton'
 const AdminApp = lazy(() => import('./admin/AdminApp'))
 const HistoryPage = lazy(() => import('./features/history/HistoryPage'))
 const ProfilePage = lazy(() => import('./features/profile/ProfilePage'))
-const LandingPage = lazy(() => import('./pages/LandingPage'))
 const OnboardingPage = lazy(() => import('./pages/OnboardingPage'))
 const WelcomePage = lazy(() => import('./pages/WelcomePage'))
 const SettingsPage = lazy(() => import('./pages/SettingsPage'))
@@ -232,10 +231,10 @@ function PublicOrAuth() {
     return <AuthenticatedRoutes />
   }
 
-  // Not logged in on web → show landing page
+  // Not logged in on web → show waitlist/landing page
   return (
     <Suspense fallback={<RouteFallback />}>
-      <LandingPage />
+      <WaitlistPage />
     </Suspense>
   )
 }
