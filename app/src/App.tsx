@@ -31,6 +31,7 @@ const InviteLandingPage = lazy(() => import('./pages/InviteLandingPage'))
 const PrivacyPage = lazy(() => import('./pages/PrivacyPage'))
 const SharedReportPage = lazy(() => import('./pages/SharedReportPage'))
 const DeletedAccountPage = lazy(() => import('./pages/DeletedAccountPage'))
+const WaitlistPage = lazy(() => import('./pages/WaitlistPage'))
 
 function RouteFallback() {
   // Skeleton genérico — aparece enquanto o chunk JS da rota baixa.
@@ -161,6 +162,14 @@ function AppRoutes() {
     return (
       <Suspense fallback={<RouteFallback />}>
         <PrivacyPage />
+      </Suspense>
+    )
+  }
+
+  if (location.pathname === '/waitlist') {
+    return (
+      <Suspense fallback={<RouteFallback />}>
+        <WaitlistPage />
       </Suspense>
     )
   }
