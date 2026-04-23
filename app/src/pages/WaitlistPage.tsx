@@ -493,10 +493,17 @@ export default function WaitlistPage() {
 
           {/* Texto */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-            <img src="/logo-symbol.png" alt="Yaya"
-              style={{ width: 72, height: 72, marginBottom: '1.25rem', borderRadius: '1rem', objectFit: 'contain' }}
-              className="wl-fade"
-            />
+            {/* Logo + nome */}
+            <div className="wl-fade" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem' }}>
+              <img src="/logo-symbol.png" alt="Yaya"
+                style={{ width: 56, height: 56, borderRadius: '0.875rem', objectFit: 'contain' }}
+              />
+              <span style={{
+                fontSize: '2rem', fontWeight: 800, letterSpacing: '-0.03em',
+                background: 'linear-gradient(135deg, hsl(330 95% 62%) 0%, hsl(280 95% 65%) 60%, hsl(254 100% 75%) 100%)',
+                WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
+              }}>Yaya</span>
+            </div>
 
             <div className="wl-fade wl-delay-1" style={{ marginBottom: '1.25rem' }}>
               <GlowCard pill style={{ padding: '0.375rem 1rem', cursor: 'default' }}>
