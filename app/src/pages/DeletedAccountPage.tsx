@@ -1,28 +1,37 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 
 /**
- * Tela exibida imediatamente após a exclusão de conta.
+ * Tela de adeus exibida após a exclusão de conta.
  *
- * Rota pública `/conta-excluida` — não requer autenticação (o usuário
- * acabou de ser deletado). O router captura esse path ANTES de
- * AuthenticatedRoutes, evitando o race condition que causava a tela de
- * onboarding aparecer após a exclusão.
+ * Renderizada por AppRoutes quando sessionStorage contém 'yaya_account_deleted'.
+ * Essa flag é setada em useDeleteAccount ANTES de limpar o localStorage,
+ * garantindo que AppRoutes mostre esta tela mesmo após onAuthStateChange
+ * disparar user=null (o que de outra forma causaria OnboardingPage).
  *
- * Após 10 segundos (ou clique no botão), redireciona pra /login via
- * window.location.href para garantir reload completo do WebView e
- * limpeza total do estado React/AppContext.
+ * Fluxo:
+ *   1. useDeleteAccount: seta flag + limpa localStorage → chama reload()
+ *   2. AppRoutes vê a flag → renderiza esta página (antes de auth check)
+ *   3. Countdown de 10s → handleLeave: remove flag + reload()
+ *   4. AppRoutes não vê flag → auth check → sem sessão → LoginPage ✓
  */
 export default function DeletedAccountPage() {
   const [seconds, setSeconds] = useState(10)
 
+  const handleLeave = useCallback(() => {
+    try {
+      sessionStorage.removeItem('yaya_account_deleted')
+    } catch { /* ignore */ }
+    window.location.reload()
+  }, [])
+
   useEffect(() => {
     if (seconds <= 0) {
-      window.location.href = '/login'
+      handleLeave()
       return
     }
     const t = setTimeout(() => setSeconds((s) => s - 1), 1000)
     return () => clearTimeout(t)
-  }, [seconds])
+  }, [seconds, handleLeave])
 
   return (
     <div className="min-h-screen bg-surface flex flex-col items-center justify-center gap-6 px-8 text-center">
@@ -45,7 +54,7 @@ export default function DeletedAccountPage() {
       </p>
 
       <button
-        onClick={() => { window.location.href = '/login' }}
+        onClick={handleLeave}
         className="px-6 py-3 rounded-md bg-primary text-on-primary font-label font-semibold text-sm"
       >
         Ir para o login agora

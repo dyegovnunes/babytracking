@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useSheetBackClose } from '../../../hooks/useSheetBackClose'
 import { useDeleteAccount } from '../../../hooks/useDeleteAccount'
 import { hapticMedium } from '../../../lib/haptics'
@@ -18,68 +18,30 @@ interface Props {
  *
  * Fluxo:
  *  1. Usuário digita "EXCLUIR" e confirma
- *  2. Edge function deleta a conta + signOut local + localStorage.clear()
- *  3. Modal troca pra tela de adeus com countdown de 10s (React state,
- *     sem navegação — evita o problema do Capacitor Android interceptar
- *     window.location.href como client-side nav e preservar estado stale)
- *  4. Countdown ou botão dispara window.location.reload(), que força
- *     reload verdadeiro. Com localStorage limpo, Supabase não acha sessão
- *     → user = null → AuthenticatedRoutes renderiza LoginPage corretamente.
+ *  2. useDeleteAccount: seta sessionStorage flag + limpa localStorage + retorna ok
+ *  3. Este modal chama window.location.reload()
+ *  4. No reload, AppRoutes vê o flag → renderiza DeletedAccountPage (tela de adeus)
+ *  5. DeletedAccountPage faz countdown 10s → remove flag → reload() → LoginPage ✓
+ *
+ * Por que reload() em vez de navegar:
+ *  - localStorage.clear() dispara onAuthStateChange → user=null → AuthenticatedRoutes
+ *    desmonta este modal antes de qualquer estado React de "adeus" renderizar.
+ *  - A flag em sessionStorage garante que AppRoutes mostre a tela de adeus
+ *    mesmo após o auth state change, pois a checagem é ANTERIOR ao auth check.
  */
 export default function DeleteAccountModal({ isOpen, onClose, onToast }: Props) {
   const [confirmText, setConfirmText] = useState('')
-  const [deleted, setDeleted] = useState(false)
-  const [seconds, setSeconds] = useState(10)
   const { deleteAccount, loading } = useDeleteAccount()
 
-  // Impede fechar com back gesture após deletar (já não há conta)
-  useSheetBackClose(isOpen && !deleted, () => {
+  useSheetBackClose(isOpen, () => {
     if (!loading) {
       setConfirmText('')
       onClose()
     }
   })
 
-  // Countdown pós-exclusão
-  useEffect(() => {
-    if (!deleted) return
-    if (seconds <= 0) { window.location.reload(); return }
-    const t = setTimeout(() => setSeconds((s) => s - 1), 1000)
-    return () => clearTimeout(t)
-  }, [deleted, seconds])
-
   if (!isOpen) return null
 
-  // ── Tela de adeus ──────────────────────────────────────────────────────
-  if (deleted) {
-    return (
-      <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center gap-6 px-8 text-center bg-surface">
-        <span className="material-symbols-outlined text-on-surface/25" style={{ fontSize: 72 }}>
-          heart_broken
-        </span>
-        <div className="space-y-2">
-          <h1 className="font-headline text-2xl font-bold text-on-surface">
-            Sua conta foi excluída
-          </h1>
-          <p className="font-body text-sm text-on-surface-variant leading-relaxed max-w-xs mx-auto">
-            Lamentamos ver você partir. Todos os seus dados foram
-            removidos com segurança dos nossos servidores.
-          </p>
-        </div>
-        <p className="text-xs text-on-surface/40">
-          Redirecionando em {seconds}s…
-        </p>
-        <button
-          onClick={() => window.location.reload()}
-          className="px-6 py-3 rounded-md bg-primary text-on-primary font-label font-semibold text-sm"
-        >
-          Ir para o login agora
-        </button>
-      </div>
-    )
-  }
-
-  // ── Tela de confirmação ────────────────────────────────────────────────
   const canDelete = confirmText === 'EXCLUIR' && !loading
 
   async function handleConfirm() {
@@ -90,9 +52,10 @@ export default function DeleteAccountModal({ isOpen, onClose, onToast }: Props) 
       onToast(res.error ?? 'Erro ao excluir conta')
       return
     }
-    // Conta deletada — mostra tela de adeus sem navegar.
-    // A navegação real acontece via window.location.reload() no countdown.
-    setDeleted(true)
+    // Flag setada e localStorage limpo em useDeleteAccount.
+    // Reload aqui garante que AppRoutes rode com o flag presente
+    // e renderize DeletedAccountPage antes de qualquer auth check.
+    window.location.reload()
   }
 
   function handleClose() {

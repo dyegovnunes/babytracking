@@ -120,6 +120,21 @@ function AuthenticatedRoutes() {
 function AppRoutes() {
   const location = useLocation()
 
+  // Conta excluída — DEVE ser o primeiro check, antes de qualquer lógica de auth.
+  // Quando useDeleteAccount limpa o localStorage, o Supabase dispara
+  // onAuthStateChange → user=null → AppContext SET_NO_BABY → needsOnboarding=true.
+  // Sem este check, AuthenticatedRoutes renderizaria OnboardingPage e o modal
+  // de adeus nunca apareceria. A flag em sessionStorage sobrevive ao reload
+  // e ao onAuthStateChange, garantindo que DeletedAccountPage seja renderizado
+  // independentemente do estado de autenticação.
+  if (sessionStorage.getItem('yaya_account_deleted')) {
+    return (
+      <Suspense fallback={<RouteFallback />}>
+        <DeletedAccountPage />
+      </Suspense>
+    )
+  }
+
   // Deep link de indicação: /i/:code → salva código + mostra landing do
   // convite (direciona pro app nativo). Experiência canônica é no app;
   // continuar pelo navegador fica como fallback discreto.

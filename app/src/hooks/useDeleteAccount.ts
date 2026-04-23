@@ -48,22 +48,27 @@ export function useDeleteAccount() {
         return { ok: false, error: data.error }
       }
 
-      // Sucesso — a conta já não existe no servidor.
+      // Sucesso — conta deletada no servidor.
       //
-      // NÃO chamamos supabase.auth.signOut() aqui. Motivo: signOut dispara
-      // onAuthStateChange → user=null → AppContext dispatch SET_NO_BABY →
-      // needsOnboarding=true → AuthenticatedRoutes desmonta o SettingsPage
-      // → DeleteAccountModal some antes de renderizar a tela de adeus.
-      // Resultado: usuário cai em OnboardingPage, não em LoginPage.
+      // Estratégia para mostrar a tela de adeus sem cair em OnboardingPage:
       //
-      // Solução: limpar o storage agora (sem signOut) e deixar o caller
-      // (DeleteAccountModal) mostrar a tela de adeus via React state.
-      // Quando o countdown chegar a 0, window.location.reload() força
-      // reload verdadeiro: Supabase lê localStorage vazio → user=null →
-      // LoginPage renderiza corretamente. Sem stale AppContext.
+      // 1. Setar flag em sessionStorage ANTES de limpar localStorage.
+      //    sessionStorage sobrevive a window.location.reload() mas NÃO é
+      //    afetado por localStorage.clear(). É a âncora que AppRoutes usa
+      //    para renderizar DeletedAccountPage acima do auth check.
+      //
+      // 2. Limpar localStorage — isso faz o Supabase detectar sessão vazia
+      //    e disparar onAuthStateChange → user=null. Sem o flag de sessão,
+      //    AppRoutes cairia em OnboardingPage. Com o flag, AppRoutes renderiza
+      //    DeletedAccountPage independentemente do estado de auth.
+      //
+      // 3. O caller (DeleteAccountModal) chama window.location.reload()
+      //    imediatamente. No reload, AppRoutes vê o flag → DeletedAccountPage.
+      //    Após o countdown, DeletedAccountPage remove o flag e chama reload()
+      //    de novo → sem flag + sem localStorage → LoginPage ✓
       try {
+        sessionStorage.setItem('yaya_account_deleted', '1')
         localStorage.clear()
-        sessionStorage.clear()
       } catch { /* ignore */ }
 
       return { ok: true }
