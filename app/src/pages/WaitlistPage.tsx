@@ -467,6 +467,24 @@ export default function WaitlistPage() {
 
       <div style={{ position: 'relative', zIndex: 1, maxWidth: '72rem', margin: '0 auto', padding: '0 1.25rem' }}>
 
+        {/* ── NAV TOPO ── */}
+        <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 0' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <img src="/logo-symbol-pink.png" style={{ width: 28, height: 28 }} alt="" aria-hidden />
+            <span style={{ fontWeight: 800, fontSize: '1.1rem', color: 'hsl(250 100% 96%)' }}>
+              Ya<span style={{ color: 'hsl(254 100% 81%)' }}>ya</span>
+            </span>
+          </div>
+          <a href="https://blog.yayababy.app" target="_blank" rel="noopener noreferrer"
+            style={{
+              fontSize: '0.875rem', fontWeight: 600, color: 'hsl(250 100% 95% / 0.7)',
+              textDecoration: 'none', padding: '0.5rem 1rem',
+              border: '1px solid rgba(255,255,255,0.12)', borderRadius: '2rem',
+              backdropFilter: 'blur(10px)', background: 'rgba(255,255,255,0.04)',
+            }}
+          >Blog →</a>
+        </nav>
+
         {/* ── HERO ── */}
         <section style={{
           display: 'grid',
@@ -495,14 +513,12 @@ export default function WaitlistPage() {
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
             {/* Logo + nome */}
             <div className="wl-fade" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem' }}>
-              <img src="/logo-symbol.png" alt="Yaya"
+              <img src="/logo-symbol-pink.png" alt="Yaya"
                 style={{ width: 56, height: 56, borderRadius: '0.875rem', objectFit: 'contain' }}
               />
-              <span style={{
-                fontSize: '2rem', fontWeight: 800, letterSpacing: '-0.03em',
-                background: 'linear-gradient(135deg, hsl(330 95% 62%) 0%, hsl(280 95% 65%) 60%, hsl(254 100% 75%) 100%)',
-                WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
-              }}>Yaya</span>
+              <span style={{ fontSize: '2rem', fontWeight: 800, letterSpacing: '-0.03em', color: 'hsl(250 100% 96%)' }}>
+                Ya<span style={{ color: 'hsl(254 100% 81%)' }}>ya</span>
+              </span>
             </div>
 
             <div className="wl-fade wl-delay-1" style={{ marginBottom: '1.25rem' }}>
