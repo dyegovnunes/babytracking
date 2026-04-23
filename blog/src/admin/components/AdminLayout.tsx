@@ -3,6 +3,7 @@ import { signOutAdmin } from '../lib/adminAuth'
 
 const NAV_ITEMS = [
   { path: 'posts', label: 'Posts', icon: 'article' },
+  { path: 'analytics', label: 'Analytics', icon: 'analytics' },
   { path: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
 ]
 

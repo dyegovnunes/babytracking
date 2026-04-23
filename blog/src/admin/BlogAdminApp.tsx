@@ -3,6 +3,7 @@ import { AdminProtectedRoute } from './components/AdminProtectedRoute'
 import AdminLayout from './components/AdminLayout'
 import AdminLoginPage from './pages/AdminLoginPage'
 import AdminDashboardPage from './pages/AdminDashboardPage'
+import AdminAnalyticsPage from './pages/AdminAnalyticsPage'
 import AdminPostsPage from './pages/AdminPostsPage'
 import AdminPostEditorPage from './pages/AdminPostEditorPage'
 
@@ -23,6 +24,7 @@ export default function BlogAdminApp() {
                   <Route path="/posts" element={<AdminPostsPage />} />
                   <Route path="/posts/new" element={<AdminPostEditorPage />} />
                   <Route path="/posts/:slug" element={<AdminPostEditorPage />} />
+                  <Route path="/analytics" element={<AdminAnalyticsPage />} />
                   <Route path="/dashboard" element={<AdminDashboardPage />} />
                   <Route index element={<Navigate to="/posts" replace />} />
                   <Route path="*" element={<Navigate to="/posts" replace />} />
