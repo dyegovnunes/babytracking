@@ -1,7 +1,9 @@
 ---
-title: "Troca de Fraldas: Guia Completo para Recém-Nascidos"
+title: 'Troca de Fraldas: Guia Completo para Recém-Nascidos'
 slug: troca-de-fraldas-guia-completo
-description: "Quantas fraldas por dia, como trocar corretamente, quando se preocupar e como prevenir assaduras. Tudo sobre fraldas nos primeiros meses."
+description: >-
+  Quantas fraldas por dia, como trocar corretamente, quando se preocupar e como
+  prevenir assaduras. Tudo sobre fraldas nos primeiros meses.
 keywords:
   primaria: quantas fraldas recém-nascido por dia
   secundarias:
@@ -26,12 +28,16 @@ seo:
   meta_chars: 145
   schema: Article
   snippet_type: paragrafo
-  snippet_section: "Quantas fraldas o recém-nascido usa por dia"
+  snippet_section: Quantas fraldas o recém-nascido usa por dia
 sources:
-  - name: "SBP. Consenso de Cuidado com a Pele do Recém-Nascido. Departamento Científico de Dermatologia Pediátrica."
-    url: "https://www.sbp.com.br/fileadmin/user_upload/flipping-book/consenso-cuidados-pele/cuidados-com-a-pele/assets/downloads/publication.pdf"
-  - name: "AAP. Diaper Rash. HealthyChildren.org."
-    url: "https://www.healthychildren.org/English/ages-stages/baby/diapers-clothing/Pages/Diaper-Rash.aspx"
+  - name: >-
+      SBP. Consenso de Cuidado com a Pele do Recém-Nascido. Departamento
+      Científico de Dermatologia Pediátrica.
+    url: >-
+      https://www.sbp.com.br/fileadmin/user_upload/flipping-book/consenso-cuidados-pele/cuidados-com-a-pele/assets/downloads/publication.pdf
+  - name: AAP. Diaper Rash. HealthyChildren.org.
+    url: >-
+      https://www.healthychildren.org/English/ages-stages/baby/diapers-clothing/Pages/Diaper-Rash.aspx
 images:
   hero: img9-1.png
   complementar: img9-2.png
@@ -45,14 +51,18 @@ related_slugs:
   - dermatite-de-fralda
   - fraldas-pano-vs-descartaveis
 schema: Article
-meta_description: "Guia completo de troca de fraldas: frequência por idade, cores do cocô, prevenção de assaduras e quando procurar o pediatra."
+meta_description: >-
+  Guia completo de troca de fraldas: frequência por idade, cores do cocô,
+  prevenção de assaduras e quando procurar o pediatra.
 audience: parent
 affiliate_products:
-  - name: "Pomada para assadura"
+  - name: Pomada para assadura
     category: higiene
-  - name: "Fralda descartável"
+  - name: Fralda descartável
     category: higiene
 lead_magnet: false
+image_url: 'https://blog.yayababy.app/posts/troca-de-fraldas-guia-completo/hero.webp'
+mid_image_url: 'https://blog.yayababy.app/posts/troca-de-fraldas-guia-completo/mid.webp'
 ---
 
 Nos primeiros meses, você vai trocar muitas fraldas. Muitas mesmo. Saber o que é normal (em quantidade, cor e textura) ajuda a ficar tranquilo e a identificar quando algo merece atenção.

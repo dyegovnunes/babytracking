@@ -47,6 +47,7 @@ export interface BlogPost {
   target_week_end: number | null
   image_url: string | null
   image_alt: string | null
+  mid_image_url: string | null
   published_at: string | null
   post_number: number | null
 }

@@ -1,8 +1,13 @@
 ---
-title: "Leite Materno: Produção, Armazenamento e Dúvidas Frequentes"
+title: 'Leite Materno: Produção, Armazenamento e Dúvidas Frequentes'
 slug: leite-materno-armazenamento
-description: "Guia completo sobre leite materno: como a produção funciona, técnicas de ordenha, regras de armazenamento, congelamento, descongelamento e doação para bancos de leite."
-meta_description: "Como armazenar leite materno: tempo na geladeira, freezer, como congelar e descongelar. Guia completo com regras atualizadas."
+description: >-
+  Guia completo sobre leite materno: como a produção funciona, técnicas de
+  ordenha, regras de armazenamento, congelamento, descongelamento e doação para
+  bancos de leite.
+meta_description: >-
+  Como armazenar leite materno: tempo na geladeira, freezer, como congelar e
+  descongelar. Guia completo com regras atualizadas.
 keywords:
   primaria: como armazenar leite materno
   secundarias:
@@ -42,21 +47,29 @@ seo:
   meta_chars: 137
   schema: FAQPage
   snippet_type: tabela
-  snippet_section: "Quanto tempo o leite materno dura?"
+  snippet_section: Quanto tempo o leite materno dura?
 sources:
-  - name: "SBP. Guia Prático de Aleitamento Materno. Departamento Científico de Aleitamento Materno. 2021."
-    url: "https://www.sbp.com.br/fileadmin/user_upload/24585d-GPRATICO-GuiaPratico_de_AM-Atualizacao.pdf"
-  - name: "OMS. Infant and young child feeding. Fact sheet. 2024."
-    url: "https://www.who.int/news-room/fact-sheets/detail/infant-and-young-child-feeding"
-  - name: "Rede Brasileira de Bancos de Leite Humano (rBLH). Fiocruz."
-    url: "https://rblh.fiocruz.br/"
-  - name: "ANVISA. RDC 171/2006 — Regulamento Técnico para o funcionamento de Bancos de Leite Humano."
-    url: "https://www.gov.br/anvisa/pt-br/assuntos/regulamentacao/legislacao/resolucoes-de-diretoria-colegiada"
+  - name: >-
+      SBP. Guia Prático de Aleitamento Materno. Departamento Científico de
+      Aleitamento Materno. 2021.
+    url: >-
+      https://www.sbp.com.br/fileadmin/user_upload/24585d-GPRATICO-GuiaPratico_de_AM-Atualizacao.pdf
+  - name: OMS. Infant and young child feeding. Fact sheet. 2024.
+    url: >-
+      https://www.who.int/news-room/fact-sheets/detail/infant-and-young-child-feeding
+  - name: Rede Brasileira de Bancos de Leite Humano (rBLH). Fiocruz.
+    url: 'https://rblh.fiocruz.br/'
+  - name: >-
+      ANVISA. RDC 171/2006 — Regulamento Técnico para o funcionamento de Bancos
+      de Leite Humano.
+    url: >-
+      https://www.gov.br/anvisa/pt-br/assuntos/regulamentacao/legislacao/resolucoes-de-diretoria-colegiada
 images:
   hero: img31-1.png
   complementar: img31-2.png
-image_url: "https://blog.yayababy.app/posts/leite-materno-armazenamento/hero.png"
-image_alt: "Leite Materno"
+image_url: 'https://blog.yayababy.app/posts/leite-materno-armazenamento/hero.webp'
+image_alt: Leite Materno
+mid_image_url: 'https://blog.yayababy.app/posts/leite-materno-armazenamento/mid.webp'
 ---
 
 Uma das maiores preocupações de mães que amamentam é: "e quando eu não estiver por perto?". Seja para voltar ao trabalho, ter algumas horas livres ou simplesmente criar uma reserva de segurança, saber como extrair e armazenar o leite materno corretamente é fundamental. E a boa notícia é que não é complicado — basta seguir algumas regras.

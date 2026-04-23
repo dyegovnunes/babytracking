@@ -1,8 +1,13 @@
 ---
-title: "Teste do Pezinho, Olhinho e Orelhinha: Guia Completo"
+title: 'Teste do Pezinho, Olhinho e Orelhinha: Guia Completo'
 slug: testes-do-recem-nascido
-description: "Guia completo sobre os testes neonatais obrigatórios: pezinho, olhinho, orelhinha, coraçãozinho, linguinha e quadril. O que detectam, quando fazer e o que mudou com a Lei 14.154."
-meta_description: "Testes do recém-nascido: pezinho, olhinho, orelhinha, coraçãozinho. Saiba quando fazer, o que detectam e o que mudou no SUS."
+description: >-
+  Guia completo sobre os testes neonatais obrigatórios: pezinho, olhinho,
+  orelhinha, coraçãozinho, linguinha e quadril. O que detectam, quando fazer e o
+  que mudou com a Lei 14.154.
+meta_description: >-
+  Testes do recém-nascido: pezinho, olhinho, orelhinha, coraçãozinho. Saiba
+  quando fazer, o que detectam e o que mudou no SUS.
 keywords:
   primaria: testes do recém-nascido
   secundarias:
@@ -43,19 +48,23 @@ seo:
   meta_chars: 138
   schema: FAQPage
   snippet_type: faq
-  snippet_section: "Quais são os testes obrigatórios do recém-nascido?"
+  snippet_section: Quais são os testes obrigatórios do recém-nascido?
 sources:
-  - name: "SBP. Triagem Auditiva Neonatal. Departamento Científico de Otorrinolaringologia. 2017."
-    url: "https://www.sbp.com.br/fileadmin/user_upload/2017/03/C-Doc-Cientifico-Otorrinolaringologia-.pdf"
-  - name: "Ministério da Saúde — Programa Nacional de Triagem Neonatal (PNTN)"
-    url: "https://www.gov.br/saude/pt-br/composicao/saes/triagem-neonatal"
-  - name: "Lei 14.154/2021 — Ampliação da Triagem Neonatal no SUS"
-    url: "https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2021/lei/l14154.htm"
+  - name: >-
+      SBP. Triagem Auditiva Neonatal. Departamento Científico de
+      Otorrinolaringologia. 2017.
+    url: >-
+      https://www.sbp.com.br/fileadmin/user_upload/2017/03/C-Doc-Cientifico-Otorrinolaringologia-.pdf
+  - name: Ministério da Saúde — Programa Nacional de Triagem Neonatal (PNTN)
+    url: 'https://www.gov.br/saude/pt-br/composicao/saes/triagem-neonatal'
+  - name: Lei 14.154/2021 — Ampliação da Triagem Neonatal no SUS
+    url: 'https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2021/lei/l14154.htm'
 images:
   hero: img26-1.png
   complementar: img26-2.png
-image_url: "https://blog.yayababy.app/posts/testes-do-recem-nascido/hero.png"
-image_alt: "Testes do Recem-Nascido: Pezinho, Olhinho e Orelhinha"
+image_url: 'https://blog.yayababy.app/posts/testes-do-recem-nascido/hero.webp'
+image_alt: 'Testes do Recem-Nascido: Pezinho, Olhinho e Orelhinha'
+mid_image_url: 'https://blog.yayababy.app/posts/testes-do-recem-nascido/mid.webp'
 ---
 
 Nos primeiros dias de vida, antes mesmo de sair da maternidade, o recém-nascido passa por uma bateria de exames que podem parecer assustadores à primeira vista — mas são rápidos, seguros e essenciais. Esses testes de triagem neonatal existem para detectar precocemente condições que, se identificadas cedo, podem ser tratadas antes de causar danos.

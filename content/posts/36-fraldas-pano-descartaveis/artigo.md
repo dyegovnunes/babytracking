@@ -1,8 +1,12 @@
 ---
-title: "Fraldas de Pano vs. Descartáveis: Comparativo Completo"
+title: 'Fraldas de Pano vs. Descartáveis: Comparativo Completo'
 slug: fraldas-pano-vs-descartaveis
-description: "Fralda de pano moderna ou descartável? Comparativo de custo, praticidade, impacto ambiental, saúde da pele e rotina. Inclui abordagem híbrida."
-meta_description: "Fralda de pano ou descartável? Comparativo de custo (2 anos), impacto ambiental, praticidade e saúde da pele. Guia completo para decidir."
+description: >-
+  Fralda de pano moderna ou descartável? Comparativo de custo, praticidade,
+  impacto ambiental, saúde da pele e rotina. Inclui abordagem híbrida.
+meta_description: >-
+  Fralda de pano ou descartável? Comparativo de custo (2 anos), impacto
+  ambiental, praticidade e saúde da pele. Guia completo para decidir.
 keywords:
   primaria: fralda de pano vale a pena
   secundarias:
@@ -39,17 +43,24 @@ seo:
   meta_chars: 143
   schema: Article
   snippet_type: tabela
-  snippet_section: "Comparativo direto"
+  snippet_section: Comparativo direto
 sources:
-  - name: "Environment Agency (UK). Life Cycle Assessment of Disposable and Reusable Nappies. 2008."
-    url: "https://www.gov.uk/government/publications/an-updated-lifecycle-assessment-for-disposable-and-reusable-nappies"
-  - name: "SBP. Dermatite da Área das Fraldas — Diagnóstico Diferencial. Departamento de Dermatologia."
-    url: "https://www.sbp.com.br/fileadmin/user_upload/publicacoes/Dermatologia-Dermatite-da-rea-das-fraldas.pdf"
+  - name: >-
+      Environment Agency (UK). Life Cycle Assessment of Disposable and Reusable
+      Nappies. 2008.
+    url: >-
+      https://www.gov.uk/government/publications/an-updated-lifecycle-assessment-for-disposable-and-reusable-nappies
+  - name: >-
+      SBP. Dermatite da Área das Fraldas — Diagnóstico Diferencial. Departamento
+      de Dermatologia.
+    url: >-
+      https://www.sbp.com.br/fileadmin/user_upload/publicacoes/Dermatologia-Dermatite-da-rea-das-fraldas.pdf
 images:
   hero: img36-1.png
   complementar: img36-2.png
-image_url: "https://blog.yayababy.app/posts/fraldas-pano-vs-descartaveis/hero.png"
-image_alt: "Fraldas de Pano vs. Descartáveis"
+image_url: 'https://blog.yayababy.app/posts/fraldas-pano-vs-descartaveis/hero.webp'
+image_alt: Fraldas de Pano vs. Descartáveis
+mid_image_url: 'https://blog.yayababy.app/posts/fraldas-pano-vs-descartaveis/mid.webp'
 ---
 
 Fralda de pano ou descartável? A pergunta parece simples, mas envolve custo, praticidade, meio ambiente, saúde da pele e rotina da família. E a resposta não é única — depende do contexto de cada casa. Este comparativo traz dados concretos para ajudar na decisão, sem romantizar nenhuma das opções.

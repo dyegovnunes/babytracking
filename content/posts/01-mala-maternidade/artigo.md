@@ -1,7 +1,9 @@
 ---
-title: "Mala da Maternidade: Lista Completa do Que Levar"
+title: 'Mala da Maternidade: Lista Completa do Que Levar'
 slug: mala-da-maternidade-lista-completa
-description: "Saiba exatamente o que colocar na mala da maternidade para você e seu bebê. Lista organizada, sem exageros, com tudo o que realmente importa."
+description: >-
+  Saiba exatamente o que colocar na mala da maternidade para você e seu bebê.
+  Lista organizada, sem exageros, com tudo o que realmente importa.
 keywords:
   primaria: mala da maternidade
   secundarias:
@@ -25,14 +27,17 @@ seo:
   meta_chars: 142
   schema: HowTo
   snippet_type: lista
-  snippet_section: "O que levar na mala da maternidade"
+  snippet_section: O que levar na mala da maternidade
 sources:
-  - name: "SBP. Recomendações para alta hospitalar do Recém-Nascido Termo Potencialmente Saudável. Departamento Científico de Neonatologia. 2020."
-    url: "https://www.sbp.com.br/fileadmin/user_upload/22649c-DC_-_Recom_Alta_hospitalar_RN_TermoPotenc_Saudavel.pdf"
-  - name: "Ministério da Saúde. Caderneta da Gestante. 8ª ed. 2023."
-    url: "https://bvsms.saude.gov.br/bvs/publicacoes/caderneta_gestante_8ed_rev.pdf"
-  - name: "OMS. WHO recommendations on maternal health. 2017."
-    url: "https://www.who.int/publications/i/item/WHO-MCA-17.10"
+  - name: >-
+      SBP. Recomendações para alta hospitalar do Recém-Nascido Termo
+      Potencialmente Saudável. Departamento Científico de Neonatologia. 2020.
+    url: >-
+      https://www.sbp.com.br/fileadmin/user_upload/22649c-DC_-_Recom_Alta_hospitalar_RN_TermoPotenc_Saudavel.pdf
+  - name: Ministério da Saúde. Caderneta da Gestante. 8ª ed. 2023.
+    url: 'https://bvsms.saude.gov.br/bvs/publicacoes/caderneta_gestante_8ed_rev.pdf'
+  - name: OMS. WHO recommendations on maternal health. 2017.
+    url: 'https://www.who.int/publications/i/item/WHO-MCA-17.10'
 images:
   hero: img1-1.png
   complementar: img1-2.png
@@ -46,31 +51,35 @@ related_slugs:
   - sinais-trabalho-de-parto
   - cadeirinha-bebe-carro
 schema: HowTo
-meta_description: "Lista completa da mala da maternidade: o que levar para você e o bebê, organizado por categoria. Sem exageros, só o essencial."
+meta_description: >-
+  Lista completa da mala da maternidade: o que levar para você e o bebê,
+  organizado por categoria. Sem exageros, só o essencial.
 audience: gestante
 affiliate_products:
   - tipo: roupas
     nome: Kit 3 Macacões Bebê Amore Vira Pé com Zíper Menina
     asin: B0G87CDXWW
-    url: https://www.amazon.com.br/dp/B0G87CDXWW?tag=yaya090-20
+    url: 'https://www.amazon.com.br/dp/B0G87CDXWW?tag=yaya090-20'
   - tipo: roupas
     nome: Kit 3 Macacões Bebê Amore Vira Pé com Zíper Menino
     asin: B0G8KRFJYR
-    url: https://www.amazon.com.br/dp/B0G8KRFJYR?tag=yaya090-20
+    url: 'https://www.amazon.com.br/dp/B0G8KRFJYR?tag=yaya090-20'
   - tipo: banho
     nome: Toalha de Banho Soft Karinho com Capuz 80x80cm
     asin: B0BV386QWT
-    url: https://www.amazon.com.br/dp/B0BV386QWT?tag=yaya090-20
+    url: 'https://www.amazon.com.br/dp/B0BV386QWT?tag=yaya090-20'
   - tipo: banho
     nome: Toalha de Banho Soft Papi Friends com Capuz 90x75cm
     asin: B09YVPFL3L
-    url: https://www.amazon.com.br/dp/B09YVPFL3L?tag=yaya090-20
+    url: 'https://www.amazon.com.br/dp/B09YVPFL3L?tag=yaya090-20'
   - tipo: banho
     nome: Toalha de Banho Papi Malhas Forrada com Capuz 94x70cm
     asin: B07XHN65NS
-    url: https://www.amazon.com.br/dp/B07XHN65NS?tag=yaya090-20
+    url: 'https://www.amazon.com.br/dp/B07XHN65NS?tag=yaya090-20'
 lead_magnet: true
 lead_magnet_type: checklist
+image_url: 'https://blog.yayababy.app/posts/mala-da-maternidade-lista-completa/hero.webp'
+mid_image_url: 'https://blog.yayababy.app/posts/mala-da-maternidade-lista-completa/mid.webp'
 ---
 
 A mala da maternidade não precisa parecer uma mudança. A maioria das maternidades pede o básico, e o que faz diferença são poucos itens bem escolhidos. Neste guia, organizamos tudo em listas separadas para você, para o bebê e para o acompanhante.

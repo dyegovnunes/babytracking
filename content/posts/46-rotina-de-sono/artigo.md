@@ -1,8 +1,13 @@
 ---
-title: "Como Criar uma Rotina de Sono para o Bebê"
+title: Como Criar uma Rotina de Sono para o Bebê
 slug: rotina-sono-bebe
-description: "Guia prático para criar uma rotina de sono que funciona: quando começar, quanto tempo deve durar, o que incluir e como adaptar quando a rotina quebra. Baseado em AAP e SBP."
-meta_description: "Rotina de sono para bebê: quando começar, passo a passo do ritual noturno, duração ideal e como adaptar. Guia prático baseado na AAP e SBP."
+description: >-
+  Guia prático para criar uma rotina de sono que funciona: quando começar,
+  quanto tempo deve durar, o que incluir e como adaptar quando a rotina quebra.
+  Baseado em AAP e SBP.
+meta_description: >-
+  Rotina de sono para bebê: quando começar, passo a passo do ritual noturno,
+  duração ideal e como adaptar. Guia prático baseado na AAP e SBP.
 keywords:
   primaria: rotina sono bebê como criar
   secundarias:
@@ -41,19 +46,26 @@ seo:
   meta_chars: 138
   schema: Article
   snippet_type: lista
-  snippet_section: "Os blocos de uma boa rotina de sono"
+  snippet_section: Os blocos de uma boa rotina de sono
 sources:
-  - name: "AAP. Sleep Hygiene for Infants and Toddlers. HealthyChildren.org."
-    url: "https://www.healthychildren.org/English/healthy-living/sleep/Pages/Healthy-Sleep-Habits-How-Many-Hours-Does-Your-Child-Need.aspx"
-  - name: "SBP. Síndrome da Morte Súbita do Lactente e Sono Seguro. Departamento Científico de Medicina do Sono. 2018."
-    url: "https://www.sbp.com.br/fileadmin/user_upload/20226d-DocCient_-_Sindrome_Morte_Subita_do_Lactente.pdf"
-  - name: "Mindell JA et al. A Nightly Bedtime Routine: Impact on Sleep in Young Children and Maternal Mood. Sleep, 2009."
-    url: "https://pubmed.ncbi.nlm.nih.gov/19480226/"
+  - name: AAP. Sleep Hygiene for Infants and Toddlers. HealthyChildren.org.
+    url: >-
+      https://www.healthychildren.org/English/healthy-living/sleep/Pages/Healthy-Sleep-Habits-How-Many-Hours-Does-Your-Child-Need.aspx
+  - name: >-
+      SBP. Síndrome da Morte Súbita do Lactente e Sono Seguro. Departamento
+      Científico de Medicina do Sono. 2018.
+    url: >-
+      https://www.sbp.com.br/fileadmin/user_upload/20226d-DocCient_-_Sindrome_Morte_Subita_do_Lactente.pdf
+  - name: >-
+      Mindell JA et al. A Nightly Bedtime Routine: Impact on Sleep in Young
+      Children and Maternal Mood. Sleep, 2009.
+    url: 'https://pubmed.ncbi.nlm.nih.gov/19480226/'
 images:
   hero: img46-1.png
   complementar: img46-2.png
-image_url: "https://blog.yayababy.app/posts/rotina-sono-bebe/hero.png"
-image_alt: "Como Criar uma Rotina de Sono para o Bebê"
+image_url: 'https://blog.yayababy.app/posts/rotina-sono-bebe/hero.webp'
+image_alt: Como Criar uma Rotina de Sono para o Bebê
+mid_image_url: 'https://blog.yayababy.app/posts/rotina-sono-bebe/mid.webp'
 ---
 
 Se tem um assunto que domina os grupos de pais é o sono do bebê. E junto com ele vem a dúvida mais repetida: "como faço meu bebê dormir melhor?" A resposta, respaldada por anos de pesquisa, é surpreendentemente simples — embora exija paciência: crie uma rotina. Não um ritual elaborado ou um cronograma rígido, mas uma sequência previsível de passos que sinalize ao cérebro do bebê que a hora de dormir chegou.

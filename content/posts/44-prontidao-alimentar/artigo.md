@@ -1,8 +1,13 @@
 ---
-title: "Sinais de Prontidão para Introdução Alimentar: Quando o Bebê Está Pronto"
+title: 'Sinais de Prontidão para Introdução Alimentar: Quando o Bebê Está Pronto'
 slug: sinais-prontidao-introducao-alimentar
-description: "Os 4 sinais de prontidão para introdução alimentar, mitos comuns, por que esperar até os 6 meses, BLW vs tradicional e o que a OMS, SBP e AAP recomendam."
-meta_description: "Sinais de prontidão alimentar: os 4 critérios reais, mitos e quando começar a introdução alimentar. Baseado na OMS, SBP e AAP."
+description: >-
+  Os 4 sinais de prontidão para introdução alimentar, mitos comuns, por que
+  esperar até os 6 meses, BLW vs tradicional e o que a OMS, SBP e AAP
+  recomendam.
+meta_description: >-
+  Sinais de prontidão alimentar: os 4 critérios reais, mitos e quando começar a
+  introdução alimentar. Baseado na OMS, SBP e AAP.
 keywords:
   primaria: sinais prontidão alimentar
   secundarias:
@@ -37,21 +42,25 @@ seo:
   meta_chars: 136
   schema: Article
   snippet_type: lista
-  snippet_section: "Os 4 sinais reais de prontidão"
+  snippet_section: Os 4 sinais reais de prontidão
 sources:
-  - name: "OMS — Complementary Feeding: Report of the Global Consultation"
-    url: "https://www.who.int/publications/i/item/924154614X"
-  - name: "SBP — Manual de Alimentação: da infância à adolescência (4ª ed., 2018)"
-    url: "https://www.sbp.com.br/fileadmin/user_upload/user_upload/publicacoes/14617a-pdmanualnutrologia-alimentacao.pdf"
-  - name: "AAP — Starting Solid Foods"
-    url: "https://www.healthychildren.org/English/ages-stages/baby/feeding-nutrition/Pages/Starting-Solid-Foods.aspx"
-  - name: "ESPGHAN — Complementary Feeding: A Position Paper (2017)"
-    url: "https://pubmed.ncbi.nlm.nih.gov/28027215/"
+  - name: 'OMS — Complementary Feeding: Report of the Global Consultation'
+    url: 'https://www.who.int/publications/i/item/924154614X'
+  - name: 'SBP — Manual de Alimentação: da infância à adolescência (4ª ed., 2018)'
+    url: >-
+      https://www.sbp.com.br/fileadmin/user_upload/user_upload/publicacoes/14617a-pdmanualnutrologia-alimentacao.pdf
+  - name: AAP — Starting Solid Foods
+    url: >-
+      https://www.healthychildren.org/English/ages-stages/baby/feeding-nutrition/Pages/Starting-Solid-Foods.aspx
+  - name: 'ESPGHAN — Complementary Feeding: A Position Paper (2017)'
+    url: 'https://pubmed.ncbi.nlm.nih.gov/28027215/'
 images:
   hero: img44-1.png
   complementar: img44-2.png
-image_url: "https://blog.yayababy.app/posts/sinais-prontidao-introducao-alimentar/hero.png"
-image_alt: "Sinais de Prontidão para Introdução Alimentar"
+image_url: >-
+  https://blog.yayababy.app/posts/sinais-prontidao-introducao-alimentar/hero.webp
+image_alt: Sinais de Prontidão para Introdução Alimentar
+mid_image_url: 'https://blog.yayababy.app/posts/sinais-prontidao-introducao-alimentar/mid.webp'
 ---
 
 # Sinais de Prontidão para Introdução Alimentar: Quando o Bebê Está Pronto

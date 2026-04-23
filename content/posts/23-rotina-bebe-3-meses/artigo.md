@@ -1,8 +1,13 @@
 ---
-title: "Rotina do Bebê aos 3-4 Meses: Horários, Sonecas e Estrutura"
+title: 'Rotina do Bebê aos 3-4 Meses: Horários, Sonecas e Estrutura'
 slug: rotina-bebe-3-4-meses
-description: "Como montar uma rotina flexível para o bebê de 3-4 meses. Janelas de sono, transição de sonecas, horários de amamentação e o que esperar da regressão dos 4 meses."
-meta_description: "Rotina do bebê de 3-4 meses: janelas de sono, transição de sonecas, horários flexíveis e como construir estrutura sem estresse."
+description: >-
+  Como montar uma rotina flexível para o bebê de 3-4 meses. Janelas de sono,
+  transição de sonecas, horários de amamentação e o que esperar da regressão dos
+  4 meses.
+meta_description: >-
+  Rotina do bebê de 3-4 meses: janelas de sono, transição de sonecas, horários
+  flexíveis e como construir estrutura sem estresse.
 keywords:
   primaria: rotina bebê 3 meses
   secundarias:
@@ -44,17 +49,24 @@ seo:
   meta_chars: 141
   schema: Article
   snippet_type: paragrafo
-  snippet_section: "O que muda aos 3-4 meses"
+  snippet_section: O que muda aos 3-4 meses
 sources:
-  - name: "AAP. Healthy Sleep Habits: How Many Hours Does Your Child Need?. HealthyChildren.org."
-    url: "https://www.healthychildren.org/English/ages-stages/baby/sleep/Pages/healthy-sleep-habits-how-many-hours-does-your-child-need.aspx"
-  - name: "SBP. Síndrome da Morte Súbita do Lactente e Sono Seguro. Departamento Científico de Medicina do Sono. 2018."
-    url: "https://www.sbp.com.br/fileadmin/user_upload/20226d-DocCient_-_Sindrome_Morte_Subita_do_Lactente.pdf"
+  - name: >-
+      AAP. Healthy Sleep Habits: How Many Hours Does Your Child Need?.
+      HealthyChildren.org.
+    url: >-
+      https://www.healthychildren.org/English/ages-stages/baby/sleep/Pages/healthy-sleep-habits-how-many-hours-does-your-child-need.aspx
+  - name: >-
+      SBP. Síndrome da Morte Súbita do Lactente e Sono Seguro. Departamento
+      Científico de Medicina do Sono. 2018.
+    url: >-
+      https://www.sbp.com.br/fileadmin/user_upload/20226d-DocCient_-_Sindrome_Morte_Subita_do_Lactente.pdf
 images:
   hero: img23-1.png
   complementar: img23-2.png
-image_url: "https://blog.yayababy.app/posts/rotina-bebe-3-4-meses/hero.png"
-image_alt: "Rotina do Bebe aos 3-4 Meses"
+image_url: 'https://blog.yayababy.app/posts/rotina-bebe-3-4-meses/hero.webp'
+image_alt: Rotina do Bebe aos 3-4 Meses
+mid_image_url: 'https://blog.yayababy.app/posts/rotina-bebe-3-4-meses/mid.webp'
 ---
 
 Até os 2 meses, a rotina do bebê era basicamente: comer, dormir, trocar fralda, repetir. Sem horários, sem padrão, sem previsibilidade. Aos 3-4 meses, algo começa a mudar. O bebê fica mais tempo acordado, as amamentações espaçam um pouco, as sonecas começam a se organizar. Não é uma rotina de relógio — mas já dá para enxergar um esboço.

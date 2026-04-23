@@ -1,8 +1,12 @@
 ---
-title: "Brincadeiras para Bebê de 3 a 6 Meses: Estímulo com Simplicidade"
+title: 'Brincadeiras para Bebê de 3 a 6 Meses: Estímulo com Simplicidade'
 slug: brincadeiras-bebe-3-6-meses
-description: "Lista prática de brincadeiras para bebê de 3 a 6 meses, organizadas por área de desenvolvimento. Atividades simples para estimular sem gastar dinheiro."
-meta_description: "Brincadeiras para bebê de 3 a 6 meses: atividades por área (motor, sensorial, cognitivo, social). Estímulo simples, sem gastar dinheiro."
+description: >-
+  Lista prática de brincadeiras para bebê de 3 a 6 meses, organizadas por área
+  de desenvolvimento. Atividades simples para estimular sem gastar dinheiro.
+meta_description: >-
+  Brincadeiras para bebê de 3 a 6 meses: atividades por área (motor, sensorial,
+  cognitivo, social). Estímulo simples, sem gastar dinheiro.
 keywords:
   primaria: brincadeiras bebê 4 meses
   secundarias:
@@ -42,19 +46,24 @@ seo:
   meta_chars: 138
   schema: Article
   snippet_type: lista
-  snippet_section: "Brincadeiras por mês"
+  snippet_section: Brincadeiras por mês
 sources:
-  - name: "AAP — Playing With Your Baby: Activities for 4 to 7 Months"
-    url: "https://www.healthychildren.org/English/ages-stages/baby/Pages/Playing-With-Your-Baby.aspx"
-  - name: "SBP. Cartilha de Desenvolvimento: dos 2 meses aos 5 anos. Departamento Científico de Pediatria do Desenvolvimento e Comportamento."
-    url: "https://www.sbp.com.br/fileadmin/user_upload/_24327e-Cartilha_de_Desenvolvimento-2m-5anos_compressed.pdf"
-  - name: "CDC — Milestone Moments: Learn the Signs, Act Early"
-    url: "https://www.cdc.gov/act-early/milestones/index.html"
+  - name: 'AAP — Playing With Your Baby: Activities for 4 to 7 Months'
+    url: >-
+      https://www.healthychildren.org/English/ages-stages/baby/Pages/Playing-With-Your-Baby.aspx
+  - name: >-
+      SBP. Cartilha de Desenvolvimento: dos 2 meses aos 5 anos. Departamento
+      Científico de Pediatria do Desenvolvimento e Comportamento.
+    url: >-
+      https://www.sbp.com.br/fileadmin/user_upload/_24327e-Cartilha_de_Desenvolvimento-2m-5anos_compressed.pdf
+  - name: 'CDC — Milestone Moments: Learn the Signs, Act Early'
+    url: 'https://www.cdc.gov/act-early/milestones/index.html'
 images:
   hero: img40-1.png
   complementar: img40-2.png
-image_url: "https://blog.yayababy.app/posts/brincadeiras-bebe-3-6-meses/hero.png"
-image_alt: "Brincadeiras para Bebê de 3 a 6 Meses"
+image_url: 'https://blog.yayababy.app/posts/brincadeiras-bebe-3-6-meses/hero.webp'
+image_alt: Brincadeiras para Bebê de 3 a 6 Meses
+mid_image_url: 'https://blog.yayababy.app/posts/brincadeiras-bebe-3-6-meses/mid.webp'
 ---
 
 # Brincadeiras para Bebê de 3 a 6 Meses: Estímulo com Simplicidade

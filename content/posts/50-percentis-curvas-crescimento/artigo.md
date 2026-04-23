@@ -1,8 +1,13 @@
 ---
-title: "Percentis e Curvas de Crescimento: Como Interpretar o Crescimento do Bebê"
+title: 'Percentis e Curvas de Crescimento: Como Interpretar o Crescimento do Bebê'
 slug: percentis-curvas-crescimento-bebe
-description: "Entenda o que são percentis, como ler as curvas de crescimento da OMS, quando uma mudança de canal preocupa e o que a Caderneta da Criança mostra. Baseado em OMS, SBP e Ministério da Saúde."
-meta_description: "Percentil do bebê: como ler as curvas de crescimento OMS, quando preocupar e o que significam os números. Guia com base na OMS e SBP."
+description: >-
+  Entenda o que são percentis, como ler as curvas de crescimento da OMS, quando
+  uma mudança de canal preocupa e o que a Caderneta da Criança mostra. Baseado
+  em OMS, SBP e Ministério da Saúde.
+meta_description: >-
+  Percentil do bebê: como ler as curvas de crescimento OMS, quando preocupar e o
+  que significam os números. Guia com base na OMS e SBP.
 keywords:
   primaria: percentil bebê tabela
   secundarias:
@@ -39,19 +44,24 @@ seo:
   meta_chars: 139
   schema: FAQPage
   snippet_type: parágrafo
-  snippet_section: "O que são percentis?"
+  snippet_section: O que são percentis?
 sources:
-  - name: "OMS. Child Growth Standards. WHO Multicentre Growth Reference Study."
-    url: "https://www.who.int/tools/child-growth-standards"
-  - name: "SBP. Manual de Avaliação Nutricional da Criança e do Adolescente. 2ª ed. atualizada. Departamento Científico de Nutrologia. 2021."
-    url: "https://www.sbp.com.br/fileadmin/user_upload/_22962f-ManAval_Nutricional_-_2Ed_Atualizada_SITE.pdf"
-  - name: "Ministério da Saúde. Caderneta da Criança. 2024."
-    url: "https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/s/saude-da-crianca/caderneta"
+  - name: OMS. Child Growth Standards. WHO Multicentre Growth Reference Study.
+    url: 'https://www.who.int/tools/child-growth-standards'
+  - name: >-
+      SBP. Manual de Avaliação Nutricional da Criança e do Adolescente. 2ª ed.
+      atualizada. Departamento Científico de Nutrologia. 2021.
+    url: >-
+      https://www.sbp.com.br/fileadmin/user_upload/_22962f-ManAval_Nutricional_-_2Ed_Atualizada_SITE.pdf
+  - name: Ministério da Saúde. Caderneta da Criança. 2024.
+    url: >-
+      https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/s/saude-da-crianca/caderneta
 images:
   hero: img50-1.png
   complementar: img50-2.png
-image_url: "https://blog.yayababy.app/posts/percentis-curvas-crescimento-bebe/hero.png"
-image_alt: "Percentis e Curvas de Crescimento"
+image_url: 'https://blog.yayababy.app/posts/percentis-curvas-crescimento-bebe/hero.webp'
+image_alt: Percentis e Curvas de Crescimento
+mid_image_url: 'https://blog.yayababy.app/posts/percentis-curvas-crescimento-bebe/mid.webp'
 ---
 
 Na consulta com o pediatra, você ouve: "Seu bebê está no percentil 25 de peso." E a primeira reação é: "Isso é bom? É ruim? Está abaixo da média?" As curvas de crescimento são uma das ferramentas mais importantes da pediatria, mas também uma das mais mal interpretadas pelos pais. Este guia explica o que são percentis, como ler os gráficos e, principalmente, quando um número é motivo de atenção — e quando não é.

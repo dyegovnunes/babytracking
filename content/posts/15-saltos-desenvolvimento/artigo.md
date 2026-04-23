@@ -1,12 +1,23 @@
 ---
-title: "Saltos de Desenvolvimento do Bebê: Guia Completo dos 0 aos 6 Meses"
+title: 'Saltos de Desenvolvimento do Bebê: Guia Completo dos 0 aos 6 Meses'
 slug: saltos-desenvolvimento
-description: "Guia completo sobre os saltos de desenvolvimento do bebê de 0 a 6 meses. Entenda cada salto (1 a 5), sintomas, novas habilidades e como ajudar."
-meta_description: "Saltos de desenvolvimento do bebê: guia completo dos 0 aos 6 meses. Conheça os 5 primeiros saltos, sintomas, habilidades e como apoiar seu filho."
+description: >-
+  Guia completo sobre os saltos de desenvolvimento do bebê de 0 a 6 meses.
+  Entenda cada salto (1 a 5), sintomas, novas habilidades e como ajudar.
+meta_description: >-
+  Saltos de desenvolvimento do bebê: guia completo dos 0 aos 6 meses. Conheça os
+  5 primeiros saltos, sintomas, habilidades e como apoiar seu filho.
 keywords:
   primaria: saltos do desenvolvimento bebê
-  secundarias: [salto de desenvolvimento sintomas, wonder weeks, picos de desenvolvimento bebê, saltos do bebê semana a semana]
-  long_tails: [salto de desenvolvimento 4 meses sintomas, como saber se o bebê está em salto de desenvolvimento, saltos do desenvolvimento tabela]
+  secundarias:
+    - salto de desenvolvimento sintomas
+    - wonder weeks
+    - picos de desenvolvimento bebê
+    - saltos do bebê semana a semana
+  long_tails:
+    - salto de desenvolvimento 4 meses sintomas
+    - como saber se o bebê está em salto de desenvolvimento
+    - saltos do desenvolvimento tabela
 category: desenvolvimento
 phase: 0-6m
 tone: especialista
@@ -35,15 +46,26 @@ seo:
   meta_chars: 138
   schema: Article
   snippet_type: featured-snippet
-  snippet_section: "O que são saltos de desenvolvimento"
+  snippet_section: O que são saltos de desenvolvimento
 sources:
-  - "Van de Rijt H, Plooij F — The Wonder Weeks (6th edition, 2019). Kiddy World Publishing."
-  - "Plooij FX — The behavioral development of free-living chimpanzee babies and infants (base da pesquisa original)"
-  - "SBP — Cartilha de Desenvolvimento: dos 2 meses aos 5 anos. Departamento Científico de Pediatria do Desenvolvimento e Comportamento: https://www.sbp.com.br/fileadmin/user_upload/_24327e-Cartilha_de_Desenvolvimento-2m-5anos_compressed.pdf"
-  - "WHO — Child Growth Standards: Motor Development Milestones: https://www.who.int/tools/child-growth-standards"
+  - >-
+    Van de Rijt H, Plooij F — The Wonder Weeks (6th edition, 2019). Kiddy World
+    Publishing.
+  - >-
+    Plooij FX — The behavioral development of free-living chimpanzee babies and
+    infants (base da pesquisa original)
+  - >-
+    SBP — Cartilha de Desenvolvimento: dos 2 meses aos 5 anos. Departamento
+    Científico de Pediatria do Desenvolvimento e Comportamento:
+    https://www.sbp.com.br/fileadmin/user_upload/_24327e-Cartilha_de_Desenvolvimento-2m-5anos_compressed.pdf
+  - >-
+    WHO — Child Growth Standards: Motor Development Milestones:
+    https://www.who.int/tools/child-growth-standards
 images:
   hero: img15-1.png
   complementar: img15-2.png
+image_url: 'https://blog.yayababy.app/posts/saltos-desenvolvimento/hero.webp'
+mid_image_url: 'https://blog.yayababy.app/posts/saltos-desenvolvimento/mid.webp'
 ---
 
 # Saltos de Desenvolvimento do Bebê: Guia Completo dos 0 aos 6 Meses

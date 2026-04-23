@@ -1,8 +1,13 @@
 ---
-title: "Ganho de Peso do Bebê: O Que É Normal"
+title: 'Ganho de Peso do Bebê: O Que É Normal'
 slug: ganho-peso-bebe
-description: "Quanto peso o bebê deve ganhar por mês? Entenda a perda de peso pós-nascimento, curvas de crescimento, percentis e quando procurar o pediatra."
-meta_description: "Ganho de peso do bebê: perda fisiológica, quanto ganha por mês, curvas de crescimento, percentis e quando procurar o pediatra. Guia baseado na OMS e SBP."
+description: >-
+  Quanto peso o bebê deve ganhar por mês? Entenda a perda de peso
+  pós-nascimento, curvas de crescimento, percentis e quando procurar o pediatra.
+meta_description: >-
+  Ganho de peso do bebê: perda fisiológica, quanto ganha por mês, curvas de
+  crescimento, percentis e quando procurar o pediatra. Guia baseado na OMS e
+  SBP.
 keywords:
   primaria: ganho de peso recém-nascido
   secundarias:
@@ -40,17 +45,25 @@ seo:
   meta_chars: 152
   schema: FAQPage
   snippet_type: tabela
-  snippet_section: "Quanto peso o bebê ganha por mês?"
+  snippet_section: Quanto peso o bebê ganha por mês?
 sources:
-  - name: "OMS. WHO Child Growth Standards: Length/height-for-age, weight-for-age. 2006."
-    url: "https://www.who.int/tools/child-growth-standards/standards"
-  - name: "SBP. Manual de Avaliação Nutricional da Criança e do Adolescente. 2ª ed. atualizada. Departamento Científico de Nutrologia. 2021."
-    url: "https://www.sbp.com.br/fileadmin/user_upload/_22962e-ManAval_Nutricional_-_2Ed_Atualizada_SITE.pdf"
-  - name: "AAP. Amount and Schedule of Baby Formula Feedings. HealthyChildren.org."
-    url: "https://www.healthychildren.org/English/ages-stages/baby/formula-feeding/Pages/Amount-and-Schedule-of-Formula-Feedings.aspx"
+  - name: >-
+      OMS. WHO Child Growth Standards: Length/height-for-age, weight-for-age.
+      2006.
+    url: 'https://www.who.int/tools/child-growth-standards/standards'
+  - name: >-
+      SBP. Manual de Avaliação Nutricional da Criança e do Adolescente. 2ª ed.
+      atualizada. Departamento Científico de Nutrologia. 2021.
+    url: >-
+      https://www.sbp.com.br/fileadmin/user_upload/_22962e-ManAval_Nutricional_-_2Ed_Atualizada_SITE.pdf
+  - name: AAP. Amount and Schedule of Baby Formula Feedings. HealthyChildren.org.
+    url: >-
+      https://www.healthychildren.org/English/ages-stages/baby/formula-feeding/Pages/Amount-and-Schedule-of-Formula-Feedings.aspx
 images:
   hero: img20-1.png
   complementar: img20-2.png
+image_url: 'https://blog.yayababy.app/posts/ganho-peso-bebe/hero.webp'
+mid_image_url: 'https://blog.yayababy.app/posts/ganho-peso-bebe/mid.webp'
 ---
 
 "Será que meu bebê está engordando o suficiente?" é uma das perguntas mais frequentes nas primeiras semanas. A balança vira um termômetro emocional: subiu, alívio; estabilizou, preocupação. Entender o que é normal ajuda a separar ansiedade real de ansiedade sem fundamento.

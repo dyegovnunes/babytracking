@@ -1,7 +1,9 @@
 ---
-title: "Cólicas do Bebê: O Que São e O Que Alivia"
+title: 'Cólicas do Bebê: O Que São e O Que Alivia'
 slug: colicas-do-bebe
-description: "Entenda por que as cólicas acontecem, quanto tempo duram e o que realmente funciona para aliviar. Guia prático baseado em evidências."
+description: >-
+  Entenda por que as cólicas acontecem, quanto tempo duram e o que realmente
+  funciona para aliviar. Guia prático baseado em evidências.
 keywords:
   primaria: cólica bebê o que fazer
   secundarias:
@@ -26,14 +28,21 @@ seo:
   meta_chars: 140
   schema: FAQPage
   snippet_type: paragrafo
-  snippet_section: "O que são cólicas do bebê"
+  snippet_section: O que são cólicas do bebê
 sources:
-  - name: "SBP. Distúrbios Gastrointestinais Funcionais no Lactente. Departamento Científico de Gastroenterologia."
-    url: "https://www.sbp.com.br/fileadmin/user_upload/Manual_Disturbios_GI_funcionais_no_lactente_versao_site.pdf"
-  - name: "AAP. Colic Relief Tips for Parents. HealthyChildren.org."
-    url: "https://www.healthychildren.org/English/ages-stages/baby/crying-colic/Pages/Colic.aspx"
-  - name: "Zeevenhooven J, et al. The New Rome IV Criteria for Functional Gastrointestinal Disorders in Infants and Toddlers. Pediatr Gastroenterol Nutr. 2017."
-    url: "https://pubmed.ncbi.nlm.nih.gov/28401050/"
+  - name: >-
+      SBP. Distúrbios Gastrointestinais Funcionais no Lactente. Departamento
+      Científico de Gastroenterologia.
+    url: >-
+      https://www.sbp.com.br/fileadmin/user_upload/Manual_Disturbios_GI_funcionais_no_lactente_versao_site.pdf
+  - name: AAP. Colic Relief Tips for Parents. HealthyChildren.org.
+    url: >-
+      https://www.healthychildren.org/English/ages-stages/baby/crying-colic/Pages/Colic.aspx
+  - name: >-
+      Zeevenhooven J, et al. The New Rome IV Criteria for Functional
+      Gastrointestinal Disorders in Infants and Toddlers. Pediatr Gastroenterol
+      Nutr. 2017.
+    url: 'https://pubmed.ncbi.nlm.nih.gov/28401050/'
 images:
   hero: img6-1.png
   complementar: img6-2.png
@@ -47,12 +56,16 @@ related_slugs:
   - sono-do-recem-nascido
   - quando-levar-bebe-pronto-socorro
 schema: FAQPage
-meta_description: "Cólicas do bebê: o que são, quando começam, quanto duram e o que realmente funciona para aliviar. Guia prático baseado em evidências."
+meta_description: >-
+  Cólicas do bebê: o que são, quando começam, quanto duram e o que realmente
+  funciona para aliviar. Guia prático baseado em evidências.
 audience: parent
 affiliate_products:
-  - name: "Bolsa térmica para cólica"
+  - name: Bolsa térmica para cólica
     category: saude
 lead_magnet: false
+image_url: 'https://blog.yayababy.app/posts/colicas-do-bebe/hero.webp'
+mid_image_url: 'https://blog.yayababy.app/posts/colicas-do-bebe/mid.webp'
 ---
 
 Seu bebê chora inconsolavelmente no fim da tarde, todo dia, e nada parece resolver? Provavelmente são cólicas. É uma das fases mais desgastantes dos primeiros meses, mas passa.

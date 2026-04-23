@@ -1,8 +1,13 @@
 ---
-title: "Sono do Bebê de 3 a 6 Meses: Transição de Ciclos e Noites Melhores"
+title: 'Sono do Bebê de 3 a 6 Meses: Transição de Ciclos e Noites Melhores'
 slug: sono-bebe-3-6-meses
-description: "Guia completo sobre o sono do bebê de 3 a 6 meses: por que a regressão dos 4 meses acontece, janelas de sono, transição de sonecas e como melhorar as noites de forma gentil."
-meta_description: "Sono do bebê de 3 a 6 meses: regressão dos 4 meses, janelas de sono, transição de ciclos e dicas para noites melhores. Guia baseado em evidências."
+description: >-
+  Guia completo sobre o sono do bebê de 3 a 6 meses: por que a regressão dos 4
+  meses acontece, janelas de sono, transição de sonecas e como melhorar as
+  noites de forma gentil.
+meta_description: >-
+  Sono do bebê de 3 a 6 meses: regressão dos 4 meses, janelas de sono, transição
+  de ciclos e dicas para noites melhores. Guia baseado em evidências.
 keywords:
   primaria: bebê 4 meses não dorme
   secundarias:
@@ -41,19 +46,26 @@ seo:
   meta_chars: 145
   schema: Article
   snippet_type: featured-snippet
-  snippet_section: "Janelas de sono por mês"
+  snippet_section: Janelas de sono por mês
 sources:
-  - name: "AAP — Healthy Sleep Habits for Infants 4-7 Months"
-    url: "https://www.healthychildren.org/English/ages-stages/baby/sleep/Pages/default.aspx"
-  - name: "SBP. Síndrome da Morte Súbita do Lactente e Sono Seguro. Departamento Científico de Medicina do Sono. 2018."
-    url: "https://www.sbp.com.br/fileadmin/user_upload/20226d-DocCient_-_Sindrome_Morte_Subita_do_Lactente.pdf"
-  - name: "Mindell JA et al. A nightly bedtime routine: impact on sleep in young children. Sleep. 2009;32(5):599-606."
-    url: "https://pubmed.ncbi.nlm.nih.gov/19480226/"
+  - name: AAP — Healthy Sleep Habits for Infants 4-7 Months
+    url: >-
+      https://www.healthychildren.org/English/ages-stages/baby/sleep/Pages/default.aspx
+  - name: >-
+      SBP. Síndrome da Morte Súbita do Lactente e Sono Seguro. Departamento
+      Científico de Medicina do Sono. 2018.
+    url: >-
+      https://www.sbp.com.br/fileadmin/user_upload/20226d-DocCient_-_Sindrome_Morte_Subita_do_Lactente.pdf
+  - name: >-
+      Mindell JA et al. A nightly bedtime routine: impact on sleep in young
+      children. Sleep. 2009;32(5):599-606.
+    url: 'https://pubmed.ncbi.nlm.nih.gov/19480226/'
 images:
   hero: img41-1.png
   complementar: img41-2.png
-image_url: "https://blog.yayababy.app/posts/sono-bebe-3-6-meses/hero.png"
-image_alt: "Sono do Bebê de 3 a 6 Meses"
+image_url: 'https://blog.yayababy.app/posts/sono-bebe-3-6-meses/hero.webp'
+image_alt: Sono do Bebê de 3 a 6 Meses
+mid_image_url: 'https://blog.yayababy.app/posts/sono-bebe-3-6-meses/mid.webp'
 ---
 
 # Sono do Bebê de 3 a 6 Meses: Transição de Ciclos e Noites Melhores

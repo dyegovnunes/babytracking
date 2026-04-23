@@ -1,8 +1,13 @@
 ---
-title: "Ansiedade de Separação no Bebê: Quando Começa e Como Lidar"
+title: 'Ansiedade de Separação no Bebê: Quando Começa e Como Lidar'
 slug: ansiedade-separacao-bebe
-description: "Bebê chora quando você sai do quarto? Entenda o que é ansiedade de separação, quando começa, por que é um bom sinal e como lidar com essa fase. Baseado em AAP e SBP."
-meta_description: "Bebê chora quando a mãe sai? Saiba quando começa a ansiedade de separação, por que é marco positivo e como lidar. Guia com base na AAP e SBP."
+description: >-
+  Bebê chora quando você sai do quarto? Entenda o que é ansiedade de separação,
+  quando começa, por que é um bom sinal e como lidar com essa fase. Baseado em
+  AAP e SBP.
+meta_description: >-
+  Bebê chora quando a mãe sai? Saiba quando começa a ansiedade de separação, por
+  que é marco positivo e como lidar. Guia com base na AAP e SBP.
 keywords:
   primaria: bebê chora quando saio
   secundarias:
@@ -39,21 +44,29 @@ seo:
   meta_chars: 137
   schema: FAQPage
   snippet_type: parágrafo
-  snippet_section: "O que é ansiedade de separação no bebê?"
+  snippet_section: O que é ansiedade de separação no bebê?
 sources:
-  - name: "AAP. Emotional and Social Development: 8 to 12 Months. HealthyChildren.org."
-    url: "https://www.healthychildren.org/English/ages-stages/baby/Pages/Emotional-and-Social-Development-8-12-Months.aspx"
-  - name: "SBP. Cartilha de Desenvolvimento: dos 2 meses aos 5 anos. Departamento Científico de Pediatria do Desenvolvimento e Comportamento."
-    url: "https://www.sbp.com.br/fileadmin/user_upload/_24327e-Cartilha_de_Desenvolvimento-2m-5anos_compressed.pdf"
-  - name: "Bowlby, J. Attachment and Loss. Vol. 1: Attachment. Basic Books, 1969."
-    url: "https://pubmed.ncbi.nlm.nih.gov/7148988/"
-  - name: "AAP. Separation Anxiety. HealthyChildren.org."
-    url: "https://www.healthychildren.org/English/ages-stages/toddler/Pages/Soothing-Your-Childs-Separation-Anxiety.aspx"
+  - name: >-
+      AAP. Emotional and Social Development: 8 to 12 Months.
+      HealthyChildren.org.
+    url: >-
+      https://www.healthychildren.org/English/ages-stages/baby/Pages/Emotional-and-Social-Development-8-12-Months.aspx
+  - name: >-
+      SBP. Cartilha de Desenvolvimento: dos 2 meses aos 5 anos. Departamento
+      Científico de Pediatria do Desenvolvimento e Comportamento.
+    url: >-
+      https://www.sbp.com.br/fileadmin/user_upload/_24327e-Cartilha_de_Desenvolvimento-2m-5anos_compressed.pdf
+  - name: 'Bowlby, J. Attachment and Loss. Vol. 1: Attachment. Basic Books, 1969.'
+    url: 'https://pubmed.ncbi.nlm.nih.gov/7148988/'
+  - name: AAP. Separation Anxiety. HealthyChildren.org.
+    url: >-
+      https://www.healthychildren.org/English/ages-stages/toddler/Pages/Soothing-Your-Childs-Separation-Anxiety.aspx
 images:
   hero: img45-1.png
   complementar: img45-2.png
-image_url: "https://blog.yayababy.app/posts/ansiedade-separacao-bebe/hero.png"
-image_alt: "Ansiedade de Separação no Bebê"
+image_url: 'https://blog.yayababy.app/posts/ansiedade-separacao-bebe/hero.webp'
+image_alt: Ansiedade de Separação no Bebê
+mid_image_url: 'https://blog.yayababy.app/posts/ansiedade-separacao-bebe/mid.webp'
 ---
 
 Você sai do quarto por dois segundos e o choro começa. O bebê que antes ficava tranquilo no colo de qualquer pessoa agora só quer a mãe — ou o pai — e protesta com intensidade quando alguém tenta tirá-lo dali. Se essa cena virou rotina na sua casa, provavelmente o bebê entrou na fase de ansiedade de separação. E, por mais cansativa que seja, ela é uma excelente notícia sobre o desenvolvimento do seu filho.

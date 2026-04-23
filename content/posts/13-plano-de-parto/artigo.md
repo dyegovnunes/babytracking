@@ -1,12 +1,23 @@
 ---
-title: "Plano de Parto: Como Fazer o Seu Passo a Passo (com Modelo)"
+title: 'Plano de Parto: Como Fazer o Seu Passo a Passo (com Modelo)'
 slug: plano-de-parto
-description: "Guia completo com passo a passo para montar seu plano de parto. Inclui modelo pronto, o que colocar, como conversar com o obstetra e dicas da OMS."
-meta_description: "Aprenda como fazer seu plano de parto com modelo pronto. Passo a passo com o que incluir, como apresentar ao obstetra e recomendações da OMS."
+description: >-
+  Guia completo com passo a passo para montar seu plano de parto. Inclui modelo
+  pronto, o que colocar, como conversar com o obstetra e dicas da OMS.
+meta_description: >-
+  Aprenda como fazer seu plano de parto com modelo pronto. Passo a passo com o
+  que incluir, como apresentar ao obstetra e recomendações da OMS.
 keywords:
   primaria: plano de parto modelo
-  secundarias: [como fazer plano de parto, plano de parto o que colocar, plano de parto SUS, plano de parto humanizado]
-  long_tails: [plano de parto modelo pronto para imprimir, como preencher plano de parto, plano de parto cesárea o que colocar]
+  secundarias:
+    - como fazer plano de parto
+    - plano de parto o que colocar
+    - plano de parto SUS
+    - plano de parto humanizado
+  long_tails:
+    - plano de parto modelo pronto para imprimir
+    - como preencher plano de parto
+    - plano de parto cesárea o que colocar
 category: gestacao
 phase: gestante
 tone: especialista
@@ -30,15 +41,25 @@ seo:
   meta_chars: 142
   schema: HowTo
   snippet_type: how-to
-  snippet_section: "Passo a passo para montar seu plano de parto"
+  snippet_section: Passo a passo para montar seu plano de parto
 sources:
-  - "OMS — Recomendações sobre cuidados intraparto para uma experiência positiva de parto (2018): https://www.who.int/publications/i/item/9789241550215"
-  - "Ministério da Saúde — Caderneta da Gestante: https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/g/gravidez/publicacoes"
-  - "SBP — Assistência ao recém-nascido na sala de parto: https://www.sbp.com.br/especiais/reanimacao-neonatal/"
-  - "Lei nº 17.137/2019 (SP) — Direito ao plano de parto: https://www.al.sp.gov.br/legislacao/lei/17137"
+  - >-
+    OMS — Recomendações sobre cuidados intraparto para uma experiência positiva
+    de parto (2018): https://www.who.int/publications/i/item/9789241550215
+  - >-
+    Ministério da Saúde — Caderneta da Gestante:
+    https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/g/gravidez/publicacoes
+  - >-
+    SBP — Assistência ao recém-nascido na sala de parto:
+    https://www.sbp.com.br/especiais/reanimacao-neonatal/
+  - >-
+    Lei nº 17.137/2019 (SP) — Direito ao plano de parto:
+    https://www.al.sp.gov.br/legislacao/lei/17137
 images:
   hero: img13-1.png
   complementar: img13-2.png
+image_url: 'https://blog.yayababy.app/posts/plano-de-parto/hero.webp'
+mid_image_url: 'https://blog.yayababy.app/posts/plano-de-parto/mid.webp'
 ---
 
 # Plano de Parto: Como Fazer o Seu Passo a Passo

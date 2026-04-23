@@ -1,8 +1,13 @@
 ---
-title: "Dermatite de Fralda (Assadura): Prevenção, Tratamento e Quando Preocupar"
+title: 'Dermatite de Fralda (Assadura): Prevenção, Tratamento e Quando Preocupar'
 slug: dermatite-de-fralda
-description: "Assadura no bebê: o que causa, como prevenir, como tratar e quando é candidíase. Guia baseado na SBP e AAP com orientações práticas para o dia a dia."
-meta_description: "Assadura no bebê: causas, prevenção (troca frequente, creme de barreira), tratamento por tipo e quando procurar o pediatra. Guia SBP e AAP."
+description: >-
+  Assadura no bebê: o que causa, como prevenir, como tratar e quando é
+  candidíase. Guia baseado na SBP e AAP com orientações práticas para o dia a
+  dia.
+meta_description: >-
+  Assadura no bebê: causas, prevenção (troca frequente, creme de barreira),
+  tratamento por tipo e quando procurar o pediatra. Guia SBP e AAP.
 keywords:
   primaria: assadura bebê tratamento
   secundarias:
@@ -39,19 +44,26 @@ seo:
   meta_chars: 147
   schema: Article
   snippet_type: lista
-  snippet_section: "Como prevenir a dermatite de fralda"
+  snippet_section: Como prevenir a dermatite de fralda
 sources:
-  - name: "SBP. Dermatite da Área das Fraldas – Diagnóstico Diferencial. Departamento de Dermatologia."
-    url: "https://www.sbp.com.br/fileadmin/user_upload/publicacoes/Dermatologia-Dermatite-da-rea-das-fraldas.pdf"
-  - name: "AAP. Diaper Rash. HealthyChildren.org."
-    url: "https://www.healthychildren.org/English/ages-stages/baby/diapers-clothing/Pages/Diaper-Rash.aspx"
-  - name: "Heimall LM et al. Beginning at the Bottom: Evidence-Based Care of Diaper Dermatitis. MCN Am J Matern Child Nurs. 2012."
-    url: "https://pubmed.ncbi.nlm.nih.gov/22072018/"
+  - name: >-
+      SBP. Dermatite da Área das Fraldas – Diagnóstico Diferencial. Departamento
+      de Dermatologia.
+    url: >-
+      https://www.sbp.com.br/fileadmin/user_upload/publicacoes/Dermatologia-Dermatite-da-rea-das-fraldas.pdf
+  - name: AAP. Diaper Rash. HealthyChildren.org.
+    url: >-
+      https://www.healthychildren.org/English/ages-stages/baby/diapers-clothing/Pages/Diaper-Rash.aspx
+  - name: >-
+      Heimall LM et al. Beginning at the Bottom: Evidence-Based Care of Diaper
+      Dermatitis. MCN Am J Matern Child Nurs. 2012.
+    url: 'https://pubmed.ncbi.nlm.nih.gov/22072018/'
 images:
   hero: img38-1.png
   complementar: img38-2.png
-image_url: "https://blog.yayababy.app/posts/dermatite-de-fralda/hero.png"
-image_alt: "Dermatite de Fralda (Assadura)"
+image_url: 'https://blog.yayababy.app/posts/dermatite-de-fralda/hero.webp'
+image_alt: Dermatite de Fralda (Assadura)
+mid_image_url: 'https://blog.yayababy.app/posts/dermatite-de-fralda/mid.webp'
 ---
 
 A assadura é quase um rito de passagem: praticamente todo bebê terá pelo menos um episódio durante o período de uso de fraldas. Na maioria dos casos, é fácil de prevenir e de tratar. Mas quando a vermelhidão não melhora, se espalha ou muda de aspecto, pode ser algo além de uma assadura simples. Saber identificar o tipo faz diferença na conduta.

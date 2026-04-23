@@ -1,7 +1,9 @@
 ---
-title: "Regressão do Sono aos 4 Meses: O Que Acontece"
+title: 'Regressão do Sono aos 4 Meses: O Que Acontece'
 slug: regressao-do-sono-4-meses
-description: "Entenda por que o bebê que dormia bem voltou a acordar várias vezes. O que é a regressão do sono aos 4 meses e como lidar."
+description: >-
+  Entenda por que o bebê que dormia bem voltou a acordar várias vezes. O que é a
+  regressão do sono aos 4 meses e como lidar.
 keywords:
   primaria: regressão sono 4 meses
   secundarias:
@@ -26,14 +28,21 @@ seo:
   meta_chars: 139
   schema: Article
   snippet_type: paragrafo
-  snippet_section: "O que é a regressão do sono aos 4 meses"
+  snippet_section: O que é a regressão do sono aos 4 meses
 sources:
-  - name: "Mindell JA, Owens JA. A Clinical Guide to Pediatric Sleep. Lippincott. 2015."
-    url: "https://shop.lww.com/a-clinical-guide-to-pediatric-sleep/p/9781451193008"
-  - name: "SBP. Síndrome da Morte Súbita do Lactente e Sono Seguro. Departamento Científico de Medicina do Sono. 2018."
-    url: "https://www.sbp.com.br/fileadmin/user_upload/20226d-DocCient_-_Sindrome_Morte_Subita_do_Lactente.pdf"
-  - name: "Galland BC, et al. Normal sleep patterns in infants and children: a systematic review. Sleep Medicine Reviews. 2012."
-    url: "https://pubmed.ncbi.nlm.nih.gov/21784676/"
+  - name: >-
+      Mindell JA, Owens JA. A Clinical Guide to Pediatric Sleep. Lippincott.
+      2015.
+    url: 'https://shop.lww.com/a-clinical-guide-to-pediatric-sleep/p/9781451193008'
+  - name: >-
+      SBP. Síndrome da Morte Súbita do Lactente e Sono Seguro. Departamento
+      Científico de Medicina do Sono. 2018.
+    url: >-
+      https://www.sbp.com.br/fileadmin/user_upload/20226d-DocCient_-_Sindrome_Morte_Subita_do_Lactente.pdf
+  - name: >-
+      Galland BC, et al. Normal sleep patterns in infants and children: a
+      systematic review. Sleep Medicine Reviews. 2012.
+    url: 'https://pubmed.ncbi.nlm.nih.gov/21784676/'
 images:
   hero: img12-1.png
   complementar: img12-2.png
@@ -47,12 +56,16 @@ related_slugs:
   - rotina-recem-nascido
   - rotina-sono-bebe
 schema: FAQPage
-meta_description: "Regressão do sono aos 4 meses: por que acontece, quanto dura e o que fazer. Não é regressão — é evolução do cérebro."
+meta_description: >-
+  Regressão do sono aos 4 meses: por que acontece, quanto dura e o que fazer.
+  Não é regressão — é evolução do cérebro.
 audience: parent
 affiliate_products:
-  - name: "Saco de dormir"
+  - name: Saco de dormir
     category: sono
 lead_magnet: false
+image_url: 'https://blog.yayababy.app/posts/regressao-do-sono-4-meses/hero.webp'
+mid_image_url: 'https://blog.yayababy.app/posts/regressao-do-sono-4-meses/mid.webp'
 ---
 
 Seu bebê dormia blocos razoáveis e de repente voltou a acordar a cada 1-2 horas? Se ele tem entre 3,5 e 5 meses, provavelmente é a regressão do sono. Não é um retrocesso. É uma reorganização.

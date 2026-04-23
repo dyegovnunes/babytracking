@@ -83,6 +83,7 @@ interface FrontMatter {
   premium_teaser?: { title: string; body: string; cta_text?: string; cta_url?: string } | null
   image_url?: string
   image_alt?: string
+  mid_image_url?: string
   status?: 'draft' | 'review' | 'published' | 'archived'
 }
 
@@ -111,6 +112,7 @@ interface ExistingPost {
   premium_teaser: any
   image_url: string | null
   image_alt: string | null
+  mid_image_url: string | null
   status: string
   published_at: string | null
   post_number: number | null
@@ -310,6 +312,7 @@ function buildUpsertObject(post: ParsedPost, existing: ExistingPost | undefined)
     premium_teaser: pick(fm.premium_teaser, existing?.premium_teaser, null),
     image_url: pick(fm.image_url, existing?.image_url, null),
     image_alt: pick(fm.image_alt, existing?.image_alt, null),
+    mid_image_url: pick(fm.mid_image_url, existing?.mid_image_url, null),
     status: pick(fm.status, existing?.status as any, 'published'),
     published_at: existing?.published_at ?? now,
   }

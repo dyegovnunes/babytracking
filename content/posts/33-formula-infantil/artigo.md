@@ -1,8 +1,12 @@
 ---
-title: "Fórmula Infantil: Quando Usar, Como Escolher e Como Preparar"
+title: 'Fórmula Infantil: Quando Usar, Como Escolher e Como Preparar'
 slug: formula-infantil
-description: "Guia completo sobre fórmula infantil: indicações, tipos, como preparar com segurança, volumes por idade e alimentação mista. Sem culpa, com informação."
-meta_description: "Fórmula infantil: quando usar, tipos (partida, AR, HA), como preparar, volumes por idade e alimentação mista. Guia baseado na OMS e SBP."
+description: >-
+  Guia completo sobre fórmula infantil: indicações, tipos, como preparar com
+  segurança, volumes por idade e alimentação mista. Sem culpa, com informação.
+meta_description: >-
+  Fórmula infantil: quando usar, tipos (partida, AR, HA), como preparar, volumes
+  por idade e alimentação mista. Guia baseado na OMS e SBP.
 keywords:
   primaria: fórmula para bebê qual escolher
   secundarias:
@@ -40,21 +44,30 @@ seo:
   meta_chars: 142
   schema: Article
   snippet_type: lista
-  snippet_section: "Tipos de fórmula infantil"
+  snippet_section: Tipos de fórmula infantil
 sources:
-  - name: "OMS. Infant and young child feeding. Fact sheet. 2024."
-    url: "https://www.who.int/news-room/fact-sheets/detail/infant-and-young-child-feeding"
-  - name: "SBP. Guia Prático de Alimentação da Criança de 0 a 5 Anos. Departamentos de Nutrologia e Pediatria Ambulatorial. 2022."
-    url: "https://www.sbp.com.br/fileadmin/user_upload/23148cf-GPrat_Aliment_Crc_0-5_anos_SITE.pdf"
-  - name: "CODEX Alimentarius. Standard for Infant Formula and Formulas for Special Medical Purposes. CXS 72-1981."
-    url: "https://www.fao.org/fao-who-codexalimentarius/codex-texts/list-standards/en/"
-  - name: "AAP. Choosing an Infant Formula. HealthyChildren.org."
-    url: "https://www.healthychildren.org/English/ages-stages/baby/formula-feeding/Pages/Choosing-an-Infant-Formula.aspx"
+  - name: OMS. Infant and young child feeding. Fact sheet. 2024.
+    url: >-
+      https://www.who.int/news-room/fact-sheets/detail/infant-and-young-child-feeding
+  - name: >-
+      SBP. Guia Prático de Alimentação da Criança de 0 a 5 Anos. Departamentos
+      de Nutrologia e Pediatria Ambulatorial. 2022.
+    url: >-
+      https://www.sbp.com.br/fileadmin/user_upload/23148cf-GPrat_Aliment_Crc_0-5_anos_SITE.pdf
+  - name: >-
+      CODEX Alimentarius. Standard for Infant Formula and Formulas for Special
+      Medical Purposes. CXS 72-1981.
+    url: >-
+      https://www.fao.org/fao-who-codexalimentarius/codex-texts/list-standards/en/
+  - name: AAP. Choosing an Infant Formula. HealthyChildren.org.
+    url: >-
+      https://www.healthychildren.org/English/ages-stages/baby/formula-feeding/Pages/Choosing-an-Infant-Formula.aspx
 images:
   hero: img33-1.png
   complementar: img33-2.png
-image_url: "https://blog.yayababy.app/posts/formula-infantil/hero.png"
-image_alt: "Fórmula Infantil"
+image_url: 'https://blog.yayababy.app/posts/formula-infantil/hero.webp'
+image_alt: Fórmula Infantil
+mid_image_url: 'https://blog.yayababy.app/posts/formula-infantil/mid.webp'
 ---
 
 Nem toda família amamenta exclusivamente — e tudo bem. A fórmula infantil existe para garantir que o bebê receba os nutrientes necessários quando o leite materno não está disponível, não é suficiente ou quando a família faz essa escolha. Este guia traz informação prática, sem julgamento, sobre quando a fórmula é indicada, como escolher e como preparar com segurança.

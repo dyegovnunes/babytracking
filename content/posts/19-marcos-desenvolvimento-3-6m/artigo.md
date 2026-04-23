@@ -1,8 +1,13 @@
 ---
-title: "Marcos de Desenvolvimento: 3 a 6 Meses"
+title: 'Marcos de Desenvolvimento: 3 a 6 Meses'
 slug: marcos-desenvolvimento-3-6-meses
-description: "O que esperar do desenvolvimento do bebê de 3 a 6 meses. Marcos motores, cognitivos, sociais e de linguagem mês a mês, como estimular e quando conversar com o pediatra."
-meta_description: "Marcos de desenvolvimento de 3 a 6 meses: o que o bebê faz a cada mês, como estimular e quando conversar com o pediatra. Guia baseado na SBP e OMS."
+description: >-
+  O que esperar do desenvolvimento do bebê de 3 a 6 meses. Marcos motores,
+  cognitivos, sociais e de linguagem mês a mês, como estimular e quando
+  conversar com o pediatra.
+meta_description: >-
+  Marcos de desenvolvimento de 3 a 6 meses: o que o bebê faz a cada mês, como
+  estimular e quando conversar com o pediatra. Guia baseado na SBP e OMS.
 keywords:
   primaria: marcos desenvolvimento 3 meses
   secundarias:
@@ -44,17 +49,21 @@ seo:
   meta_chars: 149
   schema: Article
   snippet_type: lista
-  snippet_section: "3 meses"
+  snippet_section: 3 meses
 sources:
-  - name: "SBP. Caderneta da Criança — Marcos do Desenvolvimento. 2024."
-    url: "https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/s/saude-da-crianca/caderneta"
-  - name: "OMS. Child growth standards: Motor development milestones."
-    url: "https://www.who.int/tools/child-growth-standards/standards/motor-development-milestones"
-  - name: "CDC. Milestone Moments — Learn the Signs. Act Early. 2023."
-    url: "https://www.cdc.gov/act-early/milestones/index.html"
+  - name: SBP. Caderneta da Criança — Marcos do Desenvolvimento. 2024.
+    url: >-
+      https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/s/saude-da-crianca/caderneta
+  - name: 'OMS. Child growth standards: Motor development milestones.'
+    url: >-
+      https://www.who.int/tools/child-growth-standards/standards/motor-development-milestones
+  - name: CDC. Milestone Moments — Learn the Signs. Act Early. 2023.
+    url: 'https://www.cdc.gov/act-early/milestones/index.html'
 images:
   hero: img19-1.png
   complementar: img19-2.png
+image_url: 'https://blog.yayababy.app/posts/marcos-desenvolvimento-3-6-meses/hero.webp'
+mid_image_url: 'https://blog.yayababy.app/posts/marcos-desenvolvimento-3-6-meses/mid.webp'
 ---
 
 De 3 a 6 meses, o bebê passa por transformações visíveis quase toda semana. É a fase em que o sorriso social se firma, as mãos descobrem que existem, o corpo começa a rolar e os primeiros sons com intenção aparecem. Cada bebê tem seu ritmo, mas a ciência mapeia janelas de desenvolvimento que ajudam a entender o que é esperado e quando vale conversar com o pediatra.

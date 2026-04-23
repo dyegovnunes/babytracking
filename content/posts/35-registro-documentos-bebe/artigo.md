@@ -1,8 +1,13 @@
 ---
-title: "Registro do Bebê: Documentos, Prazos e Passo a Passo"
+title: 'Registro do Bebê: Documentos, Prazos e Passo a Passo'
 slug: registro-bebe-documentos
-description: "Certidão de nascimento, CPF, cartão SUS, plano de saúde: tudo o que você precisa providenciar nos primeiros dias do bebê, com prazos e documentos necessários."
-meta_description: "Registro do bebê: certidão de nascimento, CPF, SUS, plano de saúde. Passo a passo com prazos e documentos. Inclui casos especiais."
+description: >-
+  Certidão de nascimento, CPF, cartão SUS, plano de saúde: tudo o que você
+  precisa providenciar nos primeiros dias do bebê, com prazos e documentos
+  necessários.
+meta_description: >-
+  Registro do bebê: certidão de nascimento, CPF, SUS, plano de saúde. Passo a
+  passo com prazos e documentos. Inclui casos especiais.
 keywords:
   primaria: registrar bebê documentos
   secundarias:
@@ -39,19 +44,20 @@ seo:
   meta_chars: 144
   schema: HowTo
   snippet_type: lista
-  snippet_section: "Checklist completo de documentos"
+  snippet_section: Checklist completo de documentos
 sources:
-  - name: "Lei 6.015/73. Lei de Registros Públicos. Brasil."
-    url: "https://www.planalto.gov.br/ccivil_03/leis/l6015compilada.htm"
-  - name: "Lei 13.257/2016. Marco Legal da Primeira Infância. Brasil."
-    url: "https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2016/lei/l13257.htm"
-  - name: "Provimento CNJ 63/2017. Registro de nascimento."
-    url: "https://atos.cnj.jus.br/atos/detalhar/2525"
+  - name: Lei 6.015/73. Lei de Registros Públicos. Brasil.
+    url: 'https://www.planalto.gov.br/ccivil_03/leis/l6015compilada.htm'
+  - name: Lei 13.257/2016. Marco Legal da Primeira Infância. Brasil.
+    url: 'https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2016/lei/l13257.htm'
+  - name: Provimento CNJ 63/2017. Registro de nascimento.
+    url: 'https://atos.cnj.jus.br/atos/detalhar/2525'
 images:
   hero: img35-1.png
   complementar: img35-2.png
-image_url: "https://blog.yayababy.app/posts/registro-bebe-documentos/hero.png"
-image_alt: "Registro do Bebê"
+image_url: 'https://blog.yayababy.app/posts/registro-bebe-documentos/hero.webp'
+image_alt: Registro do Bebê
+mid_image_url: 'https://blog.yayababy.app/posts/registro-bebe-documentos/mid.webp'
 ---
 
 O bebê nasceu e, junto com a emoção, chega uma lista de burocracias. Certidão de nascimento, CPF, cartão do SUS, plano de saúde — cada documento tem seu prazo e seu caminho. A boa notícia é que o processo ficou mais simples nos últimos anos, e boa parte pode ser resolvida ainda na maternidade. Este guia organiza tudo em ordem de prioridade.

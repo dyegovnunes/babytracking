@@ -1,8 +1,13 @@
 ---
-title: "Rede de Apoio na Maternidade: Por Que Importa e Como Construir"
+title: 'Rede de Apoio na Maternidade: Por Que Importa e Como Construir'
 slug: rede-de-apoio-maternidade
-description: "Entenda por que a rede de apoio é essencial no pós-parto e aprenda a construir a sua: quem pode ajudar, como pedir ajuda e como organizar a divisão de tarefas."
-meta_description: "Rede de apoio na maternidade: por que importa, quem pode ajudar, como pedir e aceitar ajuda no pós-parto. Guia prático para construir a sua."
+description: >-
+  Entenda por que a rede de apoio é essencial no pós-parto e aprenda a construir
+  a sua: quem pode ajudar, como pedir ajuda e como organizar a divisão de
+  tarefas.
+meta_description: >-
+  Rede de apoio na maternidade: por que importa, quem pode ajudar, como pedir e
+  aceitar ajuda no pós-parto. Guia prático para construir a sua.
 keywords:
   primaria: rede de apoio maternidade
   secundarias:
@@ -42,19 +47,29 @@ seo:
   meta_chars: 144
   schema: Article
   snippet_type: lista
-  snippet_section: "Tipos de apoio que fazem diferença"
+  snippet_section: Tipos de apoio que fazem diferença
 sources:
-  - name: "OMS — Recommendations on Maternal and Newborn Care for a Positive Postnatal Experience"
-    url: "https://www.who.int/publications/i/item/9789240045989"
-  - name: "SBP. O papel do pediatra na prevenção do estresse tóxico na primeira infância. Departamento Científico de Pediatria do Desenvolvimento e Comportamento. 2017."
-    url: "https://www.sbp.com.br/fileadmin/user_upload/2017/06/Ped.-Desenv.-Comp.-MOrient-Papel-pediatra-prev-estresse.pdf"
-  - name: "AAP. Caring for Your Baby and Young Child: Birth to Age 5. HealthyChildren.org."
-    url: "https://www.healthychildren.org/English/family-life/family-dynamics/Pages/Support-for-Families.aspx"
+  - name: >-
+      OMS — Recommendations on Maternal and Newborn Care for a Positive
+      Postnatal Experience
+    url: 'https://www.who.int/publications/i/item/9789240045989'
+  - name: >-
+      SBP. O papel do pediatra na prevenção do estresse tóxico na primeira
+      infância. Departamento Científico de Pediatria do Desenvolvimento e
+      Comportamento. 2017.
+    url: >-
+      https://www.sbp.com.br/fileadmin/user_upload/2017/06/Ped.-Desenv.-Comp.-MOrient-Papel-pediatra-prev-estresse.pdf
+  - name: >-
+      AAP. Caring for Your Baby and Young Child: Birth to Age 5.
+      HealthyChildren.org.
+    url: >-
+      https://www.healthychildren.org/English/family-life/family-dynamics/Pages/Support-for-Families.aspx
 images:
   hero: img29-1.png
   complementar: img29-2.png
-image_url: "https://blog.yayababy.app/posts/rede-de-apoio-maternidade/hero.png"
-image_alt: "Rede de Apoio na Maternidade"
+image_url: 'https://blog.yayababy.app/posts/rede-de-apoio-maternidade/hero.webp'
+image_alt: Rede de Apoio na Maternidade
+mid_image_url: 'https://blog.yayababy.app/posts/rede-de-apoio-maternidade/mid.webp'
 ---
 
 "É preciso uma aldeia para criar uma criança." Esse provérbio africano nunca fez tanto sentido quanto nas primeiras semanas com um recém-nascido. O problema é que a maioria das famílias modernas não tem uma aldeia pronta — precisa construí-la.

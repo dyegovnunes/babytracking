@@ -1,8 +1,13 @@
 ---
-title: "O Que Muda no Corpo Depois do Parto: Guia Completo de Recuperação"
+title: 'O Que Muda no Corpo Depois do Parto: Guia Completo de Recuperação'
 slug: o-que-muda-no-corpo-depois-do-parto
-description: "Tudo o que acontece com o corpo no pós-parto: involução uterina, lóquios, recuperação perineal e cesariana, queda de cabelo, mudanças hormonais. Linha do tempo realista da recuperação."
-meta_description: "Saiba o que esperar do seu corpo no pós-parto: involução uterina, lóquios, recuperação da cesariana, assoalho pélvico e quando procurar ajuda."
+description: >-
+  Tudo o que acontece com o corpo no pós-parto: involução uterina, lóquios,
+  recuperação perineal e cesariana, queda de cabelo, mudanças hormonais. Linha
+  do tempo realista da recuperação.
+meta_description: >-
+  Saiba o que esperar do seu corpo no pós-parto: involução uterina, lóquios,
+  recuperação da cesariana, assoalho pélvico e quando procurar ajuda.
 keywords:
   primaria: pós-parto recuperação corpo
   secundarias:
@@ -45,21 +50,31 @@ seo:
   meta_chars: 153
   schema: Article
   snippet_type: paragrafo
-  snippet_section: "Como é a linha do tempo de recuperação pós-parto"
+  snippet_section: Como é a linha do tempo de recuperação pós-parto
 sources:
-  - name: "ACOG. Optimizing Postpartum Care. Committee Opinion No. 736. 2018."
-    url: "https://www.acog.org/clinical/clinical-guidance/committee-opinion/articles/2018/05/optimizing-postpartum-care"
-  - name: "SBP. Guia Prático de Aleitamento Materno. Departamento Científico de Aleitamento Materno. 2021."
-    url: "https://www.sbp.com.br/fileadmin/user_upload/24585d-GPRATICO-GuiaPratico_de_AM-Atualizacao.pdf"
-  - name: "OMS. WHO recommendations on postnatal care of the mother and newborn. 2013."
-    url: "https://www.who.int/publications/i/item/9789241506649"
-  - name: "Ministério da Saúde. Atenção ao Pré-natal de Baixo Risco — Cadernos de Atenção Básica nº 32. 2013."
-    url: "https://bvsms.saude.gov.br/bvs/publicacoes/cadernos_atencao_basica_32_prenatal.pdf"
+  - name: ACOG. Optimizing Postpartum Care. Committee Opinion No. 736. 2018.
+    url: >-
+      https://www.acog.org/clinical/clinical-guidance/committee-opinion/articles/2018/05/optimizing-postpartum-care
+  - name: >-
+      SBP. Guia Prático de Aleitamento Materno. Departamento Científico de
+      Aleitamento Materno. 2021.
+    url: >-
+      https://www.sbp.com.br/fileadmin/user_upload/24585d-GPRATICO-GuiaPratico_de_AM-Atualizacao.pdf
+  - name: >-
+      OMS. WHO recommendations on postnatal care of the mother and newborn.
+      2013.
+    url: 'https://www.who.int/publications/i/item/9789241506649'
+  - name: >-
+      Ministério da Saúde. Atenção ao Pré-natal de Baixo Risco — Cadernos de
+      Atenção Básica nº 32. 2013.
+    url: >-
+      https://bvsms.saude.gov.br/bvs/publicacoes/cadernos_atencao_basica_32_prenatal.pdf
 images:
   hero: img21-1.png
   complementar: img21-2.png
-image_url: "https://blog.yayababy.app/posts/o-que-muda-no-corpo-depois-do-parto/hero.png"
-image_alt: "O Que Muda no Corpo Depois do Parto"
+image_url: 'https://blog.yayababy.app/posts/o-que-muda-no-corpo-depois-do-parto/hero.webp'
+image_alt: O Que Muda no Corpo Depois do Parto
+mid_image_url: 'https://blog.yayababy.app/posts/o-que-muda-no-corpo-depois-do-parto/mid.webp'
 ---
 
 O parto aconteceu. O bebê está nos seus braços. E o seu corpo? Ele acabou de completar uma das transformações mais intensas que o organismo humano faz. Agora começa outra: a volta. Não é instantânea, não é linear, e nem sempre é como você imaginou. Este guia explica o que esperar, etapa por etapa.

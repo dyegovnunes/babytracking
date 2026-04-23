@@ -1,8 +1,13 @@
 ---
-title: "Balbucio, Risada e Primeiras Palavras: Marcos de Linguagem do Bebê"
+title: 'Balbucio, Risada e Primeiras Palavras: Marcos de Linguagem do Bebê'
 slug: marcos-linguagem-bebe
-description: "Do primeiro arrulho às primeiras palavras: entenda a timeline do desenvolvimento da linguagem do bebê, como estimular a fala em casa e os sinais de alerta. Baseado em AAP, SBP e ASHA."
-meta_description: "Quando o bebê fala? Timeline do balbucio às primeiras palavras, como estimular a fala e sinais de alerta. Guia baseado em AAP, SBP e ASHA."
+description: >-
+  Do primeiro arrulho às primeiras palavras: entenda a timeline do
+  desenvolvimento da linguagem do bebê, como estimular a fala em casa e os
+  sinais de alerta. Baseado em AAP, SBP e ASHA.
+meta_description: >-
+  Quando o bebê fala? Timeline do balbucio às primeiras palavras, como estimular
+  a fala e sinais de alerta. Guia baseado em AAP, SBP e ASHA.
 keywords:
   primaria: bebê quando começa falar
   secundarias:
@@ -37,19 +42,27 @@ seo:
   meta_chars: 138
   schema: Article
   snippet_type: lista
-  snippet_section: "Timeline: do nascimento aos 12 meses"
+  snippet_section: 'Timeline: do nascimento aos 12 meses'
 sources:
-  - name: "AAP. Hearing Language Development: 1 to 12 Months Making Sounds: Your Baby's Milestones. HealthyChildren.org."
-    url: "https://www.healthychildren.org/English/ages-stages/baby/Pages/Hearing-and-Making-Sounds.aspx"
-  - name: "SBP. Cartilha de Desenvolvimento: dos 2 meses aos 5 anos. Departamento Científico de Pediatria do Desenvolvimento e Comportamento."
-    url: "https://www.sbp.com.br/fileadmin/user_upload/_24327e-Cartilha_de_Desenvolvimento-2m-5anos_compressed.pdf"
-  - name: "ASHA. How Does Your Child Hear and Talk? Birth to One Year."
-    url: "https://www.asha.org/public/developmental-milestones/communication-milestones-birth-to-1-year/"
+  - name: >-
+      AAP. Hearing Language Development: 1 to 12 Months Making Sounds: Your
+      Baby's Milestones. HealthyChildren.org.
+    url: >-
+      https://www.healthychildren.org/English/ages-stages/baby/Pages/Hearing-and-Making-Sounds.aspx
+  - name: >-
+      SBP. Cartilha de Desenvolvimento: dos 2 meses aos 5 anos. Departamento
+      Científico de Pediatria do Desenvolvimento e Comportamento.
+    url: >-
+      https://www.sbp.com.br/fileadmin/user_upload/_24327e-Cartilha_de_Desenvolvimento-2m-5anos_compressed.pdf
+  - name: ASHA. How Does Your Child Hear and Talk? Birth to One Year.
+    url: >-
+      https://www.asha.org/public/developmental-milestones/communication-milestones-birth-to-1-year/
 images:
   hero: img47-1.png
   complementar: img47-2.png
-image_url: "https://blog.yayababy.app/posts/marcos-linguagem-bebe/hero.png"
-image_alt: "Balbucio, Risada e Primeiras Palavras"
+image_url: 'https://blog.yayababy.app/posts/marcos-linguagem-bebe/hero.webp'
+image_alt: 'Balbucio, Risada e Primeiras Palavras'
+mid_image_url: 'https://blog.yayababy.app/posts/marcos-linguagem-bebe/mid.webp'
 ---
 
 O primeiro sorriso social, o arrulho que parece uma conversa, aquele "da-da-da" que deixa todo mundo emocionado — o caminho até as primeiras palavras é uma aventura fascinante. E a boa notícia é que você, como pai ou mãe, é o principal "professor de línguas" do seu bebê, sem precisar de nenhum material especial. Só da sua voz.

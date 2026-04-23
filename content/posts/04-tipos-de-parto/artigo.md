@@ -1,7 +1,9 @@
 ---
-title: "Tipos de Parto: Normal, Cesárea e Humanizado"
+title: 'Tipos de Parto: Normal, Cesárea e Humanizado'
 slug: tipos-de-parto
-description: "Conheça as diferenças entre parto normal, cesárea e parto humanizado. Comparativo prático com recuperação, riscos e o que esperar de cada um."
+description: >-
+  Conheça as diferenças entre parto normal, cesárea e parto humanizado.
+  Comparativo prático com recuperação, riscos e o que esperar de cada um.
 keywords:
   primaria: tipos de parto
   secundarias:
@@ -27,16 +29,26 @@ seo:
   meta_chars: 148
   schema: Article
   snippet_type: tabela
-  snippet_section: "Comparativo entre os tipos de parto"
+  snippet_section: Comparativo entre os tipos de parto
 sources:
-  - name: "OMS. WHO recommendations: intrapartum care for a positive childbirth experience. 2018."
-    url: "https://www.who.int/publications/i/item/9789241550215"
-  - name: "SBP. A Importância do Pediatra na Assistência Perinatal. Departamento Científico de Neonatologia. 2023."
-    url: "https://www.sbp.com.br/departamentos/neonatologia/documentos-cientificos/"
-  - name: "Ministério da Saúde. Diretrizes de Atenção à Gestante: operação cesariana. 2016."
-    url: "https://bvsms.saude.gov.br/bvs/publicacoes/diretrizes_atencao_gestante_operacao_cesariana_relatorio_recomendacao.pdf"
-  - name: "ACOG. Safe Prevention of the Primary Cesarean Delivery. Obstetric Care Consensus. 2014."
-    url: "https://www.acog.org/clinical/clinical-guidance/obstetric-care-consensus/articles/2014/03/safe-prevention-of-the-primary-cesarean-delivery"
+  - name: >-
+      OMS. WHO recommendations: intrapartum care for a positive childbirth
+      experience. 2018.
+    url: 'https://www.who.int/publications/i/item/9789241550215'
+  - name: >-
+      SBP. A Importância do Pediatra na Assistência Perinatal. Departamento
+      Científico de Neonatologia. 2023.
+    url: 'https://www.sbp.com.br/departamentos/neonatologia/documentos-cientificos/'
+  - name: >-
+      Ministério da Saúde. Diretrizes de Atenção à Gestante: operação cesariana.
+      2016.
+    url: >-
+      https://bvsms.saude.gov.br/bvs/publicacoes/diretrizes_atencao_gestante_operacao_cesariana_relatorio_recomendacao.pdf
+  - name: >-
+      ACOG. Safe Prevention of the Primary Cesarean Delivery. Obstetric Care
+      Consensus. 2014.
+    url: >-
+      https://www.acog.org/clinical/clinical-guidance/obstetric-care-consensus/articles/2014/03/safe-prevention-of-the-primary-cesarean-delivery
 images:
   hero: img4-1.png
   complementar: img4-2.png
@@ -50,22 +62,25 @@ related_slugs:
   - amamentacao-o-que-saber-antes-do-bebe-nascer
   - enxoval-do-bebe-o-que-realmente-precisa
 schema: Article
-meta_description: "Tipos de parto: diferenças entre normal, cesárea e humanizado. Recuperação, riscos e como escolher com seu obstetra."
+meta_description: >-
+  Tipos de parto: diferenças entre normal, cesárea e humanizado. Recuperação,
+  riscos e como escolher com seu obstetra.
 audience: gestante
 affiliate_products:
   - tipo: sono
     nome: Buba Saco de Dormir Baby Super Soft Azul
     asin: B07RRLVKMX
-    url: https://www.amazon.com.br/dp/B07RRLVKMX?tag=yaya090-20
+    url: 'https://www.amazon.com.br/dp/B07RRLVKMX?tag=yaya090-20'
   - tipo: sono
     nome: Aparelho de Som Ruído Branco Útero Ninar Acalmar Bebê
     asin: B0D61ZTXG9
-    url: https://www.amazon.com.br/dp/B0D61ZTXG9?tag=yaya090-20
+    url: 'https://www.amazon.com.br/dp/B0D61ZTXG9?tag=yaya090-20'
   - tipo: sono
     nome: Máquina de Som Ruído Branco 20 Sons com Luz Noturna LED
     asin: B0FD3S8NPY
-    url: https://www.amazon.com.br/dp/B0FD3S8NPY?tag=yaya090-20
+    url: 'https://www.amazon.com.br/dp/B0FD3S8NPY?tag=yaya090-20'
 lead_magnet: false
+image_url: 'https://blog.yayababy.app/posts/tipos-de-parto/hero.webp'
 ---
 
 Cada tipo de parto tem indicações, vantagens e riscos. A melhor opção depende de fatores médicos e pessoais, e a decisão deve ser compartilhada entre você e seu obstetra.

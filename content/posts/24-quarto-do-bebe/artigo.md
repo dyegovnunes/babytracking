@@ -1,8 +1,12 @@
 ---
-title: "Quarto do Bebê: O Que É Essencial (e O Que É Marketing)"
+title: 'Quarto do Bebê: O Que É Essencial (e O Que É Marketing)'
 slug: quarto-do-bebe-o-que-e-essencial
-description: "O que você realmente precisa no quarto do bebê e o que é só marketing. Sono seguro, o essencial, o útil e o desnecessário — com base em evidências."
-meta_description: "Descubra o que é realmente essencial no quarto do bebê: sono seguro, itens necessários, o que é marketing e como montar o espaço com praticidade."
+description: >-
+  O que você realmente precisa no quarto do bebê e o que é só marketing. Sono
+  seguro, o essencial, o útil e o desnecessário — com base em evidências.
+meta_description: >-
+  Descubra o que é realmente essencial no quarto do bebê: sono seguro, itens
+  necessários, o que é marketing e como montar o espaço com praticidade.
 keywords:
   primaria: como montar quarto do bebê
   secundarias:
@@ -48,19 +52,24 @@ seo:
   meta_chars: 150
   schema: Article
   snippet_type: lista
-  snippet_section: "O que é realmente essencial"
+  snippet_section: O que é realmente essencial
 sources:
-  - name: "AAP. Safe Sleep: Recommendations. Updated 2022."
-    url: "https://publications.aap.org/pediatrics/article/150/1/e2022057990/188304/Sleep-Related-Infant-Deaths-Updated-2022"
-  - name: "SBP. Síndrome da Morte Súbita do Lactente e Sono Seguro. Departamento Científico de Medicina do Sono. 2018."
-    url: "https://www.sbp.com.br/fileadmin/user_upload/20226d-DocCient_-_Sindrome_Morte_Subita_do_Lactente.pdf"
-  - name: "CPSC. Safe Sleep for Babies."
-    url: "https://www.cpsc.gov/SafeSleep"
+  - name: 'AAP. Safe Sleep: Recommendations. Updated 2022.'
+    url: >-
+      https://publications.aap.org/pediatrics/article/150/1/e2022057990/188304/Sleep-Related-Infant-Deaths-Updated-2022
+  - name: >-
+      SBP. Síndrome da Morte Súbita do Lactente e Sono Seguro. Departamento
+      Científico de Medicina do Sono. 2018.
+    url: >-
+      https://www.sbp.com.br/fileadmin/user_upload/20226d-DocCient_-_Sindrome_Morte_Subita_do_Lactente.pdf
+  - name: CPSC. Safe Sleep for Babies.
+    url: 'https://www.cpsc.gov/SafeSleep'
 images:
   hero: img24-1.png
   complementar: img24-2.png
-image_url: "https://blog.yayababy.app/posts/quarto-do-bebe-o-que-e-essencial/hero.png"
-image_alt: "Quarto do Bebe: O Que E Essencial"
+image_url: 'https://blog.yayababy.app/posts/quarto-do-bebe-o-que-e-essencial/hero.webp'
+image_alt: 'Quarto do Bebe: O Que E Essencial'
+mid_image_url: 'https://blog.yayababy.app/posts/quarto-do-bebe-o-que-e-essencial/mid.webp'
 ---
 
 O Pinterest mostra quartos de bebê dignos de capa de revista. A realidade é que seu recém-nascido não se importa com a paleta de cores, o papel de parede botânico ou o móbile de macramê. Ele precisa de um lugar seguro para dormir. O resto é decisão sua — e boa parte é marketing.

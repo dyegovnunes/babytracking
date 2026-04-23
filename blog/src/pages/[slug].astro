@@ -73,6 +73,16 @@ const contentHtml = rawHtml
     '<a href="$1" target="_blank" rel="noopener noreferrer"',
   )
 
+// Injeta imagem do meio do artigo após o 2º H2
+const h2Matches = [...contentHtml.matchAll(/<h2[ >]/g)]
+let contentTop = contentHtml
+let contentBottom = ''
+if (post.mid_image_url && h2Matches.length >= 2) {
+  const splitIdx = h2Matches[1].index!
+  contentTop = contentHtml.slice(0, splitIdx)
+  contentBottom = contentHtml.slice(splitIdx)
+}
+
 // Extrai lista de headings H2 para o TOC
 const h2Headings: string[] = (cleanedMd.match(/^## (.+)$/gm) ?? []).map(
   (l) => l.replace(/^## /, '').trim(),
@@ -208,7 +218,18 @@ const faqLd = post.schema_type === 'FAQPage' ? faqJsonLd(post) : null
     <TableOfContents headings={h2Headings} />
 
     <!-- Corpo do artigo -->
-    <div class="prose-yaya" set:html={contentHtml} />
+    <div class="prose-yaya" set:html={contentTop} />
+    {post.mid_image_url && contentBottom && (
+      <div class="my-8 rounded-md overflow-hidden border border-yaya-cloud/10">
+        <img
+          src={post.mid_image_url}
+          alt={post.image_alt ?? post.title}
+          class="w-full object-cover"
+          loading="lazy"
+        />
+      </div>
+    )}
+    {contentBottom && <div class="prose-yaya" set:html={contentBottom} />}
 
     <!-- Produtos afiliados (só aparece quando o post tem produtos cadastrados) -->
     <AffiliateProducts products={post.affiliate_products ?? []} />

@@ -1,8 +1,13 @@
 ---
-title: "Rotina do Recém-Nascido: Existe?"
+title: 'Rotina do Recém-Nascido: Existe?'
 slug: rotina-recem-nascido
-description: "Dá para ter rotina com recém-nascido? Entenda a diferença entre rotina e horário fixo, como os padrões surgem naturalmente e o que esperar semana a semana."
-meta_description: "Rotina do recém-nascido: diferença entre rotina e horário fixo, como padrões surgem nas primeiras semanas e quando o bebê está pronto para mais estrutura."
+description: >-
+  Dá para ter rotina com recém-nascido? Entenda a diferença entre rotina e
+  horário fixo, como os padrões surgem naturalmente e o que esperar semana a
+  semana.
+meta_description: >-
+  Rotina do recém-nascido: diferença entre rotina e horário fixo, como padrões
+  surgem nas primeiras semanas e quando o bebê está pronto para mais estrutura.
 keywords:
   primaria: rotina recém-nascido
   secundarias:
@@ -40,15 +45,21 @@ seo:
   meta_chars: 156
   schema: FAQPage
   snippet_type: paragrafo
-  snippet_section: "É possível ter rotina com recém-nascido?"
+  snippet_section: É possível ter rotina com recém-nascido?
 sources:
-  - name: "AAP. Stages of Newborn Sleep. HealthyChildren.org."
-    url: "https://www.healthychildren.org/English/ages-stages/baby/sleep/Pages/phases-of-sleep.aspx"
-  - name: "SBP. Síndrome da Morte Súbita do Lactente e Sono Seguro. Departamento Científico de Medicina do Sono. 2018."
-    url: "https://www.sbp.com.br/fileadmin/user_upload/20226d-DocCient_-_Sindrome_Morte_Subita_do_Lactente.pdf"
+  - name: AAP. Stages of Newborn Sleep. HealthyChildren.org.
+    url: >-
+      https://www.healthychildren.org/English/ages-stages/baby/sleep/Pages/phases-of-sleep.aspx
+  - name: >-
+      SBP. Síndrome da Morte Súbita do Lactente e Sono Seguro. Departamento
+      Científico de Medicina do Sono. 2018.
+    url: >-
+      https://www.sbp.com.br/fileadmin/user_upload/20226d-DocCient_-_Sindrome_Morte_Subita_do_Lactente.pdf
 images:
   hero: img18-1.png
   complementar: img18-2.png
+image_url: 'https://blog.yayababy.app/posts/rotina-recem-nascido/hero.webp'
+mid_image_url: 'https://blog.yayababy.app/posts/rotina-recem-nascido/mid.webp'
 ---
 
 Você pesquisou "rotina recém-nascido" e encontrou tabelas com horários exatos de amamentação às 7h, soneca às 8h30, banho às 17h. Aí olhou pro seu bebê de duas semanas que mamou às 3h14, dormiu às 4h02 e acordou às 4h47. A conta não fecha.

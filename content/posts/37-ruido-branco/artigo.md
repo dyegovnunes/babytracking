@@ -1,8 +1,12 @@
 ---
-title: "Ruído Branco para Bebê: Funciona? Como Usar com Segurança"
+title: 'Ruído Branco para Bebê: Funciona? Como Usar com Segurança'
 slug: ruido-branco-bebe
-description: "Ruído branco ajuda o bebê a dormir? Entenda a ciência, o volume seguro (máx. 50 dB), tipos de som, quando usar e quando parar. Baseado em estudos e AAP."
-meta_description: "Ruído branco para bebê: funciona? Volume seguro, distância, tipos de som, quando usar e riscos. Guia com evidências da AAP e estudos."
+description: >-
+  Ruído branco ajuda o bebê a dormir? Entenda a ciência, o volume seguro (máx.
+  50 dB), tipos de som, quando usar e quando parar. Baseado em estudos e AAP.
+meta_description: >-
+  Ruído branco para bebê: funciona? Volume seguro, distância, tipos de som,
+  quando usar e riscos. Guia com evidências da AAP e estudos.
 keywords:
   primaria: ruído branco bebê dormir
   secundarias:
@@ -38,19 +42,28 @@ seo:
   meta_chars: 141
   schema: FAQPage
   snippet_type: parágrafo
-  snippet_section: "Qual o volume seguro de ruído branco para bebê?"
+  snippet_section: Qual o volume seguro de ruído branco para bebê?
 sources:
-  - name: "Hugh SC, Wolter NE, Engelen FA et al. Infant Sleep Machines and Hazardous Sound Pressure Levels. Pediatrics. 2014;133(4):677-681."
-    url: "https://publications.aap.org/pediatrics/article/133/4/677/32749/Infant-Sleep-Machines-and-Hazardous-Sound-Pressure"
-  - name: "SBP. Higiene do Sono. Documento Científico — Departamento de Medicina do Sono."
-    url: "https://www.sbp.com.br/fileadmin/user_upload/19807c-DocCient_-_Higiene_do_Sono.pdf"
-  - name: "Spencer JA et al. White noise and sleep induction. Archives of Disease in Childhood. 1990;65(1):135-137."
-    url: "https://adc.bmj.com/content/65/1/135"
+  - name: >-
+      Hugh SC, Wolter NE, Engelen FA et al. Infant Sleep Machines and Hazardous
+      Sound Pressure Levels. Pediatrics. 2014;133(4):677-681.
+    url: >-
+      https://publications.aap.org/pediatrics/article/133/4/677/32749/Infant-Sleep-Machines-and-Hazardous-Sound-Pressure
+  - name: >-
+      SBP. Higiene do Sono. Documento Científico — Departamento de Medicina do
+      Sono.
+    url: >-
+      https://www.sbp.com.br/fileadmin/user_upload/19807c-DocCient_-_Higiene_do_Sono.pdf
+  - name: >-
+      Spencer JA et al. White noise and sleep induction. Archives of Disease in
+      Childhood. 1990;65(1):135-137.
+    url: 'https://adc.bmj.com/content/65/1/135'
 images:
   hero: img37-1.png
   complementar: img37-2.png
-image_url: "https://blog.yayababy.app/posts/ruido-branco-bebe/hero.png"
-image_alt: "Ruído Branco para Bebê"
+image_url: 'https://blog.yayababy.app/posts/ruido-branco-bebe/hero.webp'
+image_alt: Ruído Branco para Bebê
+mid_image_url: 'https://blog.yayababy.app/posts/ruido-branco-bebe/mid.webp'
 ---
 
 O bebê que só dorme com barulho. O ventilador que virou peça obrigatória do quarto. O app de "sons para dormir" que roda a noite inteira. O ruído branco se popularizou entre famílias com recém-nascidos — e por bons motivos. Mas será que funciona de verdade? E mais importante: é seguro? Vamos ao que a ciência diz.

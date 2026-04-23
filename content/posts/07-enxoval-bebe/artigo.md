@@ -1,7 +1,9 @@
 ---
-title: "Enxoval do Bebê: O Que Realmente Precisa"
+title: 'Enxoval do Bebê: O Que Realmente Precisa'
 slug: enxoval-do-bebe-o-que-realmente-precisa
-description: "Lista prática de enxoval do bebê sem exageros. O que comprar, o que esperar para depois e o que é puro marketing."
+description: >-
+  Lista prática de enxoval do bebê sem exageros. O que comprar, o que esperar
+  para depois e o que é puro marketing.
 keywords:
   primaria: lista de enxoval do bebê
   secundarias:
@@ -26,12 +28,15 @@ seo:
   meta_chars: 138
   schema: HowTo
   snippet_type: lista
-  snippet_section: "Enxoval essencial do bebê"
+  snippet_section: Enxoval essencial do bebê
 sources:
-  - name: "SBP. Recomendações para alta hospitalar do Recém-Nascido Termo Potencialmente Saudável. Departamento Científico de Neonatologia. 2020."
-    url: "https://www.sbp.com.br/fileadmin/user_upload/22649c-DC_-_Recom_Alta_hospitalar_RN_TermoPotenc_Saudavel.pdf"
-  - name: "Ministério da Saúde. Caderneta da Gestante. 2023."
-    url: "https://bvsms.saude.gov.br/bvs/publicacoes/caderneta_gestante_8ed_rev.pdf"
+  - name: >-
+      SBP. Recomendações para alta hospitalar do Recém-Nascido Termo
+      Potencialmente Saudável. Departamento Científico de Neonatologia. 2020.
+    url: >-
+      https://www.sbp.com.br/fileadmin/user_upload/22649c-DC_-_Recom_Alta_hospitalar_RN_TermoPotenc_Saudavel.pdf
+  - name: Ministério da Saúde. Caderneta da Gestante. 2023.
+    url: 'https://bvsms.saude.gov.br/bvs/publicacoes/caderneta_gestante_8ed_rev.pdf'
 images:
   hero: img7-1.png
   complementar: img7-2.png
@@ -45,15 +50,21 @@ related_slugs:
   - cadeirinha-bebe-carro
   - fraldas-pano-vs-descartaveis
 schema: HowTo
-meta_description: "Lista de enxoval do bebê: o que realmente precisa, o que pode esperar e o que é marketing. Guia prático e econômico."
+meta_description: >-
+  Lista de enxoval do bebê: o que realmente precisa, o que pode esperar e o que
+  é marketing. Guia prático e econômico.
 audience: gestante
 affiliate_products:
-  - name: "Body manga longa"
+  - name: Body manga longa
     category: vestuario
-  - name: "Manta de algodão"
+  - name: Manta de algodão
     category: vestuario
 lead_magnet: true
 lead_magnet_type: checklist
+image_url: >-
+  https://blog.yayababy.app/posts/enxoval-do-bebe-o-que-realmente-precisa/hero.webp
+mid_image_url: >-
+  https://blog.yayababy.app/posts/enxoval-do-bebe-o-que-realmente-precisa/mid.webp
 ---
 
 O enxoval do bebê é um dos itens que mais gera ansiedade (e gasto desnecessário) na gestação. A verdade é que recém-nascido precisa de muito menos do que as lojas sugerem.

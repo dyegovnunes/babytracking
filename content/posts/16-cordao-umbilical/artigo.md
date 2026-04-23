@@ -1,12 +1,23 @@
 ---
-title: "Cordão Umbilical: Cuidados Essenciais Até Cair"
+title: 'Cordão Umbilical: Cuidados Essenciais Até Cair'
 slug: cordao-umbilical
-description: "Guia prático sobre cuidados com o coto umbilical do recém-nascido. Saiba o que é normal, quando cai, como limpar e sinais de alerta."
-meta_description: "Cuidados com o cordão umbilical do recém-nascido: como limpar, quando cai, o que é normal e sinais de infecção. Guia baseado na OMS e SBP."
+description: >-
+  Guia prático sobre cuidados com o coto umbilical do recém-nascido. Saiba o que
+  é normal, quando cai, como limpar e sinais de alerta.
+meta_description: >-
+  Cuidados com o cordão umbilical do recém-nascido: como limpar, quando cai, o
+  que é normal e sinais de infecção. Guia baseado na OMS e SBP.
 keywords:
   primaria: cuidados cordão umbilical recém-nascido
-  secundarias: [quando cai o cordão umbilical, cordão umbilical sangrou, coto umbilical cuidados, umbigo recém-nascido]
-  long_tails: [cordão umbilical do bebê sangrou é normal, como limpar o coto umbilical do bebê, coto umbilical com mau cheiro]
+  secundarias:
+    - quando cai o cordão umbilical
+    - cordão umbilical sangrou
+    - coto umbilical cuidados
+    - umbigo recém-nascido
+  long_tails:
+    - cordão umbilical do bebê sangrou é normal
+    - como limpar o coto umbilical do bebê
+    - coto umbilical com mau cheiro
 category: saude
 phase: 0-3m
 tone: especialista
@@ -29,15 +40,26 @@ seo:
   meta_chars: 132
   schema: Article
   snippet_type: featured-snippet
-  snippet_section: "Como cuidar do coto umbilical"
+  snippet_section: Como cuidar do coto umbilical
 sources:
-  - "OMS — WHO recommendations on postnatal care of the mother and newborn (2013): https://www.who.int/publications/i/item/9789241506649"
-  - "OMS — Recommendations on newborn health: Guidelines approved by WGAG (2017): https://cdn.who.int/media/docs/default-source/sexual-health/stillbirth/who-mca-17-07-eng.pdf"
-  - "SBP — Recomendações para alta hospitalar do Recém-Nascido Termo Potencialmente Saudável. Departamento Científico de Neonatologia. 2020: https://www.sbp.com.br/fileadmin/user_upload/22649c-DC_-_Recom_Alta_hospitalar_RN_TermoPotenc_Saudavel.pdf"
-  - "AAP — Umbilical Cord Care: https://www.healthychildren.org/English/ages-stages/baby/bathing-skin-care/Pages/Umbilical-Cord-Care.aspx"
+  - >-
+    OMS — WHO recommendations on postnatal care of the mother and newborn
+    (2013): https://www.who.int/publications/i/item/9789241506649
+  - >-
+    OMS — Recommendations on newborn health: Guidelines approved by WGAG (2017):
+    https://cdn.who.int/media/docs/default-source/sexual-health/stillbirth/who-mca-17-07-eng.pdf
+  - >-
+    SBP — Recomendações para alta hospitalar do Recém-Nascido Termo
+    Potencialmente Saudável. Departamento Científico de Neonatologia. 2020:
+    https://www.sbp.com.br/fileadmin/user_upload/22649c-DC_-_Recom_Alta_hospitalar_RN_TermoPotenc_Saudavel.pdf
+  - >-
+    AAP — Umbilical Cord Care:
+    https://www.healthychildren.org/English/ages-stages/baby/bathing-skin-care/Pages/Umbilical-Cord-Care.aspx
 images:
   hero: img16-1.png
   complementar: img16-2.png
+image_url: 'https://blog.yayababy.app/posts/cordao-umbilical/hero.webp'
+mid_image_url: 'https://blog.yayababy.app/posts/cordao-umbilical/mid.webp'
 ---
 
 # Cordão Umbilical: Cuidados Essenciais Até Cair

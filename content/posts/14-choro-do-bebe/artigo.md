@@ -1,12 +1,24 @@
 ---
-title: "Choro do Bebê: Tipos, O Que Significam e Como Acalmar"
+title: 'Choro do Bebê: Tipos, O Que Significam e Como Acalmar'
 slug: choro-do-bebe
-description: "Entenda por que o bebê chora, conheça os tipos de choro (fome, sono, desconforto, dor), aprenda técnicas para acalmar e saiba quando procurar o pediatra."
-meta_description: "Por que o bebê chora tanto? Conheça os tipos de choro, o que significam e técnicas comprovadas para acalmar. Saiba quando é hora de procurar o pediatra."
+description: >-
+  Entenda por que o bebê chora, conheça os tipos de choro (fome, sono,
+  desconforto, dor), aprenda técnicas para acalmar e saiba quando procurar o
+  pediatra.
+meta_description: >-
+  Por que o bebê chora tanto? Conheça os tipos de choro, o que significam e
+  técnicas comprovadas para acalmar. Saiba quando é hora de procurar o pediatra.
 keywords:
   primaria: por que bebê chora tanto
-  secundarias: [tipos de choro do bebê, como acalmar bebê chorando, bebê chora muito, choro do recém-nascido]
-  long_tails: [como saber se o bebê está com dor pelo choro, bebê chora sem parar o que fazer, diferença entre choro de fome e sono]
+  secundarias:
+    - tipos de choro do bebê
+    - como acalmar bebê chorando
+    - bebê chora muito
+    - choro do recém-nascido
+  long_tails:
+    - como saber se o bebê está com dor pelo choro
+    - bebê chora sem parar o que fazer
+    - diferença entre choro de fome e sono
 category: saude
 phase: 0-3m
 tone: misto
@@ -32,15 +44,25 @@ seo:
   meta_chars: 143
   schema: FAQPage
   snippet_type: faq
-  snippet_section: "Por que o bebê chora tanto?"
+  snippet_section: Por que o bebê chora tanto?
 sources:
-  - "AAP — Responding to Your Baby's Cries: https://www.healthychildren.org/English/ages-stages/baby/crying-colic/Pages/Responding-to-Your-Babys-Cries.aspx"
-  - "SBP — Cólica do lactente: https://www.sbp.com.br/pediatria-para-familias/primeira-infancia/colica-do-lactente/"
-  - "AAP — Abusive Head Trauma (Shaken Baby Syndrome): https://www.healthychildren.org/English/safety-prevention/at-home/Pages/Abusive-Head-Trauma-Shaken-Baby-Syndrome.aspx"
-  - "Barr RG — The Normal Crying Curve (PURPLE Crying): https://dontshake.org/purple-crying"
+  - >-
+    AAP — Responding to Your Baby's Cries:
+    https://www.healthychildren.org/English/ages-stages/baby/crying-colic/Pages/Responding-to-Your-Babys-Cries.aspx
+  - >-
+    SBP — Cólica do lactente:
+    https://www.sbp.com.br/pediatria-para-familias/primeira-infancia/colica-do-lactente/
+  - >-
+    AAP — Abusive Head Trauma (Shaken Baby Syndrome):
+    https://www.healthychildren.org/English/safety-prevention/at-home/Pages/Abusive-Head-Trauma-Shaken-Baby-Syndrome.aspx
+  - >-
+    Barr RG — The Normal Crying Curve (PURPLE Crying):
+    https://dontshake.org/purple-crying
 images:
   hero: img14-1.png
   complementar: img14-2.png
+image_url: 'https://blog.yayababy.app/posts/choro-do-bebe/hero.webp'
+mid_image_url: 'https://blog.yayababy.app/posts/choro-do-bebe/mid.webp'
 ---
 
 # Choro do Bebê: Tipos, O Que Significam e Como Acalmar

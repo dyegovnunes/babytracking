@@ -1,7 +1,9 @@
 ---
-title: "Sono do Recém-Nascido: O Que Esperar nos Primeiros Meses"
+title: 'Sono do Recém-Nascido: O Que Esperar nos Primeiros Meses'
 slug: sono-do-recem-nascido
-description: "Entenda como funciona o sono do recém-nascido, quantas horas ele dorme por dia e por que acorda tantas vezes. Guia prático e baseado em evidências."
+description: >-
+  Entenda como funciona o sono do recém-nascido, quantas horas ele dorme por dia
+  e por que acorda tantas vezes. Guia prático e baseado em evidências.
 keywords:
   primaria: sono do recém-nascido
   secundarias:
@@ -27,16 +29,25 @@ seo:
   meta_chars: 149
   schema: Article
   snippet_type: paragrafo
-  snippet_section: "Quantas horas um recém-nascido dorme por dia"
+  snippet_section: Quantas horas um recém-nascido dorme por dia
 sources:
-  - name: "AAP. Sleep-Related Infant Deaths: Updated 2022 Recommendations. Pediatrics. 2022."
-    url: "https://publications.aap.org/pediatrics/article/150/1/e2022057990/188304/Sleep-Related-Infant-Deaths-Updated-2022"
-  - name: "SBP. Síndrome da Morte Súbita do Lactente. Departamento Científico de Medicina do Sono. 2018."
-    url: "https://www.sbp.com.br/fileadmin/user_upload/20226d-DocCient_-_Sindrome_Morte_Subita_do_Lactente.pdf"
-  - name: "Mindell JA, Owens JA. A Clinical Guide to Pediatric Sleep. Lippincott. 2015."
-    url: "https://shop.lww.com/a-clinical-guide-to-pediatric-sleep/p/9781451193008"
-  - name: "National Sleep Foundation. Sleep Duration Recommendations. 2015."
-    url: "https://www.sleepfoundation.org/how-sleep-works/how-much-sleep-do-we-really-need"
+  - name: >-
+      AAP. Sleep-Related Infant Deaths: Updated 2022 Recommendations.
+      Pediatrics. 2022.
+    url: >-
+      https://publications.aap.org/pediatrics/article/150/1/e2022057990/188304/Sleep-Related-Infant-Deaths-Updated-2022
+  - name: >-
+      SBP. Síndrome da Morte Súbita do Lactente. Departamento Científico de
+      Medicina do Sono. 2018.
+    url: >-
+      https://www.sbp.com.br/fileadmin/user_upload/20226d-DocCient_-_Sindrome_Morte_Subita_do_Lactente.pdf
+  - name: >-
+      Mindell JA, Owens JA. A Clinical Guide to Pediatric Sleep. Lippincott.
+      2015.
+    url: 'https://shop.lww.com/a-clinical-guide-to-pediatric-sleep/p/9781451193008'
+  - name: National Sleep Foundation. Sleep Duration Recommendations. 2015.
+    url: >-
+      https://www.sleepfoundation.org/how-sleep-works/how-much-sleep-do-we-really-need
 images:
   hero: img3-1.png
   complementar: img3-2.png
@@ -50,30 +61,33 @@ related_slugs:
   - quarto-do-bebe-o-que-e-essencial
   - bebe-quando-comeca-rolar
 schema: Article
-meta_description: "Sono do recém-nascido: quanto dorme, ciclos, diferença dia e noite e como criar boas práticas desde o início. Guia baseado em evidências."
+meta_description: >-
+  Sono do recém-nascido: quanto dorme, ciclos, diferença dia e noite e como
+  criar boas práticas desde o início. Guia baseado em evidências.
 audience: parent
 affiliate_products:
   - tipo: amamentação
     nome: Lanolina HPA Lansinoh
     asin: B077PRNTMF
-    url: https://www.amazon.com.br/dp/B077PRNTMF?tag=yaya090-20
+    url: 'https://www.amazon.com.br/dp/B077PRNTMF?tag=yaya090-20'
   - tipo: amamentação
     nome: Pomada de Lanolina Medela Purelan 2.0 37g
     asin: B08HDGKR5B
-    url: https://www.amazon.com.br/dp/B08HDGKR5B?tag=yaya090-20
+    url: 'https://www.amazon.com.br/dp/B08HDGKR5B?tag=yaya090-20'
   - tipo: amamentação
     nome: Absorvente para Seios Ultimate Protection Lansinoh
     asin: B09CFTM4LP
-    url: https://www.amazon.com.br/dp/B09CFTM4LP?tag=yaya090-20
+    url: 'https://www.amazon.com.br/dp/B09CFTM4LP?tag=yaya090-20'
   - tipo: amamentação
     nome: Absorvente para Seios Cremer 30 unidades
     asin: B0CD8T9Q45
-    url: https://www.amazon.com.br/dp/B0CD8T9Q45?tag=yaya090-20
+    url: 'https://www.amazon.com.br/dp/B0CD8T9Q45?tag=yaya090-20'
   - tipo: amamentação
     nome: Kit Absorvente Descartável para Seios Avent 2 peças
     asin: B08L9LR8RT
-    url: https://www.amazon.com.br/dp/B08L9LR8RT?tag=yaya090-20
+    url: 'https://www.amazon.com.br/dp/B08L9LR8RT?tag=yaya090-20'
 lead_magnet: false
+image_url: 'https://blog.yayababy.app/posts/sono-do-recem-nascido/hero.webp'
 ---
 
 Se você está lendo isso às 3 da manhã com um bebê no colo, saiba que é normal. O sono do recém-nascido não funciona como o de um adulto, e entender o porquê ajuda a passar por essa fase com mais tranquilidade.

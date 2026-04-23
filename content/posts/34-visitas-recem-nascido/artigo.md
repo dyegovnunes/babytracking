@@ -1,8 +1,12 @@
 ---
-title: "Visitas ao Recém-Nascido: Como Gerenciar Sem Estresse"
+title: 'Visitas ao Recém-Nascido: Como Gerenciar Sem Estresse'
 slug: visitas-recem-nascido
-description: "Regras de higiene, como definir horários, scripts para recusar educadamente e como o parceiro pode ajudar a proteger o puerpério. Guia prático e sem culpa."
-meta_description: "Visitas ao recém-nascido: regras de higiene, como definir limites, quando receber e como o parceiro pode ajudar. Guia prático para o puerpério."
+description: >-
+  Regras de higiene, como definir horários, scripts para recusar educadamente e
+  como o parceiro pode ajudar a proteger o puerpério. Guia prático e sem culpa.
+meta_description: >-
+  Visitas ao recém-nascido: regras de higiene, como definir limites, quando
+  receber e como o parceiro pode ajudar. Guia prático para o puerpério.
 keywords:
   primaria: visitas recém-nascido regras
   secundarias:
@@ -38,17 +42,22 @@ seo:
   meta_chars: 147
   schema: Article
   snippet_type: lista
-  snippet_section: "Regras de higiene para visitas"
+  snippet_section: Regras de higiene para visitas
 sources:
-  - name: "SBP. Recomendações para alta hospitalar do Recém-Nascido Termo Potencialmente Saudável. Departamento Científico de Neonatologia. 2020."
-    url: "https://www.sbp.com.br/fileadmin/user_upload/22649c-DC_-_Recom_Alta_hospitalar_RN_TermoPotenc_Saudavel.pdf"
-  - name: "AAP. Caring for Your Newborn. HealthyChildren.org."
-    url: "https://www.healthychildren.org/English/ages-stages/baby/Pages/Bringing-Baby-Home.aspx"
+  - name: >-
+      SBP. Recomendações para alta hospitalar do Recém-Nascido Termo
+      Potencialmente Saudável. Departamento Científico de Neonatologia. 2020.
+    url: >-
+      https://www.sbp.com.br/fileadmin/user_upload/22649c-DC_-_Recom_Alta_hospitalar_RN_TermoPotenc_Saudavel.pdf
+  - name: AAP. Caring for Your Newborn. HealthyChildren.org.
+    url: >-
+      https://www.healthychildren.org/English/ages-stages/baby/Pages/Bringing-Baby-Home.aspx
 images:
   hero: img34-1.png
   complementar: img34-2.png
-image_url: "https://blog.yayababy.app/posts/visitas-recem-nascido/hero.png"
-image_alt: "Visitas ao Recém-Nascido"
+image_url: 'https://blog.yayababy.app/posts/visitas-recem-nascido/hero.webp'
+image_alt: Visitas ao Recém-Nascido
+mid_image_url: 'https://blog.yayababy.app/posts/visitas-recem-nascido/mid.webp'
 ---
 
 O bebê nasceu e o mundo inteiro quer conhecê-lo. Avós, tios, amigos, colegas de trabalho, vizinhos. A intenção é boa, mas o timing raramente é ideal. Os primeiros dias com um recém-nascido são de adaptação, recuperação e descoberta — e merecem proteção. Este guia ajuda a equilibrar o carinho das visitas com a necessidade real de tranquilidade.

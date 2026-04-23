@@ -1,7 +1,9 @@
 ---
-title: "Icterícia Neonatal: O Que É e Quando Preocupar"
+title: 'Icterícia Neonatal: O Que É e Quando Preocupar'
 slug: ictericia-neonatal
-description: "Entenda o que é icterícia no recém-nascido, por que acontece, como é tratada e quando procurar o pediatra. Guia claro e baseado em evidências."
+description: >-
+  Entenda o que é icterícia no recém-nascido, por que acontece, como é tratada e
+  quando procurar o pediatra. Guia claro e baseado em evidências.
 keywords:
   primaria: icterícia recém-nascido
   secundarias:
@@ -26,14 +28,20 @@ seo:
   meta_chars: 143
   schema: Article
   snippet_type: paragrafo
-  snippet_section: "O que é icterícia neonatal"
+  snippet_section: O que é icterícia neonatal
 sources:
-  - name: "SBP. Icterícia no Recém-Nascido. Departamento Científico de Neonatologia. 2012."
-    url: "https://www.sbp.com.br/fileadmin/user_upload/pdfs/Ictericia_sem-DeptoNeoSBP-11nov12.pdf"
-  - name: "AAP. Clinical Practice Guideline: Management of Hyperbilirubinemia in the Newborn. Pediatrics. 2022."
-    url: "https://publications.aap.org/pediatrics/article/150/3/e2022058859/188726/Clinical-Practice-Guideline-Revision-Management-of"
-  - name: "OMS. WHO recommendations on newborn health. 2017."
-    url: "https://www.who.int/publications/i/item/WHO-MCA-17.07"
+  - name: >-
+      SBP. Icterícia no Recém-Nascido. Departamento Científico de Neonatologia.
+      2012.
+    url: >-
+      https://www.sbp.com.br/fileadmin/user_upload/pdfs/Ictericia_sem-DeptoNeoSBP-11nov12.pdf
+  - name: >-
+      AAP. Clinical Practice Guideline: Management of Hyperbilirubinemia in the
+      Newborn. Pediatrics. 2022.
+    url: >-
+      https://publications.aap.org/pediatrics/article/150/3/e2022058859/188726/Clinical-Practice-Guideline-Revision-Management-of
+  - name: OMS. WHO recommendations on newborn health. 2017.
+    url: 'https://www.who.int/publications/i/item/WHO-MCA-17.07'
 images:
   hero: img11-1.png
   complementar: img11-2.png
@@ -47,10 +55,14 @@ related_slugs:
   - quando-levar-bebe-pronto-socorro
   - testes-do-recem-nascido
 schema: FAQPage
-meta_description: "Icterícia neonatal: o que é, por que acontece, tipos de tratamento e quando preocupar. Guia baseado na SBP e AAP."
+meta_description: >-
+  Icterícia neonatal: o que é, por que acontece, tipos de tratamento e quando
+  preocupar. Guia baseado na SBP e AAP.
 audience: parent
 affiliate_products: []
 lead_magnet: false
+image_url: 'https://blog.yayababy.app/posts/ictericia-neonatal/hero.webp'
+mid_image_url: 'https://blog.yayababy.app/posts/ictericia-neonatal/mid.webp'
 ---
 
 Se o seu bebê ficou com a pele ou os olhinhos amarelados nos primeiros dias, provavelmente é icterícia neonatal. Acontece em cerca de 60% dos recém-nascidos a termo e 80% dos prematuros. Na maioria dos casos, é benigna e resolve sozinha.

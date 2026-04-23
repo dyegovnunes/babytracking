@@ -1,7 +1,9 @@
 ---
-title: "Primeiros Dias em Casa com o Recém-Nascido"
+title: Primeiros Dias em Casa com o Recém-Nascido
 slug: primeiros-dias-em-casa-com-recem-nascido
-description: "O que esperar dos primeiros dias em casa com o bebê. Rotina, sono, amamentação, visitas e como sobreviver sem surtar."
+description: >-
+  O que esperar dos primeiros dias em casa com o bebê. Rotina, sono,
+  amamentação, visitas e como sobreviver sem surtar.
 keywords:
   primaria: primeiros dias do recém-nascido em casa
   secundarias:
@@ -26,14 +28,22 @@ seo:
   meta_chars: 142
   schema: Article
   snippet_type: paragrafo
-  snippet_section: "O que esperar dos primeiros dias"
+  snippet_section: O que esperar dos primeiros dias
 sources:
-  - name: "SBP. Recomendações para alta hospitalar do Recém-Nascido Termo Potencialmente Saudável. Departamento Científico de Neonatologia. 2020."
-    url: "https://www.sbp.com.br/fileadmin/user_upload/22649c-DC_-_Recom_Alta_hospitalar_RN_TermoPotenc_Saudavel.pdf"
-  - name: "AAP. Bringing Baby Home: What to Do Before Leaving the Hospital. HealthyChildren.org."
-    url: "https://www.healthychildren.org/English/ages-stages/prenatal/delivery-beyond/Pages/bringing-baby-home-what-to-do-before-leaving-the-hospital.aspx"
-  - name: "OMS. WHO recommendations on postnatal care of the mother and newborn. 2013."
-    url: "https://www.who.int/publications/i/item/9789241506649"
+  - name: >-
+      SBP. Recomendações para alta hospitalar do Recém-Nascido Termo
+      Potencialmente Saudável. Departamento Científico de Neonatologia. 2020.
+    url: >-
+      https://www.sbp.com.br/fileadmin/user_upload/22649c-DC_-_Recom_Alta_hospitalar_RN_TermoPotenc_Saudavel.pdf
+  - name: >-
+      AAP. Bringing Baby Home: What to Do Before Leaving the Hospital.
+      HealthyChildren.org.
+    url: >-
+      https://www.healthychildren.org/English/ages-stages/prenatal/delivery-beyond/Pages/bringing-baby-home-what-to-do-before-leaving-the-hospital.aspx
+  - name: >-
+      OMS. WHO recommendations on postnatal care of the mother and newborn.
+      2013.
+    url: 'https://www.who.int/publications/i/item/9789241506649'
 images:
   hero: img10-1.png
   complementar: img10-2.png
@@ -48,10 +58,16 @@ related_slugs:
   - sono-do-recem-nascido
   - amamentacao-sob-demanda
 schema: Article
-meta_description: "Primeiros dias em casa com o recém-nascido: o que é normal, como se organizar, visitas e quando ligar para o pediatra."
+meta_description: >-
+  Primeiros dias em casa com o recém-nascido: o que é normal, como se organizar,
+  visitas e quando ligar para o pediatra.
 audience: both
 affiliate_products: []
 lead_magnet: false
+image_url: >-
+  https://blog.yayababy.app/posts/primeiros-dias-em-casa-com-recem-nascido/hero.webp
+mid_image_url: >-
+  https://blog.yayababy.app/posts/primeiros-dias-em-casa-com-recem-nascido/mid.webp
 ---
 
 Você saiu da maternidade, chegou em casa e de repente percebeu: "e agora?". É normal sentir medo, insegurança e até vontade de ligar pro hospital perguntando se pode voltar. Os primeiros dias são caóticos, mas você vai dar conta.

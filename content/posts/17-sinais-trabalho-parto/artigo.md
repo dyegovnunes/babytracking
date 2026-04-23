@@ -1,8 +1,12 @@
 ---
-title: "Sinais de Trabalho de Parto: Como Reconhecer e Quando Ir ao Hospital"
+title: 'Sinais de Trabalho de Parto: Como Reconhecer e Quando Ir ao Hospital'
 slug: sinais-trabalho-de-parto
-description: "Aprenda a diferenciar contrações de treinamento do trabalho de parto real. Conheça os sinais, a regra 5-1-1, quando ir ao hospital e o que levar."
-meta_description: "Sinais de trabalho de parto: contrações regulares, perda do tampão, ruptura da bolsa. Saiba diferenciar pródromo do parto real e quando ir ao hospital."
+description: >-
+  Aprenda a diferenciar contrações de treinamento do trabalho de parto real.
+  Conheça os sinais, a regra 5-1-1, quando ir ao hospital e o que levar.
+meta_description: >-
+  Sinais de trabalho de parto: contrações regulares, perda do tampão, ruptura da
+  bolsa. Saiba diferenciar pródromo do parto real e quando ir ao hospital.
 keywords:
   primaria: sinais de trabalho de parto
   secundarias:
@@ -43,17 +47,22 @@ seo:
   meta_chars: 155
   schema: FAQPage
   snippet_type: lista
-  snippet_section: "Quais são os sinais de trabalho de parto?"
+  snippet_section: Quais são os sinais de trabalho de parto?
 sources:
-  - name: "ACOG. How to Tell When Labor Begins. 2020."
-    url: "https://www.acog.org/womens-health/faqs/how-to-tell-when-labor-begins"
-  - name: "SBP/Febrasgo. Assistência ao Trabalho de Parto. 2021."
-    url: "https://www.febrasgo.org.br/pt/noticias/item/717-recomendacoes-febrasgo-parte-ii-cuidados-gerais-na-assistencia-ao-parto-assistencia-ao-nascimento-baseado-em-evidencias-e-no-respeito"
-  - name: "OMS. WHO recommendations: intrapartum care for a positive childbirth experience. 2018."
-    url: "https://www.who.int/publications/i/item/9789241550215"
+  - name: ACOG. How to Tell When Labor Begins. 2020.
+    url: 'https://www.acog.org/womens-health/faqs/how-to-tell-when-labor-begins'
+  - name: SBP/Febrasgo. Assistência ao Trabalho de Parto. 2021.
+    url: >-
+      https://www.febrasgo.org.br/pt/noticias/item/717-recomendacoes-febrasgo-parte-ii-cuidados-gerais-na-assistencia-ao-parto-assistencia-ao-nascimento-baseado-em-evidencias-e-no-respeito
+  - name: >-
+      OMS. WHO recommendations: intrapartum care for a positive childbirth
+      experience. 2018.
+    url: 'https://www.who.int/publications/i/item/9789241550215'
 images:
   hero: img17-1.png
   complementar: img17-2.png
+image_url: 'https://blog.yayababy.app/posts/sinais-trabalho-de-parto/hero.webp'
+mid_image_url: 'https://blog.yayababy.app/posts/sinais-trabalho-de-parto/mid.webp'
 ---
 
 As últimas semanas de gestação trazem uma pergunta constante: "será que é agora?". Cada pontada, pressão ou desconforto vira motivo de alerta. A boa notícia é que o corpo dá sinais claros quando o trabalho de parto real começa, e aprender a identificá-los evita idas desnecessárias ao hospital e também atrasos quando realmente for a hora.

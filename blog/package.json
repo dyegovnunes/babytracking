@@ -7,7 +7,9 @@
     "build": "astro build",
     "preview": "astro preview",
     "publish:content": "tsx scripts/publish-content.ts",
-    "publish:content:execute": "tsx scripts/publish-content.ts --execute"
+    "publish:content:execute": "tsx scripts/publish-content.ts --execute",
+    "optimize:images": "tsx scripts/optimize-images.ts",
+    "optimize:images:dry": "tsx scripts/optimize-images.ts --dry"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.2.1",
@@ -20,6 +22,7 @@
   },
   "devDependencies": {
     "dotenv": "^16.4.5",
+    "sharp": "^0.33.5",
     "tsx": "^4.19.0"
   }
 }

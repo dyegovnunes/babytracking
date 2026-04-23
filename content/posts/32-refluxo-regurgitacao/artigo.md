@@ -1,8 +1,13 @@
 ---
-title: "Bebê Regurgita Muito: Refluxo, Quando É Normal e Quando Preocupar"
+title: 'Bebê Regurgita Muito: Refluxo, Quando É Normal e Quando Preocupar'
 slug: refluxo-regurgitacao-bebe
-description: "Seu bebê regurgita após mamar? Entenda a diferença entre golfada e vômito, quando o refluxo é fisiológico e quando requer atenção médica. Baseado em SBP e AAP."
-meta_description: "Refluxo no bebê: golfada é normal? Diferença de vômito, sinais de alerta, posições após mamar e quando tratar. Guia com base na SBP e AAP."
+description: >-
+  Seu bebê regurgita após mamar? Entenda a diferença entre golfada e vômito,
+  quando o refluxo é fisiológico e quando requer atenção médica. Baseado em SBP
+  e AAP.
+meta_description: >-
+  Refluxo no bebê: golfada é normal? Diferença de vômito, sinais de alerta,
+  posições após mamar e quando tratar. Guia com base na SBP e AAP.
 keywords:
   primaria: refluxo bebê recém-nascido
   secundarias:
@@ -39,19 +44,27 @@ seo:
   meta_chars: 139
   schema: FAQPage
   snippet_type: parágrafo
-  snippet_section: "Golfada e vômito são a mesma coisa?"
+  snippet_section: Golfada e vômito são a mesma coisa?
 sources:
-  - name: "SBP. Regurgitação do Lactente (RGE Fisiológico) e Doença do RGE em Pediatria. Documento Científico."
-    url: "https://www.sbp.com.br/fileadmin/user_upload/20031c-DocCient_-_Regurg_lactente_RGEF_e_RGE.pdf"
-  - name: "AAP. Gastroesophageal Reflux in Infants. HealthyChildren.org."
-    url: "https://www.healthychildren.org/English/health-issues/conditions/abdominal/Pages/GERD-Reflux.aspx"
-  - name: "NASPGHAN/ESPGHAN. Pediatric Gastroesophageal Reflux Clinical Practice Guidelines. JPGN, 2018."
-    url: "https://journals.lww.com/jpgn/fulltext/2018/03000/Pediatric_Gastroesophageal_Reflux_Clinical.33.aspx"
+  - name: >-
+      SBP. Regurgitação do Lactente (RGE Fisiológico) e Doença do RGE em
+      Pediatria. Documento Científico.
+    url: >-
+      https://www.sbp.com.br/fileadmin/user_upload/20031c-DocCient_-_Regurg_lactente_RGEF_e_RGE.pdf
+  - name: AAP. Gastroesophageal Reflux in Infants. HealthyChildren.org.
+    url: >-
+      https://www.healthychildren.org/English/health-issues/conditions/abdominal/Pages/GERD-Reflux.aspx
+  - name: >-
+      NASPGHAN/ESPGHAN. Pediatric Gastroesophageal Reflux Clinical Practice
+      Guidelines. JPGN, 2018.
+    url: >-
+      https://journals.lww.com/jpgn/fulltext/2018/03000/Pediatric_Gastroesophageal_Reflux_Clinical.33.aspx
 images:
   hero: img32-1.png
   complementar: img32-2.png
-image_url: "https://blog.yayababy.app/posts/refluxo-regurgitacao-bebe/hero.png"
-image_alt: "Bebê Regurgita Muito"
+image_url: 'https://blog.yayababy.app/posts/refluxo-regurgitacao-bebe/hero.webp'
+image_alt: Bebê Regurgita Muito
+mid_image_url: 'https://blog.yayababy.app/posts/refluxo-regurgitacao-bebe/mid.webp'
 ---
 
 Ver o bebê regurgitar leite após mamar é uma das cenas mais comuns das primeiras semanas — e uma das que mais causam ansiedade. A roupa suja de leite, o lençol molhado e a dúvida: "isso é normal ou preciso me preocupar?" A resposta curta é que, na maioria dos casos, a golfada é fisiológica e não indica nenhum problema. Mas entender os limites entre o normal e o patológico faz toda a diferença.

@@ -1,8 +1,12 @@
 ---
-title: "Licença-Maternidade: Direitos, Prazos e Como Se Organizar"
+title: 'Licença-Maternidade: Direitos, Prazos e Como Se Organizar'
 slug: licenca-maternidade-direitos-organizacao
-description: "Tudo sobre licença-maternidade no Brasil: regras da CLT, INSS, MEI, Empresa Cidadã, estabilidade e como se planejar antes do bebê chegar."
-meta_description: "Licença-maternidade 2026: prazos, regras CLT, MEI, Empresa Cidadã, salário INSS e como se organizar. Guia completo dos seus direitos."
+description: >-
+  Tudo sobre licença-maternidade no Brasil: regras da CLT, INSS, MEI, Empresa
+  Cidadã, estabilidade e como se planejar antes do bebê chegar.
+meta_description: >-
+  Licença-maternidade 2026: prazos, regras CLT, MEI, Empresa Cidadã, salário
+  INSS e como se organizar. Guia completo dos seus direitos.
 keywords:
   primaria: licença maternidade 2026 regras
   secundarias:
@@ -42,21 +46,25 @@ seo:
   meta_chars: 142
   schema: FAQPage
   snippet_type: faq
-  snippet_section: "Quanto tempo dura a licença-maternidade?"
+  snippet_section: Quanto tempo dura a licença-maternidade?
 sources:
-  - name: "CLT, Art. 392 — Da Proteção à Maternidade"
-    url: "https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm"
-  - name: "Lei 11.770/2008 — Programa Empresa Cidadã"
-    url: "https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2008/lei/l11770.htm"
-  - name: "INSS — Salário-Maternidade"
-    url: "https://www.gov.br/inss/pt-br/direitos-e-deveres/salario-maternidade/salario-maternidade"
-  - name: "Constituição Federal, Art. 7º, XVIII"
-    url: "https://www.planalto.gov.br/ccivil_03/constituicao/constituicao.htm"
+  - name: 'CLT, Art. 392 — Da Proteção à Maternidade'
+    url: 'https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm'
+  - name: Lei 11.770/2008 — Programa Empresa Cidadã
+    url: 'https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2008/lei/l11770.htm'
+  - name: INSS — Salário-Maternidade
+    url: >-
+      https://www.gov.br/inss/pt-br/direitos-e-deveres/salario-maternidade/salario-maternidade
+  - name: 'Constituição Federal, Art. 7º, XVIII'
+    url: 'https://www.planalto.gov.br/ccivil_03/constituicao/constituicao.htm'
 images:
   hero: img25-1.png
   complementar: img25-2.png
-image_url: "https://blog.yayababy.app/posts/licenca-maternidade-direitos-organizacao/hero.png"
-image_alt: "Licenca-Maternidade: Direitos e Organizacao"
+image_url: >-
+  https://blog.yayababy.app/posts/licenca-maternidade-direitos-organizacao/hero.webp
+image_alt: 'Licenca-Maternidade: Direitos e Organizacao'
+mid_image_url: >-
+  https://blog.yayababy.app/posts/licenca-maternidade-direitos-organizacao/mid.webp
 ---
 
 Descobrir que está grávida traz uma avalanche de emoções — e também de dúvidas práticas. Uma das primeiras costuma ser: "como funciona a licença-maternidade?". A boa notícia é que a legislação brasileira garante proteções importantes. A parte complicada é que as regras mudam conforme o tipo de vínculo, e nem sempre o RH explica tudo. Vamos descomplicar.

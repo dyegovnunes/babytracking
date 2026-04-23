@@ -1,8 +1,13 @@
 ---
-title: "Voltar ao Trabalho Após a Licença: Amamentação, Rotina e Emoções"
+title: 'Voltar ao Trabalho Após a Licença: Amamentação, Rotina e Emoções'
 slug: voltar-trabalho-amamentacao
-description: "Guia prático para a volta ao trabalho após a licença-maternidade: como manter a amamentação, organizar a rotina, direitos pela CLT e como lidar com a culpa. Baseado em SBP, OMS e CLT."
-meta_description: "Voltar ao trabalho e amamentar: direitos CLT, como ordenhar, manter o leite e organizar a rotina. Guia prático baseado em SBP e OMS."
+description: >-
+  Guia prático para a volta ao trabalho após a licença-maternidade: como manter
+  a amamentação, organizar a rotina, direitos pela CLT e como lidar com a culpa.
+  Baseado em SBP, OMS e CLT.
+meta_description: >-
+  Voltar ao trabalho e amamentar: direitos CLT, como ordenhar, manter o leite e
+  organizar a rotina. Guia prático baseado em SBP e OMS.
 keywords:
   primaria: voltar trabalho amamentação
   secundarias:
@@ -40,19 +45,24 @@ seo:
   meta_chars: 140
   schema: Article
   snippet_type: lista
-  snippet_section: "Seus direitos pela CLT"
+  snippet_section: Seus direitos pela CLT
 sources:
-  - name: "CLT, Art. 396. Intervalos para amamentação."
-    url: "https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm"
-  - name: "SBP. Guia Prático de Aleitamento Materno. Departamento Científico de Aleitamento Materno. 2021."
-    url: "https://www.sbp.com.br/fileadmin/user_upload/24585d-GPRATICO-GuiaPratico_de_AM-Atualizacao.pdf"
-  - name: "OMS. Breastfeeding. Fact sheet."
-    url: "https://www.who.int/news-room/fact-sheets/detail/infant-and-young-child-feeding"
+  - name: 'CLT, Art. 396. Intervalos para amamentação.'
+    url: 'https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm'
+  - name: >-
+      SBP. Guia Prático de Aleitamento Materno. Departamento Científico de
+      Aleitamento Materno. 2021.
+    url: >-
+      https://www.sbp.com.br/fileadmin/user_upload/24585d-GPRATICO-GuiaPratico_de_AM-Atualizacao.pdf
+  - name: OMS. Breastfeeding. Fact sheet.
+    url: >-
+      https://www.who.int/news-room/fact-sheets/detail/infant-and-young-child-feeding
 images:
   hero: img49-1.png
   complementar: img49-2.png
-image_url: "https://blog.yayababy.app/posts/voltar-trabalho-amamentacao/hero.png"
-image_alt: "Voltar ao Trabalho Após a Licença"
+image_url: 'https://blog.yayababy.app/posts/voltar-trabalho-amamentacao/hero.webp'
+image_alt: Voltar ao Trabalho Após a Licença
+mid_image_url: 'https://blog.yayababy.app/posts/voltar-trabalho-amamentacao/mid.webp'
 ---
 
 O fim da licença-maternidade se aproxima e, junto com ele, um turbilhão de sentimentos: ansiedade pela separação, preocupação com a amamentação, culpa por "deixar" o bebê e, ao mesmo tempo, em alguns casos, o alívio de retomar uma parte da identidade que ficou em pausa. Tudo isso é legítimo. E a boa notícia é que, com planejamento, é possível manter a amamentação, adaptar a rotina e atravessar essa transição com mais segurança.

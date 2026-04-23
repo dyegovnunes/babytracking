@@ -1,8 +1,12 @@
 ---
-title: "Pega Correta na Amamentação: Posições e Passo a Passo"
+title: 'Pega Correta na Amamentação: Posições e Passo a Passo'
 slug: pega-correta-posicoes-amamentacao
-description: "Como saber se a pega do bebê está correta, sinais de pega inadequada e as melhores posições para amamentar. Guia visual com passo a passo."
-meta_description: "Aprenda a pega correta na amamentação: sinais de boa pega, posições para amamentar e como corrigir problemas. Guia prático com passo a passo."
+description: >-
+  Como saber se a pega do bebê está correta, sinais de pega inadequada e as
+  melhores posições para amamentar. Guia visual com passo a passo.
+meta_description: >-
+  Aprenda a pega correta na amamentação: sinais de boa pega, posições para
+  amamentar e como corrigir problemas. Guia prático com passo a passo.
 keywords:
   primaria: pega correta amamentação
   secundarias:
@@ -44,19 +48,23 @@ seo:
   meta_chars: 149
   schema: HowTo
   snippet_type: lista
-  snippet_section: "Passo a passo para conseguir a pega correta"
+  snippet_section: Passo a passo para conseguir a pega correta
 sources:
-  - name: "OMS. Breastfeeding counselling: a training course. 2022."
-    url: "https://www.who.int/publications/i/item/9789241550468"
-  - name: "SBP. Guia Prático de Aleitamento Materno. Departamento Científico de Aleitamento Materno. 2021."
-    url: "https://www.sbp.com.br/fileadmin/user_upload/24585d-GPRATICO-GuiaPratico_de_AM-Atualizacao.pdf"
-  - name: "La Leche League International. Positioning and Latch."
-    url: "https://www.llli.org/breastfeeding-info/positioning/"
+  - name: 'OMS. Breastfeeding counselling: a training course. 2022.'
+    url: 'https://www.who.int/publications/i/item/9789241550468'
+  - name: >-
+      SBP. Guia Prático de Aleitamento Materno. Departamento Científico de
+      Aleitamento Materno. 2021.
+    url: >-
+      https://www.sbp.com.br/fileadmin/user_upload/24585d-GPRATICO-GuiaPratico_de_AM-Atualizacao.pdf
+  - name: La Leche League International. Positioning and Latch.
+    url: 'https://www.llli.org/breastfeeding-info/positioning/'
 images:
   hero: img22-1.png
   complementar: img22-2.png
-image_url: "https://blog.yayababy.app/posts/pega-correta-posicoes-amamentacao/hero.png"
-image_alt: "Pega Correta na Amamentacao"
+image_url: 'https://blog.yayababy.app/posts/pega-correta-posicoes-amamentacao/hero.webp'
+image_alt: Pega Correta na Amamentacao
+mid_image_url: 'https://blog.yayababy.app/posts/pega-correta-posicoes-amamentacao/mid.webp'
 ---
 
 A pega é o fundamento da amamentação. Quando está correta, o leite flui bem, o bebê ganha peso e a experiência não causa dor. Quando está errada, surgem fissuras, baixa transferência de leite e frustração para todo mundo. A boa notícia: pega se aprende e se corrige.

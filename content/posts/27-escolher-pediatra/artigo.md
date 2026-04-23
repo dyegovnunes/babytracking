@@ -1,8 +1,13 @@
 ---
-title: "Como Escolher o Pediatra do Seu Bebê"
+title: Como Escolher o Pediatra do Seu Bebê
 slug: como-escolher-pediatra
-description: "Guia prático para escolher o pediatra do seu bebê: o que avaliar, perguntas para a primeira consulta, sinais positivos e negativos, e o calendário de consultas no primeiro ano."
-meta_description: "Como escolher o pediatra ideal: o que avaliar, perguntas para fazer, quando começar a procurar e calendário de consultas no 1º ano."
+description: >-
+  Guia prático para escolher o pediatra do seu bebê: o que avaliar, perguntas
+  para a primeira consulta, sinais positivos e negativos, e o calendário de
+  consultas no primeiro ano.
+meta_description: >-
+  Como escolher o pediatra ideal: o que avaliar, perguntas para fazer, quando
+  começar a procurar e calendário de consultas no 1º ano.
 keywords:
   primaria: como escolher pediatra
   secundarias:
@@ -40,17 +45,22 @@ seo:
   meta_chars: 136
   schema: Article
   snippet_type: lista
-  snippet_section: "O que avaliar ao escolher o pediatra"
+  snippet_section: O que avaliar ao escolher o pediatra
 sources:
-  - name: "SBP. Consulta Pediátrica Pré-Natal — Atualização 2023. Departamento Científico de Pediatria Ambulatorial."
-    url: "https://www.sbp.com.br/fileadmin/user_upload/24121d-DC_ConsultaPediatria_PreNatal-Atualiz2023.pdf"
-  - name: "AAP — Finding a Pediatrician"
-    url: "https://www.healthychildren.org/English/ages-stages/prenatal/decisions-to-make/Pages/finding-a-pediatrician.aspx"
+  - name: >-
+      SBP. Consulta Pediátrica Pré-Natal — Atualização 2023. Departamento
+      Científico de Pediatria Ambulatorial.
+    url: >-
+      https://www.sbp.com.br/fileadmin/user_upload/24121d-DC_ConsultaPediatria_PreNatal-Atualiz2023.pdf
+  - name: AAP — Finding a Pediatrician
+    url: >-
+      https://www.healthychildren.org/English/ages-stages/prenatal/decisions-to-make/Pages/finding-a-pediatrician.aspx
 images:
   hero: img27-1.png
   complementar: img27-2.png
-image_url: "https://blog.yayababy.app/posts/como-escolher-pediatra/hero.png"
-image_alt: "Como Escolher o Pediatra do Seu Bebe"
+image_url: 'https://blog.yayababy.app/posts/como-escolher-pediatra/hero.webp'
+image_alt: Como Escolher o Pediatra do Seu Bebe
+mid_image_url: 'https://blog.yayababy.app/posts/como-escolher-pediatra/mid.webp'
 ---
 
 Escolher o pediatra do seu bebê é uma daquelas decisões que parecem simples até você começar a pesquisar. De repente surgem dezenas de opções, indicações conflitantes e dúvidas que você nem sabia que tinha. A verdade é que o "melhor pediatra" não existe em abstrato — existe o melhor pediatra para a sua família.

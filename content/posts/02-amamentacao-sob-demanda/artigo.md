@@ -1,7 +1,10 @@
 ---
-title: "Amamentação sob Demanda: Como Funciona na Prática"
+title: 'Amamentação sob Demanda: Como Funciona na Prática'
 slug: amamentacao-sob-demanda
-description: "Entenda o que é amamentação sob demanda, por que é recomendada e como identificar os sinais de fome do recém-nascido. Guia prático com base científica."
+description: >-
+  Entenda o que é amamentação sob demanda, por que é recomendada e como
+  identificar os sinais de fome do recém-nascido. Guia prático com base
+  científica.
 keywords:
   primaria: amamentação sob demanda
   secundarias:
@@ -27,16 +30,26 @@ seo:
   meta_chars: 148
   schema: FAQPage
   snippet_type: paragrafo
-  snippet_section: "O que é amamentação sob demanda"
+  snippet_section: O que é amamentação sob demanda
 sources:
-  - name: "OMS. Exclusive breastfeeding for six months best for babies everywhere. 2011."
-    url: "https://www.who.int/news/item/15-01-2011-exclusive-breastfeeding-for-six-months-best-for-babies-everywhere"
-  - name: "SBP. Guia Prático de Aleitamento Materno. Departamento Científico de Aleitamento Materno. Atualizado."
-    url: "https://www.sbp.com.br/fileadmin/user_upload/24585d-GPRATICO-GuiaPratico_de_AM-Atualizacao.pdf"
-  - name: "AAP. Breastfeeding and the Use of Human Milk. Pediatrics. 2022."
-    url: "https://publications.aap.org/pediatrics/article/150/1/e2022057988/188347/Breastfeeding-and-the-Use-of-Human-Milk"
-  - name: "Ministério da Saúde. Guia Alimentar para Crianças Brasileiras Menores de 2 Anos. 2019."
-    url: "https://bvsms.saude.gov.br/bvs/publicacoes/guia_alimentar_criancas_menores_2anos.pdf"
+  - name: >-
+      OMS. Exclusive breastfeeding for six months best for babies everywhere.
+      2011.
+    url: >-
+      https://www.who.int/news/item/15-01-2011-exclusive-breastfeeding-for-six-months-best-for-babies-everywhere
+  - name: >-
+      SBP. Guia Prático de Aleitamento Materno. Departamento Científico de
+      Aleitamento Materno. Atualizado.
+    url: >-
+      https://www.sbp.com.br/fileadmin/user_upload/24585d-GPRATICO-GuiaPratico_de_AM-Atualizacao.pdf
+  - name: AAP. Breastfeeding and the Use of Human Milk. Pediatrics. 2022.
+    url: >-
+      https://publications.aap.org/pediatrics/article/150/1/e2022057988/188347/Breastfeeding-and-the-Use-of-Human-Milk
+  - name: >-
+      Ministério da Saúde. Guia Alimentar para Crianças Brasileiras Menores de 2
+      Anos. 2019.
+    url: >-
+      https://bvsms.saude.gov.br/bvs/publicacoes/guia_alimentar_criancas_menores_2anos.pdf
 images:
   hero: img2-1.png
   complementar: img2-2.png
@@ -50,30 +63,34 @@ related_slugs:
   - ganho-peso-bebe
   - formula-infantil
 schema: FAQPage
-meta_description: "Entenda a amamentação sob demanda: como funciona, sinais de fome do bebê, frequência normal e quando procurar ajuda. Guia baseado na OMS e SBP."
+meta_description: >-
+  Entenda a amamentação sob demanda: como funciona, sinais de fome do bebê,
+  frequência normal e quando procurar ajuda. Guia baseado na OMS e SBP.
 audience: parent
 affiliate_products:
   - tipo: amamentação
     nome: Bola de Pilates 65cm Muvin Antiestouro com Bomba
     asin: B07FYQXMDQ
-    url: https://www.amazon.com.br/dp/B07FYQXMDQ?tag=yaya090-20
+    url: 'https://www.amazon.com.br/dp/B07FYQXMDQ?tag=yaya090-20'
   - tipo: amamentação
     nome: Bola de Pilates Overball Muvin 25cm Soft Gym
     asin: B07FYPC9YY
-    url: https://www.amazon.com.br/dp/B07FYPC9YY?tag=yaya090-20
+    url: 'https://www.amazon.com.br/dp/B07FYPC9YY?tag=yaya090-20'
   - tipo: amamentação
     nome: Almofada de Amamentação Chevron Cinza Bebê Querido
     asin: B0CCFX6PK5
-    url: https://www.amazon.com.br/dp/B0CCFX6PK5?tag=yaya090-20
+    url: 'https://www.amazon.com.br/dp/B0CCFX6PK5?tag=yaya090-20'
   - tipo: amamentação
     nome: Almofada para Amamentação Copespuma My Baby Branco
     asin: B07J2TN5KX
-    url: https://www.amazon.com.br/dp/B07J2TN5KX?tag=yaya090-20
+    url: 'https://www.amazon.com.br/dp/B07J2TN5KX?tag=yaya090-20'
   - tipo: amamentação
     nome: Almofada de Amamentação MyBaby Rosa
     asin: B07J2WBRJM
-    url: https://www.amazon.com.br/dp/B07J2WBRJM?tag=yaya090-20
+    url: 'https://www.amazon.com.br/dp/B07J2WBRJM?tag=yaya090-20'
 lead_magnet: false
+image_url: 'https://blog.yayababy.app/posts/amamentacao-sob-demanda/hero.webp'
+mid_image_url: 'https://blog.yayababy.app/posts/amamentacao-sob-demanda/mid.webp'
 ---
 
 "De quanto em quanto tempo eu preciso amamentar?" A resposta é simples: quando o bebê pedir. Isso é amamentação sob demanda, e é o que a OMS, a SBP e a AAP recomendam.

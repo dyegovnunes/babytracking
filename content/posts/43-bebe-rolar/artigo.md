@@ -1,8 +1,12 @@
 ---
-title: "Quando o Bebê Começa a Rolar e Como Ajudar"
+title: Quando o Bebê Começa a Rolar e Como Ajudar
 slug: bebe-quando-comeca-rolar
-description: "Quando o bebê começa a rolar, o que é necessário antes, como estimular com tummy time e o que muda na segurança do sono. Guia prático para pais."
-meta_description: "Quando o bebê começa a rolar: timeline, como ajudar com tummy time, segurança no berço e quando se preocupar. Guia baseado na AAP e SBP."
+description: >-
+  Quando o bebê começa a rolar, o que é necessário antes, como estimular com
+  tummy time e o que muda na segurança do sono. Guia prático para pais.
+meta_description: >-
+  Quando o bebê começa a rolar: timeline, como ajudar com tummy time, segurança
+  no berço e quando se preocupar. Guia baseado na AAP e SBP.
 keywords:
   primaria: bebê quando começa rolar
   secundarias:
@@ -40,19 +44,25 @@ seo:
   meta_chars: 139
   schema: Article
   snippet_type: featured-snippet
-  snippet_section: "Timeline do rolar"
+  snippet_section: Timeline do rolar
 sources:
-  - name: "AAP — Motor Development Milestones"
-    url: "https://www.healthychildren.org/English/ages-stages/baby/Pages/Movement-4-to-7-Months.aspx"
-  - name: "SBP. Cartilha de Desenvolvimento: dos 2 meses aos 5 anos. Departamento Científico de Pediatria do Desenvolvimento e Comportamento."
-    url: "https://www.sbp.com.br/fileadmin/user_upload/_24327e-Cartilha_de_Desenvolvimento-2m-5anos_compressed.pdf"
-  - name: "WHO Multicentre Growth Reference Study — Motor Development Milestones"
-    url: "https://www.who.int/tools/child-growth-standards/standards/motor-development-milestones"
+  - name: AAP — Motor Development Milestones
+    url: >-
+      https://www.healthychildren.org/English/ages-stages/baby/Pages/Movement-4-to-7-Months.aspx
+  - name: >-
+      SBP. Cartilha de Desenvolvimento: dos 2 meses aos 5 anos. Departamento
+      Científico de Pediatria do Desenvolvimento e Comportamento.
+    url: >-
+      https://www.sbp.com.br/fileadmin/user_upload/_24327e-Cartilha_de_Desenvolvimento-2m-5anos_compressed.pdf
+  - name: WHO Multicentre Growth Reference Study — Motor Development Milestones
+    url: >-
+      https://www.who.int/tools/child-growth-standards/standards/motor-development-milestones
 images:
   hero: img43-1.png
   complementar: img43-2.png
-image_url: "https://blog.yayababy.app/posts/bebe-quando-comeca-rolar/hero.png"
-image_alt: "Quando o Bebê Começa a Rolar e Como Ajudar"
+image_url: 'https://blog.yayababy.app/posts/bebe-quando-comeca-rolar/hero.webp'
+image_alt: Quando o Bebê Começa a Rolar e Como Ajudar
+mid_image_url: 'https://blog.yayababy.app/posts/bebe-quando-comeca-rolar/mid.webp'
 ---
 
 # Quando o Bebê Começa a Rolar e Como Ajudar

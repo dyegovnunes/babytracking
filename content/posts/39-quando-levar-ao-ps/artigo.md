@@ -1,8 +1,13 @@
 ---
-title: "Quando Levar o Bebê ao Pronto-Socorro: Sinais de Alerta"
+title: 'Quando Levar o Bebê ao Pronto-Socorro: Sinais de Alerta'
 slug: quando-levar-bebe-pronto-socorro
-description: "Checklist dos sinais de alerta que indicam quando levar o bebê ao pronto-socorro. Febre em recém-nascido, dificuldade respiratória, desidratação e outros red flags que todo pai precisa conhecer."
-meta_description: "Sinais de alerta no bebê: saiba quando ir ao pronto-socorro, quando ligar pro pediatra e o que NÃO é emergência. Checklist por sistema."
+description: >-
+  Checklist dos sinais de alerta que indicam quando levar o bebê ao
+  pronto-socorro. Febre em recém-nascido, dificuldade respiratória, desidratação
+  e outros red flags que todo pai precisa conhecer.
+meta_description: >-
+  Sinais de alerta no bebê: saiba quando ir ao pronto-socorro, quando ligar pro
+  pediatra e o que NÃO é emergência. Checklist por sistema.
 keywords:
   primaria: quando levar bebê emergência
   secundarias:
@@ -39,19 +44,26 @@ seo:
   meta_chars: 143
   schema: Article
   snippet_type: lista
-  snippet_section: "Checklist: vá ao pronto-socorro agora"
+  snippet_section: 'Checklist: vá ao pronto-socorro agora'
 sources:
-  - name: "SBP — Documentos Científicos: Urgências e Emergências Pediátricas. Departamento Científico de Emergência."
-    url: "https://www.sbp.com.br/departamentos/emergencia/documentos-cientificos/"
-  - name: "AAP — When to Call the Pediatrician"
-    url: "https://www.healthychildren.org/English/health-issues/conditions/fever/Pages/When-to-Call-the-Pediatrician.aspx"
-  - name: "Nelson Textbook of Pediatrics, 21st edition — Kliegman et al., Elsevier, 2020"
-    url: "https://shop.elsevier.com/books/nelson-textbook-of-pediatrics-2-volume-set/kliegman/978-0-323-52950-1"
+  - name: >-
+      SBP — Documentos Científicos: Urgências e Emergências Pediátricas.
+      Departamento Científico de Emergência.
+    url: 'https://www.sbp.com.br/departamentos/emergencia/documentos-cientificos/'
+  - name: AAP — When to Call the Pediatrician
+    url: >-
+      https://www.healthychildren.org/English/health-issues/conditions/fever/Pages/When-to-Call-the-Pediatrician.aspx
+  - name: >-
+      Nelson Textbook of Pediatrics, 21st edition — Kliegman et al., Elsevier,
+      2020
+    url: >-
+      https://shop.elsevier.com/books/nelson-textbook-of-pediatrics-2-volume-set/kliegman/978-0-323-52950-1
 images:
   hero: img39-1.png
   complementar: img39-2.png
-image_url: "https://blog.yayababy.app/posts/quando-levar-bebe-pronto-socorro/hero.png"
-image_alt: "Quando Levar o Bebê ao Pronto-Socorro"
+image_url: 'https://blog.yayababy.app/posts/quando-levar-bebe-pronto-socorro/hero.webp'
+image_alt: Quando Levar o Bebê ao Pronto-Socorro
+mid_image_url: 'https://blog.yayababy.app/posts/quando-levar-bebe-pronto-socorro/mid.webp'
 ---
 
 # Quando Levar o Bebê ao Pronto-Socorro: Sinais de Alerta

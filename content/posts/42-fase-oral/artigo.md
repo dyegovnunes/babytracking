@@ -1,8 +1,13 @@
 ---
-title: "Bebê Coloca Tudo na Boca: A Fase Oral e Como Lidar"
+title: 'Bebê Coloca Tudo na Boca: A Fase Oral e Como Lidar'
 slug: fase-oral-bebe
-description: "Por que o bebê coloca tudo na boca? Entenda a fase oral, quando começa e termina, segurança contra engasgo, mordedores e como equilibrar exploração com proteção."
-meta_description: "Bebê coloca tudo na boca: entenda a fase oral, quando começa e termina, segurança contra engasgo e como lidar sem restringir a exploração."
+description: >-
+  Por que o bebê coloca tudo na boca? Entenda a fase oral, quando começa e
+  termina, segurança contra engasgo, mordedores e como equilibrar exploração com
+  proteção.
+meta_description: >-
+  Bebê coloca tudo na boca: entenda a fase oral, quando começa e termina,
+  segurança contra engasgo e como lidar sem restringir a exploração.
 keywords:
   primaria: bebê coloca tudo na boca
   secundarias:
@@ -37,19 +42,25 @@ seo:
   meta_chars: 144
   schema: FAQPage
   snippet_type: faq
-  snippet_section: "Por que o bebê coloca tudo na boca?"
+  snippet_section: Por que o bebê coloca tudo na boca?
 sources:
-  - name: "AAP — Developmental Milestones: 7 Months"
-    url: "https://www.healthychildren.org/English/ages-stages/baby/Pages/Developmental-Milestones-7-Months.aspx"
-  - name: "SBP. Cartilha de Desenvolvimento: dos 2 meses aos 5 anos. Departamento Científico de Pediatria do Desenvolvimento e Comportamento."
-    url: "https://www.sbp.com.br/fileadmin/user_upload/_24327e-Cartilha_de_Desenvolvimento-2m-5anos_compressed.pdf"
-  - name: "Piaget J. The Origin of Intelligence in the Child. Routledge, 1953."
-    url: "https://www.routledge.com/The-Origin-of-Intelligence-in-the-Child/Piaget/p/book/9780415513623"
+  - name: 'AAP — Developmental Milestones: 7 Months'
+    url: >-
+      https://www.healthychildren.org/English/ages-stages/baby/Pages/Developmental-Milestones-7-Months.aspx
+  - name: >-
+      SBP. Cartilha de Desenvolvimento: dos 2 meses aos 5 anos. Departamento
+      Científico de Pediatria do Desenvolvimento e Comportamento.
+    url: >-
+      https://www.sbp.com.br/fileadmin/user_upload/_24327e-Cartilha_de_Desenvolvimento-2m-5anos_compressed.pdf
+  - name: 'Piaget J. The Origin of Intelligence in the Child. Routledge, 1953.'
+    url: >-
+      https://www.routledge.com/The-Origin-of-Intelligence-in-the-Child/Piaget/p/book/9780415513623
 images:
   hero: img42-1.png
   complementar: img42-2.png
-image_url: "https://blog.yayababy.app/posts/fase-oral-bebe/hero.png"
-image_alt: "Bebê Coloca Tudo na Boca"
+image_url: 'https://blog.yayababy.app/posts/fase-oral-bebe/hero.webp'
+image_alt: Bebê Coloca Tudo na Boca
+mid_image_url: 'https://blog.yayababy.app/posts/fase-oral-bebe/mid.webp'
 ---
 
 # Bebê Coloca Tudo na Boca: A Fase Oral e Como Lidar

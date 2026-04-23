@@ -1,8 +1,12 @@
 ---
-title: "Depressão Pós-Parto: Sinais, Fatores de Risco e Onde Buscar Ajuda"
+title: 'Depressão Pós-Parto: Sinais, Fatores de Risco e Onde Buscar Ajuda'
 slug: depressao-pos-parto
-description: "Entenda a diferença entre baby blues e depressão pós-parto, reconheça os sinais, conheça os fatores de risco e saiba onde buscar ajuda no Brasil."
-meta_description: "Depressão pós-parto: sintomas, diferença do baby blues, fatores de risco, tratamento e onde buscar ajuda. Guia sensível e baseado em evidências."
+description: >-
+  Entenda a diferença entre baby blues e depressão pós-parto, reconheça os
+  sinais, conheça os fatores de risco e saiba onde buscar ajuda no Brasil.
+meta_description: >-
+  Depressão pós-parto: sintomas, diferença do baby blues, fatores de risco,
+  tratamento e onde buscar ajuda. Guia sensível e baseado em evidências.
 keywords:
   primaria: depressão pós-parto sintomas
   secundarias:
@@ -41,21 +45,27 @@ seo:
   meta_chars: 141
   schema: FAQPage
   snippet_type: faq
-  snippet_section: "Qual a diferença entre baby blues e depressão pós-parto?"
+  snippet_section: Qual a diferença entre baby blues e depressão pós-parto?
 sources:
-  - name: "OMS. Maternal mental health. World Health Organization. 2024."
-    url: "https://www.who.int/news-room/fact-sheets/detail/maternal-mental-health"
-  - name: "SBP. O papel do pediatra na prevenção do estresse tóxico na primeira infância. Departamento Científico de Pediatria do Desenvolvimento e Comportamento. 2017."
-    url: "https://www.sbp.com.br/fileadmin/user_upload/2017/06/Ped.-Desenv.-Comp.-MOrient-Papel-pediatra-prev-estresse.pdf"
-  - name: "ACOG — Screening for Perinatal Depression. Committee Opinion 757"
-    url: "https://www.acog.org/clinical/clinical-guidance/committee-opinion/articles/2018/11/screening-for-perinatal-depression"
-  - name: "Edinburgh Postnatal Depression Scale (EPDS)"
-    url: "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1712273/"
+  - name: OMS. Maternal mental health. World Health Organization. 2024.
+    url: 'https://www.who.int/news-room/fact-sheets/detail/maternal-mental-health'
+  - name: >-
+      SBP. O papel do pediatra na prevenção do estresse tóxico na primeira
+      infância. Departamento Científico de Pediatria do Desenvolvimento e
+      Comportamento. 2017.
+    url: >-
+      https://www.sbp.com.br/fileadmin/user_upload/2017/06/Ped.-Desenv.-Comp.-MOrient-Papel-pediatra-prev-estresse.pdf
+  - name: ACOG — Screening for Perinatal Depression. Committee Opinion 757
+    url: >-
+      https://www.acog.org/clinical/clinical-guidance/committee-opinion/articles/2018/11/screening-for-perinatal-depression
+  - name: Edinburgh Postnatal Depression Scale (EPDS)
+    url: 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1712273/'
 images:
   hero: img28-1.png
   complementar: img28-2.png
-image_url: "https://blog.yayababy.app/posts/depressao-pos-parto/hero.png"
-image_alt: "Depressao Pos-Parto: Sinais e Onde Buscar Ajuda"
+image_url: 'https://blog.yayababy.app/posts/depressao-pos-parto/hero.webp'
+image_alt: 'Depressao Pos-Parto: Sinais e Onde Buscar Ajuda'
+mid_image_url: 'https://blog.yayababy.app/posts/depressao-pos-parto/mid.webp'
 ---
 
 Ter um bebê deveria ser o momento mais feliz da vida. Pelo menos é o que todo mundo diz. Mas e quando a alegria não chega? Quando o cansaço se mistura com um vazio que você não consegue explicar? Quando o choro não é só do bebê?
