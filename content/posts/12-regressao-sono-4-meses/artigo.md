@@ -61,8 +61,26 @@ meta_description: >-
   Não é regressão — é evolução do cérebro.
 audience: parent
 affiliate_products:
-  - name: Saco de dormir
-    category: sono
+  - tipo: sono
+    nome: Carter's Bolsa de Dormir Unissex Coala Cinza 6-9 meses
+    asin: B0DDZ6LTKY
+    url: https://www.amazon.com.br/dp/B0DDZ6LTKY?tag=yaya090-20
+  - tipo: sono
+    nome: Saco de Dormir para Bebê Menina Suedine Algodão Corações Rosa P
+    asin: B0C6X3DT56
+    url: https://www.amazon.com.br/dp/B0C6X3DT56?tag=yaya090-20
+  - tipo: sono
+    nome: Buba Saco de Dormir Baby Super Soft Azul
+    asin: B07RRLVKMX
+    url: https://www.amazon.com.br/dp/B07RRLVKMX?tag=yaya090-20
+  - tipo: monitoramento
+    nome: Câmera Babá Eletrônica Motorola HD com Zoom e Wi-Fi PIP1000
+    asin: B0FHLP2FFD
+    url: https://www.amazon.com.br/dp/B0FHLP2FFD?tag=yaya090-20
+  - tipo: monitoramento
+    nome: TakTark Babá Eletrônica Câmera 4.3" Sem Wi-Fi Visão Noturna
+    asin: B09MJPVH1L
+    url: https://www.amazon.com.br/dp/B09MJPVH1L?tag=yaya090-20
 lead_magnet: false
 image_url: 'https://blog.yayababy.app/posts/regressao-do-sono-4-meses/hero.webp'
 mid_image_url: 'https://blog.yayababy.app/posts/regressao-do-sono-4-meses/mid.webp'

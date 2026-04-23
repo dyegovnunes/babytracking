@@ -34,7 +34,15 @@ related_slugs:
   - o-que-muda-no-corpo-depois-do-parto
 schema: HowTo
 audience: gestante
-affiliate_products: []
+affiliate_products:
+  - tipo: saúde
+    nome: Bola de Pilates 65cm Muvin Antiestouro com Bomba
+    asin: B07FYQXMDQ
+    url: https://www.amazon.com.br/dp/B07FYQXMDQ?tag=yaya090-20
+  - tipo: saúde
+    nome: Bolsa Térmica Faixa de Sementes e Ervas para Bebê Cólica Azul
+    asin: B0DMWMJMQ3
+    url: https://www.amazon.com.br/dp/B0DMWMJMQ3?tag=yaya090-20
 lead_magnet: false
 seo:
   h1_chars: 54

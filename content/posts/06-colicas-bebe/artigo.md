@@ -61,8 +61,14 @@ meta_description: >-
   funciona para aliviar. Guia prático baseado em evidências.
 audience: parent
 affiliate_products:
-  - name: Bolsa térmica para cólica
-    category: saude
+  - tipo: saúde
+    nome: Bolsa Térmica Faixa de Sementes e Ervas para Bebê Cólica Azul
+    asin: B0DMWMJMQ3
+    url: https://www.amazon.com.br/dp/B0DMWMJMQ3?tag=yaya090-20
+  - tipo: saúde
+    nome: Termogel Bolsa Térmica Baby Verde
+    asin: B0BSXXV1W1
+    url: https://www.amazon.com.br/dp/B0BSXXV1W1?tag=yaya090-20
 lead_magnet: false
 image_url: 'https://blog.yayababy.app/posts/colicas-do-bebe/hero.webp'
 mid_image_url: 'https://blog.yayababy.app/posts/colicas-do-bebe/mid.webp'

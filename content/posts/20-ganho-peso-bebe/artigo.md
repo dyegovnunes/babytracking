@@ -38,7 +38,19 @@ related_slugs:
   - formula-infantil
 schema: FAQPage
 audience: parent
-affiliate_products: null
+affiliate_products:
+  - tipo: saúde
+    nome: Balança Pediátrica Digital 30kg com Capa Welmy Branco
+    asin: B0DHH8BQVB
+    url: https://www.amazon.com.br/dp/B0DHH8BQVB?tag=yaya090-20
+  - tipo: organização
+    nome: Caderneta de Vacinação do Bebê Modelo SUS Capa Dura Menino Aviador
+    asin: B0F7RNY89Z
+    url: https://www.amazon.com.br/dp/B0F7RNY89Z?tag=yaya090-20
+  - tipo: organização
+    nome: Caderneta de Vacinação do Bebê Modelo SUS Capa Dura Menino Infância
+    asin: B0F7RZDR4L
+    url: https://www.amazon.com.br/dp/B0F7RZDR4L?tag=yaya090-20
 lead_magnet: null
 seo:
   h1_chars: 43

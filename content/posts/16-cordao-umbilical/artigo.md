@@ -33,7 +33,19 @@ related_slugs:
   - visitas-recem-nascido
 schema: Article
 audience: parent
-affiliate_products: []
+affiliate_products:
+  - tipo: higiene
+    nome: Fralda Pampers Premium Care Recém-Nascido RN 36 unidades
+    asin: B07GQB93FT
+    url: https://www.amazon.com.br/dp/B07GQB93FT?tag=yaya090-20
+  - tipo: higiene
+    nome: Trocador de Fraldas Portátil à Prova d'Água com Bolso para Lenços
+    asin: B07RX5BD32
+    url: https://www.amazon.com.br/dp/B07RX5BD32?tag=yaya090-20
+  - tipo: higiene
+    nome: Johnson's Baby Lenços Umedecidos Recém-Nascido 192 unidades
+    asin: B0F4G5NL2K
+    url: https://www.amazon.com.br/dp/B0F4G5NL2K?tag=yaya090-20
 lead_magnet: false
 seo:
   h1_chars: 47

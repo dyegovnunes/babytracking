@@ -56,10 +56,18 @@ meta_description: >-
   prevenção de assaduras e quando procurar o pediatra.
 audience: parent
 affiliate_products:
-  - name: Pomada para assadura
-    category: higiene
-  - name: Fralda descartável
-    category: higiene
+  - tipo: higiene
+    nome: Hipoglós Creme Preventivo de Assaduras Transparente 120g
+    asin: B089YHCFGG
+    url: https://www.amazon.com.br/dp/B089YHCFGG?tag=yaya090-20
+  - tipo: higiene
+    nome: Desitin Creme Preventivo de Assaduras Máxima Proteção 57g
+    asin: B0DW9L8BFD
+    url: https://www.amazon.com.br/dp/B0DW9L8BFD?tag=yaya090-20
+  - tipo: higiene
+    nome: Kit 2 Cremes Pomada de Assadura Bepantol 120g cada
+    asin: B0BHXK7J1B
+    url: https://www.amazon.com.br/dp/B0BHXK7J1B?tag=yaya090-20
 lead_magnet: false
 image_url: 'https://blog.yayababy.app/posts/troca-de-fraldas-guia-completo/hero.webp'
 mid_image_url: 'https://blog.yayababy.app/posts/troca-de-fraldas-guia-completo/mid.webp'

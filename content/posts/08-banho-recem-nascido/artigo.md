@@ -57,12 +57,22 @@ meta_description: >-
   frequência e cuidados com o cordão umbilical.
 audience: parent
 affiliate_products:
-  - name: Banheira para bebê
-    category: higiene
-  - name: Termômetro de banho
-    category: higiene
-  - name: Sabonete líquido neutro
-    category: higiene
+  - tipo: higiene
+    nome: Buba Rede de Proteção para Banheira Cinza
+    asin: B0CP49FHTB
+    url: https://www.amazon.com.br/dp/B0CP49FHTB?tag=yaya090-20
+  - tipo: higiene
+    nome: Burigotto Banheira Millenia Azul Bebê
+    asin: B0964FR2L8
+    url: https://www.amazon.com.br/dp/B0964FR2L8?tag=yaya090-20
+  - tipo: higiene
+    nome: Banheira Bebê Dobrável com Termômetro Digital Portátil Azul
+    asin: B0G115VVLS
+    url: https://www.amazon.com.br/dp/B0G115VVLS?tag=yaya090-20
+  - tipo: higiene
+    nome: Buba Termômetro Girafinha Bege
+    asin: B0DH98YTCD
+    url: https://www.amazon.com.br/dp/B0DH98YTCD?tag=yaya090-20
 lead_magnet: false
 image_url: 'https://blog.yayababy.app/posts/banho-do-recem-nascido/hero.webp'
 mid_image_url: 'https://blog.yayababy.app/posts/banho-do-recem-nascido/mid.webp'

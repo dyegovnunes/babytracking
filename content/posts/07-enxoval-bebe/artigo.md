@@ -55,10 +55,22 @@ meta_description: >-
   é marketing. Guia prático e econômico.
 audience: gestante
 affiliate_products:
-  - name: Body manga longa
-    category: vestuario
-  - name: Manta de algodão
-    category: vestuario
+  - tipo: vestuário
+    nome: Papi Cueiro Flanelado Estampado 100x80cm Kit 3 unidades
+    asin: B07DJFC6B9
+    url: https://www.amazon.com.br/dp/B07DJFC6B9?tag=yaya090-20
+  - tipo: vestuário
+    nome: Buba Kit Cuidados Baby Cinza
+    asin: B086JCX68G
+    url: https://www.amazon.com.br/dp/B086JCX68G?tag=yaya090-20
+  - tipo: vestuário
+    nome: Manta para Bebê em Tricot 100% Algodão Azul Bebê
+    asin: B0FSF53L8K
+    url: https://www.amazon.com.br/dp/B0FSF53L8K?tag=yaya090-20
+  - tipo: vestuário
+    nome: Kit 2 Mantas Swaddle Premium Algodão e Bambu 100x100cm Bege
+    asin: B0GMDHTRSZ
+    url: https://www.amazon.com.br/dp/B0GMDHTRSZ?tag=yaya090-20
 lead_magnet: true
 lead_magnet_type: checklist
 image_url: >-

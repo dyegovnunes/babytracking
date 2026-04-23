@@ -38,7 +38,23 @@ related_slugs:
   - regressao-do-sono-4-meses
 schema: FAQPage
 audience: parent
-affiliate_products: null
+affiliate_products:
+  - tipo: organização
+    nome: Organizador para Troca de Fraldas Munchkin Branco
+    asin: B0010SGZDC
+    url: https://www.amazon.com.br/dp/B0010SGZDC?tag=yaya090-20
+  - tipo: organização
+    nome: Mochila de Maternidade Donna Laço Bebê Kyara Cinza Claro
+    asin: B096CNPDQL
+    url: https://www.amazon.com.br/dp/B096CNPDQL?tag=yaya090-20
+  - tipo: higiene
+    nome: Fralda Pampers Recém-Nascido Tamanho RN+ 36 unidades
+    asin: B07GPV56NS
+    url: https://www.amazon.com.br/dp/B07GPV56NS?tag=yaya090-20
+  - tipo: higiene
+    nome: Fralda Pampers Premium Care Recém-Nascido RN 36 unidades
+    asin: B07GQB93FT
+    url: https://www.amazon.com.br/dp/B07GQB93FT?tag=yaya090-20
 lead_magnet: null
 seo:
   h1_chars: 38

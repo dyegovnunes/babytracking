@@ -62,7 +62,35 @@ meta_description: >-
   Primeiros dias em casa com o recém-nascido: o que é normal, como se organizar,
   visitas e quando ligar para o pediatra.
 audience: both
-affiliate_products: []
+affiliate_products:
+  - tipo: saúde
+    nome: G-Tech Termômetro Infravermelho Sem Contato Easy Sensor
+    asin: B0DB6G98X5
+    url: https://www.amazon.com.br/dp/B0DB6G98X5?tag=yaya090-20
+  - tipo: saúde
+    nome: Termômetro Digital Infravermelho 3 em 1 com Alarme de Febre
+    asin: B0FQKX724V
+    url: https://www.amazon.com.br/dp/B0FQKX724V?tag=yaya090-20
+  - tipo: saúde
+    nome: Buba Kit Aspirador Nasal de Sucção e Seringa
+    asin: B0BVG9B3NF
+    url: https://www.amazon.com.br/dp/B0BVG9B3NF?tag=yaya090-20
+  - tipo: saúde
+    nome: Buba Aspirador Nasal de Sucção Branco
+    asin: B07P617RCN
+    url: https://www.amazon.com.br/dp/B07P617RCN?tag=yaya090-20
+  - tipo: amamentação
+    nome: Almofada para Amamentação Copespuma My Baby Branco
+    asin: B07J2TN5KX
+    url: https://www.amazon.com.br/dp/B07J2TN5KX?tag=yaya090-20
+  - tipo: monitoramento
+    nome: Babá Eletrônica TakTark Câmera 3.2" Visão Noturna Áudio Bidirecional
+    asin: B0975WWR2C
+    url: https://www.amazon.com.br/dp/B0975WWR2C?tag=yaya090-20
+  - tipo: monitoramento
+    nome: Babá Eletrônica Câmera LCD 3.5" Infravermelho 10M Visão Noturna
+    asin: B0G1YFTY5J
+    url: https://www.amazon.com.br/dp/B0G1YFTY5J?tag=yaya090-20
 lead_magnet: false
 image_url: >-
   https://blog.yayababy.app/posts/primeiros-dias-em-casa-com-recem-nascido/hero.webp

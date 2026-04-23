@@ -39,10 +39,22 @@ related_slugs:
 schema: Article
 audience: parent
 affiliate_products:
-  - tipo: tapete de atividades
-    categoria: brinquedos
-  - tipo: espelho de brincar
-    categoria: brinquedos
+  - tipo: brinquedos
+    nome: Buba Tapete Dobrável Baby Arco-Íris
+    asin: B09WQW79HF
+    url: https://www.amazon.com.br/dp/B09WQW79HF?tag=yaya090-20
+  - tipo: brinquedos
+    nome: Buba Ginásio de Atividades com Piano Safari Colorido
+    asin: B07XSPX2VW
+    url: https://www.amazon.com.br/dp/B07XSPX2VW?tag=yaya090-20
+  - tipo: brinquedos
+    nome: Tapete de Atividades Infantil Térmico Dupla Face 2,0x1,5m Trenzinho/Girafa
+    asin: B0DLPFFWS3
+    url: https://www.amazon.com.br/dp/B0DLPFFWS3?tag=yaya090-20
+  - tipo: brinquedos
+    nome: Livro Macio de Alto Contraste Preto e Branco para Bebês
+    asin: B0DFG9CRST
+    url: https://www.amazon.com.br/dp/B0DFG9CRST?tag=yaya090-20
 lead_magnet: null
 seo:
   h1_chars: 41

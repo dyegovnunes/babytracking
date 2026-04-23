@@ -37,9 +37,21 @@ schema: Article
 audience: parent
 affiliate_products:
   - tipo: brinquedos
-    produto: brinquedo sensorial
-  - tipo: mobília
-    produto: móbile de berço
+    nome: Tapete Infantil de Atividades Tatame Emborrachado Dupla Face Kababy
+    asin: B0CXY31PKG
+    url: https://www.amazon.com.br/dp/B0CXY31PKG?tag=yaya090-20
+  - tipo: brinquedos
+    nome: Buba Ginásio de Atividades com Piano Safari Colorido
+    asin: B07XSPX2VW
+    url: https://www.amazon.com.br/dp/B07XSPX2VW?tag=yaya090-20
+  - tipo: brinquedos
+    nome: Kit Chocalho para Bebê 8 Peças Brinquedo Educativo Sensorial com Mordedor
+    asin: B0G2NTZQHC
+    url: https://www.amazon.com.br/dp/B0G2NTZQHC?tag=yaya090-20
+  - tipo: brinquedos
+    nome: Mordedor para Bebê 3 Meses Chocalho Dentição
+    asin: B0DNTMGQNW
+    url: https://www.amazon.com.br/dp/B0DNTMGQNW?tag=yaya090-20
 lead_magnet: false
 seo:
   h1_chars: 62

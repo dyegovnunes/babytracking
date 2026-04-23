@@ -59,7 +59,27 @@ meta_description: >-
   Icterícia neonatal: o que é, por que acontece, tipos de tratamento e quando
   preocupar. Guia baseado na SBP e AAP.
 audience: parent
-affiliate_products: []
+affiliate_products:
+  - tipo: higiene
+    nome: Fralda Pampers Premium Care Recém-Nascido RN 36 unidades
+    asin: B07GQB93FT
+    url: https://www.amazon.com.br/dp/B07GQB93FT?tag=yaya090-20
+  - tipo: higiene
+    nome: Fralda Pampers Recém-Nascido Tamanho RN+ 36 unidades
+    asin: B07GPV56NS
+    url: https://www.amazon.com.br/dp/B07GPV56NS?tag=yaya090-20
+  - tipo: higiene
+    nome: Trocador de Fraldas Portátil à Prova d'Água com Bolso para Lenços
+    asin: B07RX5BD32
+    url: https://www.amazon.com.br/dp/B07RX5BD32?tag=yaya090-20
+  - tipo: higiene
+    nome: Toalha de Banho Infantil Soft com Capuz Bichinho Bordado Branca
+    asin: B0GGW35TS6
+    url: https://www.amazon.com.br/dp/B0GGW35TS6?tag=yaya090-20
+  - tipo: higiene
+    nome: Johnson's Baby Lenços Umedecidos Recém-Nascido 192 unidades
+    asin: B0F4G5NL2K
+    url: https://www.amazon.com.br/dp/B0F4G5NL2K?tag=yaya090-20
 lead_magnet: false
 image_url: 'https://blog.yayababy.app/posts/ictericia-neonatal/hero.webp'
 mid_image_url: 'https://blog.yayababy.app/posts/ictericia-neonatal/mid.webp'

@@ -34,10 +34,18 @@ related_slugs:
 schema: FAQPage
 audience: parent
 affiliate_products:
-  - tipo: acessórios
-    produto: chupeta ortodôntica
   - tipo: transporte
-    produto: sling/canguru ergonômico
+    nome: NUK Canguru 3 em 1 Ergonômico Comfort Cinza
+    asin: B09YJ1NY2W
+    url: https://www.amazon.com.br/dp/B09YJ1NY2W?tag=yaya090-20
+  - tipo: transporte
+    nome: Wrap Sling de Bebê Carregador de Amarrar Little Beni Preto
+    asin: B0F254TBP2
+    url: https://www.amazon.com.br/dp/B0F254TBP2?tag=yaya090-20
+  - tipo: acessórios
+    nome: Chupeta Dupla Ultra Air Philips Avent Recém-Nascido 0-6M
+    asin: B0DH9DYX5Y
+    url: https://www.amazon.com.br/dp/B0DH9DYX5Y?tag=yaya090-20
 lead_magnet: false
 seo:
   h1_chars: 53
