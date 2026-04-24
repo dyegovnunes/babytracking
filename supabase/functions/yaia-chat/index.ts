@@ -1,4 +1,7 @@
-// yaIA chat proxy (v7)
+// yaIA chat proxy (v8)
+// - Parser tolerante: aceita resposta do n8n em multiplos formatos
+//   (string JSON crua, objeto direto, array com .output, nested .output)
+// - Logs verbosos pra debug de 502
 // - Valida JWT do app
 // - Confere membership + consent
 // - Enforce limite free
@@ -46,12 +49,15 @@ interface YaiaContext {
   logs_summary_7d?: {
     total_sleep_minutes?: number;
     sleep_sessions?: number;
-    total_feed_ml?: number;
-    breast_sessions?: number;
+    wake_events?: number;
+    total_bottle_ml?: number;
     bottle_sessions?: number;
-    diaper_pee?: number;
-    diaper_poop?: number;
-    diaper_both?: number;
+    breast_sessions?: number;
+    breast_left?: number;
+    breast_right?: number;
+    breast_both?: number;
+    diaper_wet?: number;
+    diaper_dirty?: number;
     bath_count?: number;
   };
   measurements?: Array<{ type: string; value: number; unit: string; measured_at: string; notes?: string }>;
@@ -183,19 +189,24 @@ serve(async (req) => {
     }
 
     const n8nBody = await n8nResp.text();
-    let n8nData: N8nResponse = {};
-    try {
-      n8nData = JSON.parse(n8nBody);
-    } catch {
-      console.error('[yaia] failed to parse n8n body', n8nBody.slice(0, 200));
-      return json({ error: 'Resposta invalida da yaIA.' }, 502);
+    console.log('[yaia] n8n raw body (first 400 chars):', n8nBody.slice(0, 400));
+
+    const n8nData = tolerantParseN8n(n8nBody);
+    if (!n8nData) {
+      console.error('[yaia] failed to parse n8n body after all attempts', n8nBody.slice(0, 300));
+      return json({
+        error: 'Resposta invalida da yaIA.',
+        debug: { stage: 'parse_fail', preview: n8nBody.slice(0, 300) },
+      }, 502);
     }
 
-    // Normaliza o output: prefere messages[], fallback pra reply string split por \n\n (max 2 bubbles).
     const messages = normalizeMessages(n8nData);
     if (!messages.length) {
-      console.error('[yaia] n8n missing messages/reply', Object.keys(n8nData));
-      return json({ error: 'Resposta invalida da yaIA.' }, 502);
+      console.error('[yaia] n8n missing messages/reply', Object.keys(n8nData), n8nBody.slice(0, 300));
+      return json({
+        error: 'Resposta invalida da yaIA.',
+        debug: { stage: 'no_messages', keys: Object.keys(n8nData), preview: n8nBody.slice(0, 300) },
+      }, 502);
     }
 
     const suggestions = Array.isArray(n8nData.suggestions)
@@ -250,6 +261,63 @@ function toMonthKey(d: Date): string {
   const y = d.getUTCFullYear();
   const m = String(d.getUTCMonth() + 1).padStart(2, '0');
   return `${y}-${m}`;
+}
+
+// Aceita qualquer shape razoavel que o n8n possa devolver:
+// 1. Objeto direto: { messages: [...], ... }
+// 2. String JSON: "{\"messages\":[...]}" (duplo-encoded)
+// 3. Array: [{ messages: [...] }] ou [{ output: { messages: [...] } }]
+// 4. Objeto com output aninhado: { output: { messages: [...] } }
+// 5. Objeto com output como string JSON: { output: "{\"messages\":[...]}" }
+// Retorna null se nao achar shape utilizavel.
+function tolerantParseN8n(body: string): N8nResponse | null {
+  const trimmed = body.trim();
+  if (!trimmed) return null;
+
+  // Tenta parsear JSON. Se falhar, game over (nao eh JSON).
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(trimmed);
+  } catch {
+    return null;
+  }
+
+  // Desembrulha ate achar algo que pareca N8nResponse.
+  for (let i = 0; i < 4 && parsed != null; i++) {
+    // Array -> pega primeiro item
+    if (Array.isArray(parsed)) {
+      parsed = parsed[0];
+      continue;
+    }
+    // String -> tenta parsear de novo (double-encoded)
+    if (typeof parsed === 'string') {
+      try {
+        parsed = JSON.parse(parsed);
+        continue;
+      } catch {
+        return null;
+      }
+    }
+    if (typeof parsed !== 'object') return null;
+
+    const obj = parsed as Record<string, unknown>;
+
+    // Shape direto: tem messages ou reply no root
+    if (Array.isArray(obj.messages) || typeof obj.reply === 'string') {
+      return obj as N8nResponse;
+    }
+
+    // Shape com output: { output: ... }
+    if ('output' in obj) {
+      parsed = obj.output;
+      continue;
+    }
+
+    // Sem output, sem messages, sem reply: da up.
+    return null;
+  }
+
+  return null;
 }
 
 function normalizeMessages(data: N8nResponse): string[] {
@@ -313,14 +381,14 @@ function buildContextSummary(ctx: YaiaContext): string {
     }
     if (s7.breast_sessions || s7.bottle_sessions) {
       const feeds: string[] = [];
-      if (s7.breast_sessions) feeds.push(`${s7.breast_sessions} mamadas no peito`);
+      if (s7.breast_sessions) feeds.push(`${s7.breast_sessions} mamadas no peito (esq ${s7.breast_left ?? 0} / dir ${s7.breast_right ?? 0} / ambos ${s7.breast_both ?? 0})`);
       if (s7.bottle_sessions) feeds.push(`${s7.bottle_sessions} mamadeiras`);
-      if (s7.total_feed_ml) feeds.push(`${s7.total_feed_ml}ml totais`);
+      if (s7.total_bottle_ml) feeds.push(`${s7.total_bottle_ml}ml em mamadeiras`);
       parts.push(`- Alimentacao: ${feeds.join(', ')}`);
     }
-    const diapers = (s7.diaper_pee ?? 0) + (s7.diaper_poop ?? 0) + (s7.diaper_both ?? 0);
+    const diapers = (s7.diaper_wet ?? 0) + (s7.diaper_dirty ?? 0);
     if (diapers) {
-      parts.push(`- Fraldas: ${diapers} trocas (${s7.diaper_pee ?? 0} xixi, ${s7.diaper_poop ?? 0} coco, ${s7.diaper_both ?? 0} ambos)`);
+      parts.push(`- Fraldas: ${diapers} trocas (${s7.diaper_wet ?? 0} xixi, ${s7.diaper_dirty ?? 0} coco)`);
     }
     if (s7.bath_count) parts.push(`- Banhos: ${s7.bath_count}`);
   }
