@@ -24,7 +24,7 @@ const baseTabs: readonly TabDef[] = [
 
 const HISTORY_TAB: TabDef = { to: '/history', icon: 'history', label: 'Histórico' }
 const YAYA_PLUS_TAB: TabDef = { to: '/yaya-plus', icon: 'workspace_premium', label: 'Yaya+' }
-// const YAIA_TAB: TabDef = { to: '/yaia', icon: 'auto_awesome', label: 'yaIA' } // oculto para submissão Apple
+const YAIA_TAB: TabDef = { to: '/yaia', icon: 'auto_awesome', label: 'yaIA' }
 
 const LONG_PRESS_MS = 600
 const DOUBLE_TAP_MS = 300
@@ -42,12 +42,11 @@ export default function BottomNav() {
   const activeColorClass = baby?.gender === 'girl' ? 'text-tertiary' : 'text-primary'
   const activeRingClass = baby?.gender === 'girl' ? 'ring-tertiary' : 'ring-primary'
 
-  // Nav adaptativa com 4 slots: Início | Insights | Histórico/Yaya+ | Perfil.
-  // Free vê "Yaya+" (upgrade) em vez de "Histórico".
-  // yaIA está temporariamente oculta da nav (feature flag off para submissão).
+  // Nav adaptativa com 5 slots: Início | Insights | yaIA (centro, destaque)
+  // | Histórico/Yaya+ | Perfil. Free vê "Yaya+" (upgrade) em vez de "Histórico".
   const tabs = useMemo<readonly TabDef[]>(() => {
-    const third = isPremium ? HISTORY_TAB : YAYA_PLUS_TAB
-    return [baseTabs[0], baseTabs[1], third, baseTabs[2]]
+    const fourth = isPremium ? HISTORY_TAB : YAYA_PLUS_TAB
+    return [baseTabs[0], baseTabs[1], YAIA_TAB, fourth, baseTabs[2]]
   }, [isPremium])
 
   const babyPhoto = baby?.photoUrl
