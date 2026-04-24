@@ -1,11 +1,15 @@
-// yaIA chat proxy (v5)
+// yaIA chat proxy (v6)
 // - Valida JWT do app
 // - Confere membership + consent
 // - Enforce limite free
-// - Chama get_yaia_context e envia payload enriquecido pro n8n
+// - Chama get_yaia_context e envia payload enriquecido pro n8n (sem history)
 // - Guard-rail: se baby.name vier vazio, nega envio pro n8n (NO_CONTEXT)
 // - Aceita resposta novo formato { messages, suggestions, sources } OU legado { reply }
 // - Persiste conversa com separador "\n\n---\n\n" entre bubbles
+//
+// Historico da conversa do AI Agent agora e responsabilidade do Postgres Chat
+// Memory do n8n (tabela yaia_agent_memory). O app le yaia_conversations
+// apenas para render da UI.
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
@@ -19,7 +23,6 @@ const YAIA_WEBHOOK_SECRET = Deno.env.get('YAIA_WEBHOOK_SECRET') ?? '';
 const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
 const FREE_MONTHLY_LIMIT = 10;
-const HISTORY_LIMIT = 10; // 20 antes, reduzido pra cortar latencia
 const BUBBLE_SEPARATOR = '\n\n---\n\n';
 
 const corsHeaders = {
@@ -132,22 +135,8 @@ serve(async (req) => {
       return json({ error: 'NO_CONTEXT' }, 503);
     }
 
-    // Historico
-    const { data: historyRows } = await admin
-      .from('yaia_conversations')
-      .select('role, content, created_at')
-      .eq('user_id', userId)
-      .eq('baby_id', babyId)
-      .order('created_at', { ascending: false })
-      .limit(HISTORY_LIMIT);
-    const history = (historyRows ?? [])
-      .slice()
-      .reverse()
-      .map((m) => ({
-        role: m.role,
-        // Split bubbles into one content string pro historico (IA nao precisa ver separador)
-        content: typeof m.content === 'string' ? m.content.replaceAll(BUBBLE_SEPARATOR, ' ') : '',
-      }));
+    // Historico da conversa: agora e responsabilidade do Postgres Chat Memory
+    // do n8n (tabela yaia_agent_memory). Nao enviamos mais do edge.
 
     const contextSummary = buildContextSummary(context);
 
@@ -160,7 +149,6 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         message,
-        history,
         user_id: userId,
         baby_id: babyId,
         baby: context.baby,
