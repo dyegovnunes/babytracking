@@ -101,8 +101,8 @@ workflows:
           # Mantém em sync com app/package.json e app/android/app/build.gradle.
           # Bump aqui sempre que subir versão.
           PBXPROJ="app/ios/App/App.xcodeproj/project.pbxproj"
-          sed -i '' 's/MARKETING_VERSION = [^;]*;/MARKETING_VERSION = 1.9.2;/g' "$PBXPROJ"
-          sed -i '' 's/CURRENT_PROJECT_VERSION = [^;]*;/CURRENT_PROJECT_VERSION = 57;/g' "$PBXPROJ"
+          sed -i '' 's/MARKETING_VERSION = [^;]*;/MARKETING_VERSION = 1.9.3;/g' "$PBXPROJ"
+          sed -i '' 's/CURRENT_PROJECT_VERSION = [^;]*;/CURRENT_PROJECT_VERSION = 58;/g' "$PBXPROJ"
 
       - name: Use fetched profiles
         script: |
