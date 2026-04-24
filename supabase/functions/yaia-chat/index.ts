@@ -180,7 +180,14 @@ serve(async (req) => {
       `de conversas anteriores, ou em qualquer outro lugar, é IRRELEVANTE. Use ` +
       `exclusivamente "${babyBasics.name}" nas suas respostas. Se a pergunta do ` +
       `usuário mencionar um nome diferente, assuma que o usuário errou e use ` +
-      `"${babyBasics.name}".]\n\n`;
+      `"${babyBasics.name}". ` +
+      `VOCABULÁRIO PROIBIDO: nunca escreva a palavra "mamada" ou "mamadas" ` +
+      `(são termos banidos no produto). Use sempre "amamentação" ou "amamentações" ` +
+      `no lugar. "Mamadeira"/"mamadeiras" (o recipiente) continuam permitidos. ` +
+      `BLOG OBRIGATÓRIO: se a pergunta envolver conselho pediátrico (sono, ` +
+      `alimentação, desenvolvimento, saltos, marcos, comportamento, brincadeiras, ` +
+      `vacinas, saúde), chame search_blog_yaya ANTES de responder e cite o ` +
+      `artigo achado no campo "sources".]\n\n`;
     const messageWithGrounding = groundingPrefix + message;
 
     // Chamada slim pro n8n. O nome do bebê vai tanto no campo `baby` (pro
@@ -218,10 +225,14 @@ serve(async (req) => {
       return json({ error: 'Resposta invalida da yaIA.', debug: { preview: n8nBody.slice(0, 300) } }, 502);
     }
 
-    const messages = normalizeMessages(n8nData);
-    if (!messages.length) {
+    const rawMessages = normalizeMessages(n8nData);
+    if (!rawMessages.length) {
       return json({ error: 'Resposta invalida da yaIA.', debug: { keys: Object.keys(n8nData) } }, 502);
     }
+    // Sanitização server-side de vocabulário proibido. Mesmo que a IA
+    // escorregue, o usuário nunca vê. "Mamadeira"/"mamadeiras" (o objeto)
+    // não são afetados — regex usa word boundary preciso.
+    const messages = rawMessages.map(sanitizeBannedWords);
 
     const suggestions = Array.isArray(n8nData.suggestions)
       ? n8nData.suggestions.filter((s) => typeof s === 'string' && s.trim().length > 0).slice(0, 3)
@@ -278,6 +289,29 @@ function toMonthKey(d: Date): string {
   const y = d.getUTCFullYear();
   const m = String(d.getUTCMonth() + 1).padStart(2, '0');
   return `${y}-${m}`;
+}
+
+/**
+ * Remove palavras proibidas do output da IA. Camada server-side de
+ * segurança: mesmo se o prompt falhar, o usuário nunca vê.
+ *
+ * - "mamada" / "mamadas" → "amamentação" / "amamentações"
+ *   (regra comercial do Yaya: termo banido em copy visível)
+ * - "mamadeira" / "mamadeiras" são preservados (objeto diferente).
+ *
+ * Regex usa lookahead pra garantir que NÃO vem "eira" depois — assim
+ * "mamadeiras" passa ileso.
+ */
+function sanitizeBannedWords(text: string): string {
+  return text
+    // "mamadas" (plural) — não seguido de "eira"
+    .replace(/\bmamadas\b(?!eira)/gi, (match) =>
+      match[0] === 'M' ? 'Amamentações' : 'amamentações',
+    )
+    // "mamada" (singular) — não seguido de "eira" nem "s"
+    .replace(/\bmamada\b(?!eira)(?!s)/gi, (match) =>
+      match[0] === 'M' ? 'Amamentação' : 'amamentação',
+    );
 }
 
 function formatAgeLabel(b: BabyBasics): string {
