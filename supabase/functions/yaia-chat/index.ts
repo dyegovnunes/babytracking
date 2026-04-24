@@ -1,4 +1,4 @@
-// yaIA chat proxy (v6)
+// yaIA chat proxy (v7)
 // - Valida JWT do app
 // - Confere membership + consent
 // - Enforce limite free
@@ -39,11 +39,30 @@ interface YaiaContext {
     age_days?: number;
     age_weeks?: number;
     age_months?: number;
+    quiet_hours_start?: number | null;
+    quiet_hours_end?: number | null;
   };
   recent_logs?: Array<{ event_id: string; timestamp: string; ml?: number; duration?: number; notes?: string }>;
-  active_medications?: Array<{ name: string; dosage?: string; frequency_hours?: number; schedule_times?: unknown; notes?: string; last_given?: string }>;
-  vaccines_pending?: Array<{ vaccine_name: string; status: string; applied_at?: string }>;
-  recent_milestones?: Array<{ milestone_name: string; category?: string; registered_at: string }>;
+  logs_summary_7d?: {
+    total_sleep_minutes?: number;
+    sleep_sessions?: number;
+    total_feed_ml?: number;
+    breast_sessions?: number;
+    bottle_sessions?: number;
+    diaper_pee?: number;
+    diaper_poop?: number;
+    diaper_both?: number;
+    bath_count?: number;
+  };
+  measurements?: Array<{ type: string; value: number; unit: string; measured_at: string; notes?: string }>;
+  active_medications?: Array<{ name: string; dosage?: string; frequency_hours?: number; schedule_times?: unknown; notes?: string; last_given?: string; start_date?: string; end_date?: string }>;
+  recent_inactive_medications?: Array<{ name: string; dosage?: string; start_date?: string; end_date?: string }>;
+  vaccines_applied?: Array<{ vaccine_name: string; applied_at: string; location?: string }>;
+  vaccines_pending?: Array<{ vaccine_name: string; status: string }>;
+  vaccines_summary?: { applied_count: number; pending_count: number; overdue_count: number; total_count: number };
+  milestones_achieved?: Array<{ milestone_name: string; category?: string; achieved_at: string; note?: string }>;
+  milestones_summary_by_category?: Record<string, number>;
+  leap_mood_recent?: Array<{ leap_id: string; mood: string; entry_date: string }>;
 }
 
 interface N8nResponse {
@@ -254,6 +273,7 @@ function buildContextSummary(ctx: YaiaContext): string {
   const parts: string[] = [];
   parts.push('=== CONTEXTO REAL DO BEBE (use esses dados, nunca invente) ===');
 
+  // Dados basicos
   if (ctx.baby?.name) {
     const g = ctx.baby.gender === 'boy' ? 'masculino' : ctx.baby.gender === 'girl' ? 'feminino' : 'nao informado';
     const agePieces: string[] = [];
@@ -264,14 +284,52 @@ function buildContextSummary(ctx: YaiaContext): string {
     parts.push(`Genero: ${g}`);
     parts.push(`Nascimento: ${ctx.baby.birth_date ?? 'nao informado'}`);
     if (agePieces.length) parts.push(`Idade: ${agePieces.join(' / ')}`);
+    if (ctx.baby.quiet_hours_start != null && ctx.baby.quiet_hours_end != null) {
+      parts.push(`Horario noturno configurado: das ${ctx.baby.quiet_hours_start}h as ${ctx.baby.quiet_hours_end}h`);
+    }
   } else {
     parts.push('Nome: nao disponivel');
   }
 
+  // Medidas (peso, altura, periimetro)
+  const meas = ctx.measurements ?? [];
+  if (meas.length) {
+    parts.push('');
+    parts.push('-- Medidas recentes (peso, altura, perimetro) --');
+    for (const m of meas.slice(0, 10)) {
+      const when = typeof m.measured_at === 'string' ? m.measured_at.slice(0, 10) : '';
+      parts.push(`- ${when} | ${m.type}: ${m.value}${m.unit ?? ''}${m.notes ? ' (' + m.notes + ')' : ''}`);
+    }
+  }
+
+  // Resumo agregado ultimos 7 dias
+  const s7 = ctx.logs_summary_7d;
+  if (s7) {
+    parts.push('');
+    parts.push('-- Resumo dos ultimos 7 dias --');
+    if (s7.sleep_sessions) {
+      const hours = Math.round((s7.total_sleep_minutes ?? 0) / 6) / 10;
+      parts.push(`- Sono: ${s7.sleep_sessions} sessoes${hours > 0 ? `, ~${hours}h totais` : ''}`);
+    }
+    if (s7.breast_sessions || s7.bottle_sessions) {
+      const feeds: string[] = [];
+      if (s7.breast_sessions) feeds.push(`${s7.breast_sessions} mamadas no peito`);
+      if (s7.bottle_sessions) feeds.push(`${s7.bottle_sessions} mamadeiras`);
+      if (s7.total_feed_ml) feeds.push(`${s7.total_feed_ml}ml totais`);
+      parts.push(`- Alimentacao: ${feeds.join(', ')}`);
+    }
+    const diapers = (s7.diaper_pee ?? 0) + (s7.diaper_poop ?? 0) + (s7.diaper_both ?? 0);
+    if (diapers) {
+      parts.push(`- Fraldas: ${diapers} trocas (${s7.diaper_pee ?? 0} xixi, ${s7.diaper_poop ?? 0} coco, ${s7.diaper_both ?? 0} ambos)`);
+    }
+    if (s7.bath_count) parts.push(`- Banhos: ${s7.bath_count}`);
+  }
+
+  // Logs recentes (detalhados)
   const logs = ctx.recent_logs ?? [];
   if (logs.length) {
     parts.push('');
-    parts.push(`-- Ultimos ${logs.length} registros (mais recente primeiro) --`);
+    parts.push(`-- Ultimos ${Math.min(logs.length, 30)} registros (mais recente primeiro) --`);
     for (const l of logs.slice(0, 30)) {
       const when = typeof l.timestamp === 'string' ? l.timestamp.replace('T', ' ').slice(0, 16) : '';
       const bits = [when, l.event_id];
@@ -282,36 +340,81 @@ function buildContextSummary(ctx: YaiaContext): string {
     }
   } else {
     parts.push('');
-    parts.push('-- Registros: nenhum log registrado ainda. Se o pai/mae perguntar sobre padrao de sono/fralda/alimentacao, diga que ainda nao ha dados suficientes. --');
+    parts.push('-- Registros: nenhum log nos ultimos 30 dias. Se o pai/mae perguntar sobre padrao de sono/fralda/alimentacao, diga que ainda nao ha dados suficientes. --');
   }
 
+  // Medicamentos ativos
   const meds = ctx.active_medications ?? [];
   if (meds.length) {
     parts.push('');
-    parts.push('-- Medicamentos ativos --');
+    parts.push('-- Medicamentos ATIVOS --');
     for (const m of meds) {
       const bits = [m.name];
       if (m.dosage) bits.push(m.dosage);
       if (m.frequency_hours) bits.push(`a cada ${m.frequency_hours}h`);
       if (m.last_given) bits.push(`ultima dose: ${m.last_given}`);
+      if (m.start_date) bits.push(`desde ${m.start_date}`);
+      if (m.end_date) bits.push(`ate ${m.end_date}`);
       parts.push(`- ${bits.join(' | ')}`);
     }
   }
 
-  const vacs = ctx.vaccines_pending ?? [];
-  if (vacs.length) {
+  // Medicamentos inativos recentes (historico)
+  const medsOff = ctx.recent_inactive_medications ?? [];
+  if (medsOff.length) {
     parts.push('');
-    parts.push('-- Vacinas pendentes/atrasadas --');
-    for (const v of vacs) parts.push(`- ${v.vaccine_name} (${v.status})`);
+    parts.push('-- Medicamentos recentes (ja encerrados, ultimos 90 dias) --');
+    for (const m of medsOff) {
+      parts.push(`- ${m.name}${m.dosage ? ' ' + m.dosage : ''} (de ${m.start_date ?? '?'} a ${m.end_date ?? '?'})`);
+    }
   }
 
-  const mils = ctx.recent_milestones ?? [];
+  // Vacinas
+  const vSum = ctx.vaccines_summary;
+  const vApplied = ctx.vaccines_applied ?? [];
+  const vPending = ctx.vaccines_pending ?? [];
+  if (vSum || vApplied.length || vPending.length) {
+    parts.push('');
+    parts.push('-- Vacinas --');
+    if (vSum) {
+      parts.push(`Resumo: ${vSum.applied_count} aplicadas, ${vSum.pending_count} pendentes, ${vSum.overdue_count} atrasadas (total ${vSum.total_count}).`);
+    }
+    if (vApplied.length) {
+      parts.push(`Aplicadas (${vApplied.length}):`);
+      for (const v of vApplied) {
+        const when = typeof v.applied_at === 'string' ? v.applied_at.slice(0, 10) : '?';
+        parts.push(`- ${v.vaccine_name} em ${when}${v.location ? ' (' + v.location + ')' : ''}`);
+      }
+    }
+    if (vPending.length) {
+      parts.push(`Pendentes/Atrasadas (${vPending.length}):`);
+      for (const v of vPending) parts.push(`- ${v.vaccine_name} (${v.status})`);
+    }
+  }
+
+  // Marcos atingidos + resumo por categoria
+  const mils = ctx.milestones_achieved ?? [];
+  const milSum = ctx.milestones_summary_by_category ?? {};
   if (mils.length) {
     parts.push('');
-    parts.push('-- Marcos recentes --');
-    for (const ms of mils.slice(0, 10)) {
-      const when = typeof ms.registered_at === 'string' ? ms.registered_at.slice(0, 10) : '';
-      parts.push(`- ${ms.milestone_name}${when ? ' em ' + when : ''}`);
+    parts.push(`-- Marcos atingidos (${mils.length}) --`);
+    const catBits = Object.entries(milSum).map(([c, n]) => `${c}: ${n}`);
+    if (catBits.length) parts.push(`Por categoria: ${catBits.join(', ')}`);
+    for (const m of mils.slice(0, 20)) {
+      const when = typeof m.achieved_at === 'string' ? m.achieved_at.slice(0, 10) : '';
+      const cat = m.category ? ` [${m.category}]` : '';
+      parts.push(`- ${m.milestone_name}${cat} em ${when}${m.note ? ': ' + m.note : ''}`);
+    }
+  }
+
+  // Saltos (leap mood entries recentes)
+  const mood = ctx.leap_mood_recent ?? [];
+  if (mood.length) {
+    parts.push('');
+    parts.push('-- Registros de humor em saltos (ultimos 14 dias) --');
+    for (const me of mood.slice(0, 20)) {
+      const when = typeof me.entry_date === 'string' ? me.entry_date.slice(0, 10) : '';
+      parts.push(`- ${when} | salto ${me.leap_id}: ${me.mood}`);
     }
   }
 
