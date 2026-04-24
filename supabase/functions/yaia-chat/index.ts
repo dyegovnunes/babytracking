@@ -17,7 +17,12 @@ const YAIA_WEBHOOK_SECRET = Deno.env.get('YAIA_WEBHOOK_SECRET') ?? '';
 
 const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-const FREE_MONTHLY_LIMIT = 10;
+// Limite free novo (abril 2026): 2 perguntas por dia, teto de 15 no mês.
+// Substitui o modelo anterior de 10/mês puro (UX travava o usuário por
+// semanas ao bater o limite). Diário renova todo dia UTC; mensal é só
+// trava de seguranca contra power users.
+const FREE_DAILY_LIMIT = 2;
+const FREE_MONTHLY_CAP = 15;
 const BUBBLE_SEPARATOR = '\n\n---\n\n';
 
 const corsHeaders = {
@@ -92,22 +97,58 @@ serve(async (req) => {
     if (!baby) return json({ error: 'Bebe nao encontrado' }, 404);
     const isPremium = !!baby.is_premium;
 
-    let remaining: number | null = null;
+    // Enforcement de limite free: 2/dia com teto 15/mês.
+    // Checa diário antes do mensal (reset bate primeiro). day_key rotaciona
+    // automaticamente — se o registro é de outro dia, zera day_count.
+    let remaining: { daily: number; monthly: number } | null = null;
     if (!isPremium) {
-      const monthKey = toMonthKey(new Date());
+      const now = new Date();
+      const monthKey = toMonthKey(now);
+      const dayKey = toDayKey(now);
       const { data: existing } = await admin
         .from('yaia_usage')
-        .select('count')
+        .select('count, day_key, day_count')
         .eq('user_id', userId)
         .eq('month_key', monthKey)
         .maybeSingle();
-      const newCount = (existing?.count ?? 0) + 1;
-      if (newCount > FREE_MONTHLY_LIMIT) return json({ error: 'LIMIT_REACHED', remaining: 0 }, 402);
+
+      const prevDayKey = existing?.day_key ?? null;
+      const prevDayCount = prevDayKey === dayKey ? (existing?.day_count ?? 0) : 0;
+      const prevMonthCount = existing?.count ?? 0;
+
+      const newDayCount = prevDayCount + 1;
+      const newMonthCount = prevMonthCount + 1;
+
+      if (newDayCount > FREE_DAILY_LIMIT) {
+        return json({
+          error: 'LIMIT_REACHED',
+          reset: 'tomorrow',
+          remaining: { daily: 0, monthly: Math.max(0, FREE_MONTHLY_CAP - prevMonthCount) },
+        }, 402);
+      }
+      if (newMonthCount > FREE_MONTHLY_CAP) {
+        return json({
+          error: 'LIMIT_REACHED',
+          reset: 'next_month',
+          remaining: { daily: Math.max(0, FREE_DAILY_LIMIT - prevDayCount), monthly: 0 },
+        }, 402);
+      }
+
       await admin.from('yaia_usage').upsert(
-        { user_id: userId, month_key: monthKey, count: newCount, updated_at: new Date().toISOString() },
+        {
+          user_id: userId,
+          month_key: monthKey,
+          count: newMonthCount,
+          day_key: dayKey,
+          day_count: newDayCount,
+          updated_at: now.toISOString(),
+        },
         { onConflict: 'user_id,month_key' },
       );
-      remaining = FREE_MONTHLY_LIMIT - newCount;
+      remaining = {
+        daily: FREE_DAILY_LIMIT - newDayCount,
+        monthly: FREE_MONTHLY_CAP - newMonthCount,
+      };
     }
 
     // Baby basics (sempre chamada — IA precisa pra saudar e saber idade).
@@ -176,8 +217,15 @@ serve(async (req) => {
       .insert([
         { user_id: userId, baby_id: babyId, role: 'user', content: message, created_at: nowIso },
         {
-          user_id: userId, baby_id: babyId, role: 'assistant', content: assistantContent,
+          user_id: userId,
+          baby_id: babyId,
+          role: 'assistant',
+          content: assistantContent,
           created_at: new Date(Date.now() + 1).toISOString(),
+          // Persistir sources + suggestions pra sobreviver a reload da tela.
+          // Antes disso, chip "Leia no blog" sumia quando usuário saia e voltava.
+          sources: sources.length ? sources : null,
+          suggestions: suggestions.length ? suggestions : null,
         },
       ])
       .select('id, role');
@@ -207,6 +255,13 @@ function toMonthKey(d: Date): string {
   const y = d.getUTCFullYear();
   const m = String(d.getUTCMonth() + 1).padStart(2, '0');
   return `${y}-${m}`;
+}
+
+function toDayKey(d: Date): string {
+  const y = d.getUTCFullYear();
+  const m = String(d.getUTCMonth() + 1).padStart(2, '0');
+  const dd = String(d.getUTCDate()).padStart(2, '0');
+  return `${y}-${m}-${dd}`;
 }
 
 function appendUtm(url: string): string {

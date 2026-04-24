@@ -5,12 +5,19 @@ export interface YaIASource {
   url: string
 }
 
+export interface YaIARemaining {
+  daily: number
+  monthly: number
+}
+
+export type YaIAResetWhen = 'tomorrow' | 'next_month'
+
 export interface YaIAResponse {
   messages: string[]
   suggestions: string[]
   sources: YaIASource[]
   messageId?: string
-  remaining: number | null
+  remaining: YaIARemaining | null
 }
 
 export type YaIAError =
@@ -24,10 +31,16 @@ export type YaIAError =
 
 export class YaIAChatError extends Error {
   code: YaIAError
-  constructor(code: YaIAError, message?: string) {
-    super(message ?? code)
+  /** Só preenchido em LIMIT_REACHED: distingue estouro diário de mensal. */
+  resetWhen?: YaIAResetWhen
+  /** Só preenchido em LIMIT_REACHED: o que ainda resta no outro contador. */
+  remaining?: YaIARemaining
+  constructor(code: YaIAError, opts?: { message?: string; resetWhen?: YaIAResetWhen; remaining?: YaIARemaining }) {
+    super(opts?.message ?? code)
     this.name = 'YaIAChatError'
     this.code = code
+    this.resetWhen = opts?.resetWhen
+    this.remaining = opts?.remaining
   }
 }
 
@@ -55,7 +68,16 @@ export async function sendToYaIA(params: {
     throw new YaIAChatError('NETWORK')
   }
 
-  if (res.status === 402) throw new YaIAChatError('LIMIT_REACHED')
+  if (res.status === 402) {
+    const body = await res.json().catch(() => null)
+    const resetWhen: YaIAResetWhen | undefined =
+      body?.reset === 'tomorrow' || body?.reset === 'next_month' ? body.reset : undefined
+    const remaining: YaIARemaining | undefined =
+      body?.remaining && typeof body.remaining === 'object'
+        ? { daily: Number(body.remaining.daily ?? 0), monthly: Number(body.remaining.monthly ?? 0) }
+        : undefined
+    throw new YaIAChatError('LIMIT_REACHED', { resetWhen, remaining })
+  }
   if (res.status === 428) throw new YaIAChatError('CONSENT_REQUIRED')
   if (res.status === 503) throw new YaIAChatError('NO_CONTEXT')
   if (res.status === 401) throw new YaIAChatError('NOT_AUTHED')
@@ -78,12 +100,20 @@ export async function sendToYaIA(params: {
       )
     : []
 
+  // remaining agora vem como { daily, monthly } (objeto). Se vier number
+  // puro (backend antigo), normaliza pra null pra não quebrar a UI.
+  const rawRemaining = data.remaining
+  const remaining: YaIARemaining | null =
+    rawRemaining && typeof rawRemaining === 'object'
+      ? { daily: Number(rawRemaining.daily ?? 0), monthly: Number(rawRemaining.monthly ?? 0) }
+      : null
+
   return {
     messages,
     suggestions,
     sources,
     messageId: typeof data.message_id === 'string' ? data.message_id : undefined,
-    remaining: data.remaining ?? null,
+    remaining,
   }
 }
 
@@ -94,7 +124,7 @@ export async function markConsent(): Promise<void> {
     .from('profiles')
     .update({ yaia_consent_at: new Date().toISOString() })
     .eq('id', session.user.id)
-  if (error) throw new YaIAChatError('UNKNOWN', error.message)
+  if (error) throw new YaIAChatError('UNKNOWN', { message: error.message })
 }
 
 export async function submitFeedback(params: {
@@ -117,5 +147,5 @@ export async function submitFeedback(params: {
       },
       { onConflict: 'message_id,user_id' },
     )
-  if (error) throw new YaIAChatError('UNKNOWN', error.message)
+  if (error) throw new YaIAChatError('UNKNOWN', { message: error.message })
 }

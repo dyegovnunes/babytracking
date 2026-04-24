@@ -8,6 +8,8 @@ interface PaywallModalProps {
   isOpen: boolean;
   onClose: () => void;
   trigger?: 'history' | 'insights' | 'multi_caregiver' | 'multi_profile' | 'daily_limit' | 'generic' | 'shared_report' | 'medications' | 'yaia';
+  /** Só usado com trigger='yaia' — muda a copy pra "volta amanhã" (diário) ou "renova dia 1" (mensal). */
+  resetWhen?: 'tomorrow' | 'next_month';
 }
 
 const TRIGGER_MESSAGES: Record<string, { title: string; description: string }> = {
@@ -41,7 +43,15 @@ const TRIGGER_MESSAGES: Record<string, { title: string; description: string }> =
   },
   yaia: {
     title: 'yaIA sem limite',
-    description: 'Você usou suas 10 perguntas do mês para a yaIA. Com o Yaya+, pergunte à vontade.',
+    description: 'Você atingiu o limite grátis da yaIA. Com o Yaya+, pergunte à vontade.',
+  },
+  yaia_daily: {
+    title: 'yaIA sem limite',
+    description: 'Você usou suas 2 perguntas de hoje. Volta amanhã, ou libera ilimitado agora com o Yaya+.',
+  },
+  yaia_monthly: {
+    title: 'yaIA sem limite',
+    description: 'Você atingiu o teto mensal de 15 perguntas. Renova no dia 1º, ou libera ilimitado com o Yaya+.',
   },
   generic: {
     title: 'Yaya+',
@@ -77,7 +87,7 @@ const FALLBACK_PLANS: PlanOption[] = [
   { type: 'lifetime', label: 'Vitalício', price: 'R$449,90', detail: 'Uma vez, para sempre' },
 ];
 
-export function PaywallModal({ isOpen, onClose, trigger = 'generic' }: PaywallModalProps) {
+export function PaywallModal({ isOpen, onClose, trigger = 'generic', resetWhen }: PaywallModalProps) {
   const { purchase, restore } = usePurchase();
   const [loading, setLoading] = useState(false);
   const [restoring, setRestoring] = useState(false);
@@ -134,7 +144,15 @@ export function PaywallModal({ isOpen, onClose, trigger = 'generic' }: PaywallMo
     });
   }, [isOpen]);
 
-  const message = TRIGGER_MESSAGES[trigger];
+  // Pra yaIA, ajusta copy por tipo de reset: diário (volta amanhã) vs
+  // mensal (renova dia 1). Sem resetWhen cai no texto genérico.
+  const triggerKey =
+    trigger === 'yaia' && resetWhen === 'tomorrow'
+      ? 'yaia_daily'
+      : trigger === 'yaia' && resetWhen === 'next_month'
+      ? 'yaia_monthly'
+      : trigger;
+  const message = TRIGGER_MESSAGES[triggerKey] ?? TRIGGER_MESSAGES[trigger];
   const selected = plans.find((p) => p.type === selectedPlan) ?? plans[0];
 
   const handlePurchase = async () => {

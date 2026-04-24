@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { motion } from 'framer-motion'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import type { YaIAMessage } from '../useYaIA'
@@ -28,12 +29,17 @@ export default function ChatBubble({ message, isFresh, onRetry, onRate }: ChatBu
 function UserBubble({ message, onRetry }: { message: YaIAMessage; onRetry?: (id: string) => void }) {
   const content = message.bubbles[0] ?? ''
   return (
-    <div className="flex flex-col items-end gap-1">
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25, ease: 'easeOut' }}
+      className="flex flex-col items-end gap-1"
+    >
       <div
-        className={`max-w-[80%] rounded-md px-3 py-2 whitespace-pre-wrap break-words transition-colors ${
+        className={`max-w-[80%] rounded-md rounded-br-sm px-3.5 py-2 whitespace-pre-wrap break-words shadow-sm transition-colors ${
           message.failed
             ? 'bg-error-container/40 text-on-surface ring-1 ring-error/40'
-            : 'bg-primary/15 text-on-surface'
+            : 'bg-gradient-to-br from-primary/20 to-primary/10 text-on-surface ring-1 ring-primary/15'
         } ${message.pending ? 'opacity-60' : ''}`}
       >
         {content}
@@ -48,6 +54,21 @@ function UserBubble({ message, onRetry }: { message: YaIAMessage; onRetry?: (id:
           Não enviou. Toca pra tentar de novo
         </button>
       )}
+    </motion.div>
+  )
+}
+
+function AssistantAvatar() {
+  return (
+    <div className="relative shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-primary/30 to-tertiary/20 text-primary flex items-center justify-center text-[11px] font-semibold ring-1 ring-primary/20">
+      yA
+      <span
+        className="material-symbols-outlined absolute -top-0.5 -right-0.5 text-[11px] text-primary bg-surface rounded-full leading-none p-[1px] ring-1 ring-primary/30"
+        style={{ fontVariationSettings: "'FILL' 1" }}
+        aria-hidden
+      >
+        auto_awesome
+      </span>
     </div>
   )
 }
@@ -108,42 +129,47 @@ function AssistantBubbles({
 
   return (
     <div className="flex flex-col gap-1.5">
-      {message.bubbles.slice(0, visibleCount).map((text, idx) => (
-        <div key={idx} className="flex justify-start gap-2">
-          {idx === 0 ? (
-            <div className="shrink-0 w-7 h-7 rounded-full bg-primary/20 text-primary flex items-center justify-center text-[11px] font-semibold">
-              yA
-            </div>
-          ) : (
-            <div className="shrink-0 w-7 h-7" aria-hidden />
-          )}
-          <div
-            className="max-w-[80%] rounded-md bg-surface-container text-on-surface px-3 py-2 break-words select-none"
-            onPointerDown={startLongPress}
-            onPointerUp={clearLongPress}
-            onPointerLeave={clearLongPress}
-            onPointerCancel={clearLongPress}
-            onContextMenu={(e) => {
-              e.preventDefault()
-              setMenuOpen(true)
-            }}
+      {message.bubbles.slice(0, visibleCount).map((text, idx) => {
+        // Primeira bubble ganha "tail" sutil no canto superior esquerdo.
+        // Demais ficam simétricas — evita parecer escadinha.
+        const tailClass = idx === 0 ? 'rounded-md rounded-tl-sm' : 'rounded-md'
+        return (
+          <motion.div
+            key={idx}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+            className="flex justify-start gap-2"
           >
-            <div className="yaia-markdown">
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                allowedElements={['p', 'strong', 'em', 'ul', 'ol', 'li', 'code', 'br']}
-                unwrapDisallowed
-              >
-                {text}
-              </ReactMarkdown>
+            {idx === 0 ? <AssistantAvatar /> : <div className="shrink-0 w-7 h-7" aria-hidden />}
+            <div
+              className={`max-w-[80%] ${tailClass} bg-gradient-to-br from-surface-container to-surface-container-high text-on-surface px-3.5 py-2 break-words select-none shadow-sm ring-1 ring-outline-variant/10`}
+              onPointerDown={startLongPress}
+              onPointerUp={clearLongPress}
+              onPointerLeave={clearLongPress}
+              onPointerCancel={clearLongPress}
+              onContextMenu={(e) => {
+                e.preventDefault()
+                setMenuOpen(true)
+              }}
+            >
+              <div className="yaia-markdown">
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  allowedElements={['p', 'strong', 'em', 'ul', 'ol', 'li', 'code', 'br']}
+                  unwrapDisallowed
+                >
+                  {text}
+                </ReactMarkdown>
+              </div>
             </div>
-          </div>
-        </div>
-      ))}
+          </motion.div>
+        )
+      })}
 
       {showingDots && visibleCount < total && (
         <div className="flex justify-start gap-2 pl-9">
-          <div className="rounded-md bg-surface-container px-3 py-2 flex items-center gap-1">
+          <div className="rounded-md bg-surface-container px-3 py-2 flex items-center gap-1 ring-1 ring-outline-variant/10">
             <span className="w-1.5 h-1.5 rounded-full bg-on-surface-variant/60 animate-pulse" />
             <span className="w-1.5 h-1.5 rounded-full bg-on-surface-variant/60 animate-pulse [animation-delay:150ms]" />
             <span className="w-1.5 h-1.5 rounded-full bg-on-surface-variant/60 animate-pulse [animation-delay:300ms]" />
@@ -160,9 +186,14 @@ function AssistantBubbles({
               href={s.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-[11px] rounded-full bg-surface-container-high text-on-surface px-2.5 py-1 hover:bg-surface-variant transition-colors"
+              className="inline-flex items-center gap-1 text-[11px] rounded-full bg-primary/10 text-primary px-2.5 py-1 ring-1 ring-primary/20 hover:bg-primary/15 transition-colors"
             >
-              <span className="material-symbols-outlined text-[14px]">menu_book</span>
+              <span
+                className="material-symbols-outlined text-[14px]"
+                style={{ fontVariationSettings: "'FILL' 1" }}
+              >
+                menu_book
+              </span>
               Leia no blog: {s.title}
             </a>
           ))}

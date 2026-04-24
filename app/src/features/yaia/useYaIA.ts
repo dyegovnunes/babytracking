@@ -1,8 +1,15 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useAppState } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
-import { sendToYaIA, submitFeedback, YaIAChatError, type YaIASource } from './yaiaChatService'
+import {
+  sendToYaIA,
+  submitFeedback,
+  YaIAChatError,
+  type YaIARemaining,
+  type YaIAResetWhen,
+  type YaIASource,
+} from './yaiaChatService'
 
 const BUBBLE_SEPARATOR = '\n\n---\n\n'
 
@@ -14,27 +21,44 @@ export interface YaIAMessage {
   createdAt: string
   pending?: boolean
   failed?: boolean
-  /** Só aplicável à última mensagem assistant (volátil, some no próximo turno). */
+  /** Só aplicável à última mensagem assistant (volátil por turno, mas agora sobrevive a reload). */
   suggestions?: string[]
   sources?: YaIASource[]
 }
 
 export interface UseYaIAReturn {
+  /** Todas as mensagens carregadas (inclui sessões anteriores). */
   messages: YaIAMessage[]
+  /** Mensagens da sessão corrente (>= sessionStartedAt). */
+  currentSession: YaIAMessage[]
+  /** Quantas mensagens ficaram atrás de "Ver mensagens anteriores". */
+  previousCount: number
+  /** Expand/collapse das anteriores na UI. */
+  showPrevious: boolean
+  togglePrevious: () => void
+  /** timestamp ISO de criação da última assistant — usado pro auto-prompt de sessão. */
+  lastAssistantAt: string | null
   isLoading: boolean
   isHistoryLoading: boolean
-  remaining: number | null
+  remaining: YaIARemaining | null
+  limitResetWhen: YaIAResetWhen | null
   consentNeeded: boolean
   limitReached: boolean
   error: string | null
   sendMessage: (content: string) => Promise<void>
   retryMessage: (messageId: string) => Promise<void>
   giveFeedback: (messageId: string, rating: 1 | -1, reasonTag?: string) => Promise<void>
+  /** Encerra sessão atual: colapsa histórico e gera novo sessionStartedAt. */
+  endSession: () => void
   dismissLimit: () => void
   refreshConsent: () => Promise<void>
 }
 
 const HISTORY_LIMIT = 50
+
+function sessionStorageKey(babyId: string) {
+  return `yaia_session_${babyId}`
+}
 
 export function useYaIA(): UseYaIAReturn {
   const { user } = useAuth()
@@ -44,12 +68,40 @@ export function useYaIA(): UseYaIAReturn {
   const [messages, setMessages] = useState<YaIAMessage[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [isHistoryLoading, setIsHistoryLoading] = useState(false)
-  const [remaining, setRemaining] = useState<number | null>(null)
+  const [remaining, setRemaining] = useState<YaIARemaining | null>(null)
+  const [limitResetWhen, setLimitResetWhen] = useState<YaIAResetWhen | null>(null)
   const [consentNeeded, setConsentNeeded] = useState(false)
   const [limitReached, setLimitReached] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  /** ISO de início da sessão corrente (por bebê, em localStorage). */
+  const [sessionStartedAt, setSessionStartedAt] = useState<string | null>(null)
+  const [showPrevious, setShowPrevious] = useState(false)
 
   const tempIdRef = useRef(0)
+
+  // Carrega/inicializa sessionStartedAt quando baby muda.
+  useEffect(() => {
+    if (!babyId) {
+      setSessionStartedAt(null)
+      return
+    }
+    try {
+      const stored = localStorage.getItem(sessionStorageKey(babyId))
+      if (stored) {
+        setSessionStartedAt(stored)
+        return
+      }
+    } catch {
+      /* ignore */
+    }
+    // Sem valor armazenado: inicia sessão agora. Como só mensagens >=
+    // sessionStartedAt aparecem como "corrente", e nenhuma é >= "agora",
+    // a tela começa limpa — o que a gente quer pro primeiro acesso.
+    // Se já houver histórico, usuário vê "Ver N mensagens anteriores".
+    const startNow = new Date().toISOString()
+    try { localStorage.setItem(sessionStorageKey(babyId), startNow) } catch { /* ignore */ }
+    setSessionStartedAt(startNow)
+  }, [babyId])
 
   const refreshConsent = useCallback(async () => {
     if (!user) return
@@ -77,7 +129,7 @@ export function useYaIA(): UseYaIAReturn {
     ;(async () => {
       const { data, error } = await supabase
         .from('yaia_conversations')
-        .select('id, role, content, created_at')
+        .select('id, role, content, created_at, sources, suggestions')
         .eq('user_id', userId)
         .eq('baby_id', babyId)
         .order('created_at', { ascending: false })
@@ -88,14 +140,31 @@ export function useYaIA(): UseYaIAReturn {
         setIsHistoryLoading(false)
         return
       }
-      const rows = (data ?? []).slice().reverse().map((r): YaIAMessage => {
+      const ordered = (data ?? []).slice().reverse()
+      const rows: YaIAMessage[] = ordered.map((r, idx, arr): YaIAMessage => {
         const raw = (r.content as string) ?? ''
         const bubbles = raw.split(BUBBLE_SEPARATOR).map((b) => b.trim()).filter(Boolean)
+        const rawSources = r.sources as unknown
+        const sources: YaIASource[] | undefined = Array.isArray(rawSources)
+          ? (rawSources.filter(
+              (s): s is YaIASource =>
+                !!s && typeof (s as YaIASource).title === 'string' && typeof (s as YaIASource).url === 'string',
+            ) as YaIASource[])
+          : undefined
+        const rawSug = r.suggestions as unknown
+        const isLast = idx === arr.length - 1
+        // Suggestions só renderiza na ÚLTIMA assistant — mesma regra de turno.
+        const suggestions: string[] | undefined =
+          isLast && Array.isArray(rawSug)
+            ? (rawSug.filter((s): s is string => typeof s === 'string' && s.trim().length > 0) as string[])
+            : undefined
         return {
           id: r.id as string,
           role: r.role as 'user' | 'assistant',
           bubbles: bubbles.length ? bubbles : [raw],
           createdAt: r.created_at as string,
+          sources: sources && sources.length ? sources : undefined,
+          suggestions: suggestions && suggestions.length ? suggestions : undefined,
         }
       })
       console.log('[yaia] carregou', rows.length, 'mensagens do DB')
@@ -112,7 +181,7 @@ export function useYaIA(): UseYaIAReturn {
       const res = await sendToYaIA({ message: trimmed, babyId: targetBabyId })
       setRemaining(res.remaining)
       setMessages((prev) => {
-        // Limpa suggestions das mensagens anteriores (volátil).
+        // Limpa suggestions das mensagens anteriores (só a última mostra).
         const cleaned = prev.map((m) =>
           m.role === 'assistant' ? { ...m, suggestions: undefined } : m,
         )
@@ -137,7 +206,9 @@ export function useYaIA(): UseYaIAReturn {
       )
       if (e instanceof YaIAChatError) {
         if (e.code === 'LIMIT_REACHED') {
-          setRemaining(0)
+          if (e.remaining) setRemaining(e.remaining)
+          else setRemaining({ daily: 0, monthly: 0 })
+          setLimitResetWhen(e.resetWhen ?? 'tomorrow')
           setLimitReached(true)
         } else if (e.code === 'CONSENT_REQUIRED') {
           setConsentNeeded(true)
@@ -198,19 +269,65 @@ export function useYaIA(): UseYaIAReturn {
     }
   }, [])
 
+  const endSession = useCallback(() => {
+    if (!babyId) return
+    const now = new Date().toISOString()
+    try { localStorage.setItem(sessionStorageKey(babyId), now) } catch { /* ignore */ }
+    setSessionStartedAt(now)
+    setShowPrevious(false)
+    // Limpa suggestions/chips da última assistant — usuário acabou a sessão.
+    setMessages((prev) =>
+      prev.map((m) => (m.role === 'assistant' ? { ...m, suggestions: undefined } : m)),
+    )
+  }, [babyId])
+
+  const togglePrevious = useCallback(() => setShowPrevious((v) => !v), [])
+
   const dismissLimit = useCallback(() => setLimitReached(false), [])
+
+  // Split entre sessão anterior e corrente. sessionStartedAt pode ser null
+  // brevemente na montagem — nesse caso trata tudo como corrente.
+  const { currentSession, previousCount, lastAssistantAt } = useMemo(() => {
+    if (!sessionStartedAt) {
+      const lastA = [...messages].reverse().find((m) => m.role === 'assistant')
+      return {
+        currentSession: messages,
+        previousCount: 0,
+        lastAssistantAt: lastA?.createdAt ?? null,
+      }
+    }
+    const current: YaIAMessage[] = []
+    let prevCount = 0
+    for (const m of messages) {
+      if (m.createdAt >= sessionStartedAt) current.push(m)
+      else prevCount++
+    }
+    const lastA = [...current].reverse().find((m) => m.role === 'assistant')
+    return {
+      currentSession: current,
+      previousCount: prevCount,
+      lastAssistantAt: lastA?.createdAt ?? null,
+    }
+  }, [messages, sessionStartedAt])
 
   return {
     messages,
+    currentSession,
+    previousCount,
+    showPrevious,
+    togglePrevious,
+    lastAssistantAt,
     isLoading,
     isHistoryLoading,
     remaining,
+    limitResetWhen,
     consentNeeded,
     limitReached,
     error,
     sendMessage,
     retryMessage,
     giveFeedback,
+    endSession,
     dismissLimit,
     refreshConsent,
   }
