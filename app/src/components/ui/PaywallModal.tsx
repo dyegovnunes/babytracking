@@ -273,6 +273,27 @@ export function PaywallModal({ isOpen, onClose, trigger = 'generic' }: PaywallMo
               {restoring ? 'Verificando...' : 'Restaurar compra'}
             </button>
           </div>
+
+          {/* Links obrigatórios pela Apple (Guideline 3.1.2(c)) */}
+          <div className="flex items-center justify-center gap-3 mt-2">
+            <a
+              href="https://yayababy.app/privacy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[10px] text-on-surface/30 hover:text-on-surface/50 underline"
+            >
+              Privacidade
+            </a>
+            <span className="text-[10px] text-on-surface/20">·</span>
+            <a
+              href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[10px] text-on-surface/30 hover:text-on-surface/50 underline"
+            >
+              Termos de Uso
+            </a>
+          </div>
         </div>
       </div>
     </div>
