@@ -10,6 +10,7 @@ export interface YaIAMessage {
   content: string
   createdAt: string
   pending?: boolean
+  failed?: boolean
 }
 
 export interface UseYaIAReturn {
@@ -21,6 +22,7 @@ export interface UseYaIAReturn {
   limitReached: boolean
   error: string | null
   sendMessage: (content: string) => Promise<void>
+  retryMessage: (messageId: string) => Promise<void>
   dismissLimit: () => void
   refreshConsent: () => Promise<void>
 }
@@ -86,34 +88,20 @@ export function useYaIA(): UseYaIAReturn {
     return () => { cancelled = true }
   }, [user, babyId])
 
-  const sendMessage = useCallback(async (content: string) => {
-    const trimmed = content.trim()
-    if (!trimmed || !babyId || isLoading) return
-
+  // Núcleo do envio: recebe uma mensagem já presente no state (com pending=true)
+  // e cuida de tentar enviar, marcando failed=true em caso de erro (sem remover).
+  async function dispatchSend(tempId: string, trimmed: string, targetBabyId: string) {
     setError(null)
     setIsLoading(true)
-
-    // Optimistic: adiciona mensagem do usuário imediatamente
-    const tempId = `tmp_${++tempIdRef.current}`
-    const nowIso = new Date().toISOString()
-    const userMsg: YaIAMessage = {
-      id: tempId,
-      role: 'user',
-      content: trimmed,
-      createdAt: nowIso,
-      pending: true,
-    }
-    setMessages((prev) => [...prev, userMsg])
-
     try {
-      const { reply, remaining: rem } = await sendToYaIA({ message: trimmed, babyId })
+      const { reply, remaining: rem } = await sendToYaIA({ message: trimmed, babyId: targetBabyId })
       setRemaining(rem)
       setMessages((prev) => {
-        const withoutTemp = prev.map((m) =>
-          m.id === tempId ? { ...m, pending: false } : m,
+        const updated = prev.map((m) =>
+          m.id === tempId ? { ...m, pending: false, failed: false } : m,
         )
         return [
-          ...withoutTemp,
+          ...updated,
           {
             id: `tmp_assist_${++tempIdRef.current}`,
             role: 'assistant',
@@ -123,8 +111,12 @@ export function useYaIA(): UseYaIAReturn {
         ]
       })
     } catch (e) {
-      // Remove optimistic em caso de erro
-      setMessages((prev) => prev.filter((m) => m.id !== tempId))
+      // Mantém a mensagem do usuário visível, marca como falha.
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === tempId ? { ...m, pending: false, failed: true } : m,
+        ),
+      )
       if (e instanceof YaIAChatError) {
         if (e.code === 'LIMIT_REACHED') {
           setRemaining(0)
@@ -132,17 +124,49 @@ export function useYaIA(): UseYaIAReturn {
         } else if (e.code === 'CONSENT_REQUIRED') {
           setConsentNeeded(true)
         } else if (e.code === 'NETWORK') {
-          setError('Tô sem conexão agora. Tenta de novo em instantes?')
+          setError('Tô sem conexão agora. Sua mensagem ficou aqui, toca pra tentar de novo quando voltar.')
         } else {
-          setError('Ops, não consegui te ouvir agora. Respira, e a gente tenta mais uma vez?')
+          setError('Tive um probleminha pra responder. Sua mensagem não se perdeu, toca nela pra gente tentar de novo.')
         }
       } else {
-        setError('Alguma coisa saiu do meu controle aqui. Tenta de novo?')
+        setError('Alguma coisa saiu do meu controle. Toca na sua mensagem pra tentar de novo.')
       }
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const sendMessage = useCallback(async (content: string) => {
+    const trimmed = content.trim()
+    if (!trimmed || !babyId || isLoading) return
+
+    const tempId = `tmp_${++tempIdRef.current}`
+    const nowIso = new Date().toISOString()
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: tempId,
+        role: 'user',
+        content: trimmed,
+        createdAt: nowIso,
+        pending: true,
+      },
+    ])
+    await dispatchSend(tempId, trimmed, babyId)
   }, [babyId, isLoading])
+
+  // Reusa a mesma mensagem do usuário (mantém id/ordem), apenas reenvia.
+  const retryMessage = useCallback(async (messageId: string) => {
+    if (!babyId || isLoading) return
+    const target = messages.find((m) => m.id === messageId && m.role === 'user')
+    if (!target) return
+    setMessages((prev) =>
+      prev.map((m) =>
+        m.id === messageId ? { ...m, pending: true, failed: false } : m,
+      ),
+    )
+    await dispatchSend(messageId, target.content, babyId)
+  }, [babyId, isLoading, messages])
 
   const dismissLimit = useCallback(() => setLimitReached(false), [])
 
@@ -155,6 +179,7 @@ export function useYaIA(): UseYaIAReturn {
     limitReached,
     error,
     sendMessage,
+    retryMessage,
     dismissLimit,
     refreshConsent,
   }

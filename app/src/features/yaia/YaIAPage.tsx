@@ -26,6 +26,7 @@ export default function YaIAPage() {
     limitReached,
     error,
     sendMessage,
+    retryMessage,
     dismissLimit,
     refreshConsent,
   } = useYaIA()
@@ -103,7 +104,7 @@ export default function YaIAPage() {
         )}
 
         {messages.map((m) => (
-          <ChatBubble key={m.id} message={m} />
+          <ChatBubble key={m.id} message={m} onRetry={retryMessage} />
         ))}
 
         {isLoading && <TypingBubble />}
