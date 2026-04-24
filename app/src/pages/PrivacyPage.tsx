@@ -30,7 +30,7 @@ export default function PrivacyPage() {
             a sério e seguimos a Lei Geral de Proteção de Dados (LGPD - Lei 13.709/2018).
           </p>
           <p className="font-label text-xs text-on-surface-variant mt-3">
-            Última atualização: 06 de abril de 2026
+            Última atualização: 24 de abril de 2026
           </p>
         </div>
 
@@ -166,25 +166,62 @@ export default function PrivacyPage() {
             </h2>
           </div>
           <p className="font-body text-sm text-on-surface-variant">
-            <strong className="text-on-surface">Não vendemos, alugamos ou compartilhamos
-            seus dados com terceiros.</strong>
+            <strong className="text-on-surface">Não vendemos nem alugamos seus dados.</strong>{' '}
+            Os serviços terceiros que podem ter acesso aos dados são:
           </p>
-          <p className="font-body text-sm text-on-surface-variant mt-2">
-            Os únicos serviços que têm acesso aos dados são:
+          <ul className="mt-2 space-y-2">
+            <li className="font-body text-sm text-on-surface-variant">
+              - <strong className="text-on-surface">Supabase:</strong> banco de dados e autenticação (processador de dados).
+            </li>
+            <li className="font-body text-sm text-on-surface-variant">
+              - <strong className="text-on-surface">Google:</strong> apenas se você optar por login com Google OAuth.
+            </li>
+            <li className="font-body text-sm text-on-surface-variant">
+              - <strong className="text-on-surface">Serviço de IA (yaIA):</strong> quando você usa o assistente yaIA,
+              dados contextuais do bebê (rotina resumida, idade, registros recentes) são enviados a um
+              serviço de inteligência artificial para gerar a resposta. Esses dados são usados exclusivamente
+              para processar sua pergunta e não são armazenados pelo provedor de IA nem usados para treinar modelos.
+            </li>
+            <li className="font-body text-sm text-on-surface-variant">
+              - <strong className="text-on-surface">AdMob (Google):</strong> exibição de anúncios para usuários
+              do plano gratuito. Coleta identificador de publicidade do dispositivo conforme a política do Google.
+            </li>
+            <li className="font-body text-sm text-on-surface-variant">
+              - <strong className="text-on-surface">RevenueCat:</strong> gerenciamento de assinaturas e compras.
+            </li>
+          </ul>
+        </div>
+
+        {/* 4b. Assistente yaIA */}
+        <div className="bg-surface-container rounded-md p-4">
+          <div className="flex items-center gap-3 mb-3">
+            <span className="material-symbols-outlined text-primary text-xl">
+              auto_awesome
+            </span>
+            <h2 className="text-on-surface font-headline text-sm font-bold">
+              4a. Assistente yaIA
+            </h2>
+          </div>
+          <p className="font-body text-sm text-on-surface-variant">
+            O yaIA é um assistente de inteligência artificial que responde perguntas sobre a
+            rotina do seu bebê com base nos registros do app. Ao enviar uma mensagem:
           </p>
           <ul className="mt-2 space-y-1">
             <li className="font-body text-sm text-on-surface-variant">
-              - <strong className="text-on-surface">Supabase:</strong> provedor de banco de dados
-              e autenticação (processador de dados).
+              - Um resumo da rotina recente do bebê (registros, idade, nome) é enviado junto com
+              sua pergunta ao serviço de IA para contextualizar a resposta.
             </li>
             <li className="font-body text-sm text-on-surface-variant">
-              - <strong className="text-on-surface">Google:</strong> apenas se você optar por login
-              com Google OAuth (dados mínimos de autenticação).
+              - Nenhum dado identificável do responsável (email, nome completo) é enviado ao serviço de IA.
+            </li>
+            <li className="font-body text-sm text-on-surface-variant">
+              - O histórico de conversa fica armazenado no nosso banco de dados (Supabase) e
+              pode ser apagado a qualquer momento nas configurações.
+            </li>
+            <li className="font-body text-sm text-on-surface-variant">
+              - Usuários do plano gratuito têm limite de 10 mensagens por mês.
             </li>
           </ul>
-          <p className="font-body text-sm text-on-surface-variant mt-2">
-            Não utilizamos ferramentas de analytics, rastreamento ou publicidade.
-          </p>
         </div>
 
         {/* 5. Seus direitos */}
