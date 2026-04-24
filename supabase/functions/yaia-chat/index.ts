@@ -1,19 +1,10 @@
-// yaIA chat proxy (v13)
-// - Parser remove prefixo '=' e code fence markdown ```json ... ```
-// - Links em sources[] ganham UTM (utm_source=yaia, utm_medium=chat, utm_campaign=in_app)
-// - context_summary inclui split dia/noite, agregados de hoje e ontem
-// - DEBUG: grava body do n8n em yaia_debug_log pra diagnose fora de banda
-// - Valida JWT do app
-// - Confere membership + consent
-// - Enforce limite free
-// - Chama get_yaia_context e envia payload enriquecido pro n8n (sem history)
-// - Guard-rail: se baby.name vier vazio, nega envio pro n8n (NO_CONTEXT)
-// - Aceita resposta novo formato { messages, suggestions, sources } OU legado { reply }
-// - Persiste conversa com separador "\n\n---\n\n" entre bubbles
-//
-// Historico da conversa do AI Agent agora e responsabilidade do Postgres Chat
-// Memory do n8n (tabela yaia_agent_memory). O app le yaia_conversations
-// apenas para render da UI.
+// yaIA chat proxy (v14 — agentic)
+// Arquitetura nova: a IA acessa dados do bebe via tools/RPCs no n8n, em vez
+// de receber um context_summary gigante pré-montado. Este edge function
+// agora é SLIM: valida auth, limites, consent, e manda um payload pequeno
+// pro n8n (só message + baby_id + baby basics). O AI Agent do n8n chama as
+// tools yaia_activity / yaia_growth / yaia_vaccines / yaia_milestones /
+// yaia_medications / yaia_logs_detail conforme precisa responder.
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
@@ -35,73 +26,26 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
-interface YaiaContext {
-  baby?: {
-    name?: string;
-    gender?: string;
-    birth_date?: string;
-    age_days?: number;
-    age_weeks?: number;
-    age_months?: number;
-    quiet_hours_start?: number | null;
-    quiet_hours_end?: number | null;
-  };
-  recent_logs?: Array<{ event_id: string; timestamp: string; ml?: number; duration?: number; notes?: string }>;
-  logs_summary_7d?: {
-    sleep_sessions?: number;
-    sleep_sessions_night?: number;
-    sleep_sessions_day?: number;
-    wake_events?: number;
-    wake_events_night?: number;
-    total_bottle_ml?: number;
-    bottle_sessions?: number;
-    breast_sessions?: number;
-    breast_left?: number;
-    breast_right?: number;
-    breast_both?: number;
-    feed_sessions_night?: number;
-    diaper_wet?: number;
-    diaper_dirty?: number;
-    bath_count?: number;
-  };
-  logs_today?: {
-    sleep_sessions?: number;
-    feed_sessions?: number;
-    diaper_wet?: number;
-    diaper_dirty?: number;
-    last_sleep_at?: string;
-    last_feed_at?: string;
-  };
-  logs_yesterday?: {
-    sleep_sessions?: number;
-    sleep_night?: number;
-    wake_night?: number;
-    feed_sessions?: number;
-    diaper_wet?: number;
-    diaper_dirty?: number;
-  };
-  measurements?: Array<{ type: string; value: number; unit: string; measured_at: string; notes?: string }>;
-  active_medications?: Array<{ name: string; dosage?: string; frequency_hours?: number; schedule_times?: unknown; notes?: string; last_given?: string; start_date?: string; end_date?: string }>;
-  recent_inactive_medications?: Array<{ name: string; dosage?: string; start_date?: string; end_date?: string }>;
-  vaccines_applied?: Array<{ vaccine_name: string; applied_at: string; location?: string }>;
-  vaccines_pending?: Array<{ vaccine_name: string; status: string }>;
-  vaccines_summary?: { applied_count: number; pending_count: number; overdue_count: number; total_count: number };
-  milestones_achieved?: Array<{ milestone_name: string; category?: string; achieved_at: string; note?: string }>;
-  milestones_summary_by_category?: Record<string, number>;
-  leap_mood_recent?: Array<{ leap_id: string; mood: string; entry_date: string }>;
+interface BabyBasics {
+  name: string;
+  gender?: string;
+  birth_date?: string;
+  age_days?: number;
+  age_weeks?: number;
+  age_months?: number;
+  quiet_hours_start?: number | null;
+  quiet_hours_end?: number | null;
 }
 
 interface N8nResponse {
   messages?: string[];
-  reply?: string; // fallback legado
+  reply?: string;
   suggestions?: string[];
   sources?: Array<{ title: string; url: string }>;
 }
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
   try {
     const authHeader = req.headers.get('Authorization') ?? '';
@@ -122,6 +66,7 @@ serve(async (req) => {
     }
     if (message.length > 2000) return json({ error: 'Mensagem muito longa (max 2000 caracteres)' }, 400);
 
+    // Auth: membership no bebê
     const { data: membership } = await admin
       .from('baby_members')
       .select('role')
@@ -130,6 +75,7 @@ serve(async (req) => {
       .maybeSingle();
     if (!membership) return json({ error: 'Sem acesso a este bebe' }, 403);
 
+    // Consent
     const { data: profile } = await admin
       .from('profiles')
       .select('yaia_consent_at')
@@ -137,6 +83,7 @@ serve(async (req) => {
       .maybeSingle();
     if (!profile?.yaia_consent_at) return json({ error: 'CONSENT_REQUIRED' }, 428);
 
+    // Premium + limite free
     const { data: baby } = await admin
       .from('babies')
       .select('id, is_premium')
@@ -145,7 +92,6 @@ serve(async (req) => {
     if (!baby) return json({ error: 'Bebe nao encontrado' }, 404);
     const isPremium = !!baby.is_premium;
 
-    // Limite free
     let remaining: number | null = null;
     if (!isPremium) {
       const monthKey = toMonthKey(new Date());
@@ -157,35 +103,27 @@ serve(async (req) => {
         .maybeSingle();
       const newCount = (existing?.count ?? 0) + 1;
       if (newCount > FREE_MONTHLY_LIMIT) return json({ error: 'LIMIT_REACHED', remaining: 0 }, 402);
-      await admin
-        .from('yaia_usage')
-        .upsert(
-          { user_id: userId, month_key: monthKey, count: newCount, updated_at: new Date().toISOString() },
-          { onConflict: 'user_id,month_key' },
-        );
+      await admin.from('yaia_usage').upsert(
+        { user_id: userId, month_key: monthKey, count: newCount, updated_at: new Date().toISOString() },
+        { onConflict: 'user_id,month_key' },
+      );
       remaining = FREE_MONTHLY_LIMIT - newCount;
     }
 
-    // Contexto real do bebe via RPC
-    const { data: contextData, error: ctxErr } = await admin.rpc('get_yaia_context', {
-      p_user_id: userId,
-      p_baby_id: babyId,
-    });
-    if (ctxErr) console.error('[yaia] get_yaia_context failed', ctxErr);
-    const context: YaiaContext = (contextData as YaiaContext) ?? {};
-
-    // GUARD-RAIL: sem nome do bebe, nao tem como a IA responder sem inventar.
-    if (!context.baby?.name) {
-      console.error('[yaia] guard-rail: baby.name missing from context', { babyId, userId });
+    // Baby basics (sempre chamada — IA precisa pra saudar e saber idade).
+    // Inline aqui pra evitar 1 tool call a mais. Outros dados ficam com as tools.
+    const { data: basics, error: basicsErr } = await admin.rpc('yaia_baby_basics', { p_baby_id: babyId });
+    if (basicsErr || !basics) {
+      console.error('[yaia] yaia_baby_basics failed', basicsErr);
+      return json({ error: 'NO_CONTEXT' }, 503);
+    }
+    const babyBasics = basics as BabyBasics;
+    if (!babyBasics.name) {
+      console.error('[yaia] guard-rail: baby.name missing', { babyId, userId });
       return json({ error: 'NO_CONTEXT' }, 503);
     }
 
-    // Historico da conversa: agora e responsabilidade do Postgres Chat Memory
-    // do n8n (tabela yaia_agent_memory). Nao enviamos mais do edge.
-
-    const contextSummary = buildContextSummary(context);
-
-    // Chamada pro n8n
+    // Chamada slim pro n8n. Sem context, sem context_summary.
     const n8nResp = await fetch(YAIA_N8N_URL, {
       method: 'POST',
       headers: {
@@ -196,9 +134,7 @@ serve(async (req) => {
         message,
         user_id: userId,
         baby_id: babyId,
-        baby: context.baby,
-        context,
-        context_summary: contextSummary,
+        baby: babyBasics,
       }),
     });
 
@@ -209,48 +145,18 @@ serve(async (req) => {
     }
 
     const n8nBody = await n8nResp.text();
-    console.log('[yaia] n8n raw body (first 400 chars):', n8nBody.slice(0, 400));
-
-    // DEBUG: grava body bruto em yaia_debug_log pra diagnose.
     await admin.from('yaia_debug_log').insert({
-      user_id: userId,
-      baby_id: babyId,
-      stage: 'n8n_response',
-      status: n8nResp.status,
-      raw_body: n8nBody,
+      user_id: userId, baby_id: babyId, stage: 'n8n_response', status: n8nResp.status, raw_body: n8nBody,
     }).then(() => {}).catch(() => {});
 
     const n8nData = tolerantParseN8n(n8nBody);
     if (!n8nData) {
-      await admin.from('yaia_debug_log').insert({
-        user_id: userId,
-        baby_id: babyId,
-        stage: 'parse_fail',
-        status: n8nResp.status,
-        raw_body: n8nBody,
-        error_msg: 'tolerantParseN8n returned null',
-      }).then(() => {}).catch(() => {});
-      return json({
-        error: 'Resposta invalida da yaIA.',
-        debug: { stage: 'parse_fail', preview: n8nBody.slice(0, 300) },
-      }, 502);
+      return json({ error: 'Resposta invalida da yaIA.', debug: { preview: n8nBody.slice(0, 300) } }, 502);
     }
 
     const messages = normalizeMessages(n8nData);
     if (!messages.length) {
-      await admin.from('yaia_debug_log').insert({
-        user_id: userId,
-        baby_id: babyId,
-        stage: 'no_messages',
-        status: n8nResp.status,
-        raw_body: n8nBody,
-        parsed: n8nData as unknown as Record<string, unknown>,
-        error_msg: `normalizeMessages returned empty; keys: ${Object.keys(n8nData).join(',')}`,
-      }).then(() => {}).catch(() => {});
-      return json({
-        error: 'Resposta invalida da yaIA.',
-        debug: { stage: 'no_messages', keys: Object.keys(n8nData), preview: n8nBody.slice(0, 300) },
-      }, 502);
+      return json({ error: 'Resposta invalida da yaIA.', debug: { keys: Object.keys(n8nData) } }, 502);
     }
 
     const suggestions = Array.isArray(n8nData.suggestions)
@@ -263,7 +169,6 @@ serve(async (req) => {
           .map((s) => ({ title: s.title, url: appendUtm(s.url) }))
       : [];
 
-    // Persistencia: 1 linha user + 1 linha assistant (separador junta os bubbles).
     const nowIso = new Date().toISOString();
     const assistantContent = messages.join(BUBBLE_SEPARATOR);
     const { data: inserted } = await admin
@@ -271,22 +176,18 @@ serve(async (req) => {
       .insert([
         { user_id: userId, baby_id: babyId, role: 'user', content: message, created_at: nowIso },
         {
-          user_id: userId,
-          baby_id: babyId,
-          role: 'assistant',
-          content: assistantContent,
+          user_id: userId, baby_id: babyId, role: 'assistant', content: assistantContent,
           created_at: new Date(Date.now() + 1).toISOString(),
         },
       ])
       .select('id, role');
     const assistantRow = inserted?.find((r) => r.role === 'assistant');
-    const assistantMessageId = assistantRow?.id as string | undefined;
 
     return json({
       messages,
       suggestions,
       sources,
-      message_id: assistantMessageId,
+      message_id: assistantRow?.id,
       remaining,
     }, 200);
   } catch (err) {
@@ -308,8 +209,6 @@ function toMonthKey(d: Date): string {
   return `${y}-${m}`;
 }
 
-// Adiciona UTM params pra identificar clique vindo do chat da yaIA.
-// Preserva params existentes; se a URL ja tem utm_source, nao sobrescreve.
 function appendUtm(url: string): string {
   try {
     const u = new URL(url);
@@ -322,72 +221,25 @@ function appendUtm(url: string): string {
   }
 }
 
-// Aceita qualquer shape razoavel que o n8n possa devolver:
-// 1. Objeto direto: { messages: [...], ... }
-// 2. String JSON: "{\"messages\":[...]}" (duplo-encoded)
-// 3. Array: [{ messages: [...] }] ou [{ output: { messages: [...] } }]
-// 4. Objeto com output aninhado: { output: { messages: [...] } }
-// 5. Objeto com output como string JSON: { output: "{\"messages\":[...]}" }
-// Retorna null se nao achar shape utilizavel.
 function tolerantParseN8n(body: string): N8nResponse | null {
   let trimmed = body.trim();
   if (!trimmed) return null;
-
-  // n8n vaza prefixo '=' literal quando usa expressao em "Respond With: Text".
   if (trimmed.startsWith('=')) trimmed = trimmed.slice(1).trim();
-
-  // Modelo as vezes envolve a resposta JSON em code fence markdown:
-  // ```json\n{...}\n``` ou ```\n{...}\n```. Remove antes de parsear.
   if (trimmed.startsWith('```')) {
-    // Remove ```json ou ```
     trimmed = trimmed.replace(/^```(?:json)?\s*\n?/i, '').trim();
-    // Remove fechamento ```
     if (trimmed.endsWith('```')) trimmed = trimmed.slice(0, -3).trim();
   }
-
-  // Tenta parsear JSON. Se falhar, game over (nao eh JSON).
   let parsed: unknown;
-  try {
-    parsed = JSON.parse(trimmed);
-  } catch {
-    return null;
-  }
-
-  // Desembrulha ate achar algo que pareca N8nResponse.
+  try { parsed = JSON.parse(trimmed); } catch { return null; }
   for (let i = 0; i < 4 && parsed != null; i++) {
-    // Array -> pega primeiro item
-    if (Array.isArray(parsed)) {
-      parsed = parsed[0];
-      continue;
-    }
-    // String -> tenta parsear de novo (double-encoded)
-    if (typeof parsed === 'string') {
-      try {
-        parsed = JSON.parse(parsed);
-        continue;
-      } catch {
-        return null;
-      }
-    }
+    if (Array.isArray(parsed)) { parsed = parsed[0]; continue; }
+    if (typeof parsed === 'string') { try { parsed = JSON.parse(parsed); continue; } catch { return null; } }
     if (typeof parsed !== 'object') return null;
-
     const obj = parsed as Record<string, unknown>;
-
-    // Shape direto: tem messages ou reply no root
-    if (Array.isArray(obj.messages) || typeof obj.reply === 'string') {
-      return obj as N8nResponse;
-    }
-
-    // Shape com output: { output: ... }
-    if ('output' in obj) {
-      parsed = obj.output;
-      continue;
-    }
-
-    // Sem output, sem messages, sem reply: da up.
+    if (Array.isArray(obj.messages) || typeof obj.reply === 'string') return obj as N8nResponse;
+    if ('output' in obj) { parsed = obj.output; continue; }
     return null;
   }
-
   return null;
 }
 
@@ -399,190 +251,8 @@ function normalizeMessages(data: N8nResponse): string[] {
       .map((m) => m.trim());
   }
   if (typeof data.reply === 'string' && data.reply.trim().length > 0) {
-    const parts = data.reply
-      .split(/\n\s*\n/)
-      .map((p) => p.trim())
-      .filter(Boolean);
+    const parts = data.reply.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
     return parts.slice(0, 2);
   }
   return [];
-}
-
-function buildContextSummary(ctx: YaiaContext): string {
-  const parts: string[] = [];
-  parts.push('=== CONTEXTO REAL DO BEBE (use esses dados, nunca invente) ===');
-
-  // Dados basicos
-  if (ctx.baby?.name) {
-    const g = ctx.baby.gender === 'boy' ? 'masculino' : ctx.baby.gender === 'girl' ? 'feminino' : 'nao informado';
-    const agePieces: string[] = [];
-    if (typeof ctx.baby.age_months === 'number') agePieces.push(`${ctx.baby.age_months} meses`);
-    if (typeof ctx.baby.age_weeks === 'number') agePieces.push(`${ctx.baby.age_weeks} semanas`);
-    if (typeof ctx.baby.age_days === 'number') agePieces.push(`${ctx.baby.age_days} dias`);
-    parts.push(`Nome: ${ctx.baby.name}`);
-    parts.push(`Genero: ${g}`);
-    parts.push(`Nascimento: ${ctx.baby.birth_date ?? 'nao informado'}`);
-    if (agePieces.length) parts.push(`Idade: ${agePieces.join(' / ')}`);
-    if (ctx.baby.quiet_hours_start != null && ctx.baby.quiet_hours_end != null) {
-      parts.push(`Horario noturno configurado: das ${ctx.baby.quiet_hours_start}h as ${ctx.baby.quiet_hours_end}h`);
-    }
-  } else {
-    parts.push('Nome: nao disponivel');
-  }
-
-  // Medidas (peso, altura, periimetro)
-  const meas = ctx.measurements ?? [];
-  if (meas.length) {
-    parts.push('');
-    parts.push('-- Medidas recentes (peso, altura, perimetro) --');
-    for (const m of meas.slice(0, 10)) {
-      const when = typeof m.measured_at === 'string' ? m.measured_at.slice(0, 10) : '';
-      parts.push(`- ${when} | ${m.type}: ${m.value}${m.unit ?? ''}${m.notes ? ' (' + m.notes + ')' : ''}`);
-    }
-  }
-
-  // Resumo agregado ultimos 7 dias (com corte dia/noite)
-  const s7 = ctx.logs_summary_7d;
-  if (s7) {
-    parts.push('');
-    parts.push('-- Resumo dos ultimos 7 dias --');
-    if (s7.sleep_sessions) {
-      parts.push(`- Sono: ${s7.sleep_sessions} sonecas totais (${s7.sleep_sessions_day ?? 0} durante o dia, ${s7.sleep_sessions_night ?? 0} durante a noite)`);
-    }
-    if (s7.wake_events_night != null) {
-      parts.push(`- Despertares noturnos: ${s7.wake_events_night} (horario noturno configurado do bebe)`);
-    }
-    if (s7.breast_sessions || s7.bottle_sessions) {
-      const feeds: string[] = [];
-      if (s7.breast_sessions) feeds.push(`${s7.breast_sessions} mamadas no peito (esq ${s7.breast_left ?? 0} / dir ${s7.breast_right ?? 0} / ambos ${s7.breast_both ?? 0})`);
-      if (s7.bottle_sessions) feeds.push(`${s7.bottle_sessions} mamadeiras (${s7.total_bottle_ml ?? 0}ml totais)`);
-      parts.push(`- Alimentacao: ${feeds.join(', ')}`);
-      if (s7.feed_sessions_night) parts.push(`  (desses, ${s7.feed_sessions_night} foram no horario noturno)`);
-    }
-    const diapers = (s7.diaper_wet ?? 0) + (s7.diaper_dirty ?? 0);
-    if (diapers) {
-      parts.push(`- Fraldas: ${diapers} trocas (${s7.diaper_wet ?? 0} xixi, ${s7.diaper_dirty ?? 0} coco)`);
-    }
-    if (s7.bath_count) parts.push(`- Banhos: ${s7.bath_count}`);
-  }
-
-  // Hoje
-  const today = ctx.logs_today;
-  if (today && (today.sleep_sessions || today.feed_sessions || today.diaper_wet || today.diaper_dirty)) {
-    parts.push('');
-    parts.push('-- Hoje --');
-    if (today.sleep_sessions) parts.push(`- Sonecas hoje: ${today.sleep_sessions}${today.last_sleep_at ? ` (ultima: ${String(today.last_sleep_at).slice(11, 16)})` : ''}`);
-    if (today.feed_sessions) parts.push(`- Mamadas hoje: ${today.feed_sessions}${today.last_feed_at ? ` (ultima: ${String(today.last_feed_at).slice(11, 16)})` : ''}`);
-    const diapersToday = (today.diaper_wet ?? 0) + (today.diaper_dirty ?? 0);
-    if (diapersToday) parts.push(`- Fraldas hoje: ${diapersToday} (${today.diaper_wet ?? 0} xixi, ${today.diaper_dirty ?? 0} coco)`);
-  }
-
-  // Ontem
-  const y = ctx.logs_yesterday;
-  if (y && (y.sleep_sessions || y.feed_sessions || y.diaper_wet || y.diaper_dirty)) {
-    parts.push('');
-    parts.push('-- Ontem --');
-    if (y.sleep_sessions) parts.push(`- Sonecas: ${y.sleep_sessions}${y.sleep_night ? ` (${y.sleep_night} noturnas)` : ''}`);
-    if (y.wake_night) parts.push(`- Despertares noturnos: ${y.wake_night}`);
-    if (y.feed_sessions) parts.push(`- Mamadas: ${y.feed_sessions}`);
-    const diapersY = (y.diaper_wet ?? 0) + (y.diaper_dirty ?? 0);
-    if (diapersY) parts.push(`- Fraldas: ${diapersY} (${y.diaper_wet ?? 0} xixi, ${y.diaper_dirty ?? 0} coco)`);
-  }
-
-  // Logs recentes (detalhados)
-  const logs = ctx.recent_logs ?? [];
-  if (logs.length) {
-    parts.push('');
-    parts.push(`-- Ultimos ${Math.min(logs.length, 30)} registros (mais recente primeiro) --`);
-    for (const l of logs.slice(0, 30)) {
-      const when = typeof l.timestamp === 'string' ? l.timestamp.replace('T', ' ').slice(0, 16) : '';
-      const bits = [when, l.event_id];
-      if (l.ml != null) bits.push(`${l.ml}ml`);
-      if (l.duration != null) bits.push(`${l.duration}min`);
-      if (l.notes) bits.push(`"${l.notes}"`);
-      parts.push(`- ${bits.join(' | ')}`);
-    }
-  } else {
-    parts.push('');
-    parts.push('-- Registros: nenhum log nos ultimos 30 dias. Se o pai/mae perguntar sobre padrao de sono/fralda/alimentacao, diga que ainda nao ha dados suficientes. --');
-  }
-
-  // Medicamentos ativos
-  const meds = ctx.active_medications ?? [];
-  if (meds.length) {
-    parts.push('');
-    parts.push('-- Medicamentos ATIVOS --');
-    for (const m of meds) {
-      const bits = [m.name];
-      if (m.dosage) bits.push(m.dosage);
-      if (m.frequency_hours) bits.push(`a cada ${m.frequency_hours}h`);
-      if (m.last_given) bits.push(`ultima dose: ${m.last_given}`);
-      if (m.start_date) bits.push(`desde ${m.start_date}`);
-      if (m.end_date) bits.push(`ate ${m.end_date}`);
-      parts.push(`- ${bits.join(' | ')}`);
-    }
-  }
-
-  // Medicamentos inativos recentes (historico)
-  const medsOff = ctx.recent_inactive_medications ?? [];
-  if (medsOff.length) {
-    parts.push('');
-    parts.push('-- Medicamentos recentes (ja encerrados, ultimos 90 dias) --');
-    for (const m of medsOff) {
-      parts.push(`- ${m.name}${m.dosage ? ' ' + m.dosage : ''} (de ${m.start_date ?? '?'} a ${m.end_date ?? '?'})`);
-    }
-  }
-
-  // Vacinas
-  const vSum = ctx.vaccines_summary;
-  const vApplied = ctx.vaccines_applied ?? [];
-  const vPending = ctx.vaccines_pending ?? [];
-  if (vSum || vApplied.length || vPending.length) {
-    parts.push('');
-    parts.push('-- Vacinas --');
-    if (vSum) {
-      parts.push(`Resumo: ${vSum.applied_count} aplicadas, ${vSum.pending_count} pendentes, ${vSum.overdue_count} atrasadas (total ${vSum.total_count}).`);
-    }
-    if (vApplied.length) {
-      parts.push(`Aplicadas (${vApplied.length}):`);
-      for (const v of vApplied) {
-        const when = typeof v.applied_at === 'string' ? v.applied_at.slice(0, 10) : '?';
-        parts.push(`- ${v.vaccine_name} em ${when}${v.location ? ' (' + v.location + ')' : ''}`);
-      }
-    }
-    if (vPending.length) {
-      parts.push(`Pendentes/Atrasadas (${vPending.length}):`);
-      for (const v of vPending) parts.push(`- ${v.vaccine_name} (${v.status})`);
-    }
-  }
-
-  // Marcos atingidos + resumo por categoria
-  const mils = ctx.milestones_achieved ?? [];
-  const milSum = ctx.milestones_summary_by_category ?? {};
-  if (mils.length) {
-    parts.push('');
-    parts.push(`-- Marcos atingidos (${mils.length}) --`);
-    const catBits = Object.entries(milSum).map(([c, n]) => `${c}: ${n}`);
-    if (catBits.length) parts.push(`Por categoria: ${catBits.join(', ')}`);
-    for (const m of mils.slice(0, 20)) {
-      const when = typeof m.achieved_at === 'string' ? m.achieved_at.slice(0, 10) : '';
-      const cat = m.category ? ` [${m.category}]` : '';
-      parts.push(`- ${m.milestone_name}${cat} em ${when}${m.note ? ': ' + m.note : ''}`);
-    }
-  }
-
-  // Saltos (leap mood entries recentes)
-  const mood = ctx.leap_mood_recent ?? [];
-  if (mood.length) {
-    parts.push('');
-    parts.push('-- Registros de humor em saltos (ultimos 14 dias) --');
-    for (const me of mood.slice(0, 20)) {
-      const when = typeof me.entry_date === 'string' ? me.entry_date.slice(0, 10) : '';
-      parts.push(`- ${when} | salto ${me.leap_id}: ${me.mood}`);
-    }
-  }
-
-  parts.push('');
-  parts.push('=== FIM DO CONTEXTO ===');
-  return parts.join('\n');
 }
