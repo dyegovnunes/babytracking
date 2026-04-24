@@ -1,6 +1,7 @@
-// yaIA chat proxy (v11)
-// - Parser remove prefixo '=' que o n8n vaza com expressoes em Respond With Text
+// yaIA chat proxy (v13)
+// - Parser remove prefixo '=' e code fence markdown ```json ... ```
 // - Links em sources[] ganham UTM (utm_source=yaia, utm_medium=chat, utm_campaign=in_app)
+// - context_summary inclui split dia/noite, agregados de hoje e ontem
 // - DEBUG: grava body do n8n em yaia_debug_log pra diagnose fora de banda
 // - Valida JWT do app
 // - Confere membership + consent
@@ -47,18 +48,37 @@ interface YaiaContext {
   };
   recent_logs?: Array<{ event_id: string; timestamp: string; ml?: number; duration?: number; notes?: string }>;
   logs_summary_7d?: {
-    total_sleep_minutes?: number;
     sleep_sessions?: number;
+    sleep_sessions_night?: number;
+    sleep_sessions_day?: number;
     wake_events?: number;
+    wake_events_night?: number;
     total_bottle_ml?: number;
     bottle_sessions?: number;
     breast_sessions?: number;
     breast_left?: number;
     breast_right?: number;
     breast_both?: number;
+    feed_sessions_night?: number;
     diaper_wet?: number;
     diaper_dirty?: number;
     bath_count?: number;
+  };
+  logs_today?: {
+    sleep_sessions?: number;
+    feed_sessions?: number;
+    diaper_wet?: number;
+    diaper_dirty?: number;
+    last_sleep_at?: string;
+    last_feed_at?: string;
+  };
+  logs_yesterday?: {
+    sleep_sessions?: number;
+    sleep_night?: number;
+    wake_night?: number;
+    feed_sessions?: number;
+    diaper_wet?: number;
+    diaper_dirty?: number;
   };
   measurements?: Array<{ type: string; value: number; unit: string; measured_at: string; notes?: string }>;
   active_medications?: Array<{ name: string; dosage?: string; frequency_hours?: number; schedule_times?: unknown; notes?: string; last_given?: string; start_date?: string; end_date?: string }>;
@@ -313,9 +333,17 @@ function tolerantParseN8n(body: string): N8nResponse | null {
   let trimmed = body.trim();
   if (!trimmed) return null;
 
-  // n8n com "Respond With: Text" + expressao `={{ ... }}` as vezes vaza o
-  // prefixo '=' literal no output. Tira antes de tentar JSON.parse.
+  // n8n vaza prefixo '=' literal quando usa expressao em "Respond With: Text".
   if (trimmed.startsWith('=')) trimmed = trimmed.slice(1).trim();
+
+  // Modelo as vezes envolve a resposta JSON em code fence markdown:
+  // ```json\n{...}\n``` ou ```\n{...}\n```. Remove antes de parsear.
+  if (trimmed.startsWith('```')) {
+    // Remove ```json ou ```
+    trimmed = trimmed.replace(/^```(?:json)?\s*\n?/i, '').trim();
+    // Remove fechamento ```
+    if (trimmed.endsWith('```')) trimmed = trimmed.slice(0, -3).trim();
+  }
 
   // Tenta parsear JSON. Se falhar, game over (nao eh JSON).
   let parsed: unknown;
@@ -413,27 +441,52 @@ function buildContextSummary(ctx: YaiaContext): string {
     }
   }
 
-  // Resumo agregado ultimos 7 dias
+  // Resumo agregado ultimos 7 dias (com corte dia/noite)
   const s7 = ctx.logs_summary_7d;
   if (s7) {
     parts.push('');
     parts.push('-- Resumo dos ultimos 7 dias --');
     if (s7.sleep_sessions) {
-      const hours = Math.round((s7.total_sleep_minutes ?? 0) / 6) / 10;
-      parts.push(`- Sono: ${s7.sleep_sessions} sessoes${hours > 0 ? `, ~${hours}h totais` : ''}`);
+      parts.push(`- Sono: ${s7.sleep_sessions} sonecas totais (${s7.sleep_sessions_day ?? 0} durante o dia, ${s7.sleep_sessions_night ?? 0} durante a noite)`);
+    }
+    if (s7.wake_events_night != null) {
+      parts.push(`- Despertares noturnos: ${s7.wake_events_night} (horario noturno configurado do bebe)`);
     }
     if (s7.breast_sessions || s7.bottle_sessions) {
       const feeds: string[] = [];
       if (s7.breast_sessions) feeds.push(`${s7.breast_sessions} mamadas no peito (esq ${s7.breast_left ?? 0} / dir ${s7.breast_right ?? 0} / ambos ${s7.breast_both ?? 0})`);
-      if (s7.bottle_sessions) feeds.push(`${s7.bottle_sessions} mamadeiras`);
-      if (s7.total_bottle_ml) feeds.push(`${s7.total_bottle_ml}ml em mamadeiras`);
+      if (s7.bottle_sessions) feeds.push(`${s7.bottle_sessions} mamadeiras (${s7.total_bottle_ml ?? 0}ml totais)`);
       parts.push(`- Alimentacao: ${feeds.join(', ')}`);
+      if (s7.feed_sessions_night) parts.push(`  (desses, ${s7.feed_sessions_night} foram no horario noturno)`);
     }
     const diapers = (s7.diaper_wet ?? 0) + (s7.diaper_dirty ?? 0);
     if (diapers) {
       parts.push(`- Fraldas: ${diapers} trocas (${s7.diaper_wet ?? 0} xixi, ${s7.diaper_dirty ?? 0} coco)`);
     }
     if (s7.bath_count) parts.push(`- Banhos: ${s7.bath_count}`);
+  }
+
+  // Hoje
+  const today = ctx.logs_today;
+  if (today && (today.sleep_sessions || today.feed_sessions || today.diaper_wet || today.diaper_dirty)) {
+    parts.push('');
+    parts.push('-- Hoje --');
+    if (today.sleep_sessions) parts.push(`- Sonecas hoje: ${today.sleep_sessions}${today.last_sleep_at ? ` (ultima: ${String(today.last_sleep_at).slice(11, 16)})` : ''}`);
+    if (today.feed_sessions) parts.push(`- Mamadas hoje: ${today.feed_sessions}${today.last_feed_at ? ` (ultima: ${String(today.last_feed_at).slice(11, 16)})` : ''}`);
+    const diapersToday = (today.diaper_wet ?? 0) + (today.diaper_dirty ?? 0);
+    if (diapersToday) parts.push(`- Fraldas hoje: ${diapersToday} (${today.diaper_wet ?? 0} xixi, ${today.diaper_dirty ?? 0} coco)`);
+  }
+
+  // Ontem
+  const y = ctx.logs_yesterday;
+  if (y && (y.sleep_sessions || y.feed_sessions || y.diaper_wet || y.diaper_dirty)) {
+    parts.push('');
+    parts.push('-- Ontem --');
+    if (y.sleep_sessions) parts.push(`- Sonecas: ${y.sleep_sessions}${y.sleep_night ? ` (${y.sleep_night} noturnas)` : ''}`);
+    if (y.wake_night) parts.push(`- Despertares noturnos: ${y.wake_night}`);
+    if (y.feed_sessions) parts.push(`- Mamadas: ${y.feed_sessions}`);
+    const diapersY = (y.diaper_wet ?? 0) + (y.diaper_dirty ?? 0);
+    if (diapersY) parts.push(`- Fraldas: ${diapersY} (${y.diaper_wet ?? 0} xixi, ${y.diaper_dirty ?? 0} coco)`);
   }
 
   // Logs recentes (detalhados)
