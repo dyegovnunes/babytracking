@@ -46,7 +46,7 @@ export default function YaIAIntroModal({ isOpen, onAccept, onClose }: YaIAIntroM
         <div className="text-sm text-on-surface-variant space-y-3">
           <p>
             Sou a assistente do Yaya. Pergunto, escuto e respondo com base nos dados reais
-            do seu bebê — sono, alimentação, saltos, vacinas, marcos.
+            do seu bebê: sono, alimentação, saltos, vacinas, marcos.
           </p>
           <p>
             <strong>Não substituo o pediatra.</strong> Minhas respostas são informativas e

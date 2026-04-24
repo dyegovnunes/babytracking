@@ -1,4 +1,4 @@
-import { supabase } from '../../lib/supabase'
+import { supabase, supabaseUrl } from '../../lib/supabase'
 
 export interface YaIAResponse {
   reply: string
@@ -29,7 +29,6 @@ export async function sendToYaIA(params: {
   const { data: { session } } = await supabase.auth.getSession()
   if (!session) throw new YaIAChatError('NOT_AUTHED')
 
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
   let res: Response
   try {
     res = await fetch(`${supabaseUrl}/functions/v1/yaia-chat`, {

@@ -41,7 +41,7 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
           </div>
         </div>
         <p className="text-[10px] text-on-surface-variant/70 mt-1 px-1">
-          ⚠ Informação geral. Não substitui consulta pediátrica.
+          Informação geral. Não substitui consulta pediátrica.
         </p>
       </div>
     </div>

@@ -132,12 +132,12 @@ export function useYaIA(): UseYaIAReturn {
         } else if (e.code === 'CONSENT_REQUIRED') {
           setConsentNeeded(true)
         } else if (e.code === 'NETWORK') {
-          setError('Sem conexão. Tenta de novo em instantes.')
+          setError('Tô sem conexão agora. Tenta de novo em instantes?')
         } else {
-          setError('Não consegui responder agora. Tenta de novo.')
+          setError('Ops, não consegui te ouvir agora. Respira, e a gente tenta mais uma vez?')
         }
       } else {
-        setError('Algo deu errado.')
+        setError('Alguma coisa saiu do meu controle aqui. Tenta de novo?')
       }
     } finally {
       setIsLoading(false)

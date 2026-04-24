@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppState } from '../../contexts/AppContext'
 import { PaywallModal } from '../../components/ui/PaywallModal'
@@ -8,6 +8,11 @@ import ChatBubble from './components/ChatBubble'
 import ChatInput from './components/ChatInput'
 import ChatEmpty from './components/ChatEmpty'
 import YaIAIntroModal from './components/YaIAIntroModal'
+
+// Altura reservada pro ChatInput fixo acima da BottomNav (input + folga).
+// ChatInput fica em: bottom = 4rem (BottomNav) + safe + ad-offset.
+// A página precisa deixar esse espaço livre no fim do scroll.
+const CHAT_INPUT_SPACER = '5rem'
 
 export default function YaIAPage() {
   const navigate = useNavigate()
@@ -26,23 +31,27 @@ export default function YaIAPage() {
   } = useYaIA()
 
   const [showInfo, setShowInfo] = useState(false)
-  useSheetBackClose(showInfo, () => setShowInfo(false))
 
-  const scrollRef = useRef<HTMLDivElement>(null)
-
-  // Auto-scroll para o fim sempre que chega mensagem nova ou entra em loading
+  // Auto-scroll do main (container de scroll do AppShell) sempre que chega
+  // mensagem nova ou muda o loading. Evita nested scroll na página.
   useEffect(() => {
-    const el = scrollRef.current
-    if (!el) return
-    el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
+    const main = document.querySelector('main')
+    if (!main) return
+    // Timeout curto deixa o DOM atualizar antes de medir scrollHeight.
+    const id = window.setTimeout(() => {
+      main.scrollTo({ top: main.scrollHeight, behavior: 'smooth' })
+    }, 30)
+    return () => window.clearTimeout(id)
   }, [messages.length, isLoading])
 
   const hasMessages = messages.length > 0
 
   return (
-    <div className="flex flex-col h-[100dvh] bg-surface">
-      {/* Header */}
-      <header className="shrink-0 sticky top-0 z-30 bg-surface/90 backdrop-blur-xl border-b border-outline-variant/15 pt-safe">
+    <>
+      {/* Header sticky dentro do main do AppShell.
+          Top=0 é o topo da área rolável (AppShell já pagou o safe-area-top
+          via padding do main). */}
+      <header className="sticky top-0 z-20 bg-surface/90 backdrop-blur-xl border-b border-outline-variant/15">
         <div className="flex items-center justify-between h-12 px-2 max-w-lg mx-auto w-full">
           <button
             type="button"
@@ -77,39 +86,37 @@ export default function YaIAPage() {
         )}
       </header>
 
-      {/* Corpo: lista de mensagens */}
+      {/* Conteúdo da conversa — flow normal, sem scroll container próprio.
+          paddingBottom deixa espaço pro ChatInput fixo acima da BottomNav. */}
       <div
-        ref={scrollRef}
-        className="flex-1 overflow-y-auto"
-        style={{ paddingBottom: 'calc(72px + var(--yaya-ad-offset, 0px) + env(safe-area-inset-bottom, 0px))' }}
+        className="max-w-lg mx-auto w-full px-3 py-4 flex flex-col gap-3"
+        style={{ paddingBottom: CHAT_INPUT_SPACER }}
       >
-        <div className="max-w-lg mx-auto w-full px-3 py-4 flex flex-col gap-3">
-          {isHistoryLoading && (
-            <div className="text-center text-sm text-on-surface-variant py-6">
-              Carregando conversa…
-            </div>
-          )}
+        {isHistoryLoading && (
+          <div className="text-center text-sm text-on-surface-variant py-6">
+            Carregando conversa...
+          </div>
+        )}
 
-          {!isHistoryLoading && !hasMessages && (
-            <ChatEmpty baby={baby} onPick={(s) => sendMessage(s)} />
-          )}
+        {!isHistoryLoading && !hasMessages && (
+          <ChatEmpty baby={baby} onPick={(s) => sendMessage(s)} />
+        )}
 
-          {messages.map((m) => (
-            <ChatBubble key={m.id} message={m} />
-          ))}
+        {messages.map((m) => (
+          <ChatBubble key={m.id} message={m} />
+        ))}
 
-          {isLoading && <TypingBubble />}
+        {isLoading && <TypingBubble />}
 
-          {error && (
-            <div className="text-sm text-error text-center py-2">{error}</div>
-          )}
-        </div>
+        {error && (
+          <div className="text-sm text-error text-center py-2">{error}</div>
+        )}
       </div>
 
-      {/* Input fixo */}
+      {/* Input fixo, posicionado acima da BottomNav (ver ChatInput.tsx). */}
       <ChatInput
         disabled={isLoading || consentNeeded || !baby}
-        placeholder={!baby ? 'Selecione um bebê primeiro' : 'Pergunta pra yaIA…'}
+        placeholder={!baby ? 'Selecione um bebê primeiro' : 'Conta pra yaIA...'}
         onSend={(v) => sendMessage(v)}
       />
 
@@ -128,8 +135,8 @@ export default function YaIAPage() {
       />
 
       {/* Info "o que é yaIA" */}
-      {showInfo && <InfoSheet onClose={() => setShowInfo(false)} />}
-    </div>
+      <InfoSheet isOpen={showInfo} onClose={() => setShowInfo(false)} />
+    </>
   )
 }
 
@@ -148,14 +155,17 @@ function TypingBubble() {
   )
 }
 
-function InfoSheet({ onClose }: { onClose: () => void }) {
+function InfoSheet({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  useSheetBackClose(isOpen, onClose)
+  if (!isOpen) return null
   return (
     <div
       className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md bg-surface rounded-t-2xl sm:rounded-md p-5 pt-6 pb-safe flex flex-col gap-3"
+        className="w-full max-w-md bg-surface rounded-t-2xl sm:rounded-md p-5 pt-6 flex flex-col gap-3"
+        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 1.25rem)' }}
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="font-display text-lg text-on-surface">Sobre a yaIA</h2>
@@ -167,11 +177,10 @@ function InfoSheet({ onClose }: { onClose: () => void }) {
           </p>
           <p>
             <strong>Ela não substitui o pediatra.</strong> As respostas são
-            informativas — em qualquer dúvida clínica, procure um profissional.
+            informativas. Em qualquer dúvida clínica, procure um profissional.
           </p>
           <p className="text-xs">
-            No plano grátis, você pode fazer 10 perguntas por mês. Com o Yaya+,
-            são ilimitadas.
+            No plano grátis você pode fazer 10 perguntas por mês. Com o Yaya+, são ilimitadas.
           </p>
         </div>
         <button
