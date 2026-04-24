@@ -1,7 +1,7 @@
-// yaIA chat proxy (v8)
-// - Parser tolerante: aceita resposta do n8n em multiplos formatos
-//   (string JSON crua, objeto direto, array com .output, nested .output)
-// - Logs verbosos pra debug de 502
+// yaIA chat proxy (v11)
+// - Parser remove prefixo '=' que o n8n vaza com expressoes em Respond With Text
+// - Links em sources[] ganham UTM (utm_source=yaia, utm_medium=chat, utm_campaign=in_app)
+// - DEBUG: grava body do n8n em yaia_debug_log pra diagnose fora de banda
 // - Valida JWT do app
 // - Confere membership + consent
 // - Enforce limite free
@@ -191,9 +191,25 @@ serve(async (req) => {
     const n8nBody = await n8nResp.text();
     console.log('[yaia] n8n raw body (first 400 chars):', n8nBody.slice(0, 400));
 
+    // DEBUG: grava body bruto em yaia_debug_log pra diagnose.
+    await admin.from('yaia_debug_log').insert({
+      user_id: userId,
+      baby_id: babyId,
+      stage: 'n8n_response',
+      status: n8nResp.status,
+      raw_body: n8nBody,
+    }).then(() => {}).catch(() => {});
+
     const n8nData = tolerantParseN8n(n8nBody);
     if (!n8nData) {
-      console.error('[yaia] failed to parse n8n body after all attempts', n8nBody.slice(0, 300));
+      await admin.from('yaia_debug_log').insert({
+        user_id: userId,
+        baby_id: babyId,
+        stage: 'parse_fail',
+        status: n8nResp.status,
+        raw_body: n8nBody,
+        error_msg: 'tolerantParseN8n returned null',
+      }).then(() => {}).catch(() => {});
       return json({
         error: 'Resposta invalida da yaIA.',
         debug: { stage: 'parse_fail', preview: n8nBody.slice(0, 300) },
@@ -202,7 +218,15 @@ serve(async (req) => {
 
     const messages = normalizeMessages(n8nData);
     if (!messages.length) {
-      console.error('[yaia] n8n missing messages/reply', Object.keys(n8nData), n8nBody.slice(0, 300));
+      await admin.from('yaia_debug_log').insert({
+        user_id: userId,
+        baby_id: babyId,
+        stage: 'no_messages',
+        status: n8nResp.status,
+        raw_body: n8nBody,
+        parsed: n8nData as unknown as Record<string, unknown>,
+        error_msg: `normalizeMessages returned empty; keys: ${Object.keys(n8nData).join(',')}`,
+      }).then(() => {}).catch(() => {});
       return json({
         error: 'Resposta invalida da yaIA.',
         debug: { stage: 'no_messages', keys: Object.keys(n8nData), preview: n8nBody.slice(0, 300) },
@@ -216,6 +240,7 @@ serve(async (req) => {
       ? n8nData.sources
           .filter((s) => s && typeof s.title === 'string' && typeof s.url === 'string')
           .slice(0, 3)
+          .map((s) => ({ title: s.title, url: appendUtm(s.url) }))
       : [];
 
     // Persistencia: 1 linha user + 1 linha assistant (separador junta os bubbles).
@@ -263,6 +288,20 @@ function toMonthKey(d: Date): string {
   return `${y}-${m}`;
 }
 
+// Adiciona UTM params pra identificar clique vindo do chat da yaIA.
+// Preserva params existentes; se a URL ja tem utm_source, nao sobrescreve.
+function appendUtm(url: string): string {
+  try {
+    const u = new URL(url);
+    if (!u.searchParams.has('utm_source')) u.searchParams.set('utm_source', 'yaia');
+    if (!u.searchParams.has('utm_medium')) u.searchParams.set('utm_medium', 'chat');
+    if (!u.searchParams.has('utm_campaign')) u.searchParams.set('utm_campaign', 'in_app');
+    return u.toString();
+  } catch {
+    return url;
+  }
+}
+
 // Aceita qualquer shape razoavel que o n8n possa devolver:
 // 1. Objeto direto: { messages: [...], ... }
 // 2. String JSON: "{\"messages\":[...]}" (duplo-encoded)
@@ -271,8 +310,12 @@ function toMonthKey(d: Date): string {
 // 5. Objeto com output como string JSON: { output: "{\"messages\":[...]}" }
 // Retorna null se nao achar shape utilizavel.
 function tolerantParseN8n(body: string): N8nResponse | null {
-  const trimmed = body.trim();
+  let trimmed = body.trim();
   if (!trimmed) return null;
+
+  // n8n com "Respond With: Text" + expressao `={{ ... }}` as vezes vaza o
+  // prefixo '=' literal no output. Tira antes de tentar JSON.parse.
+  if (trimmed.startsWith('=')) trimmed = trimmed.slice(1).trim();
 
   // Tenta parsear JSON. Se falhar, game over (nao eh JSON).
   let parsed: unknown;

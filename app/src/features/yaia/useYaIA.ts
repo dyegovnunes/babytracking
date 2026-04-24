@@ -63,12 +63,16 @@ export function useYaIA(): UseYaIAReturn {
 
   useEffect(() => { refreshConsent() }, [refreshConsent])
 
-  // Carrega histórico
+  // Carrega histórico apenas quando mudamos de bebê (ou entramos com um
+  // pela primeira vez). NÃO zera mensagens quando `user` fica null
+  // transitoriamente (ex: re-verificação de sessão após voltar de link
+  // externo), porque isso apagava a conversa da tela.
+  const loadedBabyIdRef = useRef<string | null>(null)
   useEffect(() => {
-    if (!user || !babyId) {
-      setMessages([])
-      return
-    }
+    if (!user || !babyId) return
+    // Se já carregamos esse babyId antes, não recarrega.
+    if (loadedBabyIdRef.current === babyId && messages.length > 0) return
+    loadedBabyIdRef.current = babyId
     let cancelled = false
     setIsHistoryLoading(true)
     ;(async () => {
