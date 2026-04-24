@@ -63,27 +63,31 @@ export function useYaIA(): UseYaIAReturn {
 
   useEffect(() => { refreshConsent() }, [refreshConsent])
 
-  // Carrega histórico apenas quando mudamos de bebê (ou entramos com um
-  // pela primeira vez). NÃO zera mensagens quando `user` fica null
-  // transitoriamente (ex: re-verificação de sessão após voltar de link
-  // externo), porque isso apagava a conversa da tela.
-  const loadedBabyIdRef = useRef<string | null>(null)
+  // Carrega histórico sempre que user.id OU babyId mudarem (ou na montagem).
+  // Usa user?.id como dep (nao o objeto user) pra evitar re-disparos
+  // desnecessarios quando o AuthContext re-renderiza com objeto novo mas
+  // mesmo id. NUNCA zera mensagens sozinho: se vier null temporariamente
+  // (ex: re-verificacao de sessao ao voltar de link externo), so nao faz
+  // nada e mantém o que ja estava na tela.
+  const userId = user?.id
   useEffect(() => {
-    if (!user || !babyId) return
-    // Se já carregamos esse babyId antes, não recarrega.
-    if (loadedBabyIdRef.current === babyId && messages.length > 0) return
-    loadedBabyIdRef.current = babyId
+    if (!userId || !babyId) return
     let cancelled = false
     setIsHistoryLoading(true)
     ;(async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('yaia_conversations')
         .select('id, role, content, created_at')
-        .eq('user_id', user.id)
+        .eq('user_id', userId)
         .eq('baby_id', babyId)
         .order('created_at', { ascending: false })
         .limit(HISTORY_LIMIT)
       if (cancelled) return
+      if (error) {
+        console.error('[yaia] erro ao carregar conversa', error)
+        setIsHistoryLoading(false)
+        return
+      }
       const rows = (data ?? []).slice().reverse().map((r): YaIAMessage => {
         const raw = (r.content as string) ?? ''
         const bubbles = raw.split(BUBBLE_SEPARATOR).map((b) => b.trim()).filter(Boolean)
@@ -94,11 +98,12 @@ export function useYaIA(): UseYaIAReturn {
           createdAt: r.created_at as string,
         }
       })
+      console.log('[yaia] carregou', rows.length, 'mensagens do DB')
       setMessages(rows)
       setIsHistoryLoading(false)
     })()
     return () => { cancelled = true }
-  }, [user, babyId])
+  }, [userId, babyId])
 
   async function dispatchSend(tempId: string, trimmed: string, targetBabyId: string) {
     setError(null)
