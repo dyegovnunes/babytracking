@@ -2,15 +2,21 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useAppState } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
-import { sendToYaIA, YaIAChatError } from './yaiaChatService'
+import { sendToYaIA, submitFeedback, YaIAChatError, type YaIASource } from './yaiaChatService'
+
+const BUBBLE_SEPARATOR = '\n\n---\n\n'
 
 export interface YaIAMessage {
   id: string
   role: 'user' | 'assistant'
-  content: string
+  /** user: 1 item. assistant: 1-3 bubbles. */
+  bubbles: string[]
   createdAt: string
   pending?: boolean
   failed?: boolean
+  /** Só aplicável à última mensagem assistant (volátil, some no próximo turno). */
+  suggestions?: string[]
+  sources?: YaIASource[]
 }
 
 export interface UseYaIAReturn {
@@ -23,6 +29,7 @@ export interface UseYaIAReturn {
   error: string | null
   sendMessage: (content: string) => Promise<void>
   retryMessage: (messageId: string) => Promise<void>
+  giveFeedback: (messageId: string, rating: 1 | -1, reasonTag?: string) => Promise<void>
   dismissLimit: () => void
   refreshConsent: () => Promise<void>
 }
@@ -44,7 +51,6 @@ export function useYaIA(): UseYaIAReturn {
 
   const tempIdRef = useRef(0)
 
-  // Consent check — roda ao abrir a aba
   const refreshConsent = useCallback(async () => {
     if (!user) return
     const { data } = await supabase
@@ -55,11 +61,9 @@ export function useYaIA(): UseYaIAReturn {
     setConsentNeeded(!data?.yaia_consent_at)
   }, [user])
 
-  useEffect(() => {
-    refreshConsent()
-  }, [refreshConsent])
+  useEffect(() => { refreshConsent() }, [refreshConsent])
 
-  // Carrega histórico ao montar e a cada troca de bebê
+  // Carrega histórico
   useEffect(() => {
     if (!user || !babyId) {
       setMessages([])
@@ -76,46 +80,51 @@ export function useYaIA(): UseYaIAReturn {
         .order('created_at', { ascending: false })
         .limit(HISTORY_LIMIT)
       if (cancelled) return
-      const rows = (data ?? []).slice().reverse().map((r): YaIAMessage => ({
-        id: r.id as string,
-        role: r.role as 'user' | 'assistant',
-        content: r.content as string,
-        createdAt: r.created_at as string,
-      }))
+      const rows = (data ?? []).slice().reverse().map((r): YaIAMessage => {
+        const raw = (r.content as string) ?? ''
+        const bubbles = raw.split(BUBBLE_SEPARATOR).map((b) => b.trim()).filter(Boolean)
+        return {
+          id: r.id as string,
+          role: r.role as 'user' | 'assistant',
+          bubbles: bubbles.length ? bubbles : [raw],
+          createdAt: r.created_at as string,
+        }
+      })
       setMessages(rows)
       setIsHistoryLoading(false)
     })()
     return () => { cancelled = true }
   }, [user, babyId])
 
-  // Núcleo do envio: recebe uma mensagem já presente no state (com pending=true)
-  // e cuida de tentar enviar, marcando failed=true em caso de erro (sem remover).
   async function dispatchSend(tempId: string, trimmed: string, targetBabyId: string) {
     setError(null)
     setIsLoading(true)
     try {
-      const { reply, remaining: rem } = await sendToYaIA({ message: trimmed, babyId: targetBabyId })
-      setRemaining(rem)
+      const res = await sendToYaIA({ message: trimmed, babyId: targetBabyId })
+      setRemaining(res.remaining)
       setMessages((prev) => {
-        const updated = prev.map((m) =>
+        // Limpa suggestions das mensagens anteriores (volátil).
+        const cleaned = prev.map((m) =>
+          m.role === 'assistant' ? { ...m, suggestions: undefined } : m,
+        )
+        const updated = cleaned.map((m) =>
           m.id === tempId ? { ...m, pending: false, failed: false } : m,
         )
         return [
           ...updated,
           {
-            id: `tmp_assist_${++tempIdRef.current}`,
+            id: res.messageId ?? `tmp_assist_${++tempIdRef.current}`,
             role: 'assistant',
-            content: reply,
+            bubbles: res.messages,
             createdAt: new Date().toISOString(),
+            suggestions: res.suggestions,
+            sources: res.sources,
           },
         ]
       })
     } catch (e) {
-      // Mantém a mensagem do usuário visível, marca como falha.
       setMessages((prev) =>
-        prev.map((m) =>
-          m.id === tempId ? { ...m, pending: false, failed: true } : m,
-        ),
+        prev.map((m) => (m.id === tempId ? { ...m, pending: false, failed: true } : m)),
       )
       if (e instanceof YaIAChatError) {
         if (e.code === 'LIMIT_REACHED') {
@@ -123,6 +132,8 @@ export function useYaIA(): UseYaIAReturn {
           setLimitReached(true)
         } else if (e.code === 'CONSENT_REQUIRED') {
           setConsentNeeded(true)
+        } else if (e.code === 'NO_CONTEXT') {
+          setError('Não consegui carregar os dados do bebê. Tenta recarregar o app?')
         } else if (e.code === 'NETWORK') {
           setError('Tô sem conexão agora. Sua mensagem ficou aqui, toca pra tentar de novo quando voltar.')
         } else {
@@ -142,31 +153,41 @@ export function useYaIA(): UseYaIAReturn {
 
     const tempId = `tmp_${++tempIdRef.current}`
     const nowIso = new Date().toISOString()
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: tempId,
-        role: 'user',
-        content: trimmed,
-        createdAt: nowIso,
-        pending: true,
-      },
-    ])
+    setMessages((prev) => {
+      const cleaned = prev.map((m) =>
+        m.role === 'assistant' ? { ...m, suggestions: undefined } : m,
+      )
+      return [
+        ...cleaned,
+        {
+          id: tempId,
+          role: 'user',
+          bubbles: [trimmed],
+          createdAt: nowIso,
+          pending: true,
+        },
+      ]
+    })
     await dispatchSend(tempId, trimmed, babyId)
   }, [babyId, isLoading])
 
-  // Reusa a mesma mensagem do usuário (mantém id/ordem), apenas reenvia.
   const retryMessage = useCallback(async (messageId: string) => {
     if (!babyId || isLoading) return
     const target = messages.find((m) => m.id === messageId && m.role === 'user')
     if (!target) return
     setMessages((prev) =>
-      prev.map((m) =>
-        m.id === messageId ? { ...m, pending: true, failed: false } : m,
-      ),
+      prev.map((m) => (m.id === messageId ? { ...m, pending: true, failed: false } : m)),
     )
-    await dispatchSend(messageId, target.content, babyId)
+    await dispatchSend(messageId, target.bubbles[0] ?? '', babyId)
   }, [babyId, isLoading, messages])
+
+  const giveFeedback = useCallback(async (messageId: string, rating: 1 | -1, reasonTag?: string) => {
+    try {
+      await submitFeedback({ messageId, rating, reasonTag })
+    } catch (e) {
+      console.error('[yaia] feedback failed', e)
+    }
+  }, [])
 
   const dismissLimit = useCallback(() => setLimitReached(false), [])
 
@@ -180,6 +201,7 @@ export function useYaIA(): UseYaIAReturn {
     error,
     sendMessage,
     retryMessage,
+    giveFeedback,
     dismissLimit,
     refreshConsent,
   }

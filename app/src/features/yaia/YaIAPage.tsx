@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppState } from '../../contexts/AppContext'
 import { PaywallModal } from '../../components/ui/PaywallModal'
@@ -8,10 +8,10 @@ import ChatBubble from './components/ChatBubble'
 import ChatInput from './components/ChatInput'
 import ChatEmpty from './components/ChatEmpty'
 import YaIAIntroModal from './components/YaIAIntroModal'
+import TypingIndicator from './components/TypingIndicator'
+import SuggestionChips from './components/SuggestionChips'
+import ContextChip from './components/ContextChip'
 
-// Altura reservada pro ChatInput fixo acima da BottomNav (input + folga).
-// ChatInput fica em: bottom = 4rem (BottomNav) + safe + ad-offset.
-// A página precisa deixar esse espaço livre no fim do scroll.
 const CHAT_INPUT_SPACER = '5rem'
 
 export default function YaIAPage() {
@@ -27,31 +27,41 @@ export default function YaIAPage() {
     error,
     sendMessage,
     retryMessage,
+    giveFeedback,
     dismissLimit,
     refreshConsent,
   } = useYaIA()
 
   const [showInfo, setShowInfo] = useState(false)
 
-  // Auto-scroll do main (container de scroll do AppShell) sempre que chega
-  // mensagem nova ou muda o loading. Evita nested scroll na página.
+  // Tracking de quais mensagens foram montadas (pra stagger só em novas).
+  const seenRef = useRef<Set<string>>(new Set())
+  const freshIds = useMemo(() => {
+    const s = new Set<string>()
+    for (const m of messages) {
+      if (m.role === 'assistant' && !seenRef.current.has(m.id)) s.add(m.id)
+    }
+    return s
+  }, [messages])
+  useEffect(() => {
+    for (const m of messages) seenRef.current.add(m.id)
+  }, [messages])
+
   useEffect(() => {
     const main = document.querySelector('main')
     if (!main) return
-    // Timeout curto deixa o DOM atualizar antes de medir scrollHeight.
     const id = window.setTimeout(() => {
       main.scrollTo({ top: main.scrollHeight, behavior: 'smooth' })
-    }, 30)
+    }, 60)
     return () => window.clearTimeout(id)
   }, [messages.length, isLoading])
 
   const hasMessages = messages.length > 0
+  const lastAssistant = [...messages].reverse().find((m) => m.role === 'assistant')
+  const activeSuggestions = lastAssistant?.suggestions ?? []
 
   return (
     <>
-      {/* Header sticky dentro do main do AppShell.
-          Top=0 é o topo da área rolável (AppShell já pagou o safe-area-top
-          via padding do main). */}
       <header className="sticky top-0 z-20 bg-surface/90 backdrop-blur-xl border-b border-outline-variant/15">
         <div className="flex items-center justify-between h-12 px-2 max-w-lg mx-auto w-full">
           <button
@@ -80,6 +90,7 @@ export default function YaIAPage() {
             <span className="material-symbols-outlined">info</span>
           </button>
         </div>
+        <ContextChip baby={baby} />
         {remaining !== null && remaining <= 3 && remaining > 0 && (
           <div className="text-center text-[11px] text-on-surface-variant pb-1">
             {remaining} {remaining === 1 ? 'pergunta restante' : 'perguntas restantes'} esse mês
@@ -87,8 +98,6 @@ export default function YaIAPage() {
         )}
       </header>
 
-      {/* Conteúdo da conversa — flow normal, sem scroll container próprio.
-          paddingBottom deixa espaço pro ChatInput fixo acima da BottomNav. */}
       <div
         className="max-w-lg mx-auto w-full px-3 py-4 flex flex-col gap-3"
         style={{ paddingBottom: CHAT_INPUT_SPACER }}
@@ -104,55 +113,57 @@ export default function YaIAPage() {
         )}
 
         {messages.map((m) => (
-          <ChatBubble key={m.id} message={m} onRetry={retryMessage} />
+          <ChatBubble
+            key={m.id}
+            message={m}
+            isFresh={freshIds.has(m.id)}
+            onRetry={retryMessage}
+            onRate={giveFeedback}
+          />
         ))}
 
-        {isLoading && <TypingBubble />}
+        {!isLoading && activeSuggestions.length > 0 && lastAssistant && (
+          <div className="pl-9">
+            <SuggestionChips
+              suggestions={activeSuggestions}
+              onPick={(s) => sendMessage(s)}
+            />
+          </div>
+        )}
+
+        {isLoading && <TypingIndicator />}
 
         {error && (
           <div className="text-sm text-error text-center py-2">{error}</div>
         )}
+
+        {hasMessages && (
+          <p className="text-[10px] text-on-surface-variant/60 text-center pt-2">
+            Informação geral. Não substitui consulta pediátrica.
+          </p>
+        )}
       </div>
 
-      {/* Input fixo, posicionado acima da BottomNav (ver ChatInput.tsx). */}
       <ChatInput
         disabled={isLoading || consentNeeded || !baby}
         placeholder={!baby ? 'Selecione um bebê primeiro' : 'Conta pra yaIA...'}
         onSend={(v) => sendMessage(v)}
       />
 
-      {/* Consent na 1ª abertura */}
       <YaIAIntroModal
         isOpen={consentNeeded}
         onAccept={refreshConsent}
         onClose={() => navigate('/')}
       />
 
-      {/* Paywall no 11º envio */}
       <PaywallModal
         isOpen={limitReached}
         onClose={dismissLimit}
         trigger="yaia"
       />
 
-      {/* Info "o que é yaIA" */}
       <InfoSheet isOpen={showInfo} onClose={() => setShowInfo(false)} />
     </>
-  )
-}
-
-function TypingBubble() {
-  return (
-    <div className="flex justify-start gap-2">
-      <div className="shrink-0 w-7 h-7 rounded-full bg-primary/20 text-primary flex items-center justify-center text-[11px] font-semibold">
-        yA
-      </div>
-      <div className="rounded-md bg-surface-container px-4 py-3 flex items-center gap-1">
-        <span className="w-1.5 h-1.5 rounded-full bg-on-surface-variant/60 animate-pulse" />
-        <span className="w-1.5 h-1.5 rounded-full bg-on-surface-variant/60 animate-pulse [animation-delay:150ms]" />
-        <span className="w-1.5 h-1.5 rounded-full bg-on-surface-variant/60 animate-pulse [animation-delay:300ms]" />
-      </div>
-    </div>
   )
 }
 

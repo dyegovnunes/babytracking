@@ -1,11 +1,11 @@
-// yaIA chat proxy
+// yaIA chat proxy (v5)
 // - Valida JWT do app
-// - Confere membership do usuario no baby_id
-// - Verifica consent (profiles.yaia_consent_at)
-// - Enforce limite free (10/mes) em yaia_usage
-// - Busca contexto real do bebe via RPC get_yaia_context e envia pro n8n
-// - Persiste user + assistant messages em yaia_conversations (single writer)
-// - Proxy para n8n via header secreto X-YaIA-Secret
+// - Confere membership + consent
+// - Enforce limite free
+// - Chama get_yaia_context e envia payload enriquecido pro n8n
+// - Guard-rail: se baby.name vier vazio, nega envio pro n8n (NO_CONTEXT)
+// - Aceita resposta novo formato { messages, suggestions, sources } OU legado { reply }
+// - Persiste conversa com separador "\n\n---\n\n" entre bubbles
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
@@ -19,7 +19,8 @@ const YAIA_WEBHOOK_SECRET = Deno.env.get('YAIA_WEBHOOK_SECRET') ?? '';
 const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
 const FREE_MONTHLY_LIMIT = 10;
-const HISTORY_LIMIT = 20;
+const HISTORY_LIMIT = 10; // 20 antes, reduzido pra cortar latencia
+const BUBBLE_SEPARATOR = '\n\n---\n\n';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -40,6 +41,13 @@ interface YaiaContext {
   active_medications?: Array<{ name: string; dosage?: string; frequency_hours?: number; schedule_times?: unknown; notes?: string; last_given?: string }>;
   vaccines_pending?: Array<{ vaccine_name: string; status: string; applied_at?: string }>;
   recent_milestones?: Array<{ milestone_name: string; category?: string; registered_at: string }>;
+}
+
+interface N8nResponse {
+  messages?: string[];
+  reply?: string; // fallback legado
+  suggestions?: string[];
+  sources?: Array<{ title: string; url: string }>;
 }
 
 serve(async (req) => {
@@ -110,7 +118,21 @@ serve(async (req) => {
       remaining = FREE_MONTHLY_LIMIT - newCount;
     }
 
-    // Historico da conversa
+    // Contexto real do bebe via RPC
+    const { data: contextData, error: ctxErr } = await admin.rpc('get_yaia_context', {
+      p_user_id: userId,
+      p_baby_id: babyId,
+    });
+    if (ctxErr) console.error('[yaia] get_yaia_context failed', ctxErr);
+    const context: YaiaContext = (contextData as YaiaContext) ?? {};
+
+    // GUARD-RAIL: sem nome do bebe, nao tem como a IA responder sem inventar.
+    if (!context.baby?.name) {
+      console.error('[yaia] guard-rail: baby.name missing from context', { babyId, userId });
+      return json({ error: 'NO_CONTEXT' }, 503);
+    }
+
+    // Historico
     const { data: historyRows } = await admin
       .from('yaia_conversations')
       .select('role, content, created_at')
@@ -121,17 +143,12 @@ serve(async (req) => {
     const history = (historyRows ?? [])
       .slice()
       .reverse()
-      .map((m) => ({ role: m.role, content: m.content }));
+      .map((m) => ({
+        role: m.role,
+        // Split bubbles into one content string pro historico (IA nao precisa ver separador)
+        content: typeof m.content === 'string' ? m.content.replaceAll(BUBBLE_SEPARATOR, ' ') : '',
+      }));
 
-    // Contexto real do bebe via RPC
-    const { data: contextData, error: ctxErr } = await admin.rpc('get_yaia_context', {
-      p_user_id: userId,
-      p_baby_id: babyId,
-    });
-    if (ctxErr) {
-      console.error('[yaia] get_yaia_context failed', ctxErr);
-    }
-    const context: YaiaContext = (contextData as YaiaContext) ?? {};
     const contextSummary = buildContextSummary(context);
 
     // Chamada pro n8n
@@ -146,7 +163,7 @@ serve(async (req) => {
         history,
         user_id: userId,
         baby_id: babyId,
-        baby: context.baby ?? null,
+        baby: context.baby,
         context,
         context_summary: contextSummary,
       }),
@@ -159,7 +176,7 @@ serve(async (req) => {
     }
 
     const n8nBody = await n8nResp.text();
-    let n8nData: { reply?: string } = {};
+    let n8nData: N8nResponse = {};
     try {
       n8nData = JSON.parse(n8nBody);
     } catch {
@@ -167,25 +184,48 @@ serve(async (req) => {
       return json({ error: 'Resposta invalida da yaIA.' }, 502);
     }
 
-    const reply = typeof n8nData?.reply === 'string' ? n8nData.reply : undefined;
-    if (!reply) {
-      console.error('[yaia] n8n missing reply', Object.keys(n8nData));
+    // Normaliza o output: prefere messages[], fallback pra reply string split por \n\n (max 2 bubbles).
+    const messages = normalizeMessages(n8nData);
+    if (!messages.length) {
+      console.error('[yaia] n8n missing messages/reply', Object.keys(n8nData));
       return json({ error: 'Resposta invalida da yaIA.' }, 502);
     }
 
-    const nowIso = new Date().toISOString();
-    await admin.from('yaia_conversations').insert([
-      { user_id: userId, baby_id: babyId, role: 'user', content: message, created_at: nowIso },
-      {
-        user_id: userId,
-        baby_id: babyId,
-        role: 'assistant',
-        content: reply,
-        created_at: new Date(Date.now() + 1).toISOString(),
-      },
-    ]);
+    const suggestions = Array.isArray(n8nData.suggestions)
+      ? n8nData.suggestions.filter((s) => typeof s === 'string' && s.trim().length > 0).slice(0, 3)
+      : [];
+    const sources = Array.isArray(n8nData.sources)
+      ? n8nData.sources
+          .filter((s) => s && typeof s.title === 'string' && typeof s.url === 'string')
+          .slice(0, 3)
+      : [];
 
-    return json({ reply, remaining }, 200);
+    // Persistencia: 1 linha user + 1 linha assistant (separador junta os bubbles).
+    const nowIso = new Date().toISOString();
+    const assistantContent = messages.join(BUBBLE_SEPARATOR);
+    const { data: inserted } = await admin
+      .from('yaia_conversations')
+      .insert([
+        { user_id: userId, baby_id: babyId, role: 'user', content: message, created_at: nowIso },
+        {
+          user_id: userId,
+          baby_id: babyId,
+          role: 'assistant',
+          content: assistantContent,
+          created_at: new Date(Date.now() + 1).toISOString(),
+        },
+      ])
+      .select('id, role');
+    const assistantRow = inserted?.find((r) => r.role === 'assistant');
+    const assistantMessageId = assistantRow?.id as string | undefined;
+
+    return json({
+      messages,
+      suggestions,
+      sources,
+      message_id: assistantMessageId,
+      remaining,
+    }, 200);
   } catch (err) {
     console.error('yaia-chat error', err);
     return json({ error: 'Erro interno' }, 500);
@@ -205,8 +245,23 @@ function toMonthKey(d: Date): string {
   return `${y}-${m}`;
 }
 
-// Monta bloco pronto pra ser colado no system prompt do AI Agent no n8n.
-// Use esse texto diretamente: {{ $json.context_summary }}
+function normalizeMessages(data: N8nResponse): string[] {
+  if (Array.isArray(data.messages)) {
+    return data.messages
+      .filter((m): m is string => typeof m === 'string' && m.trim().length > 0)
+      .slice(0, 3)
+      .map((m) => m.trim());
+  }
+  if (typeof data.reply === 'string' && data.reply.trim().length > 0) {
+    const parts = data.reply
+      .split(/\n\s*\n/)
+      .map((p) => p.trim())
+      .filter(Boolean);
+    return parts.slice(0, 2);
+  }
+  return [];
+}
+
 function buildContextSummary(ctx: YaiaContext): string {
   const parts: string[] = [];
   parts.push('=== CONTEXTO REAL DO BEBE (use esses dados, nunca invente) ===');
@@ -239,7 +294,7 @@ function buildContextSummary(ctx: YaiaContext): string {
     }
   } else {
     parts.push('');
-    parts.push('-- Registros: nenhum log registrado ainda. Se o pai/mae perguntar sobre padrao de sono/fralda/alimentacao, diga que ainda nao ha dados suficientes e sugira comecar a registrar no app. --');
+    parts.push('-- Registros: nenhum log registrado ainda. Se o pai/mae perguntar sobre padrao de sono/fralda/alimentacao, diga que ainda nao ha dados suficientes. --');
   }
 
   const meds = ctx.active_medications ?? [];
