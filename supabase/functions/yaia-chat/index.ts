@@ -164,7 +164,27 @@ serve(async (req) => {
       return json({ error: 'NO_CONTEXT' }, 503);
     }
 
-    // Chamada slim pro n8n. Sem context, sem context_summary.
+    // GROUNDING HARDENING (v15.1): prefixar a user message com um bloco
+    // SISTEMA contendo o nome real do bebê. O Claude respeita a user message
+    // de forma mais absoluta do que variáveis no system prompt do n8n — se
+    // por qualquer motivo `{{ $json.baby.name }}` não for interpolado, ou se
+    // few-shot examples contaminarem, este bloco sobrevive. Bug fix de
+    // 2026-04-24: IA chamou bebês Luiza/Flavia/Rafael de "Guto"/"Arthur".
+    const ageLabel = formatAgeLabel(babyBasics);
+    const groundingPrefix =
+      `[SISTEMA: Você está conversando agora sobre o bebê chamado "${babyBasics.name}"` +
+      (babyBasics.gender ? `, gênero "${babyBasics.gender}"` : '') +
+      (ageLabel ? `, idade ${ageLabel}` : '') +
+      `. Este é o ÚNICO nome correto, confirmado pelo banco de dados do Yaya Baby. ` +
+      `Qualquer outro nome que apareça em exemplos do seu system prompt, em memória ` +
+      `de conversas anteriores, ou em qualquer outro lugar, é IRRELEVANTE. Use ` +
+      `exclusivamente "${babyBasics.name}" nas suas respostas. Se a pergunta do ` +
+      `usuário mencionar um nome diferente, assuma que o usuário errou e use ` +
+      `"${babyBasics.name}".]\n\n`;
+    const messageWithGrounding = groundingPrefix + message;
+
+    // Chamada slim pro n8n. O nome do bebê vai tanto no campo `baby` (pro
+    // system prompt usar) quanto prefixado na `message` (defense in depth).
     const n8nResp = await fetch(YAIA_N8N_URL, {
       method: 'POST',
       headers: {
@@ -172,7 +192,10 @@ serve(async (req) => {
         'X-YaIA-Secret': YAIA_WEBHOOK_SECRET,
       },
       body: JSON.stringify({
-        message,
+        message: messageWithGrounding,
+        // message_raw é a pergunta original do usuário, sem o grounding —
+        // caso alguém queira logar ou mostrar só o que o usuário digitou.
+        message_raw: message,
         user_id: userId,
         baby_id: babyId,
         baby: babyBasics,
@@ -255,6 +278,18 @@ function toMonthKey(d: Date): string {
   const y = d.getUTCFullYear();
   const m = String(d.getUTCMonth() + 1).padStart(2, '0');
   return `${y}-${m}`;
+}
+
+function formatAgeLabel(b: BabyBasics): string {
+  const m = b.age_months;
+  const d = b.age_days;
+  if (typeof d === 'number' && d < 30) {
+    return `${d} ${d === 1 ? 'dia' : 'dias'} de vida`;
+  }
+  if (typeof m === 'number') {
+    return `${m} ${m === 1 ? 'mês' : 'meses'}`;
+  }
+  return '';
 }
 
 function toDayKey(d: Date): string {
