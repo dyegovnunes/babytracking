@@ -5,18 +5,30 @@ import { PaywallModal } from '../../components/ui/PaywallModal'
 import { useSheetBackClose } from '../../hooks/useSheetBackClose'
 import { hapticLight } from '../../lib/haptics'
 import { useYaIA } from './useYaIA'
-import ChatBubble from './components/ChatBubble'
 import ChatInput from './components/ChatInput'
 import ChatEmpty from './components/ChatEmpty'
 import YaIAIntroModal from './components/YaIAIntroModal'
 import TypingIndicator from './components/TypingIndicator'
 import SuggestionChips from './components/SuggestionChips'
-import ContextChip from './components/ContextChip'
 import SessionEndCard from './components/SessionEndCard'
+import YaIAHeader from './components/YaIAHeader'
+import MessageGroup from './components/MessageGroup'
+import { groupMessages } from './lib/groupMessages'
 
-const CHAT_INPUT_SPACER = '5rem'
-// Auto-prompt de fim de sessão: 10min sem input novo após última resposta.
+const CHAT_INPUT_SPACER = '5.5rem'
 const AUTO_SESSION_END_MS = 10 * 60 * 1000
+
+/**
+ * Canvas ambient — pontinhos de luz em posições fixas com delays diferentes.
+ * Pointer-events-none, aria-hidden. Não distrai, só dá profundidade.
+ */
+const PARTICLES = [
+  { top: '18%', left: '12%', size: 3, delay: '0ms' },
+  { top: '32%', left: '78%', size: 2, delay: '800ms' },
+  { top: '56%', left: '22%', size: 2, delay: '1600ms' },
+  { top: '72%', left: '68%', size: 3, delay: '400ms' },
+  { top: '88%', left: '38%', size: 2, delay: '1200ms' },
+]
 
 export default function YaIAPage() {
   const navigate = useNavigate()
@@ -44,12 +56,9 @@ export default function YaIAPage() {
   } = useYaIA()
 
   const [showInfo, setShowInfo] = useState(false)
-  /** Card de fim de sessão visível (manual ou auto). */
   const [showEndCard, setShowEndCard] = useState(false)
-  /** Pra não reabrir o card repetidamente após o usuário dispensar. */
   const [dismissedAutoFor, setDismissedAutoFor] = useState<string | null>(null)
 
-  // Tracking de quais mensagens foram montadas (pra stagger só em novas).
   const seenRef = useRef<Set<string>>(new Set())
   const freshIds = useMemo(() => {
     const s = new Set<string>()
@@ -71,8 +80,6 @@ export default function YaIAPage() {
     return () => window.clearTimeout(id)
   }, [currentSession.length, isLoading, showPrevious])
 
-  // Auto-prompt: 10min após última resposta sem novo input → mostra card.
-  // Só dispara uma vez por lastAssistantAt (chave anti-re-abertura).
   useEffect(() => {
     if (!lastAssistantAt) return
     if (isLoading) return
@@ -87,7 +94,6 @@ export default function YaIAPage() {
     return () => window.clearTimeout(id)
   }, [lastAssistantAt, isLoading, dismissedAutoFor])
 
-  // Se o usuário mandar nova mensagem, esconde o card (não intrusivo).
   useEffect(() => {
     if (isLoading) setShowEndCard(false)
   }, [isLoading])
@@ -96,8 +102,15 @@ export default function YaIAPage() {
   const lastAssistant = [...currentSession].reverse().find((m) => m.role === 'assistant')
   const activeSuggestions = lastAssistant?.suggestions ?? []
 
-  // Banner de contador: mostra diário no fluxo normal; quando diário acaba,
-  // mostra mensal (transparência sem poluir quando tá OK).
+  // Agrupa mensagens da sessão corrente em "turnos" com separadores de tempo.
+  const groupedCurrent = useMemo(() => groupMessages(currentSession), [currentSession])
+  // Agrupa também as anteriores (sem separador dia — elas moram no "passado"
+  // do botão colapsável, dia/hora já é contexto de quando acontece).
+  const groupedPrevious = useMemo(
+    () => (showPrevious ? groupMessages(messages.slice(0, previousCount)) : []),
+    [showPrevious, messages, previousCount],
+  )
+
   const counterLabel: string | null = useMemo(() => {
     if (!remaining) return null
     if (remaining.daily > 0) {
@@ -121,74 +134,49 @@ export default function YaIAPage() {
 
   function handleDismissCard() {
     setShowEndCard(false)
-    // Lembra pra não reabrir auto pro mesmo lastAssistantAt.
     if (lastAssistantAt) setDismissedAutoFor(lastAssistantAt)
   }
 
   return (
     <>
-      {/* Glow discreto no topo do canvas — "chão luminoso" do chat.
-          Posicionado fixed atrás do conteúdo pra dar profundidade sem custar layout. */}
+      {/* Canvas ambient — gradiente rico + pontos de luz. Fixed no fundo. */}
       <div
         aria-hidden
-        className="fixed inset-x-0 top-0 h-64 pointer-events-none z-0"
+        className="fixed inset-0 pointer-events-none z-0"
         style={{
           background:
-            'radial-gradient(ellipse at 50% 0%, rgba(107,78,201,0.12) 0%, rgba(107,78,201,0.04) 40%, transparent 75%)',
+            'radial-gradient(ellipse 70% 50% at 50% 0%, rgba(107,78,201,0.14) 0%, transparent 60%), radial-gradient(ellipse 60% 40% at 80% 100%, rgba(212,165,165,0.06) 0%, transparent 70%)',
         }}
       />
+      <div aria-hidden className="fixed inset-0 pointer-events-none z-0">
+        {PARTICLES.map((p, i) => (
+          <span
+            key={i}
+            className="absolute rounded-full bg-primary/40 animate-pulse"
+            style={{
+              top: p.top,
+              left: p.left,
+              width: p.size,
+              height: p.size,
+              animationDuration: '2.5s',
+              animationDelay: p.delay,
+              filter: 'blur(1px)',
+            }}
+          />
+        ))}
+      </div>
 
-      <header className="sticky top-0 z-20 bg-surface/85 backdrop-blur-xl border-b border-outline-variant/10">
-        <div className="flex items-center justify-between h-12 px-2 max-w-lg mx-auto w-full">
-          <button
-            type="button"
-            onClick={() => navigate(-1)}
-            className="w-10 h-10 flex items-center justify-center text-on-surface-variant"
-            aria-label="Voltar"
-          >
-            <span className="material-symbols-outlined">arrow_back</span>
-          </button>
-          <div className="flex items-center gap-2">
-            <span
-              className="material-symbols-outlined text-primary"
-              style={{ fontVariationSettings: "'FILL' 1" }}
-            >
-              auto_awesome
-            </span>
-            <h1 className="font-display text-lg text-on-surface">yaIA</h1>
-          </div>
-          <div className="flex items-center">
-            {hasCurrentMessages && (
-              <button
-                type="button"
-                onClick={handleEndSessionClick}
-                className="w-10 h-10 flex items-center justify-center text-on-surface-variant hover:text-on-surface transition-colors"
-                aria-label="Encerrar conversa"
-                title="Encerrar conversa"
-              >
-                <span className="material-symbols-outlined">restart_alt</span>
-              </button>
-            )}
-            <button
-              type="button"
-              onClick={() => setShowInfo(true)}
-              className="w-10 h-10 flex items-center justify-center text-on-surface-variant"
-              aria-label="Sobre a yaIA"
-            >
-              <span className="material-symbols-outlined">info</span>
-            </button>
-          </div>
-        </div>
-        <ContextChip baby={baby} />
-        {counterLabel && (
-          <div className="text-center text-[11px] text-on-surface-variant pb-1">
-            {counterLabel}
-          </div>
-        )}
-      </header>
+      <YaIAHeader
+        baby={baby}
+        isLoading={isLoading}
+        hasMessages={hasCurrentMessages}
+        counterLabel={counterLabel}
+        onEndSession={handleEndSessionClick}
+        onOpenInfo={() => setShowInfo(true)}
+      />
 
       <div
-        className="relative max-w-lg mx-auto w-full px-3 py-4 flex flex-col gap-3 z-10"
+        className="relative max-w-lg mx-auto w-full px-4 py-4 flex flex-col z-10"
         style={{ paddingBottom: CHAT_INPUT_SPACER }}
       >
         {isHistoryLoading && (
@@ -197,12 +185,12 @@ export default function YaIAPage() {
           </div>
         )}
 
-        {/* Toggle pra ver mensagens de sessões anteriores. */}
+        {/* Toggle: ver mensagens de sessões anteriores. */}
         {!isHistoryLoading && previousCount > 0 && (
           <button
             type="button"
             onClick={togglePrevious}
-            className="self-center text-[11px] text-on-surface-variant/70 hover:text-on-surface flex items-center gap-1 py-1 transition-colors"
+            className="self-center text-[11px] text-on-surface-variant/70 hover:text-on-surface flex items-center gap-1 py-1.5 px-3 rounded-full bg-surface-container/60 backdrop-blur-sm ring-1 ring-outline-variant/15 transition-colors mb-3"
           >
             <span className="material-symbols-outlined text-[14px]">
               {showPrevious ? 'expand_less' : 'expand_more'}
@@ -215,12 +203,14 @@ export default function YaIAPage() {
 
         {/* Mensagens antigas (colapsadas por padrão). */}
         {showPrevious && previousCount > 0 && (
-          <div className="flex flex-col gap-3 opacity-70">
-            {messages.slice(0, previousCount).map((m) => (
-              <ChatBubble
-                key={m.id}
-                message={m}
-                isFresh={false}
+          <div className="flex flex-col gap-5 opacity-70 mb-5">
+            {groupedPrevious.map((g, i) => (
+              <MessageGroup
+                key={`prev-${i}-${g.messages[0].id}`}
+                messages={g.messages}
+                showTimeLabel={g.showTimeLabel}
+                timeLabel={g.timeLabel}
+                freshIds={freshIds}
                 onRetry={retryMessage}
                 onRate={giveFeedback}
               />
@@ -235,18 +225,23 @@ export default function YaIAPage() {
           <ChatEmpty baby={baby} onPick={(s) => sendMessage(s)} />
         )}
 
-        {currentSession.map((m) => (
-          <ChatBubble
-            key={m.id}
-            message={m}
-            isFresh={freshIds.has(m.id)}
-            onRetry={retryMessage}
-            onRate={giveFeedback}
-          />
-        ))}
+        {/* Mensagens da sessão atual, agrupadas com separadores de tempo. */}
+        <div className="flex flex-col gap-5">
+          {groupedCurrent.map((g, i) => (
+            <MessageGroup
+              key={`cur-${i}-${g.messages[0].id}`}
+              messages={g.messages}
+              showTimeLabel={g.showTimeLabel}
+              timeLabel={g.timeLabel}
+              freshIds={freshIds}
+              onRetry={retryMessage}
+              onRate={giveFeedback}
+            />
+          ))}
+        </div>
 
         {!isLoading && activeSuggestions.length > 0 && lastAssistant && !showEndCard && (
-          <div className="pl-9">
+          <div className="pl-9 mt-3">
             <SuggestionChips
               suggestions={activeSuggestions}
               onPick={(s) => sendMessage(s)}
@@ -254,23 +249,29 @@ export default function YaIAPage() {
           </div>
         )}
 
-        {isLoading && <TypingIndicator babyName={baby?.name ?? null} />}
+        {isLoading && (
+          <div className="mt-3">
+            <TypingIndicator babyName={baby?.name ?? null} />
+          </div>
+        )}
 
         {error && (
-          <div className="text-sm text-error text-center py-2">{error}</div>
+          <div className="text-sm text-error text-center py-2 mt-3">{error}</div>
         )}
 
         {showEndCard && !isLoading && (
-          <SessionEndCard
-            lastAssistantMessageId={lastAssistant?.id ?? null}
-            onRate={giveFeedback}
-            onNewSession={handleNewSession}
-            onDismiss={handleDismissCard}
-          />
+          <div className="mt-4">
+            <SessionEndCard
+              lastAssistantMessageId={lastAssistant?.id ?? null}
+              onRate={giveFeedback}
+              onNewSession={handleNewSession}
+              onDismiss={handleDismissCard}
+            />
+          </div>
         )}
 
         {hasCurrentMessages && (
-          <p className="text-[10px] text-on-surface-variant/60 text-center pt-2">
+          <p className="text-[10px] text-on-surface-variant/50 text-center pt-4">
             Informação geral. Não substitui consulta pediátrica.
           </p>
         )}
@@ -339,3 +340,4 @@ function InfoSheet({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
     </div>
   )
 }
+

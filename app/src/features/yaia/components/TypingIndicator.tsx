@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { motion } from 'framer-motion'
+import YaIAOrb from './YaIAOrb'
 
 // Status rotativo — 6 fases + "quase lá..." só depois de 6s. Sensação de
 // progresso varia: às vezes ela "olha os registros", às vezes "consulta o
@@ -50,14 +50,10 @@ export default function TypingIndicator({ babyName }: TypingIndicatorProps) {
 
   return (
     <div className="flex justify-start gap-2 items-end">
-      <motion.div
-        className="shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-primary/30 to-tertiary/20 text-primary flex items-center justify-center text-[11px] font-semibold ring-1 ring-primary/20"
-        animate={{ scale: [1, 1.08, 1] }}
-        transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
-      >
-        yA
-      </motion.div>
-      <div className="relative rounded-md bg-gradient-to-br from-surface-container to-surface-container-high px-4 py-3 flex items-center gap-2 ring-1 ring-outline-variant/10 shadow-sm overflow-hidden">
+      <div className="shrink-0">
+        <YaIAOrb size="sm" pulsing />
+      </div>
+      <div className="relative rounded-2xl rounded-bl-md bg-gradient-to-br from-surface-container to-surface-container-high px-4 py-3 flex items-center gap-2 ring-1 ring-outline-variant/10 shadow-sm overflow-hidden">
         {/* Shimmer sutil passando por cima — efeito "carregando de verdade". */}
         <span
           aria-hidden
