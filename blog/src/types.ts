@@ -42,6 +42,7 @@ export interface BlogPost {
   related_slugs: string[]
   schema_type: SchemaType
   affiliate_products: AffiliateProduct[]
+  sources: Array<{ name: string; url: string }> | null
   premium_teaser: PremiumTeaserData | null
   target_week_start: number | null
   target_week_end: number | null

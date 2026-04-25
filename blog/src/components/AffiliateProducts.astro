@@ -31,14 +31,24 @@ if (!products || products.length === 0) {
         data-nome={p.nome}
         data-tipo={p.tipo}
       >
-        <div class="bg-white flex items-center justify-center p-2 h-28">
+        <div class="relative bg-white flex items-center justify-center p-2 h-28 overflow-hidden">
+          <!-- Placeholder: visível quando a imagem falha ou é bloqueada pelo CDN -->
+          <div class="absolute inset-0 flex flex-col items-center justify-center gap-1 pointer-events-none">
+            <svg class="w-8 h-8 text-gray-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <circle cx="8.5" cy="8.5" r="1.5"></circle>
+              <polyline points="21 15 16 10 5 21"></polyline>
+            </svg>
+            <span class="text-[9px] text-gray-300 font-sans tracking-wide uppercase">Amazon</span>
+          </div>
+          <!-- Imagem do produto (z-10 fica sobre o placeholder) -->
           <img
-            src={`https://m.media-amazon.com/images/P/${p.asin}.01._SX200_QL70_.jpg`}
+            src={`https://m.media-amazon.com/images/P/${p.asin}.01._SX500_QL70_.jpg`}
             alt={p.nome}
-            class="max-h-24 max-w-full object-contain"
+            class="relative z-10 max-h-24 max-w-full object-contain"
             loading="lazy"
-            onerror="this.style.display='none'"
-            onload="if(this.naturalWidth<=1)this.style.display='none'"
+            onerror="this.remove()"
+            onload="if(this.naturalWidth<=1)this.remove()"
           />
         </div>
         <div class="p-3 flex flex-col gap-1 flex-1">

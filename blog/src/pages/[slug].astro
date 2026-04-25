@@ -48,9 +48,11 @@ const post = data as BlogPost
 // Pre-processa markdown:
 // - Remove "## Leia também" (renderizado via componente RelatedPosts com cards)
 // - Remove "## Sumário" (renderizado via TableOfContents auto-gerado)
+// - Remove "## Fontes" / "**Fontes:**" em diante (renderizado via post.sources JSONB)
 const cleanedMd = post.content_md
   .replace(/##\s*Leia também[\s\S]*?\n---\n/gi, '')
   .replace(/##\s*Sumário[\s\S]*?(?=\n##\s)/gi, '')
+  .replace(/(\*\*Fontes:\*\*|##\s*Fontes)[\s\S]*/i, '')
 
 // gfm: true (padrão) habilita tabelas, strikethrough, etc.
 // breaks: false (removido) permite parsing correto de listas e tabelas
@@ -242,6 +244,27 @@ const faqLd = post.schema_type === 'FAQPage' ? faqJsonLd(post) : null
 
     <!-- Newsletter signup inline pós-artigo -->
     <NewsletterSignup source={`blog-post-${post.slug}`} variant="article" />
+
+    <!-- Fontes (renderizado via JSONB, não via markdown) -->
+    {post.sources && post.sources.length > 0 && (
+      <div class="mt-10 pt-6 border-t border-yaya-cloud/10">
+        <h2 class="font-display text-sm font-bold text-yaya-cloud/50 uppercase tracking-wider mb-4">Fontes</h2>
+        <ol class="list-decimal list-inside space-y-2">
+          {post.sources.map((s) => (
+            <li class="text-sm text-yaya-cloud/60 font-sans">
+              <a
+                href={s.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-yaya-purple hover:text-yaya-glow transition-colors underline underline-offset-2"
+              >
+                {s.name}
+              </a>
+            </li>
+          ))}
+        </ol>
+      </div>
+    )}
 
     <!-- Disclaimer -->
     <div class="mt-12 p-4 rounded-md bg-yaya-cloud/[0.03] border border-yaya-cloud/10 text-sm text-yaya-cloud/60 leading-relaxed font-sans">
