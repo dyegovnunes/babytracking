@@ -101,9 +101,9 @@ export default function ChatEmpty({ baby, onPick }: ChatEmptyProps) {
       >
         <p className="text-[11px] text-on-surface-variant leading-relaxed">
           <span className="font-semibold text-on-surface">yaIA pode cometer erros.</span>{' '}
-          Confira respostas importantes. As respostas combinam os dados reais do seu bebe,
-          conteudo do blog Yaya e diretrizes OMS/SBP. yaIA e uma ferramenta de apoio aos pais
-          — nao substitui o medico. Consulte o pediatra do seu filho.
+          Confira respostas importantes. As respostas combinam os dados reais do seu bebê,
+          conteúdo do blog Yaya e diretrizes OMS/SBP. yaIA é uma ferramenta de apoio aos pais
+          — não substitui o médico. Consulte o pediatra do seu filho.
         </p>
       </motion.div>
 
@@ -120,7 +120,7 @@ export default function ChatEmpty({ baby, onPick }: ChatEmptyProps) {
           className="w-3 h-3 opacity-60"
           draggable={false}
         />
-        Assistente do Yaya Baby
+        Especialista do Yaya Baby
       </motion.p>
     </motion.div>
   )
