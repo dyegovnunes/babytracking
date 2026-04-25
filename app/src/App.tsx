@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { AppProvider, useAppState, useAppDispatch } from './contexts/AppContext'
 import { PurchaseProvider } from './contexts/PurchaseContext'
 import { ThemeProvider } from './contexts/ThemeContext'
+import { usePresenceTracker } from './hooks/usePresenceTracker'
 import { Capacitor } from '@capacitor/core'
 import { supabase } from './lib/supabase'
 
@@ -300,6 +301,16 @@ function PushNavigationHandler() {
   return null
 }
 
+/**
+ * Mantem profiles.last_seen_at atualizado em todo foco/resume do app —
+ * sem isso o "ultimo acesso" no painel admin fica preso na ultima vez
+ * que o usuario gravou algo (logs/marcos), nao na ultima vez que abriu.
+ */
+function PresenceTracker() {
+  usePresenceTracker()
+  return null
+}
+
 export default function App() {
   return (
     <BrowserRouter>
@@ -308,6 +319,7 @@ export default function App() {
           <ThemeProvider>
             <PurchaseProvider>
               <PushNavigationHandler />
+              <PresenceTracker />
               <AppRoutes />
             </PurchaseProvider>
           </ThemeProvider>
