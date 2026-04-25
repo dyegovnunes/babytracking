@@ -15,7 +15,7 @@ import YaIAHeader from './components/YaIAHeader'
 import MessageGroup from './components/MessageGroup'
 import { groupMessages } from './lib/groupMessages'
 
-const CHAT_INPUT_SPACER = '5.5rem'
+const CHAT_INPUT_SPACER = '7rem'
 const AUTO_SESSION_END_MS = 10 * 60 * 1000
 
 /**
@@ -124,7 +124,8 @@ export default function YaIAPage() {
 
   function handleEndSessionClick() {
     hapticLight()
-    setShowEndCard(true)
+    // Encerra direto sem pesquisa — a pesquisa aparece só no auto-timer de 10 min.
+    handleNewSession()
   }
 
   function handleNewSession() {
@@ -270,11 +271,6 @@ export default function YaIAPage() {
           </div>
         )}
 
-        {hasCurrentMessages && (
-          <p className="text-[10px] text-on-surface-variant/50 text-center pt-4">
-            Informação geral baseada em diretrizes OMS/SBP. Não substitui consulta pediátrica.
-          </p>
-        )}
       </div>
 
       <ChatInput

@@ -43,6 +43,9 @@ export default function ChatInput({ disabled, placeholder, onSend }: ChatInputPr
           '0 -12px 32px -16px rgba(0,0,0,0.35), inset 0 1px 0 0 rgba(107,78,201,0.18)',
       }}
     >
+      <p className="text-center text-[9.5px] text-on-surface-variant/35 pt-1.5 pb-0 px-4 leading-snug">
+        yaIA pode cometer erros. As respostas combinam dados do seu bebê, blog Yaya e diretrizes OMS/SBP. Não substitui consulta pediátrica.
+      </p>
       <div className="flex items-end gap-2 max-w-lg mx-auto px-3 py-2.5">
         <div className="flex-1 relative">
           <textarea

@@ -92,12 +92,27 @@ export default function ChatEmpty({ baby, onPick }: ChatEmptyProps) {
         })}
       </motion.div>
 
+      <motion.div
+        variants={{
+          hidden: { opacity: 0, y: 6 },
+          show: { opacity: 1, y: 0, transition: { duration: 0.4, delay: 0.5 } },
+        }}
+        className="w-full max-w-xs rounded-md bg-surface-container/60 ring-1 ring-outline-variant/15 px-4 py-3 text-left"
+      >
+        <p className="text-[11px] text-on-surface-variant leading-relaxed">
+          <span className="font-semibold text-on-surface">yaIA pode cometer erros.</span>{' '}
+          Confira respostas importantes. As respostas combinam os dados reais do seu bebe,
+          conteudo do blog Yaya e diretrizes OMS/SBP. yaIA e uma ferramenta de apoio aos pais
+          — nao substitui o medico. Consulte o pediatra do seu filho.
+        </p>
+      </motion.div>
+
       <motion.p
         variants={{
           hidden: { opacity: 0 },
-          show: { opacity: 1, transition: { duration: 0.3, delay: 0.4 } },
+          show: { opacity: 1, transition: { duration: 0.3, delay: 0.6 } },
         }}
-        className="text-[10px] text-on-surface-variant/50 pt-3 flex items-center gap-1.5"
+        className="text-[10px] text-on-surface-variant/50 flex items-center gap-1.5"
       >
         <img
           src="./landing/symbol-light.png"
