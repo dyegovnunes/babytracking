@@ -39,6 +39,7 @@ const postNumberLabel = post.post_number != null
   data-audience={post.audience}
   data-phase={phase}
   data-published-at={publishedAt}
+  data-post-number={post.post_number ?? 0}
   data-views={viewsCount}
   data-feedback-total={feedbackTotal}
   data-feedback-approval={feedbackApproval.toFixed(3)}

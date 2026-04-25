@@ -12,7 +12,7 @@
  */
 
 type ViewMode = 'grid' | 'list'
-type SortMode = 'recent' | 'views' | 'approval'
+type SortMode = 'recent' | 'oldest' | 'views' | 'approval'
 type PageLimit = 36 | 48 | 'all'
 type PhaseFilter = 'all' | 'gestante' | '0-3m' | '3-6m' | '6m+'
 
@@ -47,7 +47,7 @@ function readState(): State {
   return {
     phase: phase && ['all', 'gestante', '0-3m', '3-6m', '6m+'].includes(phase) ? phase : base.phase,
     view: view && ['grid', 'list'].includes(view) ? view : base.view,
-    sort: sort && ['recent', 'views', 'approval'].includes(sort) ? sort : base.sort,
+    sort: sort && ['recent', 'oldest', 'views', 'approval'].includes(sort) ? sort : base.sort,
     limit: limit && ([36, 48, 'all'] as (number | 'all')[]).includes(limit) ? limit : base.limit,
   }
 }
@@ -63,7 +63,7 @@ function saveState(state: State) {
   else url.searchParams.set('fase', state.phase)
   if (state.view === 'grid') url.searchParams.delete('view')
   else url.searchParams.set('view', state.view)
-  if (state.sort === 'recent') url.searchParams.delete('sort')
+  if (state.sort === 'recent') url.searchParams.delete('sort') // recent é o default, omite da URL
   else url.searchParams.set('sort', state.sort)
   if (state.limit === 36) url.searchParams.delete('limit')
   else url.searchParams.set('limit', String(state.limit))
@@ -93,13 +93,23 @@ function applyState(state: State) {
   // 2. Ordena
   const sorted = [...matching].sort((a, b) => {
     if (state.sort === 'recent') {
-      return (b.dataset.publishedAt ?? '').localeCompare(a.dataset.publishedAt ?? '')
+      // Mais recente = maior post_number (ordem de publicação editorial)
+      const an = parseInt(a.dataset.postNumber ?? '0', 10)
+      const bn = parseInt(b.dataset.postNumber ?? '0', 10)
+      return bn - an
+    }
+    if (state.sort === 'oldest') {
+      // Mais antigo = menor post_number (#1 é o mais antigo)
+      const an = parseInt(a.dataset.postNumber ?? '0', 10)
+      const bn = parseInt(b.dataset.postNumber ?? '0', 10)
+      return an - bn
     }
     if (state.sort === 'views') {
       const av = parseInt(a.dataset.views ?? '0', 10)
       const bv = parseInt(b.dataset.views ?? '0', 10)
       if (bv !== av) return bv - av
-      return (b.dataset.publishedAt ?? '').localeCompare(a.dataset.publishedAt ?? '') // tiebreaker
+      // tiebreaker: post_number mais alto primeiro
+      return parseInt(b.dataset.postNumber ?? '0', 10) - parseInt(a.dataset.postNumber ?? '0', 10)
     }
     if (state.sort === 'approval') {
       // Threshold: só ranking se tiver 3+ votos
@@ -108,7 +118,8 @@ function applyState(state: State) {
       const aa = at >= 3 ? parseFloat(a.dataset.feedbackApproval ?? '0') : -1
       const ba = bt >= 3 ? parseFloat(b.dataset.feedbackApproval ?? '0') : -1
       if (ba !== aa) return ba - aa
-      return (b.dataset.publishedAt ?? '').localeCompare(a.dataset.publishedAt ?? '')
+      // tiebreaker: post_number mais alto primeiro
+      return parseInt(b.dataset.postNumber ?? '0', 10) - parseInt(a.dataset.postNumber ?? '0', 10)
     }
     return 0
   })
