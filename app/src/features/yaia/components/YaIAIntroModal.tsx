@@ -45,17 +45,30 @@ export default function YaIAIntroModal({ isOpen, onAccept, onClose }: YaIAIntroM
 
         <div className="text-sm text-on-surface-variant space-y-3">
           <p>
-            Sou a assistente do Yaya. Pergunto, escuto e respondo com base nos dados reais
-            do seu bebê: sono, alimentação, saltos, vacinas, marcos.
+            Sou a assistente do Yaya. Respondo com base nos registros reais do seu bebê:
+            sono, alimentação, fraldas, vacinas, marcos e saltos.
           </p>
+
+          <div className="bg-surface-container rounded-md p-3 space-y-2 text-xs">
+            <p className="font-semibold text-on-surface">O que é enviado ao processar suas perguntas:</p>
+            <ul className="space-y-1 text-on-surface-variant">
+              <li>• Nome, data de nascimento e sexo do bebê</li>
+              <li>• Registros recentes de sono, alimentação, fraldas, vacinas e marcos</li>
+              <li>• Texto das suas mensagens nesta conversa</li>
+            </ul>
+            <p className="font-semibold text-on-surface mt-2">Para quem os dados são enviados:</p>
+            <p className="text-on-surface-variant">
+              Suas perguntas e o contexto do bebê são processados por um serviço de
+              inteligência artificial de terceiro (provedor de IA em nuvem). Esses dados
+              são usados exclusivamente para gerar a resposta e não são usados para
+              treinar modelos ou compartilhados com outras partes.
+            </p>
+          </div>
+
           <p>
-            <strong>Não substituo o pediatra.</strong> Minhas respostas são informativas e
-            não servem como diagnóstico ou prescrição. Em qualquer dúvida clínica, consulte
-            um profissional.
-          </p>
-          <p>
-            Ao continuar, você concorda em compartilhar os dados do seu bebê comigo pra eu
-            poder te ajudar.
+            <strong className="text-on-surface">Não substituo o pediatra.</strong>{' '}
+            Minhas respostas são informativas, baseadas em diretrizes gerais de saúde
+            infantil (OMS, SBP), e não servem como diagnóstico ou prescrição médica.
           </p>
         </div>
 

@@ -272,7 +272,7 @@ export default function YaIAPage() {
 
         {hasCurrentMessages && (
           <p className="text-[10px] text-on-surface-variant/50 text-center pt-4">
-            Informação geral. Não substitui consulta pediátrica.
+            Informação geral baseada em diretrizes OMS/SBP. Não substitui consulta pediátrica.
           </p>
         )}
       </div>
@@ -317,16 +317,35 @@ function InfoSheet({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
         <h2 className="font-display text-lg text-on-surface">Sobre a yaIA</h2>
         <div className="text-sm text-on-surface-variant space-y-2">
           <p>
-            A yaIA é a assistente conversacional do Yaya. Ela combina conhecimento
-            pediátrico atualizado com os dados reais do seu bebê para responder de
-            forma personalizada.
+            A yaIA é a assistente conversacional do Yaya. Ela combina diretrizes gerais
+            de saúde infantil com os dados reais do seu bebê para responder de forma personalizada.
           </p>
           <p>
-            <strong>Ela não substitui o pediatra.</strong> As respostas são
-            informativas. Em qualquer dúvida clínica, procure um profissional.
+            <strong className="text-on-surface">Não substitui o pediatra.</strong>{' '}
+            As respostas são informativas e baseadas em referências de saúde infantil.
+            Em qualquer dúvida clínica, procure um profissional.
           </p>
+          <div className="text-xs space-y-1">
+            <p className="font-medium text-on-surface">Fontes de referência:</p>
+            <a
+              href="https://www.who.int/tools/child-growth-standards"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block text-primary underline"
+            >
+              OMS — Padroes de Crescimento Infantil
+            </a>
+            <a
+              href="https://www.sbp.com.br"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block text-primary underline"
+            >
+              SBP — Sociedade Brasileira de Pediatria
+            </a>
+          </div>
           <p className="text-xs">
-            No plano grátis você tem 2 perguntas por dia, até 15 por mês. Com o Yaya+ são ilimitadas.
+            No plano grátis voce tem 2 perguntas por dia, ate 15 por mes. Com o Yaya+ sao ilimitadas.
           </p>
         </div>
         <button
