@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { Capacitor } from '@capacitor/core'
-import { App as CapApp } from '@capacitor/app'
+import { App as CapApp, type AppState } from '@capacitor/app'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 
@@ -68,7 +68,7 @@ export function usePresenceTracker() {
     // Resume nativo (Capacitor)
     let capListener: { remove: () => void } | undefined
     if (Capacitor.isNativePlatform()) {
-      CapApp.addListener('appStateChange', (state) => {
+      CapApp.addListener('appStateChange', (state: AppState) => {
         if (state.isActive) ping()
       }).then((l) => {
         capListener = l
