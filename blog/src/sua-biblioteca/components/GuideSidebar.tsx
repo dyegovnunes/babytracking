@@ -45,8 +45,10 @@ export default function GuideSidebar({
   const [highlights, setHighlights] = useState<HighlightRow[]>([])
   const [notesOpen, setNotesOpen] = useState(false)
 
+  // Busca anotações sempre que o painel é expandido (não apenas quando a sidebar abre),
+  // garantindo que highlights salvos nessa sessão apareçam imediatamente
   useEffect(() => {
-    if (!userId || !open) return
+    if (!userId || !notesOpen) return
     let cancelled = false
     const allIds = sections.map(s => s.id)
     if (allIds.length === 0) return
@@ -60,7 +62,7 @@ export default function GuideSidebar({
         if (!cancelled && data) setHighlights(data as HighlightRow[])
       })
     return () => { cancelled = true }
-  }, [userId, open, sections])
+  }, [userId, notesOpen, sections])
 
   // ── Swipe-to-close (mobile) ─────────────────────────────────────────
   const touchStart = useRef<{ x: number; y: number; t: number } | null>(null)
