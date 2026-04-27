@@ -131,13 +131,23 @@ export default function NpsBlock({ guideId, sectionId, userId }: Props) {
                 aria-label={`${star} estrela${star > 1 ? 's' : ''}`}
                 style={{
                   background: 'none', border: 'none', cursor: 'pointer',
-                  fontSize: 24, lineHeight: 1, padding: '4px 5px',
+                  padding: '4px 5px', lineHeight: 1,
                   transition: 'transform 0.12s',
                   transform: star <= displayRating ? 'scale(1.2)' : 'scale(1)',
-                  filter: star <= displayRating ? 'none' : 'grayscale(1) opacity(0.3)',
                 }}
               >
-                ⭐
+                <span
+                  className="material-symbols-outlined"
+                  style={{
+                    fontSize: 28,
+                    color: star <= displayRating ? 'var(--r-accent)' : 'var(--r-text-subtle)',
+                    fontVariationSettings: star <= displayRating ? '"FILL" 1' : '"FILL" 0',
+                    transition: 'color 0.15s, font-variation-settings 0.15s',
+                    display: 'block',
+                  }}
+                >
+                  star
+                </span>
               </button>
             ))}
           </div>

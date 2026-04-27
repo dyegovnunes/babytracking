@@ -135,6 +135,20 @@ export default function SectionRenderer({
     <div className="reader-content" ref={contentRef}>
       {/* Header da seção */}
       <header style={{ marginBottom: 32 }}>
+        {(section.data as Record<string, unknown> | null)?.hide_completion_btn && (
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            fontSize: 11, fontWeight: 700,
+            letterSpacing: '0.07em', textTransform: 'uppercase',
+            color: 'var(--r-accent)',
+            marginBottom: 14,
+          }}>
+            <span className="material-symbols-outlined" style={{ fontSize: 14, fontVariationSettings: '"FILL" 1' }}>
+              auto_awesome
+            </span>
+            Conclusão do guia
+          </div>
+        )}
         {section.estimated_minutes && (
           <div style={{
             fontSize: 12, color: 'var(--r-text-subtle)',
