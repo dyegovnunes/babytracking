@@ -11,29 +11,53 @@ import type { Guide, GuideSection } from '../../types'
 interface Props {
   guide: Guide
   currentSection: GuideSection | undefined
-  overallProgress: number
+  overallProgress: number  // mantido na prop pra compatibilidade — não usado na barra
   onToggleSidebar: () => void
   onToggleReadingMode: () => void
   readingMode: boolean
+  onToggleTheme: () => void
+  theme: 'light' | 'dark'
 }
 
 export default function GuideTopbar({
-  guide, currentSection, overallProgress,
+  guide, currentSection,
   onToggleSidebar, onToggleReadingMode, readingMode,
+  onToggleTheme, theme,
 }: Props) {
+  // Barra mostra apenas o progresso de scroll na seção atual.
+  // Ao trocar de seção, reseta pra 0. Quando a seção é toda visível
+  // (docHeight ≤ 0), assume 100% — leitora já viu tudo.
   const [scrollProgress, setScrollProgress] = useState(0)
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
-  // Combina progresso da seção atual (% de scroll) + completedRatio
   useEffect(() => {
-    function onScroll() {
+    // Reset ao mudar seção (evita "começar preenchida" ao navegar)
+    setScrollProgress(0)
+    // Calcula progresso inicial após layout settle
+    const calc = () => {
       const docHeight = document.documentElement.scrollHeight - window.innerHeight
-      const ratio = docHeight > 0 ? Math.min(1, window.scrollY / docHeight) : 0
+      if (docHeight <= 4) {
+        // Conteúdo cabe inteiro na viewport — 100%
+        setScrollProgress(1)
+        return
+      }
+      const ratio = Math.max(0, Math.min(1, window.scrollY / docHeight))
       setScrollProgress(ratio)
     }
+    function onScroll() { calc() }
+    // Recalcula em scroll, resize e resize observer
     window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
+    window.addEventListener('resize', calc)
+    // Após layout (resume reading scroll, imagens carregando, etc)
+    const t1 = window.setTimeout(calc, 100)
+    const t2 = window.setTimeout(calc, 800)
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', calc)
+      window.clearTimeout(t1)
+      window.clearTimeout(t2)
+    }
   }, [currentSection?.id])
 
   // Fecha menu ao clicar fora
@@ -59,7 +83,7 @@ export default function GuideTopbar({
         position: 'fixed',
         top: 0, left: 0, right: 0,
         height: 60,
-        background: 'rgba(13, 10, 39, 0.85)',
+        background: 'var(--r-overlay)',
         backdropFilter: 'blur(16px)',
         borderBottom: '1px solid var(--r-border)',
         zIndex: 30,
@@ -143,14 +167,19 @@ export default function GuideTopbar({
               right: 0,
               marginTop: 8,
               minWidth: 220,
-              background: 'rgba(20, 16, 50, 0.98)',
+              background: 'var(--r-overlay)',
               backdropFilter: 'blur(20px)',
               border: '1px solid var(--r-border)',
               borderRadius: 10,
               padding: 6,
-              boxShadow: '0 10px 40px rgba(0,0,0,0.4)',
+              boxShadow: '0 10px 40px var(--r-shadow)',
             }}
           >
+            <MenuItem
+              icon={theme === 'dark' ? 'light_mode' : 'dark_mode'}
+              label={theme === 'dark' ? 'Tema claro' : 'Tema escuro'}
+              onClick={() => { onToggleTheme(); setMenuOpen(false) }}
+            />
             <MenuItem
               icon={readingMode ? 'fullscreen_exit' : 'visibility'}
               label={readingMode ? 'Sair do modo leitura' : 'Modo leitura (F)'}
@@ -171,21 +200,21 @@ export default function GuideTopbar({
         )}
       </div>
 
-      {/* Barra de progresso na base */}
+      {/* Barra de progresso de leitura da seção atual */}
       <div
         style={{
           position: 'absolute',
           bottom: 0, left: 0, right: 0,
           height: 2,
-          background: 'rgba(183,159,255,0.08)',
+          background: 'color-mix(in srgb, var(--r-accent) 12%, transparent)',
         }}
       >
         <div
           style={{
             height: '100%',
-            width: `${Math.max(overallProgress * 0.7 + scrollProgress * 0.3, 0) * 100}%`,
+            width: `${scrollProgress * 100}%`,
             background: 'linear-gradient(90deg, var(--r-accent) 0%, var(--r-accent-glow) 100%)',
-            transition: 'width 0.15s ease-out',
+            transition: 'width 0.12s ease-out',
           }}
         />
       </div>
@@ -210,7 +239,7 @@ function MenuItem({ icon, label, onClick }: { icon: string; label: string; onCli
         borderRadius: 6,
         textAlign: 'left',
       }}
-      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(183,159,255,0.08)' }}
+      onMouseEnter={e => { e.currentTarget.style.background = 'var(--r-surface-strong)' }}
       onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
     >
       <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--r-accent)' }}>{icon}</span>

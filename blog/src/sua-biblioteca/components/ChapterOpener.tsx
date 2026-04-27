@@ -76,7 +76,7 @@ export default function ChapterOpener({ section, onContinue }: Props) {
             borderRadius: 999,
             border: 'none',
             background: 'var(--r-accent)',
-            color: '#0d0a27',
+            color: 'var(--r-on-accent)',
             fontFamily: 'inherit',
             fontSize: 15,
             fontWeight: 700,

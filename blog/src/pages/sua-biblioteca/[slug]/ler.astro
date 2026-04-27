@@ -5,6 +5,7 @@
 
 import GuideReaderApp from '../../../sua-biblioteca/GuideReaderApp'
 import { supabase } from '../../../lib/supabase'
+import '../../../styles/theme.css'
 
 export async function getStaticPaths() {
   // Lê TODOS os guides (incluindo draft) — gate de acesso é client-side via auth

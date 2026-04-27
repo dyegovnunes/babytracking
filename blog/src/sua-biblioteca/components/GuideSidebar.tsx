@@ -38,7 +38,7 @@ export default function GuideSidebar({
           className="reader-sidebar-backdrop"
           style={{
             position: 'fixed', inset: 0,
-            background: 'rgba(0,0,0,0.6)',
+            background: 'rgba(0,0,0,0.45)',
             backdropFilter: 'blur(4px)',
             zIndex: 40,
           }}
@@ -52,7 +52,7 @@ export default function GuideSidebar({
           top: 0, bottom: 0, left: 0,
           width: 320,
           maxWidth: '85vw',
-          background: 'rgba(13, 10, 39, 0.97)',
+          background: 'var(--r-overlay)',
           backdropFilter: 'blur(20px)',
           borderRight: '1px solid var(--r-border)',
           padding: '76px 0 24px',

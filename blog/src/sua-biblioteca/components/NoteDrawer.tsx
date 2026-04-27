@@ -79,7 +79,7 @@ export default function NoteDrawer({ sectionId, userId, open, onClose }: Props) 
         onClick={onClose}
         style={{
           position: 'fixed', inset: 0,
-          background: 'rgba(0,0,0,0.5)',
+          background: 'rgba(0,0,0,0.4)',
           backdropFilter: 'blur(4px)',
           zIndex: 80,
         }}
@@ -89,7 +89,7 @@ export default function NoteDrawer({ sectionId, userId, open, onClose }: Props) 
           position: 'fixed',
           top: 0, bottom: 0, right: 0,
           width: 'min(440px, 100%)',
-          background: 'rgba(13, 10, 39, 0.98)',
+          background: 'var(--r-overlay)',
           backdropFilter: 'blur(20px)',
           borderLeft: '1px solid var(--r-border)',
           zIndex: 90,

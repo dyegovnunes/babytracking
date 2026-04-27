@@ -1,94 +1,162 @@
 /* ─────────────────────────────────────────────────────────────────────────
  * Sua Biblioteca Yaya — tipografia editorial premium
  *
+ * Suporte light/dark espelha o blog (theme.css):
+ *   - Default dark
+ *   - prefers-color-scheme: light (se sem override) → light
+ *   - html.theme-light / html.theme-dark → override manual via toggle
+ *
  * Referências de leitura aplicadas:
- *   - Substack/Stripe Press/The Atlantic: serif no corpo, ~19px desktop,
- *     line-height 1.8, max-width ~65ch, generoso espaçamento entre parágrafos
- *   - Fraunces (variable serif moderna) com opsz adaptável: corpo 14, h2 72,
- *     h3 32 — assim o "design" da fonte muda com o tamanho (legibilidade
- *     em texto, drama em títulos)
- *   - Hanging punctuation, text-wrap: pretty, hyphens auto pra fluir melhor
- *   - Cor do texto a 88% do branco (não 100%) reduz fadiga de leitura
+ *   Substack/Stripe Press/The Atlantic/NYT — serif no corpo, ~19px desktop,
+ *   line-height 1.8, max-width ~65ch, generoso espaçamento entre parágrafos.
  *
  * Carrega só dentro do leitor — não polui o resto do blog.
  * ───────────────────────────────────────────────────────────────────────── */
 
+/* ── Tokens dark (default) ─────────────────────────────────────────────── */
 .reader-root {
   --r-bg: #0d0a27;
   --r-surface: rgba(183, 159, 255, 0.04);
-  --r-text: rgba(231, 226, 255, 0.88);          /* corpo: 88% pra reduzir glare */
-  --r-text-strong: rgba(231, 226, 255, 1);       /* títulos, strong */
+  --r-surface-strong: rgba(183, 159, 255, 0.08);
+  --r-text: rgba(231, 226, 255, 0.88);
+  --r-text-strong: rgba(231, 226, 255, 1);
   --r-text-muted: rgba(231, 226, 255, 0.55);
   --r-text-subtle: rgba(231, 226, 255, 0.4);
   --r-accent: #b79fff;
   --r-accent-glow: #d4c1ff;
+  --r-accent-deep: #8b6df0;
   --r-border: rgba(183, 159, 255, 0.15);
+  --r-border-strong: rgba(183, 159, 255, 0.3);
+  --r-shadow: rgba(0, 0, 0, 0.4);
+  --r-overlay: rgba(13, 10, 39, 0.95);
+  --r-on-accent: #0d0a27;            /* texto sobre fundo accent */
+
+  /* Callout colors */
+  --r-callout-ciencia-from: #b79fff;
+  --r-callout-ciencia-to: #d4c1ff;
+  --r-callout-mito: #ffc857;
+  --r-callout-mito-to: #ffd97a;
+  --r-callout-alerta: #ff7a90;
+  --r-callout-alerta-to: #ff9bb0;
+  --r-callout-yaya: #70c4ff;
+  --r-callout-yaya-to: #a4d8ff;
+
   --r-serif: 'Fraunces', 'Source Serif Pro', Georgia, serif;
   --r-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+
   background: var(--r-bg);
   color: var(--r-text);
   font-family: var(--r-serif);
   min-height: 100vh;
+  color-scheme: dark;
+}
+
+/* ── Tokens light — via prefers-color-scheme (sem override) ────────────── */
+@media (prefers-color-scheme: light) {
+  html:not(.theme-dark) .reader-root {
+    --r-bg: #fafafe;
+    --r-surface: rgba(112, 86, 224, 0.04);
+    --r-surface-strong: rgba(112, 86, 224, 0.08);
+    --r-text: rgba(28, 27, 43, 0.92);
+    --r-text-strong: rgba(28, 27, 43, 1);
+    --r-text-muted: rgba(28, 27, 43, 0.6);
+    --r-text-subtle: rgba(28, 27, 43, 0.42);
+    --r-accent: #7056e0;
+    --r-accent-glow: #5a45c4;
+    --r-accent-deep: #4a35b0;
+    --r-border: rgba(112, 86, 224, 0.16);
+    --r-border-strong: rgba(112, 86, 224, 0.3);
+    --r-shadow: rgba(28, 27, 43, 0.12);
+    --r-overlay: rgba(250, 250, 254, 0.96);
+    --r-on-accent: #ffffff;
+
+    --r-callout-ciencia-from: #7056e0;
+    --r-callout-ciencia-to: #b79fff;
+    --r-callout-mito: #d49500;
+    --r-callout-mito-to: #ffc857;
+    --r-callout-alerta: #d63a5c;
+    --r-callout-alerta-to: #ff7a90;
+    --r-callout-yaya: #1d8fdf;
+    --r-callout-yaya-to: #70c4ff;
+
+    color-scheme: light;
+  }
+}
+
+/* ── Override manual via toggle ────────────────────────────────────────── */
+html.theme-light .reader-root {
+  --r-bg: #fafafe;
+  --r-surface: rgba(112, 86, 224, 0.04);
+  --r-surface-strong: rgba(112, 86, 224, 0.08);
+  --r-text: rgba(28, 27, 43, 0.92);
+  --r-text-strong: rgba(28, 27, 43, 1);
+  --r-text-muted: rgba(28, 27, 43, 0.6);
+  --r-text-subtle: rgba(28, 27, 43, 0.42);
+  --r-accent: #7056e0;
+  --r-accent-glow: #5a45c4;
+  --r-accent-deep: #4a35b0;
+  --r-border: rgba(112, 86, 224, 0.16);
+  --r-border-strong: rgba(112, 86, 224, 0.3);
+  --r-shadow: rgba(28, 27, 43, 0.12);
+  --r-overlay: rgba(250, 250, 254, 0.96);
+  --r-on-accent: #ffffff;
+
+  --r-callout-ciencia-from: #7056e0;
+  --r-callout-ciencia-to: #b79fff;
+  --r-callout-mito: #d49500;
+  --r-callout-mito-to: #ffc857;
+  --r-callout-alerta: #d63a5c;
+  --r-callout-alerta-to: #ff7a90;
+  --r-callout-yaya: #1d8fdf;
+  --r-callout-yaya-to: #70c4ff;
+
+  color-scheme: light;
+}
+
+html.theme-dark .reader-root {
+  /* Mantém os defaults dark — definidos em .reader-root acima */
+  color-scheme: dark;
 }
 
 /* ── Tipografia geral do conteúdo ──────────────────────────────────────── */
 .reader-content {
-  /* SERIF NO CORPO — a mudança mais impactante. Fraunces opsz 14 = otimizada
-     pra leitura de texto, não pra display. */
   font-family: var(--r-serif);
   font-variation-settings: 'opsz' 14, 'SOFT' 0;
-  font-size: 18px;          /* base mobile */
-  line-height: 1.8;          /* respiro vertical */
-  letter-spacing: -0.003em;  /* compactação levíssima — Fraunces é wide */
+  font-size: 18px;
+  line-height: 1.8;
+  letter-spacing: -0.003em;
   color: var(--r-text);
-  max-width: 64ch;            /* ~640px com 18px = sweet spot leitura */
+  max-width: 64ch;
   margin: 0 auto;
-  text-wrap: pretty;          /* evita órfãs/viúvas */
+  text-wrap: pretty;
   hanging-punctuation: first last;
   hyphens: auto;
   -webkit-hyphens: auto;
 }
 
-/* Mobile mantém 17px pra caber bem em telas pequenas */
 @media (max-width: 639px) {
-  .reader-content {
-    font-size: 17px;
-    line-height: 1.75;
-  }
+  .reader-content { font-size: 17px; line-height: 1.75; }
 }
-
-/* Desktop maior pra leitura confortável */
 @media (min-width: 1024px) {
-  .reader-content {
-    font-size: 19px;
-    line-height: 1.82;
-    max-width: 65ch;
-  }
+  .reader-content { font-size: 19px; line-height: 1.82; max-width: 65ch; }
 }
 
-/* Espaçamento generoso entre blocos — chave da leitura "leve" */
-.reader-content > * + * {
-  margin-top: 1.5em;
-}
-
-/* Parágrafos com extra breathing-room entre si */
-.reader-content p + p {
-  margin-top: 1.4em;
-}
+.reader-content > * + * { margin-top: 1.5em; }
+.reader-content p + p { margin-top: 1.4em; }
 
 /* ── Headings ──────────────────────────────────────────────────────────── */
 .reader-content h2 {
   font-family: var(--r-serif);
   font-variation-settings: 'opsz' 72, 'SOFT' 30;
   font-size: 1.65em;
-  font-weight: 600;        /* serif a 600 = elegante; 700 fica pesado */
+  font-weight: 600;
   letter-spacing: -0.02em;
   line-height: 1.2;
   color: var(--r-text-strong);
-  margin-top: 3em;          /* MAIS respiro acima de h2 */
+  margin-top: 3em;
   margin-bottom: 0.7em;
   scroll-margin-top: 80px;
-  text-wrap: balance;       /* evita títulos com 1 palavra na 2ª linha */
+  text-wrap: balance;
 }
 
 .reader-content h3 {
@@ -105,8 +173,6 @@
 }
 
 .reader-content h4 {
-  /* Subseções (####) — não querem ter peso de heading. Renderiza como label
-     bold inline com cor do accent, dá hierarquia sem quebrar fluxo */
   font-family: var(--r-sans);
   font-size: 0.82em;
   font-weight: 700;
@@ -117,27 +183,16 @@
   margin-bottom: 0.5em;
 }
 
-.reader-content p {
-  margin: 0;
-  text-wrap: pretty;
-}
-
-.reader-content strong {
-  color: var(--r-text-strong);
-  font-weight: 600;     /* serif: 600 lê melhor que 700 em destaques */
-}
-
-.reader-content em {
-  color: var(--r-text);
-  font-style: italic;
-}
+.reader-content p { margin: 0; text-wrap: pretty; }
+.reader-content strong { color: var(--r-text-strong); font-weight: 600; }
+.reader-content em { color: var(--r-text); font-style: italic; }
 
 .reader-content a {
   color: var(--r-accent);
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 4px;
-  text-decoration-color: rgba(183, 159, 255, 0.35);
+  text-decoration-color: color-mix(in srgb, var(--r-accent) 35%, transparent);
   transition: color 0.15s, text-decoration-color 0.15s;
 }
 .reader-content a:hover {
@@ -146,26 +201,13 @@
 }
 
 /* ── Listas ────────────────────────────────────────────────────────────── */
-.reader-content ul, .reader-content ol {
-  padding-left: 1.6em;
-  margin: 1.5em 0;
-}
+.reader-content ul, .reader-content ol { padding-left: 1.6em; margin: 1.5em 0; }
 .reader-content ul { list-style: disc; }
 .reader-content ol { list-style: decimal; }
-.reader-content li {
-  margin-bottom: 0.55em;
-  padding-left: 0.3em;
-}
+.reader-content li { margin-bottom: 0.55em; padding-left: 0.3em; }
 .reader-content li::marker { color: var(--r-accent); }
-.reader-content li > ul, .reader-content li > ol {
-  margin: 0.5em 0;
-}
-
-/* Listas de checklist (- [ ] item) viram pretty checkboxes */
-.reader-content li input[type="checkbox"] {
-  margin-right: 0.5em;
-  accent-color: var(--r-accent);
-}
+.reader-content li > ul, .reader-content li > ol { margin: 0.5em 0; }
+.reader-content li input[type="checkbox"] { margin-right: 0.5em; accent-color: var(--r-accent); }
 
 /* ── Separadores ───────────────────────────────────────────────────────── */
 .reader-content hr {
@@ -183,7 +225,7 @@
 
 /* ── Code inline ───────────────────────────────────────────────────────── */
 .reader-content code {
-  background: rgba(183, 159, 255, 0.1);
+  background: var(--r-surface-strong);
   padding: 0.1em 0.4em;
   border-radius: 4px;
   font-size: 0.88em;
@@ -200,10 +242,7 @@
   display: block;
   border: 1px solid var(--r-border);
 }
-
-.reader-content figure {
-  margin: 2.5em auto;
-}
+.reader-content figure { margin: 2.5em auto; }
 .reader-content figcaption {
   font-family: var(--r-sans);
   font-size: 0.82em;
@@ -267,7 +306,7 @@
   border-left: 3px solid var(--r-accent);
   padding-left: 1.4em;
   margin: 2em 0;
-  color: rgba(231, 226, 255, 0.78);
+  color: var(--r-text-muted);
   font-style: italic;
   font-size: 1.02em;
 }
@@ -281,8 +320,6 @@
   background: var(--r-surface);
   position: relative;
   overflow: hidden;
-  /* Callouts usam sans pra contrastar com serif do corpo — quebra visual
-     intencional (este é um aside, não fluxo principal) */
   font-family: var(--r-sans);
   font-size: 0.94em;
   line-height: 1.65;
@@ -299,10 +336,7 @@
   gap: 0.5em;
   margin-bottom: 0.7em;
 }
-.reader-content .callout .callout-icon {
-  font-size: 22px;
-  line-height: 1;
-}
+.reader-content .callout .callout-icon { font-size: 22px; line-height: 1; }
 .reader-content .callout .callout-label {
   font-family: var(--r-sans);
   font-size: 0.82em;
@@ -315,24 +349,31 @@
 .reader-content .callout .callout-body strong { color: var(--r-text-strong); }
 .reader-content .callout .callout-body p + p { margin-top: 0.7em; }
 
-/* Variants — gradiente lateral por tipo */
-.reader-content .callout-ciencia::before { background: linear-gradient(180deg, #b79fff 0%, #d4c1ff 100%); }
+.reader-content .callout-ciencia::before {
+  background: linear-gradient(180deg, var(--r-callout-ciencia-from) 0%, var(--r-callout-ciencia-to) 100%);
+}
 .reader-content .callout-ciencia .callout-icon,
-.reader-content .callout-ciencia .callout-label { color: #b79fff; }
+.reader-content .callout-ciencia .callout-label { color: var(--r-callout-ciencia-from); }
 
-.reader-content .callout-mito::before { background: linear-gradient(180deg, #ffc857 0%, #ffd97a 100%); }
+.reader-content .callout-mito::before {
+  background: linear-gradient(180deg, var(--r-callout-mito) 0%, var(--r-callout-mito-to) 100%);
+}
 .reader-content .callout-mito .callout-icon,
-.reader-content .callout-mito .callout-label { color: #ffc857; }
+.reader-content .callout-mito .callout-label { color: var(--r-callout-mito); }
 
-.reader-content .callout-alerta::before { background: linear-gradient(180deg, #ff7a90 0%, #ff9bb0 100%); }
+.reader-content .callout-alerta::before {
+  background: linear-gradient(180deg, var(--r-callout-alerta) 0%, var(--r-callout-alerta-to) 100%);
+}
 .reader-content .callout-alerta .callout-icon,
-.reader-content .callout-alerta .callout-label { color: #ff7a90; }
+.reader-content .callout-alerta .callout-label { color: var(--r-callout-alerta); }
 
-.reader-content .callout-yaya::before { background: linear-gradient(180deg, #70c4ff 0%, #a4d8ff 100%); }
+.reader-content .callout-yaya::before {
+  background: linear-gradient(180deg, var(--r-callout-yaya) 0%, var(--r-callout-yaya-to) 100%);
+}
 .reader-content .callout-yaya .callout-icon,
-.reader-content .callout-yaya .callout-label { color: #70c4ff; }
+.reader-content .callout-yaya .callout-label { color: var(--r-callout-yaya); }
 
-/* ── Tabelas (raras mas precisam ficar legíveis) ───────────────────────── */
+/* ── Tabelas ───────────────────────────────────────────────────────────── */
 .reader-content table {
   width: 100%;
   border-collapse: collapse;
@@ -345,9 +386,7 @@
   display: block;
   overflow-x: auto;
 }
-.reader-content thead {
-  background: rgba(183,159,255,0.06);
-}
+.reader-content thead { background: var(--r-surface-strong); }
 .reader-content th {
   padding: 0.85em 1em;
   text-align: left;
@@ -357,17 +396,17 @@
 }
 .reader-content td {
   padding: 0.85em 1em;
-  border-bottom: 1px solid rgba(183,159,255,0.07);
+  border-bottom: 1px solid var(--r-border);
   vertical-align: top;
 }
 .reader-content tbody tr:last-child td { border-bottom: none; }
 
-/* ── Highlights aplicados ao texto ─────────────────────────────────────── */
-.reader-content .highlight-yellow { background: rgba(255, 200, 87, 0.28); padding: 0.05em 0.05em; border-radius: 3px; }
-.reader-content .highlight-pink   { background: rgba(255, 122, 144, 0.28); padding: 0.05em 0.05em; border-radius: 3px; }
-.reader-content .highlight-purple { background: rgba(183, 159, 255, 0.32); padding: 0.05em 0.05em; border-radius: 3px; }
+/* ── Highlights ────────────────────────────────────────────────────────── */
+.reader-content .highlight-yellow { background: rgba(255, 200, 87, 0.32); padding: 0.05em; border-radius: 3px; }
+.reader-content .highlight-pink   { background: rgba(255, 122, 144, 0.32); padding: 0.05em; border-radius: 3px; }
+.reader-content .highlight-purple { background: rgba(183, 159, 255, 0.36); padding: 0.05em; border-radius: 3px; }
 
-/* ── Reading mode (tudo escondido exceto conteúdo) ─────────────────────── */
+/* ── Reading mode ──────────────────────────────────────────────────────── */
 .reader-root.reading-mode .reader-topbar,
 .reader-root.reading-mode .reader-sidebar,
 .reader-root.reading-mode .reader-fab {
@@ -375,9 +414,7 @@
   pointer-events: none;
   transition: opacity 0.4s;
 }
-.reader-root.reading-mode .reader-main {
-  margin-left: 0 !important;
-}
+.reader-root.reading-mode .reader-main { margin-left: 0 !important; }
 
 /* ── Print ─────────────────────────────────────────────────────────────── */
 @media print {
@@ -405,7 +442,6 @@
   }
 }
 
-/* ── Reduced motion ────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

@@ -285,7 +285,7 @@ function ResultCard({ result, onClose }: { result: QuizResult; onClose: () => vo
 
 const overlay: React.CSSProperties = {
   position: 'fixed', inset: 0,
-  background: 'rgba(13, 10, 39, 0.98)',
+  background: 'var(--r-overlay)',
   backdropFilter: 'blur(24px)',
   zIndex: 100,
   display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -317,7 +317,7 @@ const btnPrimary: React.CSSProperties = {
   borderRadius: 999,
   border: 'none',
   background: 'var(--r-accent)',
-  color: '#0d0a27',
+  color: 'var(--r-on-accent)',
   fontFamily: 'inherit',
   fontSize: 15,
   fontWeight: 700,

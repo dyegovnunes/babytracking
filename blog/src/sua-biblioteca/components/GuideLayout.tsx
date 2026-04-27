@@ -61,7 +61,31 @@ export default function GuideLayout({ guide, sections, userId }: Props) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [readingMode, setReadingMode] = useState(false)
   const [progressMap, setProgressMap] = useState<Record<string, GuideProgress>>({})
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => detectInitialTheme())
   const mainRef = useRef<HTMLElement>(null)
+
+  // Aplica tema no <html> e persiste em localStorage. Compartilha a chave
+  // 'yb_theme' com o blog/admin pra que o tema seja consistente entre páginas.
+  useEffect(() => {
+    const html = document.documentElement
+    html.classList.remove('theme-light', 'theme-dark')
+    html.classList.add(`theme-${theme}`)
+    try { localStorage.setItem('yb_theme', theme) } catch { /* ignore */ }
+    // Atualiza meta theme-color pra reagir na statusbar do mobile
+    const meta = document.querySelector('meta[name="theme-color"]')
+    const color = theme === 'light' ? '#fafafe' : '#0d0a27'
+    if (meta) meta.setAttribute('content', color)
+    else {
+      const m = document.createElement('meta')
+      m.name = 'theme-color'
+      m.content = color
+      document.head.appendChild(m)
+    }
+  }, [theme])
+
+  function toggleTheme() {
+    setTheme(t => t === 'dark' ? 'light' : 'dark')
+  }
 
   // Salva última seção visitada
   useEffect(() => {
@@ -140,6 +164,8 @@ export default function GuideLayout({ guide, sections, userId }: Props) {
         onToggleSidebar={() => setSidebarOpen(o => !o)}
         onToggleReadingMode={() => setReadingMode(m => !m)}
         readingMode={readingMode}
+        onToggleTheme={toggleTheme}
+        theme={theme}
       />
 
       <GuideSidebar
@@ -196,4 +222,18 @@ export default function GuideLayout({ guide, sections, userId }: Props) {
       `}</style>
     </div>
   )
+}
+
+// Detecta tema inicial: localStorage > classe no <html> > prefers-color-scheme.
+// Roda só no client (Astro client:only garante).
+function detectInitialTheme(): 'light' | 'dark' {
+  if (typeof window === 'undefined') return 'dark'
+  try {
+    const stored = localStorage.getItem('yb_theme')
+    if (stored === 'light' || stored === 'dark') return stored
+  } catch { /* ignore */ }
+  const html = document.documentElement
+  if (html.classList.contains('theme-light')) return 'light'
+  if (html.classList.contains('theme-dark')) return 'dark'
+  return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
 }

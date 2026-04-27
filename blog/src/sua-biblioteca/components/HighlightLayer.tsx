@@ -119,7 +119,7 @@ export default function HighlightLayer({ sectionId, userId, contentRef }: Props)
         left: popoverPos.x,
         top: popoverPos.y,
         transform: 'translate(-50%, -100%)',
-        background: 'rgba(20, 16, 50, 0.98)',
+        background: 'var(--r-overlay)',
         backdropFilter: 'blur(20px)',
         border: '1px solid var(--r-border)',
         borderRadius: 999,
@@ -127,7 +127,7 @@ export default function HighlightLayer({ sectionId, userId, contentRef }: Props)
         display: 'flex',
         gap: 4,
         zIndex: 60,
-        boxShadow: '0 10px 30px rgba(0,0,0,0.4)',
+        boxShadow: '0 10px 30px var(--r-shadow)',
         animation: 'highlight-popover-in 0.18s ease',
       }}
     >
@@ -139,7 +139,7 @@ export default function HighlightLayer({ sectionId, userId, contentRef }: Props)
           style={{
             width: 28, height: 28,
             borderRadius: '50%',
-            border: '2px solid rgba(255,255,255,0.1)',
+            border: '2px solid var(--r-border)',
             background: c.bg,
             cursor: 'pointer',
             transition: 'transform 0.15s',
