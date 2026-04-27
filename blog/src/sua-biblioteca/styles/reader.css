@@ -14,7 +14,24 @@
  * ───────────────────────────────────────────────────────────────────────── */
 
 /* ── Tokens dark (default) ─────────────────────────────────────────────── */
+/* ── Contenção horizontal global do leitor ─────────────────────────────
+   Evita que qualquer elemento acidentalmente vaze além de 100vw e cause
+   horizontal scroll na página inteira (estoura header, faz user precisar
+   rolar lateralmente pra acessar o menu). */
+html, body { overflow-x: hidden; max-width: 100vw; }
+html { box-sizing: border-box; }
+*, *::before, *::after { box-sizing: inherit; }
+body { width: 100%; position: relative; }
+
+/* Reader layout containers respeitam viewport width */
+.reader-topbar, .reader-main {
+  max-width: 100vw;
+  box-sizing: border-box;
+}
+
 .reader-root {
+  overflow-x: hidden;
+  max-width: 100vw;
   --r-bg: #0d0a27;
   --r-surface: rgba(183, 159, 255, 0.04);
   --r-surface-strong: rgba(183, 159, 255, 0.08);
@@ -132,6 +149,22 @@ html.theme-dark .reader-root {
   hanging-punctuation: first last;
   hyphens: auto;
   -webkit-hyphens: auto;
+  /* Garante que conteúdo nunca passa do container disponível */
+  width: 100%;
+  overflow-wrap: anywhere;
+  word-wrap: break-word;
+}
+
+/* Bloqueia overflow de descendentes (long URLs, código sem quebra, etc) */
+.reader-content > *,
+.reader-content .callout,
+.reader-content blockquote,
+.reader-content pre {
+  max-width: 100%;
+}
+.reader-content pre {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 @media (max-width: 639px) {

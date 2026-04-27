@@ -53,8 +53,10 @@ const { title } = Astro.props as { title: string }
         color: #e7e2ff;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
+        overflow-x: hidden;             /* impede horizontal scroll global */
+        max-width: 100vw;
       }
-      body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+      body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; width: 100%; position: relative; }
       .material-symbols-outlined {
         font-family: 'Material Symbols Outlined';
         font-weight: normal;

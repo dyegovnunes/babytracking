@@ -91,8 +91,12 @@ export default function GuideTopbar({
         display: 'flex',
         alignItems: 'center',
         padding: '0 8px',
+        paddingTop: 'env(safe-area-inset-top, 0px)',
         gap: 4,
         transition: 'opacity 0.4s',
+        overflow: 'hidden',         /* nunca deixa filho estourar a viewport */
+        maxWidth: '100vw',
+        width: '100%',
       }}
     >
       {/* Menu button */}
