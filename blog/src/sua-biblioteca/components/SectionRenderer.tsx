@@ -26,12 +26,16 @@ interface Props {
   mainRef: React.RefObject<HTMLElement | null>
 }
 
+const COUNTDOWN_SECONDS = 3
+
 export default function SectionRenderer({
   guide, section, allSections, currentIdx, userId, onNavigate, onProgressUpdate, mainRef,
 }: Props) {
   const contentRef = useRef<HTMLDivElement>(null)
   const [completedAnimating, setCompletedAnimating] = useState(false)
   const [noteOpen, setNoteOpen] = useState(false)
+  const [countdown, setCountdown] = useState<number | null>(null)
+  const countdownTimerRef = useRef<number | null>(null)
 
   const { markCompleted } = useReadingProgress({
     userId,
@@ -40,24 +44,72 @@ export default function SectionRenderer({
     containerRef: mainRef,
   })
 
+  const prev = currentIdx > 0 ? allSections[currentIdx - 1] : null
+  const next = currentIdx < allSections.length - 1 ? allSections[currentIdx + 1] : null
+
   // Marca seção como visitada (last_seen_at) ao montar
   useEffect(() => {
     onProgressUpdate(section.id, { last_seen_at: new Date().toISOString() })
   }, [section.id])
 
+  // Limpa countdown quando navegar (manualmente ou outra forma) — evita
+  // disparar navegação após o user já ter saído da seção
+  useEffect(() => {
+    return () => stopCountdown()
+  }, [section.id])
+
+  // ESC cancela countdown
+  useEffect(() => {
+    if (countdown === null) return
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') stopCountdown()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [countdown])
+
+  function stopCountdown() {
+    if (countdownTimerRef.current) {
+      window.clearInterval(countdownTimerRef.current)
+      countdownTimerRef.current = null
+    }
+    setCountdown(null)
+  }
+
+  function startCountdown() {
+    if (!next) return
+    setCountdown(COUNTDOWN_SECONDS)
+    countdownTimerRef.current = window.setInterval(() => {
+      setCountdown(prev => {
+        if (prev === null) return null
+        if (prev <= 1) {
+          // Tempo acabou: navega
+          if (countdownTimerRef.current) {
+            window.clearInterval(countdownTimerRef.current)
+            countdownTimerRef.current = null
+          }
+          // setTimeout 0 evita conflito com setState durante render
+          setTimeout(() => onNavigate(next.id), 0)
+          return null
+        }
+        return prev - 1
+      })
+    }, 1000)
+  }
+
   async function handleMarkCompleted() {
     setCompletedAnimating(true)
     await markCompleted()
     onProgressUpdate(section.id, { completed: true, completed_at: new Date().toISOString() })
-    // Haptic feedback (mobile)
     if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
       try { navigator.vibrate([15, 30, 15]) } catch { /* ignore */ }
     }
-    setTimeout(() => setCompletedAnimating(false), 1800)
+    setTimeout(() => {
+      setCompletedAnimating(false)
+      // Inicia countdown automático pra próxima seção (só se houver next)
+      if (next) startCountdown()
+    }, 1200)
   }
-
-  const prev = currentIdx > 0 ? allSections[currentIdx - 1] : null
-  const next = currentIdx < allSections.length - 1 ? allSections[currentIdx + 1] : null
 
   // ── Render por tipo ──────────────────────────────────────────────────────
 
@@ -176,7 +228,7 @@ export default function SectionRenderer({
           margin: '0 auto',
         }}>
           {prev ? (
-            <button onClick={() => onNavigate(prev.id)} style={navBtn}>
+            <button onClick={() => { stopCountdown(); onNavigate(prev.id) }} style={navBtn}>
               <span className="material-symbols-outlined" style={{ fontSize: 18 }}>arrow_back</span>
               <div style={{ textAlign: 'left', flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: 11, color: 'var(--r-text-subtle)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>Anterior</div>
@@ -185,7 +237,7 @@ export default function SectionRenderer({
             </button>
           ) : <div />}
           {next ? (
-            <button onClick={() => onNavigate(next.id)} style={{ ...navBtn, justifyContent: 'flex-end' }}>
+            <button onClick={() => { stopCountdown(); onNavigate(next.id) }} style={{ ...navBtn, justifyContent: 'flex-end' }}>
               <div style={{ textAlign: 'right', flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: 11, color: 'var(--r-text-subtle)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>Próxima</div>
                 <div style={{ fontSize: 13, color: 'var(--r-text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{next.title}</div>
@@ -195,6 +247,17 @@ export default function SectionRenderer({
           ) : <div />}
         </div>
       </div>
+
+      {/* Countdown snackbar — aparece após marcar concluída e auto-navega */}
+      {countdown !== null && next && (
+        <CountdownSnackbar
+          seconds={countdown}
+          total={COUNTDOWN_SECONDS}
+          nextTitle={next.title}
+          onCancel={stopCountdown}
+          onSkip={() => { stopCountdown(); onNavigate(next.id) }}
+        />
+      )}
 
       {/* Floating Action Button mobile — abre notas */}
       <button
@@ -234,4 +297,165 @@ const navBtn: React.CSSProperties = {
   fontFamily: 'inherit',
   textAlign: 'left',
   transition: 'background 0.15s, border-color 0.15s',
+}
+
+// ── Countdown snackbar ───────────────────────────────────────────────────
+// Pílula flutuante no centro-bottom anunciando navegação automática.
+// Inclui anel de progresso SVG shrinking 360°→0°, número decrescente,
+// botão "Cancelar" (ESC também cancela) e botão "Ir agora" pra pular o timer.
+
+function CountdownSnackbar({
+  seconds, total, nextTitle, onCancel, onSkip,
+}: {
+  seconds: number
+  total: number
+  nextTitle: string
+  onCancel: () => void
+  onSkip: () => void
+}) {
+  // Progress: começa em 100% e vai pra 0%. Animação suave entre os ticks
+  // via CSS transition de 1s linear.
+  const progress = seconds / total
+  const circumference = 2 * Math.PI * 14 // r=14
+  const offset = circumference * (1 - progress)
+
+  return (
+    <div
+      role="status"
+      aria-live="polite"
+      style={{
+        position: 'fixed',
+        bottom: 'calc(max(20px, env(safe-area-inset-bottom)) + 84px)',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        zIndex: 28,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 12,
+        padding: '8px 8px 8px 16px',
+        background: 'rgba(20, 16, 50, 0.95)',
+        backdropFilter: 'blur(20px)',
+        border: '1px solid var(--r-border)',
+        borderRadius: 999,
+        boxShadow: '0 12px 36px rgba(0,0,0,0.4)',
+        animation: 'countdown-in 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
+        maxWidth: '92vw',
+      }}
+    >
+      {/* Anel SVG com número no centro */}
+      <div style={{ position: 'relative', width: 36, height: 36, flex: '0 0 auto' }}>
+        <svg width="36" height="36" viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)' }}>
+          <circle cx="18" cy="18" r="14" fill="none" stroke="rgba(183,159,255,0.15)" strokeWidth="2.5" />
+          <circle
+            cx="18" cy="18" r="14" fill="none"
+            stroke="var(--r-accent)"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeDasharray={circumference}
+            strokeDashoffset={offset}
+            style={{ transition: 'stroke-dashoffset 1s linear' }}
+          />
+        </svg>
+        <div style={{
+          position: 'absolute', inset: 0,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: 14, fontWeight: 700, color: 'var(--r-accent)',
+          fontFamily: 'Plus Jakarta Sans, sans-serif',
+          fontVariantNumeric: 'tabular-nums',
+        }}>
+          {seconds}
+        </div>
+      </div>
+
+      {/* Texto: "Próxima: <título>" */}
+      <div style={{
+        flex: 1,
+        minWidth: 0,
+        fontFamily: 'Plus Jakarta Sans, sans-serif',
+        fontSize: 13,
+        color: 'var(--r-text)',
+        lineHeight: 1.3,
+      }}>
+        <div style={{
+          fontSize: 10,
+          fontWeight: 700,
+          letterSpacing: '0.08em',
+          textTransform: 'uppercase',
+          color: 'var(--r-text-subtle)',
+          marginBottom: 1,
+        }}>
+          Próxima em {seconds}s
+        </div>
+        <div style={{
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          fontWeight: 600,
+          color: 'var(--r-text-strong)',
+          maxWidth: 220,
+        }}>
+          {nextTitle}
+        </div>
+      </div>
+
+      {/* Cancelar */}
+      <button
+        onClick={onCancel}
+        aria-label="Cancelar navegação automática"
+        style={{
+          background: 'transparent',
+          border: 'none',
+          color: 'var(--r-text-muted)',
+          cursor: 'pointer',
+          fontFamily: 'Plus Jakarta Sans, sans-serif',
+          fontSize: 12,
+          fontWeight: 600,
+          padding: '8px 12px',
+          borderRadius: 999,
+          transition: 'background 0.15s, color 0.15s',
+          flex: '0 0 auto',
+        }}
+        onMouseEnter={e => {
+          e.currentTarget.style.background = 'rgba(255,255,255,0.06)'
+          e.currentTarget.style.color = 'var(--r-text)'
+        }}
+        onMouseLeave={e => {
+          e.currentTarget.style.background = 'transparent'
+          e.currentTarget.style.color = 'var(--r-text-muted)'
+        }}
+      >
+        Cancelar
+      </button>
+
+      {/* Ir agora */}
+      <button
+        onClick={onSkip}
+        aria-label="Ir para próxima seção agora"
+        style={{
+          background: 'var(--r-accent)',
+          border: 'none',
+          color: '#0d0a27',
+          cursor: 'pointer',
+          fontFamily: 'Plus Jakarta Sans, sans-serif',
+          fontSize: 12,
+          fontWeight: 700,
+          padding: '8px 14px',
+          borderRadius: 999,
+          flex: '0 0 auto',
+          transition: 'background 0.15s',
+        }}
+        onMouseEnter={e => { e.currentTarget.style.background = 'var(--r-accent-glow)' }}
+        onMouseLeave={e => { e.currentTarget.style.background = 'var(--r-accent)' }}
+      >
+        Ir agora
+      </button>
+
+      <style>{`
+        @keyframes countdown-in {
+          from { opacity: 0; transform: translate(-50%, 16px); }
+          to   { opacity: 1; transform: translate(-50%, 0); }
+        }
+      `}</style>
+    </div>
+  )
 }
