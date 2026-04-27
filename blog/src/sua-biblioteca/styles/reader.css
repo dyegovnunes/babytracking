@@ -57,6 +57,10 @@ body { width: 100%; position: relative; }
   --r-callout-alerta-to: #ff9bb0;
   --r-callout-yaya: #70c4ff;
   --r-callout-yaya-to: #a4d8ff;
+  --r-callout-disclaimer: #b79fff;
+  --r-callout-disclaimer-to: #d4c1ff;
+  --r-callout-disclaimer-bg: rgba(112, 86, 224, 0.07);
+  --r-callout-disclaimer-text: var(--r-text-muted);
 
   --r-serif: 'Fraunces', 'Source Serif Pro', Georgia, serif;
   --r-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
@@ -95,6 +99,10 @@ body { width: 100%; position: relative; }
     --r-callout-alerta-to: #ff7a90;
     --r-callout-yaya: #1d8fdf;
     --r-callout-yaya-to: #70c4ff;
+    --r-callout-disclaimer: #7056e0;
+    --r-callout-disclaimer-to: #b79fff;
+    --r-callout-disclaimer-bg: rgba(112, 86, 224, 0.05);
+    --r-callout-disclaimer-text: rgba(28, 27, 43, 0.65);
 
     color-scheme: light;
   }
@@ -126,6 +134,10 @@ html.theme-light .reader-root {
   --r-callout-alerta-to: #ff7a90;
   --r-callout-yaya: #1d8fdf;
   --r-callout-yaya-to: #70c4ff;
+  --r-callout-disclaimer: #7056e0;
+  --r-callout-disclaimer-to: #b79fff;
+  --r-callout-disclaimer-bg: rgba(112, 86, 224, 0.05);
+  --r-callout-disclaimer-text: rgba(28, 27, 43, 0.65);
 
   color-scheme: light;
 }
@@ -405,6 +417,29 @@ html.theme-dark .reader-root {
 }
 .reader-content .callout-yaya .callout-icon,
 .reader-content .callout-yaya .callout-label { color: var(--r-callout-yaya); }
+
+.reader-content .callout-disclaimer {
+  background: var(--r-callout-disclaimer-bg);
+}
+.reader-content .callout-disclaimer::before {
+  background: linear-gradient(180deg, var(--r-callout-disclaimer) 0%, var(--r-callout-disclaimer-to) 100%);
+}
+.reader-content .callout-disclaimer .callout-icon,
+.reader-content .callout-disclaimer .callout-label { color: var(--r-callout-disclaimer); }
+.reader-content .callout-disclaimer .callout-body {
+  font-size: 0.88em;
+  color: var(--r-callout-disclaimer-text);
+}
+
+/* Imagens dentro de callouts: constrange altura para não ficar desproporcional */
+.reader-content .callout img {
+  max-width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 8px;
+  display: block;
+  margin: 0.5em auto;
+}
 
 /* ── Tabelas ───────────────────────────────────────────────────────────── */
 .reader-content table {

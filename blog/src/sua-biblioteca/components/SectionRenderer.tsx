@@ -17,6 +17,7 @@ import InteractiveChecklist, { type ChecklistItem } from './InteractiveChecklist
 import QuizFullscreen from './QuizFullscreen'
 import HighlightLayer from './HighlightLayer'
 import NoteDrawer from './NoteDrawer'
+import NpsBlock from './NpsBlock'
 
 interface Props {
   guide: Guide
@@ -202,6 +203,14 @@ export default function SectionRenderer({
         return <ToolLinkCards links={toolLinks} onNavigate={onNavigate} />
       })()}
 
+      {/* CTA de download do Yaya (seção de celebração da conclusão) */}
+      {(section.data as Record<string, unknown> | null)?.show_yaya_cta && <YayaCtaBlock />}
+
+      {/* NPS / avaliação do guia */}
+      {(section.data as Record<string, unknown> | null)?.show_nps && (
+        <NpsBlock guideId={guide.id} sectionId={section.id} userId={userId} />
+      )}
+
       {/* Quiz entry */}
       {section.type === 'quiz' && (
         <QuizFullscreen
@@ -257,12 +266,12 @@ export default function SectionRenderer({
 
       {/* Footer da seção: botão "marcar concluída" + navegação prev/next */}
       <div style={{ marginTop: 'clamp(40px, 8vw, 64px)', paddingTop: 28, borderTop: '1px solid var(--r-border)' }}>
-        {/* Ferramenta (checklist) não tem botão de conclusão — é uma ferramenta, não leitura */}
+        {/* Ferramenta (checklist) e seções comemorativas não têm botão de conclusão */}
         <div style={{
           display: 'flex', flexDirection: 'column', alignItems: 'center',
           gap: 14, marginBottom: 28,
         }}>
-          {section.type === 'checklist' ? null : (isCompleted || completedAnimating) ? (
+          {(section.type === 'checklist' || (section.data as Record<string, unknown> | null)?.hide_completion_btn) ? null : (isCompleted || completedAnimating) ? (
             <div
               style={{
                 padding: '13px 26px',
@@ -307,7 +316,7 @@ export default function SectionRenderer({
               Marcar como concluída
             </button>
           )}
-          {section.type !== 'checklist' && !isCompleted && (
+          {section.type !== 'checklist' && !(section.data as Record<string, unknown> | null)?.hide_completion_btn && !isCompleted && (
             <p style={{ fontSize: 12, color: 'var(--r-text-subtle)', margin: 0 }}>
               Ou rola até o final pra avançar pra próxima seção
             </p>
@@ -361,6 +370,20 @@ export default function SectionRenderer({
         />
       )}
 
+      {/* Rodapé de disclaimer médico — aparece em toda seção de leitura */}
+      <footer style={{
+        marginTop: '3em',
+        padding: '14px 0 4px',
+        borderTop: '1px solid var(--r-border)',
+        fontSize: 12,
+        color: 'var(--r-text-subtle)',
+        lineHeight: 1.7,
+        fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif',
+      }}>
+        <strong style={{ color: 'var(--r-text-muted)' }}>O Yaya é uma plataforma de informação e acompanhamento, não um serviço médico.</strong>{' '}
+        O conteúdo deste guia é baseado em diretrizes de organizações como OMS, SBP e AAP. Toda situação é individual — quando houver conflito entre o que você leu aqui e o que o seu médico orientou, siga o seu médico.
+      </footer>
+
       {/* Floating Action Button mobile — abre notas. Esconde durante
           countdown pra não competir visualmente com o snackbar. */}
       <button
@@ -387,6 +410,69 @@ export default function SectionRenderer({
       >
         <span className="material-symbols-outlined" style={{ fontSize: 22 }}>edit_note</span>
       </button>
+    </div>
+  )
+}
+
+// ── YayaCtaBlock ─────────────────────────────────��───────────────────────────
+// CTA de download do Yaya na seção de conclusão (show_yaya_cta: true)
+
+function YayaCtaBlock() {
+  return (
+    <div style={{
+      marginTop: '2.5em',
+      padding: '28px 24px',
+      background: 'color-mix(in srgb, var(--r-accent) 8%, var(--r-surface))',
+      border: '1px solid color-mix(in srgb, var(--r-accent) 28%, transparent)',
+      borderRadius: 16,
+      textAlign: 'center',
+      fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif',
+    }}>
+      <div style={{ fontSize: 32, marginBottom: 10 }}>🎉</div>
+      <div style={{
+        fontFamily: 'Manrope, system-ui, sans-serif',
+        fontWeight: 800, fontSize: 18,
+        color: 'var(--r-text-strong)',
+        letterSpacing: '-0.01em',
+        marginBottom: 8,
+      }}>
+        Sua Yaya+ gratuita está esperando
+      </div>
+      <p style={{
+        fontSize: 14, color: 'var(--r-text-muted)', lineHeight: 1.65,
+        maxWidth: 420, margin: '0 auto 24px',
+      }}>
+        Você ganhou 30 dias de Yaya+ com a compra do guia. Use para acompanhar sono, mamadas e fraldas — e chegar na primeira consulta do pediatra com tudo registrado.
+      </p>
+      <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+        <a
+          href="https://play.google.com/store/apps/details?id=app.yayababy"
+          target="_blank" rel="noopener noreferrer"
+          style={{
+            padding: '12px 22px', borderRadius: 999,
+            background: 'var(--r-accent)', color: 'var(--r-on-accent)',
+            fontWeight: 700, fontSize: 14, textDecoration: 'none',
+            display: 'inline-flex', alignItems: 'center', gap: 7,
+          }}
+        >
+          <span className="material-symbols-outlined" style={{ fontSize: 17 }}>android</span>
+          Baixar no Android
+        </a>
+        <a
+          href="https://apps.apple.com/br/app/yaya-bebe/id6741482602"
+          target="_blank" rel="noopener noreferrer"
+          style={{
+            padding: '12px 22px', borderRadius: 999,
+            border: '1.5px solid var(--r-accent)', color: 'var(--r-accent)',
+            fontWeight: 700, fontSize: 14, textDecoration: 'none',
+            display: 'inline-flex', alignItems: 'center', gap: 7,
+            background: 'transparent',
+          }}
+        >
+          <span className="material-symbols-outlined" style={{ fontSize: 17 }}>apple</span>
+          Baixar no iPhone
+        </a>
+      </div>
     </div>
   )
 }

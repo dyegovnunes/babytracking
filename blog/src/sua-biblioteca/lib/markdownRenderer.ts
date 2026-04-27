@@ -7,13 +7,14 @@
 
 import { marked, type Tokens } from 'marked'
 
-type CalloutType = 'ciencia' | 'mito' | 'alerta' | 'yaya'
+type CalloutType = 'ciencia' | 'mito' | 'alerta' | 'yaya' | 'disclaimer'
 
 const CALLOUT_LABELS: Record<CalloutType, string> = {
   ciencia: 'Ciência',
   mito: 'Mito vs. Realidade',
   alerta: 'Alerta',
   yaya: 'No Yaya',
+  disclaimer: 'Uma nota do Yaya',
 }
 
 const CALLOUT_ICONS: Record<CalloutType, string> = {
@@ -21,6 +22,7 @@ const CALLOUT_ICONS: Record<CalloutType, string> = {
   mito: 'help_outline',
   alerta: 'warning',
   yaya: 'phone_iphone',
+  disclaimer: 'chat_bubble',
 }
 
 // Extensão "callout" — sintaxe :::tipo\n...conteúdo...\n:::
@@ -30,11 +32,11 @@ const calloutExtension = {
   name: 'callout',
   level: 'block' as const,
   start(src: string) {
-    const m = src.match(/^:::(?:ciencia|mito|alerta|yaya)/m)
+    const m = src.match(/^:::(?:ciencia|mito|alerta|yaya|disclaimer)/m)
     return m ? m.index : undefined
   },
   tokenizer(this: { lexer: { blockTokens: (src: string) => unknown[] } }, src: string) {
-    const rule = /^:::(ciencia|mito|alerta|yaya)\s*\n([\s\S]+?)\n:::(?:\n|$)/
+    const rule = /^:::(ciencia|mito|alerta|yaya|disclaimer)\s*\n([\s\S]+?)\n:::(?:\n|$)/
     const match = rule.exec(src)
     if (match) {
       return {
