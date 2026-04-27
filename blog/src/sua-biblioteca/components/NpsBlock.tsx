@@ -70,11 +70,11 @@ export default function NpsBlock({ guideId, sectionId, userId }: Props) {
 
   return (
     <div style={{
-      marginTop: '3em',
-      padding: '28px 24px',
+      marginTop: '2.5em',
+      padding: '20px 16px',
       background: 'var(--r-surface)',
       border: '1px solid var(--r-border)',
-      borderRadius: 16,
+      borderRadius: 14,
       textAlign: 'center',
       fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif',
     }}>
@@ -121,7 +121,7 @@ export default function NpsBlock({ guideId, sectionId, userId }: Props) {
           </p>
 
           {/* Estrelas */}
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 16 }}>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 4, marginBottom: 16, flexWrap: 'wrap' }}>
             {[1, 2, 3, 4, 5].map(star => (
               <button
                 key={star}
@@ -131,10 +131,10 @@ export default function NpsBlock({ guideId, sectionId, userId }: Props) {
                 aria-label={`${star} estrela${star > 1 ? 's' : ''}`}
                 style={{
                   background: 'none', border: 'none', cursor: 'pointer',
-                  fontSize: 32, lineHeight: 1, padding: '2px 4px',
+                  fontSize: 24, lineHeight: 1, padding: '4px 5px',
                   transition: 'transform 0.12s',
-                  transform: star <= displayRating ? 'scale(1.15)' : 'scale(1)',
-                  filter: star <= displayRating ? 'none' : 'grayscale(1) opacity(0.35)',
+                  transform: star <= displayRating ? 'scale(1.2)' : 'scale(1)',
+                  filter: star <= displayRating ? 'none' : 'grayscale(1) opacity(0.3)',
                 }}
               >
                 ⭐

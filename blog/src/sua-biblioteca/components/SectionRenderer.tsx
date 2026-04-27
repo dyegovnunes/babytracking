@@ -381,7 +381,7 @@ export default function SectionRenderer({
         fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif',
       }}>
         <strong style={{ color: 'var(--r-text-muted)' }}>O Yaya é uma plataforma de informação e acompanhamento, não um serviço médico.</strong>{' '}
-        O conteúdo deste guia é baseado em diretrizes de organizações como OMS, SBP e AAP. Toda situação é individual — quando houver conflito entre o que você leu aqui e o que o seu médico orientou, siga o seu médico.
+        O conteúdo deste guia é baseado em diretrizes de organizações como OMS, SBP e AAP. Toda situação é individual. Quando houver conflito entre o que você leu aqui e o que o seu médico orientou, siga o seu médico.
       </footer>
 
       {/* Floating Action Button mobile — abre notas. Esconde durante
@@ -421,57 +421,63 @@ function YayaCtaBlock() {
   return (
     <div style={{
       marginTop: '2.5em',
-      padding: '28px 24px',
-      background: 'color-mix(in srgb, var(--r-accent) 8%, var(--r-surface))',
-      border: '1px solid color-mix(in srgb, var(--r-accent) 28%, transparent)',
-      borderRadius: 16,
-      textAlign: 'center',
+      padding: '18px 20px',
+      background: 'var(--r-surface)',
+      border: '1px solid var(--r-border)',
+      borderRadius: 14,
+      display: 'flex',
+      alignItems: 'flex-start',
+      gap: 14,
       fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif',
     }}>
-      <div style={{ fontSize: 32, marginBottom: 10 }}>🎉</div>
-      <div style={{
-        fontFamily: 'Manrope, system-ui, sans-serif',
-        fontWeight: 800, fontSize: 18,
-        color: 'var(--r-text-strong)',
-        letterSpacing: '-0.01em',
-        marginBottom: 8,
-      }}>
-        Sua Yaya+ gratuita está esperando
-      </div>
-      <p style={{
-        fontSize: 14, color: 'var(--r-text-muted)', lineHeight: 1.65,
-        maxWidth: 420, margin: '0 auto 24px',
-      }}>
-        Você ganhou 30 dias de Yaya+ com a compra do guia. Use para acompanhar sono, mamadas e fraldas — e chegar na primeira consulta do pediatra com tudo registrado.
-      </p>
-      <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-        <a
-          href="https://play.google.com/store/apps/details?id=app.yayababy"
-          target="_blank" rel="noopener noreferrer"
-          style={{
-            padding: '12px 22px', borderRadius: 999,
-            background: 'var(--r-accent)', color: 'var(--r-on-accent)',
-            fontWeight: 700, fontSize: 14, textDecoration: 'none',
-            display: 'inline-flex', alignItems: 'center', gap: 7,
-          }}
-        >
-          <span className="material-symbols-outlined" style={{ fontSize: 17 }}>android</span>
-          Baixar no Android
-        </a>
-        <a
-          href="https://apps.apple.com/br/app/yaya-bebe/id6741482602"
-          target="_blank" rel="noopener noreferrer"
-          style={{
-            padding: '12px 22px', borderRadius: 999,
-            border: '1.5px solid var(--r-accent)', color: 'var(--r-accent)',
-            fontWeight: 700, fontSize: 14, textDecoration: 'none',
-            display: 'inline-flex', alignItems: 'center', gap: 7,
-            background: 'transparent',
-          }}
-        >
-          <span className="material-symbols-outlined" style={{ fontSize: 17 }}>apple</span>
-          Baixar no iPhone
-        </a>
+      <span
+        className="material-symbols-outlined"
+        style={{ fontSize: 22, color: 'var(--r-accent)', flex: '0 0 auto', marginTop: 2 }}
+      >
+        phone_iphone
+      </span>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{
+          fontFamily: 'Manrope, system-ui, sans-serif',
+          fontWeight: 800, fontSize: 14,
+          color: 'var(--r-text-strong)',
+          letterSpacing: '-0.01em',
+          marginBottom: 4,
+        }}>
+          Sua Yaya+ gratuita está esperando
+        </div>
+        <p style={{ fontSize: 13, color: 'var(--r-text-muted)', lineHeight: 1.55, margin: '0 0 12px' }}>
+          Você ganhou 30 dias de Yaya+ com a compra do guia. Registre sono, mamadas e fraldas e chegue na primeira consulta com tudo anotado.
+        </p>
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          <a
+            href="https://play.google.com/store/apps/details?id=app.yayababy"
+            target="_blank" rel="noopener noreferrer"
+            style={{
+              padding: '8px 14px', borderRadius: 999,
+              background: 'var(--r-accent)', color: 'var(--r-on-accent)',
+              fontWeight: 700, fontSize: 12, textDecoration: 'none',
+              display: 'inline-flex', alignItems: 'center', gap: 5,
+            }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 14 }}>android</span>
+            Android
+          </a>
+          <a
+            href="https://apps.apple.com/br/app/yaya-bebe/id6741482602"
+            target="_blank" rel="noopener noreferrer"
+            style={{
+              padding: '8px 14px', borderRadius: 999,
+              border: '1px solid var(--r-border)', color: 'var(--r-text-muted)',
+              fontWeight: 700, fontSize: 12, textDecoration: 'none',
+              display: 'inline-flex', alignItems: 'center', gap: 5,
+              background: 'transparent',
+            }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 14 }}>apple</span>
+            iPhone
+          </a>
+        </div>
       </div>
     </div>
   )
