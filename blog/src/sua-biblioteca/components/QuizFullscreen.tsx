@@ -46,6 +46,7 @@ export default function QuizFullscreen({ section, guide, userId, onComplete }: P
   useEffect(() => {
     let cancelled = false
     async function load() {
+      if (!userId) return   // userId ainda não disponível — re-roda quando mudar
       const { data: existing } = await supabase
         .from('guide_quiz_responses')
         .select('result, answers')

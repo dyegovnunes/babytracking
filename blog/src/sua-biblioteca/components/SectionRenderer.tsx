@@ -195,6 +195,13 @@ export default function SectionRenderer({
         return <div dangerouslySetInnerHTML={{ __html: html }} />
       })()}
 
+      {/* Tool link cards — ex: celebração da Conclusão com cards para quiz + checklist */}
+      {(() => {
+        const toolLinks = (section.data as { tool_links?: ToolLink[] } | null)?.tool_links
+        if (!toolLinks || toolLinks.length === 0) return null
+        return <ToolLinkCards links={toolLinks} onNavigate={onNavigate} />
+      })()}
+
       {/* Quiz entry */}
       {section.type === 'quiz' && (
         <QuizFullscreen
@@ -625,6 +632,82 @@ function CountdownSnackbar({
           to   { opacity: 1; transform: translate(-50%, 0); }
         }
       `}</style>
+    </div>
+  )
+}
+
+// ── ToolLinkCards ────────────────────────────────────────────────────────────
+
+interface ToolLink {
+  section_id: string
+  title: string
+  description: string
+  icon: string
+}
+
+function ToolLinkCards({ links, onNavigate }: { links: ToolLink[]; onNavigate: (id: string) => void }) {
+  return (
+    <div style={{
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+      gap: 14,
+      margin: '2em 0',
+    }}>
+      {links.map(link => (
+        <button
+          key={link.section_id}
+          onClick={() => onNavigate(link.section_id)}
+          style={{
+            display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 10,
+            padding: '18px 20px',
+            background: 'color-mix(in srgb, var(--r-accent) 6%, var(--r-surface))',
+            border: '1px solid color-mix(in srgb, var(--r-accent) 28%, transparent)',
+            borderRadius: 14,
+            cursor: 'pointer',
+            textAlign: 'left',
+            fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif',
+            transition: 'background 0.2s, border-color 0.2s, transform 0.15s',
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.background = 'color-mix(in srgb, var(--r-accent) 12%, var(--r-surface))'
+            e.currentTarget.style.transform = 'translateY(-2px)'
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.background = 'color-mix(in srgb, var(--r-accent) 6%, var(--r-surface))'
+            e.currentTarget.style.transform = 'translateY(0)'
+          }}
+        >
+          <span className="material-symbols-outlined" style={{
+            fontSize: 28, color: 'var(--r-accent)',
+            fontVariationSettings: '"FILL" 0',
+          }}>
+            {link.icon}
+          </span>
+          <div>
+            <div style={{
+              fontFamily: 'Manrope, system-ui, sans-serif',
+              fontWeight: 800, fontSize: 14,
+              color: 'var(--r-text-strong)',
+              letterSpacing: '-0.01em',
+              marginBottom: 4,
+            }}>
+              {link.title}
+            </div>
+            <div style={{ fontSize: 13, color: 'var(--r-text-muted)', lineHeight: 1.5 }}>
+              {link.description}
+            </div>
+          </div>
+          <div style={{
+            marginTop: 'auto',
+            display: 'inline-flex', alignItems: 'center', gap: 4,
+            fontSize: 12, fontWeight: 700, color: 'var(--r-accent)',
+            letterSpacing: '0.02em',
+          }}>
+            Acessar
+            <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_forward</span>
+          </div>
+        </button>
+      ))}
     </div>
   )
 }
