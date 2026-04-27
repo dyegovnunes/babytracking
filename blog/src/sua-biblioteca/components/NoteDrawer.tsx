@@ -11,11 +11,14 @@ interface Props {
   userId: string
   open: boolean
   onClose: () => void
+  /** Callback após salvar nota com conteúdo (não-empty). GuideLayout usa
+   *  pra registrar marco 'first-note'. */
+  onNoteSaved?: () => void
 }
 
 const SAVE_DEBOUNCE_MS = 800
 
-export default function NoteDrawer({ sectionId, userId, open, onClose }: Props) {
+export default function NoteDrawer({ sectionId, userId, open, onClose, onNoteSaved }: Props) {
   const [note, setNote] = useState('')
   const [loading, setLoading] = useState(true)
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle')
@@ -70,6 +73,8 @@ export default function NoteDrawer({ sectionId, userId, open, onClose }: Props) 
       lastSaved.current = note
       setSaveStatus('saved')
       setTimeout(() => setSaveStatus('idle'), 1500)
+      // Só dispara onNoteSaved se a nota tem conteúdo (>3 chars não-whitespace)
+      if (note.trim().length > 3) onNoteSaved?.()
     }, SAVE_DEBOUNCE_MS)
     return () => { if (saveTimer.current) window.clearTimeout(saveTimer.current) }
   }, [note, loading, sectionId, userId])

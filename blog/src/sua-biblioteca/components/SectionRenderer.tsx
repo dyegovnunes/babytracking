@@ -1,16 +1,19 @@
 // SectionRenderer — renderiza UMA seção dependendo do tipo:
 //   part      → ChapterOpener (capa grande, título serif XL, "Comece a ler")
-//   linear    → markdown rendered + handlers de highlight
+//   linear    → markdown rendered + handlers de highlight + InteractiveChecklist
+//                (se data.checklist_items existir)
 //   quiz      → entry point pra QuizFullscreen
-//   checklist → ChecklistRenderer
-// Inclui: navegação prev/next, "marcar como concluída", auto-progress
+//   checklist → InteractiveChecklist (variant card)
+// Inclui: navegação prev/next, "marcar como concluída", auto-progress,
+//          toast de milestone
 
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import type { Guide, GuideSection, GuideProgress } from '../../types'
 import { renderSectionMarkdown } from '../lib/markdownRenderer'
 import { useReadingProgress } from '../lib/useReadingProgress'
+import type { GuideMilestone } from '../lib/useMilestones'
 import ChapterOpener from './ChapterOpener'
-import ChecklistRenderer from './ChecklistRenderer'
+import InteractiveChecklist, { type ChecklistItem } from './InteractiveChecklist'
 import QuizFullscreen from './QuizFullscreen'
 import HighlightLayer from './HighlightLayer'
 import NoteDrawer from './NoteDrawer'
@@ -24,12 +27,16 @@ interface Props {
   onNavigate: (id: string) => void
   onProgressUpdate: (sectionId: string, partial: Partial<GuideProgress>) => void
   mainRef: React.RefObject<HTMLElement | null>
+  /** Registra milestone manualmente (ex: 'first-highlight', 'first-note').
+   *  GuideLayout passa o `record` do useMilestones hook. */
+  recordMilestone?: (type: GuideMilestone['type'], ref?: string, metadata?: Record<string, unknown>) => Promise<unknown>
 }
 
 const COUNTDOWN_SECONDS = 3
 
 export default function SectionRenderer({
   guide, section, allSections, currentIdx, userId, onNavigate, onProgressUpdate, mainRef,
+  recordMilestone,
 }: Props) {
   const contentRef = useRef<HTMLDivElement>(null)
   const [completedAnimating, setCompletedAnimating] = useState(false)
@@ -169,16 +176,41 @@ export default function SectionRenderer({
         />
       )}
 
-      {/* Checklist */}
-      {section.type === 'checklist' && (
-        <ChecklistRenderer section={section} userId={userId} />
-      )}
+      {/* Checklist (section type='checklist' OU section linear com data.checklist_items) */}
+      {(() => {
+        const items = (section.data as { checklist_items?: ChecklistItem[]; items?: ChecklistItem[] } | null)
+        const list = items?.checklist_items ?? items?.items ?? []
+        if (section.type === 'checklist' && list.length > 0) {
+          return (
+            <InteractiveChecklist
+              items={list}
+              sectionId={section.id}
+              userId={userId}
+              variant="card"
+              onCompleted={() => recordMilestone?.('first-checklist-completed', section.id)}
+            />
+          )
+        }
+        if (section.type === 'linear' && list.length > 0) {
+          return (
+            <InteractiveChecklist
+              items={list}
+              sectionId={section.id}
+              userId={userId}
+              variant="card"
+              onCompleted={() => recordMilestone?.('first-checklist-completed', section.id)}
+            />
+          )
+        }
+        return null
+      })()}
 
       {/* Highlights overlay (text selection popover) */}
       <HighlightLayer
         sectionId={section.id}
         userId={userId}
         contentRef={contentRef}
+        onHighlightSaved={() => recordMilestone?.('first-highlight')}
       />
 
       {/* Notas */}
@@ -187,6 +219,7 @@ export default function SectionRenderer({
         userId={userId}
         open={noteOpen}
         onClose={() => setNoteOpen(false)}
+        onNoteSaved={() => recordMilestone?.('first-note')}
       />
 
       {/* Footer da seção: botão "marcar concluída" + navegação prev/next */}

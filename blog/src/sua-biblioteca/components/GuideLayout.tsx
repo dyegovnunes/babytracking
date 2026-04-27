@@ -8,6 +8,10 @@ import type { Guide, GuideSection, GuideProgress } from '../../types'
 import GuideTopbar from './GuideTopbar'
 import GuideSidebar from './GuideSidebar'
 import SectionRenderer from './SectionRenderer'
+import PartCompletionModal from './PartCompletionModal'
+import GuideCompletionScreen from './GuideCompletionScreen'
+import MilestoneToast from './MilestoneToast'
+import { useMilestones, type GuideMilestone } from '../lib/useMilestones'
 
 interface Props {
   guide: Guide
@@ -63,6 +67,55 @@ export default function GuideLayout({ guide, sections, userId }: Props) {
   const [progressMap, setProgressMap] = useState<Record<string, GuideProgress>>({})
   const [theme, setTheme] = useState<'light' | 'dark'>(() => detectInitialTheme())
   const mainRef = useRef<HTMLElement>(null)
+
+  // ── Milestones ─────────────────────────────────────────────────────────
+  // - Quando novo part-completed chega → abre PartCompletionModal
+  // - Quando guide-completed chega → abre GuideCompletionScreen
+  // - Outros tipos → MilestoneToast
+  const [partCompletedId, setPartCompletedId] = useState<string | null>(null)
+  const [showGuideCompletion, setShowGuideCompletion] = useState(false)
+  const [activeToast, setActiveToast] = useState<GuideMilestone | null>(null)
+
+  const handleNewMilestone = useCallback((m: GuideMilestone) => {
+    if (m.type === 'part-completed' && m.ref) {
+      setPartCompletedId(m.ref)
+    } else if (m.type === 'guide-completed') {
+      // Pequeno delay pra modal de parte fechar primeiro (se aberto)
+      setPartCompletedId(null)
+      setTimeout(() => setShowGuideCompletion(true), 600)
+    } else {
+      // Outros marcos: toast efêmero
+      setActiveToast(m)
+    }
+  }, [])
+
+  const { record: recordMilestone, has: hasMilestone } = useMilestones({
+    userId,
+    guideId: guide.id,
+    onNewMilestone: handleNewMilestone,
+  })
+
+  // Quiz completed: detecta via guide_quiz_responses presence (registra
+  // milestone client-side quando quiz é respondido — o componente
+  // QuizFullscreen já faz INSERT no DB; aqui só garantimos o marco).
+  useEffect(() => {
+    if (!hasMilestone('quiz-completed')) {
+      // Verifica se já tem resposta no DB (caso quiz tenha sido feito
+      // antes da migration de milestones existir)
+      let cancelled = false
+      ;(async () => {
+        const { count } = await supabase
+          .from('guide_quiz_responses')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', userId)
+          .eq('guide_id', guide.id)
+        if (!cancelled && (count ?? 0) > 0) {
+          recordMilestone('quiz-completed')
+        }
+      })()
+      return () => { cancelled = true }
+    }
+  }, [hasMilestone, recordMilestone, userId, guide.id])
 
   // Aplica tema no <html> e persiste em localStorage. Compartilha a chave
   // 'yb_theme' com o blog/admin pra que o tema seja consistente entre páginas.
@@ -202,6 +255,7 @@ export default function GuideLayout({ guide, sections, userId }: Props) {
             onNavigate={goToSection}
             onProgressUpdate={onProgressUpdate}
             mainRef={mainRef}
+            recordMilestone={recordMilestone}
           />
         ) : (
           <div style={{ textAlign: 'center', color: 'var(--r-text-muted)', padding: 80 }}>
@@ -209,6 +263,35 @@ export default function GuideLayout({ guide, sections, userId }: Props) {
           </div>
         )}
       </main>
+
+      {/* Comemoração ao concluir uma parte */}
+      <PartCompletionModal
+        partId={partCompletedId}
+        guide={guide}
+        allSections={flatSections}
+        onClose={() => setPartCompletedId(null)}
+        onContinue={(nextSectionId) => {
+          setPartCompletedId(null)
+          goToSection(nextSectionId)
+        }}
+      />
+
+      {/* Comemoração ao concluir o guia inteiro */}
+      {showGuideCompletion && (
+        <GuideCompletionScreen
+          guide={guide}
+          allSections={flatSections}
+          userId={userId}
+          onClose={() => setShowGuideCompletion(false)}
+          onBackToReading={() => setShowGuideCompletion(false)}
+        />
+      )}
+
+      {/* Toast efêmero pra marcos pequenos (first-highlight, etc) */}
+      <MilestoneToast
+        milestone={activeToast}
+        onDismiss={() => setActiveToast(null)}
+      />
 
       {/* Botão pra sair do modo leitura — visível apenas quando modo ativo,
           essencial pra mobile (onde tap não pode togglar por causa de

@@ -13,6 +13,9 @@ interface Props {
   sectionId: string
   userId: string
   contentRef: React.RefObject<HTMLDivElement | null>
+  /** Callback após salvar highlight com sucesso. GuideLayout usa pra
+   *  registrar marcos like 'first-highlight', '5-highlights', etc. */
+  onHighlightSaved?: () => void
 }
 
 const COLORS: { value: HighlightColor; bg: string; label: string }[] = [
@@ -21,7 +24,7 @@ const COLORS: { value: HighlightColor; bg: string; label: string }[] = [
   { value: 'purple', bg: 'rgba(183, 159, 255, 0.6)', label: 'Roxo' },
 ]
 
-export default function HighlightLayer({ sectionId, userId, contentRef }: Props) {
+export default function HighlightLayer({ sectionId, userId, contentRef, onHighlightSaved }: Props) {
   const [popoverPos, setPopoverPos] = useState<{ x: number; y: number; text: string } | null>(null)
   const [highlights, setHighlights] = useState<GuideHighlight[]>([])
   const popoverRef = useRef<HTMLDivElement>(null)
@@ -111,6 +114,7 @@ export default function HighlightLayer({ sectionId, userId, contentRef }: Props)
     }).select().single()
     if (data) {
       setHighlights(prev => [...prev, data])
+      onHighlightSaved?.()
     }
     setPopoverPos(null)
     window.getSelection()?.removeAllRanges()

@@ -158,6 +158,41 @@ function convertCallouts(md: string): string {
   return out
 }
 
+/**
+ * Extrai blocos de checklist (sequências de `- [ ] item`) do markdown e
+ * retorna { mdLimpo, items[] }. O markdown limpo NÃO contém os checkboxes
+ * — eles serão renderizados pelo InteractiveChecklist via section.data.
+ *
+ * Mantém uma marca `<!-- checklist -->` no lugar onde o checklist estava
+ * pra preservar o ponto de inserção (se houver várias listas, todas viram
+ * uma só no data — limitação aceitável do MVP).
+ */
+function extractChecklistItems(md: string): { md: string; items: Array<{ id: string; text: string; required?: boolean }> } {
+  const items: Array<{ id: string; text: string; required?: boolean }> = []
+  let counter = 1
+
+  // Regex pra blocos contínuos de `- [ ] item` ou `- [x] item`
+  // Captura listas que tenham 2+ items (1 item solto não é checklist)
+  const cleaned = md.replace(
+    /(?:^- \[[ xX]\] .+\n?){2,}/gm,
+    (block: string) => {
+      const lines = block.trim().split('\n')
+      for (const line of lines) {
+        const m = line.match(/^- \[([ xX])\] (.+)$/)
+        if (m) {
+          items.push({
+            id: `item-${counter++}`,
+            text: m[2].trim(),
+          })
+        }
+      }
+      return '<!-- checklist -->\n'  // marcador (será removido na render)
+    },
+  )
+
+  return { md: cleaned, items }
+}
+
 /** Substitui paths locais de imagens pelas URLs públicas */
 function rewriteImagePaths(md: string, imageMap: Map<string, string>): string {
   return md.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (full, alt: string, src: string) => {
@@ -182,6 +217,7 @@ interface ParsedSection {
   body: string
   type?: 'linear' | 'quiz' | 'part'
   is_preview?: boolean
+  checklistItems?: Array<{ id: string; text: string; required?: boolean }>
 }
 
 function parseMarkdown(md: string, imageMap: Map<string, string>): ParsedSection[] {
@@ -255,10 +291,17 @@ function parseMarkdown(md: string, imageMap: Map<string, string>): ParsedSection
   }
   flush()
 
-  // Pós-processamento: aplica callouts + image rewrite
+  // Pós-processamento: aplica callouts + image rewrite + extrai checklists
   for (const sec of sections) {
     sec.body = convertCallouts(sec.body)
     sec.body = rewriteImagePaths(sec.body, imageMap)
+    // Extrai checklists `- [ ]` do markdown pra section.data.checklist_items
+    // (renderizados pelo InteractiveChecklist no leitor)
+    const { md: cleanedMd, items } = extractChecklistItems(sec.body)
+    if (items.length > 0) {
+      sec.body = cleanedMd
+      sec.checklistItems = items
+    }
   }
 
   return sections
@@ -417,6 +460,11 @@ async function persistSections(parsed: ParsedSection[]) {
     }
     if (!currentPartId) continue
 
+    // Se a section tem checklist extraído, popula data.checklist_items
+    const sectionData = item.checklistItems && item.checklistItems.length > 0
+      ? { checklist_items: item.checklistItems }
+      : null
+
     const { error } = await supabase.from('guide_sections').insert({
       guide_id: guideId,
       parent_id: currentPartId,
@@ -425,6 +473,7 @@ async function persistSections(parsed: ParsedSection[]) {
       title: item.title,
       content_md: item.body,
       type: 'linear',
+      data: sectionData,
       estimated_minutes: estimateMinutes(item.body),
       is_preview: false,
     })
@@ -432,6 +481,9 @@ async function persistSections(parsed: ParsedSection[]) {
       console.error(`  ✗ ${item.title}: ${error.message}`)
     } else {
       totalSecs++
+      if (sectionData) {
+        console.log(`  📋 "${item.title}" tem ${item.checklistItems!.length} items de checklist`)
+      }
     }
   }
 
