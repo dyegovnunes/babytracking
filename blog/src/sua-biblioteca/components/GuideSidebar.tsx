@@ -85,12 +85,12 @@ export default function GuideSidebar({
             Sua Biblioteca
           </div>
           <h2 style={{
-            fontFamily: 'Fraunces, serif',
-            fontSize: 20,
-            fontWeight: 700,
+            fontFamily: 'Manrope, system-ui, sans-serif',
+            fontSize: 18,
+            fontWeight: 800,
             margin: 0,
-            color: 'var(--r-text)',
-            letterSpacing: '-0.01em',
+            color: 'var(--r-text-strong)',
+            letterSpacing: '-0.02em',
             lineHeight: 1.25,
           }}>
             {guide.title}
@@ -222,11 +222,12 @@ function SectionItem({
       {/* Title + minutes */}
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{
-          fontFamily: isPart ? 'Fraunces, serif' : 'inherit',
-          fontSize: isPart ? 15 : 13.5,
-          fontWeight: isPart ? 700 : isCurrent ? 600 : 500,
-          color: isCurrent ? 'var(--r-accent)' : 'var(--r-text)',
-          letterSpacing: isPart ? '-0.01em' : 'normal',
+          fontFamily: isPart ? 'Manrope, system-ui, sans-serif' : 'Plus Jakarta Sans, system-ui, sans-serif',
+          fontSize: isPart ? 12 : 13.5,
+          fontWeight: isPart ? 800 : isCurrent ? 600 : 500,
+          color: isCurrent ? 'var(--r-accent)' : isPart ? 'var(--r-text-strong)' : 'var(--r-text)',
+          letterSpacing: isPart ? '0.06em' : 'normal',
+          textTransform: isPart ? 'uppercase' as const : 'none' as const,
           lineHeight: 1.35,
         }}>
           {section.title}

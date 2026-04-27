@@ -116,7 +116,7 @@ export default function QuizFullscreen({ section, guide, userId, onComplete }: P
       <div style={{ fontSize: 12, color: 'var(--r-accent)', letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 700, marginBottom: 8 }}>
         Sua jornada
       </div>
-      <h3 style={{ fontFamily: 'Fraunces, serif', fontSize: 28, margin: '0 0 8px', color: 'var(--r-text)', letterSpacing: '-0.01em' }}>
+      <h3 style={{ fontFamily: 'Manrope, system-ui, sans-serif', fontSize: 24, fontWeight: 800, margin: '0 0 8px', color: 'var(--r-text-strong)', letterSpacing: '-0.02em' }}>
         {savedResult.title}
       </h3>
       <p style={{ fontSize: 14, color: 'var(--r-text-muted)', lineHeight: 1.6, margin: '0 0 20px' }}>
@@ -129,7 +129,7 @@ export default function QuizFullscreen({ section, guide, userId, onComplete }: P
   ) : (
     <div style={resultPreviewCard}>
       <span className="material-symbols-outlined" style={{ fontSize: 36, color: 'var(--r-accent)' }}>quiz</span>
-      <h3 style={{ fontFamily: 'Fraunces, serif', fontSize: 26, margin: '12px 0 8px', color: 'var(--r-text)', letterSpacing: '-0.01em' }}>
+      <h3 style={{ fontFamily: 'Manrope, system-ui, sans-serif', fontSize: 22, fontWeight: 800, margin: '12px 0 8px', color: 'var(--r-text-strong)', letterSpacing: '-0.02em' }}>
         Descubra seu perfil
       </h3>
       <p style={{ fontSize: 14, color: 'var(--r-text-muted)', lineHeight: 1.6, margin: '0 0 20px' }}>

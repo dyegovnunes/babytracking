@@ -210,6 +210,48 @@ export default function GuideLayout({ guide, sections, userId }: Props) {
         )}
       </main>
 
+      {/* Botão pra sair do modo leitura — visível apenas quando modo ativo,
+          essencial pra mobile (onde tap não pode togglar por causa de
+          highlight). Posição: top-right discreto, semi-transparente. */}
+      {readingMode && (
+        <button
+          onClick={() => setReadingMode(false)}
+          className="reader-exit-reading-mode"
+          aria-label="Sair do modo leitura"
+          title="Sair do modo leitura (F ou ESC)"
+          style={{
+            position: 'fixed',
+            top: 'calc(env(safe-area-inset-top, 0px) + 16px)',
+            right: 16,
+            zIndex: 200,
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            padding: '8px 14px 8px 12px',
+            borderRadius: 999,
+            border: '1px solid var(--r-border-strong)',
+            background: 'var(--r-overlay)',
+            backdropFilter: 'blur(16px)',
+            color: 'var(--r-text)',
+            fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif',
+            fontSize: 13,
+            fontWeight: 600,
+            cursor: 'pointer',
+            boxShadow: '0 6px 20px var(--r-shadow)',
+            animation: 'reading-exit-in 0.25s ease',
+            opacity: 0.85,
+            transition: 'opacity 0.2s, transform 0.15s',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.opacity = '1' }}
+          onMouseLeave={e => { e.currentTarget.style.opacity = '0.85' }}
+        >
+          <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--r-accent)' }}>
+            fullscreen_exit
+          </span>
+          <span className="reader-exit-label">Sair do modo leitura</span>
+        </button>
+      )}
+
       <style>{`
         /* Sidebar fixa em desktop */
         @media (min-width: 1024px) {
@@ -218,6 +260,15 @@ export default function GuideLayout({ guide, sections, userId }: Props) {
             padding-left: 48px !important;
             padding-right: 48px !important;
           }
+        }
+        @keyframes reading-exit-in {
+          from { opacity: 0; transform: translateY(-8px); }
+          to   { opacity: 0.85; transform: translateY(0); }
+        }
+        /* Em telas estreitas o botão fica menor (só ícone) */
+        @media (max-width: 480px) {
+          .reader-exit-reading-mode { padding: 8px 10px !important; }
+          .reader-exit-reading-mode .reader-exit-label { display: none; }
         }
       `}</style>
     </div>

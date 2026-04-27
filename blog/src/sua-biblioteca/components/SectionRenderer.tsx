@@ -299,11 +299,11 @@ const navBtn: React.CSSProperties = {
   transition: 'background 0.15s, border-color 0.15s',
 }
 
-// ── Countdown card ───────────────────────────────────────────────────────
-// Card destaque centralizado anunciando navegação automática pra próxima
-// seção. Layout vertical com hierarquia: ring grande + número + título +
-// botões centralizados. Background com gradient sutil do accent pra dar
-// presença visual sem competir com o conteúdo.
+// ── Countdown snackbar ───────────────────────────────────────────────────
+// Pílula horizontal compacta, com tinta accent pra destacar do fundo dark
+// (que era o problema da versão anterior — invisível). Centralizada sobre
+// a ÁREA DE CONTEÚDO (não a viewport): no desktop, offset compensa a
+// sidebar fixa de 320px; no mobile, true center.
 
 function CountdownSnackbar({
   seconds, total, nextTitle, onCancel, onSkip,
@@ -314,184 +314,163 @@ function CountdownSnackbar({
   onCancel: () => void
   onSkip: () => void
 }) {
-  // Anel: começa cheio (3s = 100%) e esvazia até 0 em sync com os ticks.
-  // Transição linear de 1s segue o intervalo do timer.
   const progress = seconds / total
-  const ringRadius = 22
-  const circumference = 2 * Math.PI * ringRadius
+  const circumference = 2 * Math.PI * 14
   const offset = circumference * (1 - progress)
 
   return (
     <div
       role="status"
       aria-live="polite"
-      className="countdown-card"
+      className="countdown-snackbar"
       style={{
         position: 'fixed',
-        bottom: 'calc(max(20px, env(safe-area-inset-bottom)) + 16px)',
-        left: '50%',
-        transform: 'translateX(-50%)',
+        bottom: 'calc(max(20px, env(safe-area-inset-bottom)) + 84px)',
+        // left e transform vêm do CSS abaixo (com media query pra desktop)
         zIndex: 28,
-        width: 'min(420px, calc(100vw - 32px))',
-        padding: '20px 22px 18px',
-        background: 'var(--r-overlay)',
-        backdropFilter: 'blur(24px)',
-        border: '1px solid var(--r-border-strong)',
-        borderRadius: 18,
-        boxShadow: '0 18px 48px var(--r-shadow), 0 0 0 1px color-mix(in srgb, var(--r-accent) 12%, transparent) inset',
-        textAlign: 'center',
-        animation: 'countdown-in 0.28s cubic-bezier(0.34, 1.56, 0.64, 1)',
-        fontFamily: 'Plus Jakarta Sans, sans-serif',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 12,
+        padding: '8px 8px 8px 14px',
+        // Tinta accent sobre o overlay = destaque sem ser gritante.
+        // color-mix respeita light/dark theme automaticamente.
+        background: 'color-mix(in srgb, var(--r-accent) 14%, var(--r-overlay))',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: '1px solid color-mix(in srgb, var(--r-accent) 45%, transparent)',
+        borderRadius: 999,
+        boxShadow: '0 10px 28px color-mix(in srgb, var(--r-accent) 22%, transparent), 0 2px 8px var(--r-shadow)',
+        animation: 'countdown-in 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) both',
+        maxWidth: 'calc(100vw - 32px)',
+        fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif',
       }}
     >
-      {/* Halo de gradiente sutil de fundo */}
-      <div
-        aria-hidden="true"
-        style={{
-          position: 'absolute',
-          inset: 0,
-          borderRadius: 18,
-          background: 'radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--r-accent) 18%, transparent) 0%, transparent 70%)',
-          pointerEvents: 'none',
-        }}
-      />
-
-      <div style={{ position: 'relative' }}>
-        {/* Anel SVG grande com número decrescente no centro */}
+      {/* Anel SVG com número no centro */}
+      <div style={{ position: 'relative', width: 36, height: 36, flex: '0 0 auto' }}>
+        <svg width="36" height="36" viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)' }}>
+          <circle cx="18" cy="18" r="14" fill="none" stroke="color-mix(in srgb, var(--r-accent) 22%, transparent)" strokeWidth="2.5" />
+          <circle
+            cx="18" cy="18" r="14" fill="none"
+            stroke="var(--r-accent)"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeDasharray={circumference}
+            strokeDashoffset={offset}
+            style={{ transition: 'stroke-dashoffset 1s linear' }}
+          />
+        </svg>
         <div style={{
-          position: 'relative',
-          width: 56,
-          height: 56,
-          margin: '0 auto 10px',
+          position: 'absolute', inset: 0,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: 13, fontWeight: 800, color: 'var(--r-accent)',
+          fontFamily: 'Manrope, system-ui, sans-serif',
+          fontVariantNumeric: 'tabular-nums',
+          letterSpacing: '-0.02em',
         }}>
-          <svg width="56" height="56" viewBox="0 0 56 56" style={{ transform: 'rotate(-90deg)' }}>
-            <circle
-              cx="28" cy="28" r={ringRadius}
-              fill="none"
-              stroke="color-mix(in srgb, var(--r-accent) 14%, transparent)"
-              strokeWidth="3"
-            />
-            <circle
-              cx="28" cy="28" r={ringRadius}
-              fill="none"
-              stroke="var(--r-accent)"
-              strokeWidth="3"
-              strokeLinecap="round"
-              strokeDasharray={circumference}
-              strokeDashoffset={offset}
-              style={{ transition: 'stroke-dashoffset 1s linear' }}
-            />
-          </svg>
-          <div style={{
-            position: 'absolute', inset: 0,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 22, fontWeight: 700, color: 'var(--r-accent)',
-            fontVariantNumeric: 'tabular-nums',
-            fontFamily: 'Fraunces, serif',
-            fontVariationSettings: '"opsz" 72',
-          }}>
-            {seconds}
-          </div>
-        </div>
-
-        {/* Eyebrow + título da próxima */}
-        <div style={{
-          fontSize: 10,
-          fontWeight: 700,
-          letterSpacing: '0.12em',
-          textTransform: 'uppercase',
-          color: 'var(--r-accent)',
-          marginBottom: 4,
-        }}>
-          Próxima leitura
-        </div>
-        <div style={{
-          fontFamily: 'Fraunces, serif',
-          fontVariationSettings: '"opsz" 32, "SOFT" 20',
-          fontSize: 17,
-          fontWeight: 600,
-          letterSpacing: '-0.01em',
-          color: 'var(--r-text-strong)',
-          lineHeight: 1.3,
-          marginBottom: 16,
-          padding: '0 8px',
-          textWrap: 'balance' as never,
-        }}>
-          {nextTitle}
-        </div>
-
-        {/* Botões centralizados — espelham o estilo do "marcar como concluída" */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          gap: 8,
-          flexWrap: 'wrap',
-        }}>
-          <button
-            onClick={onCancel}
-            aria-label="Cancelar navegação automática"
-            style={{
-              background: 'transparent',
-              border: '1px solid var(--r-border)',
-              color: 'var(--r-text-muted)',
-              cursor: 'pointer',
-              fontFamily: 'inherit',
-              fontSize: 13,
-              fontWeight: 600,
-              padding: '10px 18px',
-              borderRadius: 999,
-              transition: 'background 0.15s, color 0.15s, border-color 0.15s',
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.background = 'var(--r-surface-strong)'
-              e.currentTarget.style.color = 'var(--r-text)'
-              e.currentTarget.style.borderColor = 'var(--r-border-strong)'
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.background = 'transparent'
-              e.currentTarget.style.color = 'var(--r-text-muted)'
-              e.currentTarget.style.borderColor = 'var(--r-border)'
-            }}
-          >
-            Cancelar
-          </button>
-          <button
-            onClick={onSkip}
-            aria-label="Ir para próxima seção agora"
-            style={{
-              background: 'var(--r-accent)',
-              border: 'none',
-              color: 'var(--r-on-accent)',
-              cursor: 'pointer',
-              fontFamily: 'inherit',
-              fontSize: 13,
-              fontWeight: 700,
-              padding: '10px 20px',
-              borderRadius: 999,
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              transition: 'background 0.15s, transform 0.15s',
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.background = 'var(--r-accent-glow)'
-              e.currentTarget.style.transform = 'translateY(-1px)'
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.background = 'var(--r-accent)'
-              e.currentTarget.style.transform = 'translateY(0)'
-            }}
-          >
-            Ir agora
-            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>arrow_forward</span>
-          </button>
+          {seconds}
         </div>
       </div>
 
+      {/* Texto: "PRÓXIMA EM Ns" + título */}
+      <div style={{
+        flex: 1,
+        minWidth: 0,
+        fontSize: 13,
+        color: 'var(--r-text)',
+        lineHeight: 1.3,
+      }}>
+        <div style={{
+          fontSize: 10,
+          fontWeight: 700,
+          letterSpacing: '0.08em',
+          textTransform: 'uppercase',
+          color: 'var(--r-accent)',
+          marginBottom: 1,
+        }}>
+          Próxima em {seconds}s
+        </div>
+        <div style={{
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          fontFamily: 'Manrope, system-ui, sans-serif',
+          fontWeight: 700,
+          letterSpacing: '-0.01em',
+          color: 'var(--r-text-strong)',
+          maxWidth: 240,
+        }}>
+          {nextTitle}
+        </div>
+      </div>
+
+      <button
+        onClick={onCancel}
+        aria-label="Cancelar navegação automática"
+        style={{
+          background: 'transparent',
+          border: 'none',
+          color: 'var(--r-text-muted)',
+          cursor: 'pointer',
+          fontFamily: 'inherit',
+          fontSize: 12,
+          fontWeight: 600,
+          padding: '8px 12px',
+          borderRadius: 999,
+          transition: 'background 0.15s, color 0.15s',
+          flex: '0 0 auto',
+        }}
+        onMouseEnter={e => {
+          e.currentTarget.style.background = 'var(--r-surface-strong)'
+          e.currentTarget.style.color = 'var(--r-text)'
+        }}
+        onMouseLeave={e => {
+          e.currentTarget.style.background = 'transparent'
+          e.currentTarget.style.color = 'var(--r-text-muted)'
+        }}
+      >
+        Cancelar
+      </button>
+
+      <button
+        onClick={onSkip}
+        aria-label="Ir para próxima seção agora"
+        style={{
+          background: 'var(--r-accent)',
+          border: 'none',
+          color: 'var(--r-on-accent)',
+          cursor: 'pointer',
+          fontFamily: 'inherit',
+          fontSize: 12,
+          fontWeight: 700,
+          padding: '8px 14px',
+          borderRadius: 999,
+          flex: '0 0 auto',
+          transition: 'background 0.15s',
+        }}
+        onMouseEnter={e => { e.currentTarget.style.background = 'var(--r-accent-glow)' }}
+        onMouseLeave={e => { e.currentTarget.style.background = 'var(--r-accent)' }}
+      >
+        Ir agora
+      </button>
+
       <style>{`
+        /* Mobile/tablet: centralizado na viewport (sidebar é drawer) */
+        .countdown-snackbar {
+          left: 50%;
+        }
+        /* Desktop ≥1024px: sidebar fixa de 320px ocupa a esquerda, então o
+           "centro" da área de conteúdo é deslocado 160px à direita do
+           50% da viewport. */
+        @media (min-width: 1024px) {
+          .countdown-snackbar {
+            left: calc(50% + 160px);
+          }
+        }
+        /* O translateX(-50%) é aplicado via animation (translate(-50%, …))
+           com fill-mode: both, então o estado final do keyframe persiste. */
         @keyframes countdown-in {
-          from { opacity: 0; transform: translate(-50%, 24px) scale(0.96); }
-          to   { opacity: 1; transform: translate(-50%, 0) scale(1); }
+          from { opacity: 0; transform: translate(-50%, 16px); }
+          to   { opacity: 1; transform: translate(-50%, 0); }
         }
       `}</style>
     </div>

@@ -18,7 +18,7 @@ export default function GuideAuthGuard({ access, guideSlug }: Props) {
     return (
       <div style={center}>
         <div style={{ textAlign: 'center', color: 'var(--r-text-muted)' }}>
-          <div style={{ fontFamily: 'Fraunces, serif', fontSize: 22 }}>Carregando…</div>
+          <div style={{ fontFamily: 'Manrope, system-ui, sans-serif', fontSize: 22 }}>Carregando…</div>
         </div>
       </div>
     )
@@ -29,7 +29,7 @@ export default function GuideAuthGuard({ access, guideSlug }: Props) {
       <div style={center}>
         <div style={card}>
           <span className="material-symbols-outlined" style={{ fontSize: 36, color: '#ff7a90' }}>error</span>
-          <h1 style={{ fontFamily: 'Fraunces, serif', fontSize: 26, margin: '12px 0 8px', color: 'var(--r-text)' }}>
+          <h1 style={{ fontFamily: 'Manrope, system-ui, sans-serif', fontSize: 26, margin: '12px 0 8px', color: 'var(--r-text)' }}>
             Algo deu errado
           </h1>
           <p style={{ color: 'var(--r-text-muted)', fontSize: 15 }}>
@@ -80,7 +80,7 @@ function MagicLinkPrompt({ guideSlug, guideTitle }: { guideSlug: string; guideTi
       <div style={center}>
         <div style={card}>
           <span className="material-symbols-outlined" style={{ fontSize: 36, color: '#70e09a' }}>mark_email_read</span>
-          <h1 style={{ fontFamily: 'Fraunces, serif', fontSize: 28, margin: '14px 0 10px', color: 'var(--r-text)' }}>
+          <h1 style={{ fontFamily: 'Manrope, system-ui, sans-serif', fontSize: 28, margin: '14px 0 10px', color: 'var(--r-text)' }}>
             Link enviado pro seu email
           </h1>
           <p style={{ color: 'var(--r-text-muted)', fontSize: 15, lineHeight: 1.6 }}>
@@ -103,7 +103,7 @@ function MagicLinkPrompt({ guideSlug, guideTitle }: { guideSlug: string; guideTi
     <div style={center}>
       <div style={card}>
         <span className="material-symbols-outlined" style={{ fontSize: 32, color: 'var(--r-accent)' }}>menu_book</span>
-        <h1 style={{ fontFamily: 'Fraunces, serif', fontSize: 28, margin: '14px 0 8px', color: 'var(--r-text)', letterSpacing: '-0.01em' }}>
+        <h1 style={{ fontFamily: 'Manrope, system-ui, sans-serif', fontSize: 28, margin: '14px 0 8px', color: 'var(--r-text)', letterSpacing: '-0.01em' }}>
           Entre na sua biblioteca
         </h1>
         <p style={{ color: 'var(--r-text-muted)', fontSize: 15, lineHeight: 1.6, marginBottom: 24 }}>
@@ -145,7 +145,7 @@ function NoAccessCTA({ guideSlug, guideTitle, email }: { guideSlug: string; guid
     <div style={center}>
       <div style={card}>
         <span className="material-symbols-outlined" style={{ fontSize: 32, color: 'var(--r-accent)' }}>lock</span>
-        <h1 style={{ fontFamily: 'Fraunces, serif', fontSize: 28, margin: '14px 0 8px', color: 'var(--r-text)', letterSpacing: '-0.01em' }}>
+        <h1 style={{ fontFamily: 'Manrope, system-ui, sans-serif', fontSize: 28, margin: '14px 0 8px', color: 'var(--r-text)', letterSpacing: '-0.01em' }}>
           Você ainda não tem acesso a esse guia
         </h1>
         <p style={{ color: 'var(--r-text-muted)', fontSize: 15, lineHeight: 1.6, marginBottom: 20 }}>

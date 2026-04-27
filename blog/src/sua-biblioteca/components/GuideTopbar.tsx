@@ -110,10 +110,11 @@ export default function GuideTopbar({
         </div>
         <div
           style={{
-            fontFamily: 'Fraunces, serif',
+            fontFamily: 'Manrope, system-ui, sans-serif',
             fontSize: 14,
-            fontWeight: 700,
-            color: 'var(--r-text)',
+            fontWeight: 800,
+            letterSpacing: '-0.015em',
+            color: 'var(--r-text-strong)',
             whiteSpace: 'nowrap',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
