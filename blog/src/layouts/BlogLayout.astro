@@ -103,19 +103,8 @@ const GA_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID as string | undefined
     )}
   </head>
   <body class="bg-yaya-night text-yaya-cloud font-sans antialiased min-h-screen flex flex-col">
-    <!-- Smart banner: convite calmo pra baixar o app -->
-    <div class="bg-yaya-purple/10 border-b border-yaya-purple/20 py-2.5 px-4 flex items-center justify-between gap-3 text-sm">
-      <span class="text-yaya-cloud/90">Acompanhe a rotina do seu bebê com o Yaya</span>
-      <a
-        href="https://yayababy.app"
-        class="shrink-0 bg-yaya-purple text-yaya-night font-display font-bold text-xs px-3 py-1.5 rounded-md hover:bg-yaya-glow transition-colors"
-      >
-        Baixar grátis
-      </a>
-    </div>
-
     <!-- Header -->
-    <header class="border-b border-yaya-cloud/5 bg-yaya-night/90 backdrop-blur-sm sticky top-0 z-10">
+    <header class="border-b border-yaya-cloud/5 bg-yaya-night/90 backdrop-blur-sm sticky top-0 z-20">
       <div class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
         <a href="/" class="flex items-center gap-2 min-w-0 shrink-0" aria-label="Yaya Baby — Blog">
           <img
@@ -147,7 +136,7 @@ const GA_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID as string | undefined
         </nav>
 
         <div class="flex items-center gap-2">
-          <!-- Minha biblioteca — CTA ghost outlined, desktop -->
+          <!-- CTAs desktop (sm+) -->
           <a
             href="/sua-biblioteca/ultimas-semanas/ler"
             class="hidden sm:inline-block border border-yaya-purple/50 text-yaya-purple hover:bg-yaya-purple/10 font-display font-bold text-xs px-4 py-2 rounded-md transition-colors whitespace-nowrap"
@@ -160,14 +149,56 @@ const GA_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID as string | undefined
           >
             Baixar app
           </a>
+
+          <!-- Hambúrguer mobile -->
+          <button
+            id="yb-nav-toggle"
+            class="sm:hidden p-2 -mr-1 text-yaya-cloud/65 hover:text-yaya-cloud transition-colors"
+            aria-label="Abrir menu"
+            aria-expanded="false"
+            aria-controls="yb-mobile-nav"
+          >
+            <svg id="yb-icon-menu" width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <rect y="3" width="20" height="2" rx="1"/>
+              <rect y="9" width="20" height="2" rx="1"/>
+              <rect y="15" width="20" height="2" rx="1"/>
+            </svg>
+            <svg id="yb-icon-close" width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" class="hidden">
+              <path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/>
+            </svg>
+          </button>
+
+          <ThemeToggle />
+        </div>
+      </div>
+
+      <!-- Menu mobile expandível -->
+      <div
+        id="yb-mobile-nav"
+        class="hidden sm:hidden border-t border-yaya-cloud/5 px-4 pb-4 pt-2 flex flex-col gap-0.5"
+      >
+        <a href="/" class="py-2.5 px-3 rounded-md text-sm font-sans text-yaya-cloud/70 hover:text-yaya-purple hover:bg-yaya-cloud/5 transition-colors">
+          Posts
+        </a>
+        <a href="/sua-biblioteca/ultimas-semanas/ler" class="py-2.5 px-3 rounded-md text-sm font-sans text-yaya-cloud/70 hover:text-yaya-purple hover:bg-yaya-cloud/5 transition-colors">
+          Biblioteca Yaya
+        </a>
+        <a href="https://yayababy.app" class="py-2.5 px-3 rounded-md text-sm font-sans text-yaya-cloud/70 hover:text-yaya-purple hover:bg-yaya-cloud/5 transition-colors">
+          Conheça o app
+        </a>
+        <div class="mt-3 pt-3 border-t border-yaya-cloud/5 flex gap-2">
+          <a
+            href="/sua-biblioteca/ultimas-semanas/ler"
+            class="flex-1 text-center border border-yaya-purple/50 text-yaya-purple hover:bg-yaya-purple/10 font-display font-bold text-xs px-4 py-2.5 rounded-md transition-colors"
+          >
+            Minha biblioteca
+          </a>
           <a
             href="https://yayababy.app"
-            class="sm:hidden bg-yaya-purple hover:bg-yaya-glow text-yaya-night font-display font-bold text-xs px-3 py-2 rounded-md transition-colors"
-            aria-label="Baixar app"
+            class="flex-1 text-center bg-yaya-purple hover:bg-yaya-glow text-yaya-night font-display font-bold text-xs px-4 py-2.5 rounded-md transition-colors"
           >
-            Baixar
+            Baixar app
           </a>
-          <ThemeToggle />
         </div>
       </div>
     </header>
@@ -208,5 +239,32 @@ const GA_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID as string | undefined
     </footer>
 
     <CookieConsent />
+
+    <!-- Toggle do menu mobile -->
+    <script is:inline>
+      (function () {
+        var btn = document.getElementById('yb-nav-toggle')
+        var menu = document.getElementById('yb-mobile-nav')
+        var iconMenu = document.getElementById('yb-icon-menu')
+        var iconClose = document.getElementById('yb-icon-close')
+        if (!btn || !menu) return
+
+        function setOpen(open) {
+          menu.classList.toggle('hidden', !open)
+          btn.setAttribute('aria-expanded', String(open))
+          iconMenu.classList.toggle('hidden', open)
+          iconClose.classList.toggle('hidden', !open)
+        }
+
+        btn.addEventListener('click', function () {
+          setOpen(menu.classList.contains('hidden'))
+        })
+
+        // Fecha ao clicar em qualquer link do menu
+        menu.querySelectorAll('a').forEach(function (a) {
+          a.addEventListener('click', function () { setOpen(false) })
+        })
+      })()
+    </script>
   </body>
 </html>
