@@ -132,24 +132,25 @@ const GA_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID as string | undefined
         </a>
 
         <!-- Nav links — visíveis a partir de md (768px) -->
-        <nav class="hidden md:flex items-center gap-0.5 text-sm font-sans" aria-label="Navegação principal">
-          <a href="/" class="px-3 py-1.5 rounded-md text-yaya-cloud/65 hover:text-yaya-cloud hover:bg-yaya-cloud/5 transition-colors whitespace-nowrap">
+        <nav class="hidden md:flex items-center gap-1 text-xs font-sans" aria-label="Navegação principal">
+          <a href="/" class="px-2.5 py-1.5 text-yaya-cloud/55 hover:text-yaya-purple transition-colors whitespace-nowrap">
             Posts
           </a>
-          <a href="/sua-biblioteca/ultimas-semanas/ler" class="px-3 py-1.5 rounded-md text-yaya-cloud/65 hover:text-yaya-cloud hover:bg-yaya-cloud/5 transition-colors whitespace-nowrap">
+          <span aria-hidden="true" class="text-yaya-cloud/25 select-none">·</span>
+          <a href="/sua-biblioteca/ultimas-semanas/ler" class="px-2.5 py-1.5 text-yaya-cloud/55 hover:text-yaya-purple transition-colors whitespace-nowrap">
             Biblioteca Yaya
           </a>
-          <a href="https://yayababy.app" class="px-3 py-1.5 rounded-md text-yaya-cloud/65 hover:text-yaya-cloud hover:bg-yaya-cloud/5 transition-colors whitespace-nowrap">
+          <span aria-hidden="true" class="text-yaya-cloud/25 select-none">·</span>
+          <a href="https://yayababy.app" class="px-2.5 py-1.5 text-yaya-cloud/55 hover:text-yaya-purple transition-colors whitespace-nowrap">
             Conheça o app
           </a>
         </nav>
 
         <div class="flex items-center gap-2">
-          <ThemeToggle />
-          <!-- Minha biblioteca — link de texto, desktop -->
+          <!-- Minha biblioteca — CTA ghost outlined, desktop -->
           <a
             href="/sua-biblioteca/ultimas-semanas/ler"
-            class="hidden sm:inline-block text-yaya-cloud/65 hover:text-yaya-cloud font-sans text-xs px-2 py-2 transition-colors whitespace-nowrap"
+            class="hidden sm:inline-block border border-yaya-purple/50 text-yaya-purple hover:bg-yaya-purple/10 font-display font-bold text-xs px-4 py-2 rounded-md transition-colors whitespace-nowrap"
           >
             Minha biblioteca
           </a>
@@ -166,6 +167,7 @@ const GA_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID as string | undefined
           >
             Baixar
           </a>
+          <ThemeToggle />
         </div>
       </div>
     </header>
