@@ -117,7 +117,7 @@ const GA_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID as string | undefined
     <!-- Header -->
     <header class="border-b border-yaya-cloud/5 bg-yaya-night/90 backdrop-blur-sm sticky top-0 z-10">
       <div class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
-        <a href="/" class="flex items-center gap-2 min-w-0" aria-label="Yaya Baby — Blog">
+        <a href="/" class="flex items-center gap-2 min-w-0 shrink-0" aria-label="Yaya Baby — Blog">
           <img
             src="/heart.png"
             alt=""
@@ -130,11 +130,32 @@ const GA_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID as string | undefined
             <span class="text-yaya-purple font-bold ml-1 hidden min-[400px]:inline">blog</span>
           </span>
         </a>
+
+        <!-- Nav links — visíveis a partir de md (768px) -->
+        <nav class="hidden md:flex items-center gap-0.5 text-sm font-sans" aria-label="Navegação principal">
+          <a href="/" class="px-3 py-1.5 rounded-md text-yaya-cloud/65 hover:text-yaya-cloud hover:bg-yaya-cloud/5 transition-colors whitespace-nowrap">
+            Posts
+          </a>
+          <a href="/sua-biblioteca/ultimas-semanas/ler" class="px-3 py-1.5 rounded-md text-yaya-cloud/65 hover:text-yaya-cloud hover:bg-yaya-cloud/5 transition-colors whitespace-nowrap">
+            Biblioteca Yaya
+          </a>
+          <a href="https://yayababy.app" class="px-3 py-1.5 rounded-md text-yaya-cloud/65 hover:text-yaya-cloud hover:bg-yaya-cloud/5 transition-colors whitespace-nowrap">
+            Conheça o app
+          </a>
+        </nav>
+
         <div class="flex items-center gap-2">
           <ThemeToggle />
+          <!-- Minha biblioteca — link de texto, desktop -->
+          <a
+            href="/sua-biblioteca/ultimas-semanas/ler"
+            class="hidden sm:inline-block text-yaya-cloud/65 hover:text-yaya-cloud font-sans text-xs px-2 py-2 transition-colors whitespace-nowrap"
+          >
+            Minha biblioteca
+          </a>
           <a
             href="https://yayababy.app"
-            class="hidden sm:inline-block bg-yaya-purple hover:bg-yaya-glow text-yaya-night font-display font-bold text-xs px-4 py-2 rounded-md transition-colors"
+            class="hidden sm:inline-block bg-yaya-purple hover:bg-yaya-glow text-yaya-night font-display font-bold text-xs px-4 py-2 rounded-md transition-colors whitespace-nowrap"
           >
             Baixar app
           </a>

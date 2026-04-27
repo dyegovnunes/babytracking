@@ -271,37 +271,6 @@ const faqLd = post.schema_type === 'FAQPage' ? faqJsonLd(post) : null
       <strong class="text-yaya-cloud/80">Aviso:</strong> Este artigo tem caráter educativo e não substitui orientação médica individualizada. Consulte sempre o pediatra do seu bebê.
     </div>
 
-    <!-- CTA baixar app — condicional por audience -->
-    {post.audience === 'gestante' ? (
-      <div class="mt-10 p-6 rounded-md bg-gradient-to-br from-yaya-purple/15 to-yaya-blush/10 border border-yaya-purple/25 text-center">
-        <p class="font-display text-lg font-bold text-yaya-cloud mb-2">Prepare-se pra chegada do bebê</p>
-        <p class="text-yaya-cloud/70 text-sm mb-5 font-sans leading-relaxed">
-          Baixe o Yaya agora e tenha tudo pronto pro primeiro dia: rotina, amamentação, sono, marcos — com 1 toque.
-        </p>
-        <a
-          href="https://yayababy.app"
-          class="inline-block bg-yaya-purple hover:bg-yaya-glow text-yaya-night font-display font-bold px-6 py-3 rounded-md transition-colors"
-        >
-          Deixar o Yaya instalado
-        </a>
-        <p class="text-yaya-cloud/40 text-xs mt-3 font-sans">Grátis · Android e iOS</p>
-      </div>
-    ) : (
-      <div class="mt-10 p-6 rounded-md bg-gradient-to-br from-yaya-purple/15 to-yaya-blush/10 border border-yaya-purple/25 text-center">
-        <p class="font-display text-lg font-bold text-yaya-cloud mb-2">Organize a rotina do seu bebê</p>
-        <p class="text-yaya-cloud/70 text-sm mb-5 font-sans leading-relaxed">
-          Registre amamentação, sono, fraldas e marcos com 1 toque.
-        </p>
-        <a
-          href="https://yayababy.app"
-          class="inline-block bg-yaya-purple hover:bg-yaya-glow text-yaya-night font-display font-bold px-6 py-3 rounded-md transition-colors"
-        >
-          Baixar o Yaya grátis
-        </a>
-        <p class="text-yaya-cloud/40 text-xs mt-3 font-sans">Grátis · Android e iOS</p>
-      </div>
-    )}
-
     <!-- Feedback (CSAT 👍/👎 + incentivo a compartilhar) -->
     <FeedbackBox
       slug={post.slug}
