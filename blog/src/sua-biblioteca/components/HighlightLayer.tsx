@@ -387,6 +387,7 @@ function MarkActionPopover({
 
   return (
     <div
+      onClick={e => e.stopPropagation()}
       style={{
         position: 'absolute',
         left: markPopover.x,

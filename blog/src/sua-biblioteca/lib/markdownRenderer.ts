@@ -66,8 +66,12 @@ export function renderSectionMarkdown(md: string): string {
   if (!md) return ''
   let html = marked.parse(md, { async: false }) as string
 
-  // Adiciona classe `drop-cap` no primeiro parágrafo (CSS aplica o effect)
-  html = html.replace(/<p>/, '<p class="drop-cap">')
+  // Adiciona drop-cap só no primeiro <p> top-level — não dentro de callouts.
+  // Se o HTML começa com <aside> (callout), a primeira <p> já está dentro
+  // do callout e receberia o drop cap incorretamente.
+  if (!html.trimStart().startsWith('<aside')) {
+    html = html.replace(/<p>/, '<p class="drop-cap">')
+  }
 
   // Pull quote: blockquote contendo apenas outro blockquote — converte
   // em <aside class="pull-quote">
