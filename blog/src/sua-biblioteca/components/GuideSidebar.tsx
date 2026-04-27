@@ -439,6 +439,9 @@ function SectionItem({
 }) {
   const isCompleted = progress?.completed === true
   const isStarted = !!progress
+  const isBonus = section.type === 'quiz'
+  const isChecklist = section.type === 'checklist'
+  const isSpecial = isBonus || isChecklist
 
   return (
     <button
@@ -448,24 +451,42 @@ function SectionItem({
         alignItems: 'center',
         gap: 10,
         width: '100%',
-        padding: isPart ? '12px 12px' : '10px 12px 10px 26px',
-        marginBottom: 2,
-        background: isCurrent ? 'color-mix(in srgb, var(--r-accent) 12%, transparent)' : 'transparent',
-        border: 'none',
-        borderRadius: 8,
+        padding: isPart || isSpecial ? '12px 12px' : '10px 12px 10px 26px',
+        marginBottom: isSpecial ? 8 : 2,
+        background: isCurrent
+          ? 'color-mix(in srgb, var(--r-accent) 14%, transparent)'
+          : isSpecial
+            ? 'color-mix(in srgb, var(--r-accent) 7%, var(--r-surface))'
+            : 'transparent',
+        border: isSpecial
+          ? `1px solid color-mix(in srgb, var(--r-accent) ${isCurrent ? 45 : 22}%, transparent)`
+          : 'none',
+        borderRadius: isSpecial ? 10 : 8,
         cursor: 'pointer',
         textAlign: 'left',
         position: 'relative',
         fontFamily: 'inherit',
         transition: 'background 0.15s',
-        minHeight: 44,                  /* touch target Apple HIG */
+        minHeight: 44,
       }}
-      onMouseEnter={e => { if (!isCurrent) e.currentTarget.style.background = 'var(--r-surface-strong)' }}
-      onMouseLeave={e => { if (!isCurrent) e.currentTarget.style.background = 'transparent' }}
+      onMouseEnter={e => {
+        if (!isCurrent) e.currentTarget.style.background = isSpecial
+          ? 'color-mix(in srgb, var(--r-accent) 12%, var(--r-surface))'
+          : 'var(--r-surface-strong)'
+      }}
+      onMouseLeave={e => {
+        if (!isCurrent) e.currentTarget.style.background = isSpecial
+          ? 'color-mix(in srgb, var(--r-accent) 7%, var(--r-surface))'
+          : 'transparent'
+      }}
     >
-      {/* Indicador de progresso à esquerda */}
-      <span style={{ flex: '0 0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', width: 18 }}>
-        {isCompleted ? (
+      {/* Ícone especial para quiz/checklist ou indicador de progresso */}
+      <span style={{ flex: '0 0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', width: 22 }}>
+        {isBonus ? (
+          <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--r-accent)' }}>auto_awesome</span>
+        ) : isChecklist ? (
+          <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--r-accent)' }}>checklist</span>
+        ) : isCompleted ? (
           <span className="material-symbols-outlined" style={{ fontSize: 16, color: '#70e09a' }}>check_circle</span>
         ) : isStarted ? (
           <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--r-accent)', opacity: 0.7 }} />
@@ -474,13 +495,21 @@ function SectionItem({
         )}
       </span>
 
-      {/* Title + minutes */}
+      {/* Title + badge + minutes */}
       <div style={{ flex: 1, minWidth: 0 }}>
+        {isSpecial && (
+          <div style={{
+            fontSize: 9, fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase',
+            color: 'var(--r-accent)', marginBottom: 3,
+          }}>
+            {isBonus ? 'Bônus exclusivo' : 'Ferramenta interativa'}
+          </div>
+        )}
         <div style={{
-          fontFamily: isPart ? 'Manrope, system-ui, sans-serif' : 'Plus Jakarta Sans, system-ui, sans-serif',
-          fontSize: isPart ? 12 : 13.5,
-          fontWeight: isPart ? 800 : isCurrent ? 600 : 500,
-          color: isCurrent ? 'var(--r-accent)' : isPart ? 'var(--r-text-strong)' : 'var(--r-text)',
+          fontFamily: isPart || isSpecial ? 'Manrope, system-ui, sans-serif' : 'Plus Jakarta Sans, system-ui, sans-serif',
+          fontSize: isPart ? 12 : isSpecial ? 13 : 13.5,
+          fontWeight: isPart || isSpecial ? 800 : isCurrent ? 600 : 500,
+          color: isCurrent ? 'var(--r-accent)' : isPart || isSpecial ? 'var(--r-text-strong)' : 'var(--r-text)',
           letterSpacing: isPart ? '0.06em' : 'normal',
           textTransform: isPart ? 'uppercase' as const : 'none' as const,
           lineHeight: 1.35,
@@ -488,23 +517,11 @@ function SectionItem({
           {section.title}
         </div>
         {section.estimated_minutes && (
-          <div style={{
-            fontSize: 11,
-            color: 'var(--r-text-subtle)',
-            marginTop: 2,
-          }}>
+          <div style={{ fontSize: 11, color: 'var(--r-text-subtle)', marginTop: 2 }}>
             {section.estimated_minutes} min
           </div>
         )}
       </div>
-
-      {/* Type badge */}
-      {section.type === 'quiz' && (
-        <span className="material-symbols-outlined" style={{ fontSize: 14, color: 'var(--r-accent)', opacity: 0.7 }}>quiz</span>
-      )}
-      {section.type === 'checklist' && (
-        <span className="material-symbols-outlined" style={{ fontSize: 14, color: 'var(--r-accent)', opacity: 0.7 }}>checklist</span>
-      )}
 
       {/* Barra ativa à esquerda */}
       {isCurrent && (

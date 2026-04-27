@@ -6,7 +6,7 @@
 //   }
 // Resultado final é o `value` mais frequente nas respostas.
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../../lib/supabase'
 import type { Guide, GuideSection } from '../../types'
 
@@ -38,7 +38,9 @@ export default function QuizFullscreen({ section, guide, userId, onComplete }: P
   const [step, setStep] = useState(0)
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [result, setResult] = useState<QuizResult | null>(null)
+  const [resultKey, setResultKey] = useState<string | null>(null)
   const [savedResult, setSavedResult] = useState<QuizResult | null>(null)
+  const [savedResultKey, setSavedResultKey] = useState<string | null>(null)
 
   // Tenta buscar resposta anterior
   useEffect(() => {
@@ -56,6 +58,7 @@ export default function QuizFullscreen({ section, guide, userId, onComplete }: P
       const profile = existing.result as string | null
       if (profile && data.results[profile]) {
         setSavedResult(data.results[profile])
+        setSavedResultKey(profile)
       }
     }
     load()
@@ -91,7 +94,9 @@ export default function QuizFullscreen({ section, guide, userId, onComplete }: P
       const winner = Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0]
       const r = data!.results[winner]
       setResult(r)
+      setResultKey(winner)
       setSavedResult(r)
+      setSavedResultKey(winner)
 
       // Salva no DB
       supabase.from('guide_quiz_responses').insert({
@@ -111,12 +116,17 @@ export default function QuizFullscreen({ section, guide, userId, onComplete }: P
   }
 
   // ── Card antes de iniciar ─────────────────────────────────────────────
+  const profileEmoji: Record<string, string> = { a: '📊', b: '🌸', c: '💛', d: '⚡' }
+
   const cardContent = savedResult ? (
-    <div style={resultPreviewCard}>
-      <div style={{ fontSize: 12, color: 'var(--r-accent)', letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 700, marginBottom: 8 }}>
-        Sua jornada
+    <div style={{ ...resultPreviewCard, background: 'linear-gradient(135deg, rgba(183,159,255,0.1), rgba(255,193,255,0.06))', border: '1px solid color-mix(in srgb, var(--r-accent) 30%, transparent)' }}>
+      <div style={{ fontSize: 12, color: 'var(--r-accent)', letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 700, marginBottom: 12 }}>
+        ✨ Seu perfil descoberto
       </div>
-      <h3 style={{ fontFamily: 'Manrope, system-ui, sans-serif', fontSize: 24, fontWeight: 800, margin: '0 0 8px', color: 'var(--r-text-strong)', letterSpacing: '-0.02em' }}>
+      <div style={{ fontSize: 36, marginBottom: 8 }}>
+        {profileEmoji[savedResultKey ?? ''] ?? '💜'}
+      </div>
+      <h3 style={{ fontFamily: 'Fraunces, serif', fontSize: 26, fontWeight: 700, margin: '0 0 10px', color: 'var(--r-text-strong)', letterSpacing: '-0.02em' }}>
         {savedResult.title}
       </h3>
       <p style={{ fontSize: 14, color: 'var(--r-text-muted)', lineHeight: 1.6, margin: '0 0 20px' }}>
@@ -128,15 +138,15 @@ export default function QuizFullscreen({ section, guide, userId, onComplete }: P
     </div>
   ) : (
     <div style={resultPreviewCard}>
-      <span className="material-symbols-outlined" style={{ fontSize: 36, color: 'var(--r-accent)' }}>quiz</span>
-      <h3 style={{ fontFamily: 'Manrope, system-ui, sans-serif', fontSize: 22, fontWeight: 800, margin: '12px 0 8px', color: 'var(--r-text-strong)', letterSpacing: '-0.02em' }}>
-        Descubra seu perfil
+      <span className="material-symbols-outlined" style={{ fontSize: 36, color: 'var(--r-accent)' }}>auto_awesome</span>
+      <h3 style={{ fontFamily: 'Fraunces, serif', fontSize: 24, fontWeight: 700, margin: '12px 0 8px', color: 'var(--r-text-strong)', letterSpacing: '-0.02em' }}>
+        Qual é o seu estilo de cuidar?
       </h3>
       <p style={{ fontSize: 14, color: 'var(--r-text-muted)', lineHeight: 1.6, margin: '0 0 20px' }}>
-        {data.questions.length} perguntas rápidas pra recomendar as seções mais úteis pra você.
+        {data.questions.length} perguntas rápidas. No final, você descobre seu perfil — e recebe recomendações personalizadas pra essa fase.
       </p>
       <button onClick={startQuiz} style={btnPrimary}>
-        Iniciar quiz
+        Descobrir meu perfil
         <span className="material-symbols-outlined" style={{ fontSize: 18 }}>arrow_forward</span>
       </button>
     </div>
@@ -179,7 +189,12 @@ export default function QuizFullscreen({ section, guide, userId, onComplete }: P
               onAnswer={(v) => answerQuestion(data.questions[step].id, v)}
             />
           ) : (
-            <ResultCard result={result} onClose={() => { close(); onComplete() }} />
+            <ResultCard
+              result={result}
+              resultKey={resultKey ?? ''}
+              sectionId={section.id}
+              onClose={() => { close(); onComplete() }}
+            />
           )}
         </div>
       )}
@@ -245,23 +260,68 @@ function QuestionCard({ question, onAnswer }: { question: QuizQuestion; onAnswer
   )
 }
 
-function ResultCard({ result, onClose }: { result: QuizResult; onClose: () => void }) {
+const PROFILE_EMOJI: Record<string, string> = { a: '📊', b: '🌸', c: '💛', d: '⚡' }
+const PROFILE_COMFORT: Record<string, string> = {
+  a: 'Você transforma incerteza em clareza. Isso é um dom raro.',
+  b: 'Confiar no instinto é sabedoria que nenhum livro consegue ensinar.',
+  c: 'Você se preocupa porque ama muito. E isso é lindo de ver.',
+  d: 'Você faz acontecer. Seu bebê tem muita sorte por isso.',
+}
+
+function ResultCard({ result, resultKey, sectionId, onClose }: {
+  result: QuizResult
+  resultKey: string
+  sectionId: string
+  onClose: () => void
+}) {
+  const [pct, setPct] = useState<number | null>(null)
+  const [totalCount, setTotalCount] = useState(0)
+  const didFetch = useRef(false)
+
+  useEffect(() => {
+    if (didFetch.current) return
+    didFetch.current = true
+    async function fetchStats() {
+      const { data } = await supabase
+        .from('guide_quiz_responses')
+        .select('result')
+        .eq('section_id', sectionId)
+      if (!data || data.length === 0) return
+      const total = data.length
+      const same = data.filter(r => r.result === resultKey).length
+      setTotalCount(total)
+      setPct(Math.round((same / total) * 100))
+    }
+    fetchStats()
+  }, [sectionId, resultKey])
+
+  const emoji = PROFILE_EMOJI[resultKey] ?? '💜'
+  const comfort = PROFILE_COMFORT[resultKey] ?? result.description
+
   return (
     <div style={{
       maxWidth: 540, width: '90%', textAlign: 'center',
-      animation: 'quiz-slide-in 0.5s ease',
+      animation: 'quiz-result-in 0.6s cubic-bezier(0.34, 1.4, 0.64, 1) both',
     }}>
-      <div style={{ fontSize: 13, color: 'var(--r-accent)', letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 700, marginBottom: 16 }}>
-        Sua jornada é
+      {/* Emoji grande */}
+      <div style={{
+        fontSize: 64, lineHeight: 1, marginBottom: 16,
+        animation: 'quiz-emoji-pop 0.5s 0.2s cubic-bezier(0.34, 1.8, 0.64, 1) both',
+      }}>
+        {emoji}
       </div>
+
+      <div style={{ fontSize: 12, color: 'var(--r-accent)', letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 700, marginBottom: 12 }}>
+        Você é
+      </div>
+
       <h2 style={{
         fontFamily: 'Fraunces, serif',
-        fontSize: 'clamp(2.4rem, 6vw, 4.2rem)',
+        fontSize: 'clamp(2.6rem, 6vw, 4.4rem)',
         fontWeight: 800,
         fontVariationSettings: '"opsz" 144, "SOFT" 50',
         letterSpacing: '-0.03em',
         lineHeight: 1.05,
-        color: 'var(--r-text)',
         background: 'linear-gradient(135deg, var(--r-accent), var(--r-accent-glow))',
         WebkitBackgroundClip: 'text',
         WebkitTextFillColor: 'transparent',
@@ -270,13 +330,57 @@ function ResultCard({ result, onClose }: { result: QuizResult; onClose: () => vo
       }}>
         {result.title}
       </h2>
-      <p style={{ fontSize: 16, color: 'var(--r-text-muted)', lineHeight: 1.65, marginBottom: 32 }}>
+
+      {/* Stat de comunidade */}
+      {pct !== null && totalCount >= 5 && (
+        <div style={{
+          display: 'inline-block',
+          padding: '8px 18px',
+          borderRadius: 999,
+          background: 'color-mix(in srgb, var(--r-accent) 12%, transparent)',
+          border: '1px solid color-mix(in srgb, var(--r-accent) 28%, transparent)',
+          fontSize: 13,
+          fontWeight: 700,
+          color: 'var(--r-accent)',
+          marginBottom: 20,
+          animation: 'quiz-stat-in 0.4s 0.5s ease both',
+        }}>
+          Como {pct}% das mães que responderam este quiz 💜
+        </div>
+      )}
+
+      <p style={{ fontSize: 15, color: 'var(--r-text)', lineHeight: 1.7, marginBottom: 12 }}>
         {result.description}
       </p>
+
+      <p style={{
+        fontSize: 14, color: 'var(--r-accent)',
+        fontStyle: 'italic', lineHeight: 1.6,
+        marginBottom: 36,
+        padding: '0 12px',
+      }}>
+        {comfort}
+      </p>
+
       <button onClick={onClose} style={btnPrimary}>
         Continuar a leitura
         <span className="material-symbols-outlined" style={{ fontSize: 18 }}>arrow_forward</span>
       </button>
+
+      <style>{`
+        @keyframes quiz-result-in {
+          from { opacity: 0; transform: translateY(24px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes quiz-emoji-pop {
+          from { opacity: 0; transform: scale(0.3); }
+          to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes quiz-stat-in {
+          from { opacity: 0; transform: scale(0.9); }
+          to { opacity: 1; transform: scale(1); }
+        }
+      `}</style>
     </div>
   )
 }

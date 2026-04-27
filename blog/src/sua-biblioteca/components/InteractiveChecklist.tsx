@@ -17,6 +17,7 @@ export interface ChecklistItem {
   id: string
   text: string
   required?: boolean
+  group?: string
 }
 
 interface Props {
@@ -189,91 +190,8 @@ export default function InteractiveChecklist({
         </div>
       )}
 
-      {/* Items */}
-      <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-        {items.map(item => {
-          const isChecked = checked.has(item.id)
-          return (
-            <li key={item.id} style={{ marginBottom: isInline ? 6 : 8 }}>
-              <button
-                onClick={() => toggle(item.id)}
-                disabled={loading}
-                style={{
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  gap: 12,
-                  width: '100%',
-                  padding: isInline ? '10px 12px' : '12px 16px',
-                  background: isChecked
-                    ? 'color-mix(in srgb, var(--r-accent) 8%, transparent)'
-                    : 'var(--r-surface)',
-                  border: `1px solid ${isChecked
-                    ? 'color-mix(in srgb, var(--r-accent) 35%, transparent)'
-                    : 'var(--r-border)'}`,
-                  borderRadius: 10,
-                  cursor: loading ? 'wait' : 'pointer',
-                  textAlign: 'left',
-                  fontFamily: 'inherit',
-                  transition: 'all 0.2s',
-                  minHeight: 44,
-                  opacity: loading ? 0.5 : 1,
-                }}
-                onMouseEnter={e => {
-                  if (!isChecked && !loading) {
-                    e.currentTarget.style.background = 'var(--r-surface-strong)'
-                  }
-                }}
-                onMouseLeave={e => {
-                  if (!isChecked) e.currentTarget.style.background = 'var(--r-surface)'
-                }}
-              >
-                {/* Checkbox visual com path drawing animation */}
-                <span
-                  className="material-symbols-outlined"
-                  style={{
-                    fontSize: 22,
-                    color: isChecked ? 'var(--r-accent)' : 'var(--r-text-subtle)',
-                    flex: '0 0 auto',
-                    transition: 'color 0.2s, transform 0.15s',
-                    transform: isChecked ? 'scale(1.05)' : 'scale(1)',
-                    fontVariationSettings: isChecked ? '"FILL" 1' : '"FILL" 0',
-                  }}
-                >
-                  {isChecked ? 'check_circle' : 'radio_button_unchecked'}
-                </span>
-                <span style={{
-                  flex: 1,
-                  fontSize: isInline ? 14 : 15,
-                  color: isChecked ? 'var(--r-text-muted)' : 'var(--r-text)',
-                  textDecoration: isChecked ? 'line-through' : 'none',
-                  textDecorationColor: isChecked ? 'var(--r-text-subtle)' : 'transparent',
-                  lineHeight: 1.5,
-                  transition: 'color 0.2s, text-decoration-color 0.2s',
-                }}>
-                  {item.text}
-                </span>
-                {item.required && (
-                  <span style={{
-                    fontSize: 10,
-                    fontWeight: 700,
-                    letterSpacing: '0.08em',
-                    color: 'var(--r-accent)',
-                    background: 'color-mix(in srgb, var(--r-accent) 12%, transparent)',
-                    padding: '3px 8px',
-                    borderRadius: 999,
-                    textTransform: 'uppercase',
-                    flex: '0 0 auto',
-                    alignSelf: 'center',
-                    fontFamily: 'Manrope, system-ui, sans-serif',
-                  }}>
-                    Essencial
-                  </span>
-                )}
-              </button>
-            </li>
-          )
-        })}
-      </ul>
+      {/* Items — com suporte a grupos quando items têm campo `group` */}
+      {renderItems(items, checked, loading, toggle, isInline)}
 
       {/* Toast efêmero "Checklist completo" */}
       {completionToast && (
@@ -316,5 +234,139 @@ export default function InteractiveChecklist({
         </div>
       )}
     </div>
+  )
+}
+
+// ── Helpers de renderização ────────────────────────────────────────────────
+
+function ChecklistItemRow({
+  item, isChecked, loading, onToggle, isInline,
+}: {
+  item: ChecklistItem
+  isChecked: boolean
+  loading: boolean
+  onToggle: () => void
+  isInline: boolean
+}) {
+  return (
+    <li style={{ marginBottom: isInline ? 6 : 8 }}>
+      <button
+        onClick={onToggle}
+        disabled={loading}
+        style={{
+          display: 'flex', alignItems: 'flex-start', gap: 12,
+          width: '100%', padding: isInline ? '10px 12px' : '12px 16px',
+          background: isChecked ? 'color-mix(in srgb, var(--r-accent) 8%, transparent)' : 'var(--r-surface)',
+          border: `1px solid ${isChecked ? 'color-mix(in srgb, var(--r-accent) 35%, transparent)' : 'var(--r-border)'}`,
+          borderRadius: 10, cursor: loading ? 'wait' : 'pointer',
+          textAlign: 'left', fontFamily: 'inherit',
+          transition: 'all 0.2s', minHeight: 44, opacity: loading ? 0.5 : 1,
+        }}
+        onMouseEnter={e => { if (!isChecked && !loading) e.currentTarget.style.background = 'var(--r-surface-strong)' }}
+        onMouseLeave={e => { if (!isChecked) e.currentTarget.style.background = 'var(--r-surface)' }}
+      >
+        <span className="material-symbols-outlined" style={{
+          fontSize: 22, color: isChecked ? 'var(--r-accent)' : 'var(--r-text-subtle)',
+          flex: '0 0 auto', transition: 'color 0.2s, transform 0.15s',
+          transform: isChecked ? 'scale(1.05)' : 'scale(1)',
+          fontVariationSettings: isChecked ? '"FILL" 1' : '"FILL" 0',
+        }}>
+          {isChecked ? 'check_circle' : 'radio_button_unchecked'}
+        </span>
+        <span style={{
+          flex: 1, fontSize: isInline ? 14 : 15,
+          color: isChecked ? 'var(--r-text-muted)' : 'var(--r-text)',
+          textDecoration: isChecked ? 'line-through' : 'none',
+          textDecorationColor: isChecked ? 'var(--r-text-subtle)' : 'transparent',
+          lineHeight: 1.5, transition: 'color 0.2s, text-decoration-color 0.2s',
+        }}>
+          {item.text}
+        </span>
+        {item.required && (
+          <span style={{
+            fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', color: 'var(--r-accent)',
+            background: 'color-mix(in srgb, var(--r-accent) 12%, transparent)',
+            padding: '3px 8px', borderRadius: 999, textTransform: 'uppercase',
+            flex: '0 0 auto', alignSelf: 'center', fontFamily: 'Manrope, system-ui, sans-serif',
+          }}>Essencial</span>
+        )}
+      </button>
+    </li>
+  )
+}
+
+function renderItems(
+  items: ChecklistItem[],
+  checked: Set<string>,
+  loading: boolean,
+  toggle: (id: string) => void,
+  isInline: boolean,
+): React.ReactNode {
+  const hasGroups = items.some(i => i.group)
+
+  if (!hasGroups) {
+    return (
+      <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+        {items.map(item => (
+          <ChecklistItemRow
+            key={item.id} item={item}
+            isChecked={checked.has(item.id)} loading={loading}
+            onToggle={() => toggle(item.id)} isInline={isInline}
+          />
+        ))}
+      </ul>
+    )
+  }
+
+  // Agrupa mantendo ordem de inserção
+  const groups: Array<{ name: string; items: ChecklistItem[] }> = []
+  const groupMap = new Map<string, ChecklistItem[]>()
+  for (const item of items) {
+    const g = item.group ?? ''
+    if (!groupMap.has(g)) {
+      groupMap.set(g, [])
+      groups.push({ name: g, items: groupMap.get(g)! })
+    }
+    groupMap.get(g)!.push(item)
+  }
+
+  return (
+    <>
+      {groups.map((group, gi) => {
+        const groupDone = group.items.filter(i => checked.has(i.id)).length
+        const groupTotal = group.items.length
+        return (
+          <div key={group.name} style={{ marginBottom: gi < groups.length - 1 ? 24 : 0 }}>
+            {/* Cabeçalho do grupo */}
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              padding: '8px 4px', marginBottom: 8,
+              borderBottom: '1px solid var(--r-border)',
+            }}>
+              <span style={{
+                fontFamily: 'Manrope, system-ui, sans-serif',
+                fontSize: 11, fontWeight: 800,
+                letterSpacing: '0.08em', textTransform: 'uppercase',
+                color: 'var(--r-accent)',
+              }}>
+                {group.name}
+              </span>
+              <span style={{ fontSize: 11, color: 'var(--r-text-muted)', fontWeight: 600 }}>
+                {groupDone}/{groupTotal}
+              </span>
+            </div>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+              {group.items.map(item => (
+                <ChecklistItemRow
+                  key={item.id} item={item}
+                  isChecked={checked.has(item.id)} loading={loading}
+                  onToggle={() => toggle(item.id)} isInline={isInline}
+                />
+              ))}
+            </ul>
+          </div>
+        )
+      })}
+    </>
   )
 }
