@@ -1,0 +1,279 @@
+/* ─────────────────────────────────────────────────────────────────────────
+ * Sua Biblioteca Yaya — tipografia editorial premium
+ * Carrega dentro do leitor; não polui o resto do blog.
+ * ───────────────────────────────────────────────────────────────────────── */
+
+.reader-root {
+  --r-bg: #0d0a27;
+  --r-surface: rgba(183, 159, 255, 0.04);
+  --r-text: rgba(231, 226, 255, 0.92);
+  --r-text-muted: rgba(231, 226, 255, 0.55);
+  --r-text-subtle: rgba(231, 226, 255, 0.4);
+  --r-accent: #b79fff;
+  --r-accent-glow: #d4c1ff;
+  --r-border: rgba(183, 159, 255, 0.15);
+  --r-serif: 'Fraunces', Georgia, serif;
+  --r-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+  background: var(--r-bg);
+  color: var(--r-text);
+  font-family: var(--r-sans);
+  min-height: 100vh;
+}
+
+/* ── Tipografia geral do conteúdo ──────────────────────────────────────── */
+.reader-content {
+  font-family: var(--r-sans);
+  font-size: 17px;
+  line-height: 1.75;
+  color: var(--r-text);
+  max-width: 65ch;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .reader-content { font-size: 18px; }
+}
+
+.reader-content > * + * { margin-top: 1.25em; }
+
+.reader-content h2 {
+  font-family: var(--r-serif);
+  font-size: 1.85em;
+  font-weight: 700;
+  font-variation-settings: 'opsz' 32, 'SOFT' 30;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: rgb(231, 226, 255);
+  margin-top: 2.5em;
+  margin-bottom: 0.6em;
+  scroll-margin-top: 80px;
+}
+
+.reader-content h3 {
+  font-family: var(--r-serif);
+  font-size: 1.35em;
+  font-weight: 600;
+  font-variation-settings: 'opsz' 24;
+  color: rgb(231, 226, 255);
+  margin-top: 2em;
+  margin-bottom: 0.4em;
+  scroll-margin-top: 80px;
+}
+
+.reader-content p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+.reader-content strong {
+  color: rgb(231, 226, 255);
+  font-weight: 700;
+}
+
+.reader-content em { color: rgba(231, 226, 255, 0.95); }
+
+.reader-content a {
+  color: var(--r-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: rgba(183, 159, 255, 0.4);
+  transition: color 0.15s, text-decoration-color 0.15s;
+}
+.reader-content a:hover {
+  color: var(--r-accent-glow);
+  text-decoration-color: var(--r-accent-glow);
+}
+
+.reader-content ul, .reader-content ol {
+  padding-left: 1.5em;
+  margin: 1.25em 0;
+}
+.reader-content ul { list-style: disc; }
+.reader-content ol { list-style: decimal; }
+.reader-content li { margin-bottom: 0.35em; }
+.reader-content li::marker { color: var(--r-accent); }
+
+.reader-content hr {
+  border: none;
+  border-top: 1px solid var(--r-border);
+  margin: 2.5em 0;
+}
+
+.reader-content code {
+  background: rgba(183, 159, 255, 0.1);
+  padding: 0.1em 0.4em;
+  border-radius: 4px;
+  font-size: 0.88em;
+  color: var(--r-accent);
+}
+
+.reader-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  margin: 1.75em 0;
+  border: 1px solid var(--r-border);
+}
+
+/* ── Drop cap no primeiro parágrafo ────────────────────────────────────── */
+@media (min-width: 600px) {
+  .reader-content p.drop-cap::first-letter {
+    font-family: var(--r-serif);
+    font-size: 4.5em;
+    font-weight: 800;
+    font-variation-settings: 'opsz' 144, 'SOFT' 0;
+    line-height: 0.85;
+    float: left;
+    margin: 0.05em 0.12em 0 -0.04em;
+    color: var(--r-accent);
+    background: linear-gradient(135deg, var(--r-accent) 0%, var(--r-accent-glow) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+/* ── Pull quote ────────────────────────────────────────────────────────── */
+.reader-content .pull-quote {
+  font-family: var(--r-serif);
+  font-style: italic;
+  font-size: 1.45em;
+  font-weight: 500;
+  font-variation-settings: 'opsz' 72, 'SOFT' 50;
+  line-height: 1.4;
+  color: rgb(231, 226, 255);
+  border: none;
+  padding: 1.5em 0;
+  margin: 2em 0;
+  position: relative;
+  text-align: center;
+  letter-spacing: -0.01em;
+}
+.reader-content .pull-quote::before {
+  content: '"';
+  font-size: 4em;
+  color: var(--r-accent);
+  position: absolute;
+  top: -0.1em;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0.4;
+  line-height: 1;
+  font-family: var(--r-serif);
+}
+
+/* ── Blockquote padrão ─────────────────────────────────────────────────── */
+.reader-content blockquote {
+  border-left: 3px solid var(--r-accent);
+  padding-left: 1.25em;
+  color: rgba(231, 226, 255, 0.78);
+  font-style: italic;
+  margin: 1.75em 0;
+}
+
+/* ── Caixas de destaque (callouts) ─────────────────────────────────────── */
+.reader-content .callout {
+  margin: 2em 0;
+  padding: 1.5em 1.5em 1.5em 1.75em;
+  border-radius: 14px;
+  border: 1px solid var(--r-border);
+  background: var(--r-surface);
+  position: relative;
+  overflow: hidden;
+}
+.reader-content .callout::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+}
+.reader-content .callout .callout-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  margin-bottom: 0.6em;
+}
+.reader-content .callout .callout-icon {
+  font-size: 22px;
+  line-height: 1;
+}
+.reader-content .callout .callout-label {
+  font-family: var(--r-sans);
+  font-size: 0.78em;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.reader-content .callout .callout-body > * { margin: 0 0 0.6em; }
+.reader-content .callout .callout-body > *:last-child { margin-bottom: 0; }
+.reader-content .callout .callout-body { font-size: 0.96em; }
+
+/* Variants — gradiente lateral por tipo */
+.reader-content .callout-ciencia::before { background: linear-gradient(180deg, #b79fff 0%, #d4c1ff 100%); }
+.reader-content .callout-ciencia .callout-icon,
+.reader-content .callout-ciencia .callout-label { color: #b79fff; }
+
+.reader-content .callout-mito::before { background: linear-gradient(180deg, #ffc857 0%, #ffd97a 100%); }
+.reader-content .callout-mito .callout-icon,
+.reader-content .callout-mito .callout-label { color: #ffc857; }
+
+.reader-content .callout-alerta::before { background: linear-gradient(180deg, #ff7a90 0%, #ff9bb0 100%); }
+.reader-content .callout-alerta .callout-icon,
+.reader-content .callout-alerta .callout-label { color: #ff7a90; }
+
+.reader-content .callout-yaya::before { background: linear-gradient(180deg, #70c4ff 0%, #a4d8ff 100%); }
+.reader-content .callout-yaya .callout-icon,
+.reader-content .callout-yaya .callout-label { color: #70c4ff; }
+
+/* ── Highlights aplicados ao texto ─────────────────────────────────────── */
+.reader-content .highlight-yellow { background: rgba(255, 200, 87, 0.28); padding: 0 0.05em; border-radius: 2px; }
+.reader-content .highlight-pink   { background: rgba(255, 122, 144, 0.28); padding: 0 0.05em; border-radius: 2px; }
+.reader-content .highlight-purple { background: rgba(183, 159, 255, 0.32); padding: 0 0.05em; border-radius: 2px; }
+
+/* ── Reading mode (tudo escondido exceto conteúdo) ─────────────────────── */
+.reader-root.reading-mode .reader-topbar,
+.reader-root.reading-mode .reader-sidebar,
+.reader-root.reading-mode .reader-fab {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s;
+}
+.reader-root.reading-mode .reader-main {
+  margin-left: 0 !important;
+}
+
+/* ── Print ─────────────────────────────────────────────────────────────── */
+@media print {
+  .reader-root { background: white !important; color: #1a1334 !important; }
+  .reader-topbar, .reader-sidebar, .reader-fab, .reader-actions { display: none !important; }
+  .reader-content { max-width: none; font-size: 12pt; color: #1a1334; }
+  .reader-content h2, .reader-content h3 { color: #1a1334; page-break-after: avoid; }
+  .reader-content .callout {
+    border: 1px solid #ccc;
+    background: #faf8ff;
+    page-break-inside: avoid;
+  }
+  .reader-content .callout-icon { display: none; }
+  .reader-content .pull-quote::before { display: none; }
+  .reader-content a { color: #5a3eb3; text-decoration: underline; }
+  .reader-content a::after {
+    content: ' (' attr(href) ')';
+    font-size: 0.85em;
+    color: #666;
+  }
+  .reader-content .drop-cap::first-letter {
+    color: #5a3eb3 !important;
+    -webkit-text-fill-color: #5a3eb3 !important;
+    background: none !important;
+  }
+}
+
+/* ── Reduced motion ────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

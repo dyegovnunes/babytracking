@@ -1,0 +1,80 @@
+---
+// Astro shell pra SPA do leitor da Sua Biblioteca Yaya.
+// Toda a lógica é client:only via React (GuideReaderApp).
+// Pre-renderiza uma página por slug em build time.
+
+import GuideReaderApp from '../../../sua-biblioteca/GuideReaderApp'
+import { supabase } from '../../../lib/supabase'
+
+export async function getStaticPaths() {
+  // Lê TODOS os guides (incluindo draft) — gate de acesso é client-side via auth
+  const { data } = await supabase.from('guides').select('slug, title')
+  return (data ?? []).map((g) => ({
+    params: { slug: g.slug },
+    props: { title: g.title },
+  }))
+}
+
+const { slug } = Astro.params
+const { title } = Astro.props as { title: string }
+---
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>{title} — Sua Biblioteca Yaya</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+
+    <!-- Material Symbols Outlined (ícones) -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+      rel="stylesheet"
+    />
+
+    <!-- Tipografia editorial: Fraunces (serif premium) + Plus Jakarta Sans (corpo) -->
+    <!-- font-display: swap garante que o texto aparece imediatamente; serif faz "pop" quando carrega -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,400..800,0..100&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style is:global>
+      *, *::before, *::after { box-sizing: border-box; }
+      html, body {
+        margin: 0;
+        padding: 0;
+        background: #0d0a27;
+        color: #e7e2ff;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+      .material-symbols-outlined {
+        font-family: 'Material Symbols Outlined';
+        font-weight: normal;
+        font-style: normal;
+        line-height: 1;
+        text-transform: none;
+        display: inline-block;
+        white-space: nowrap;
+        direction: ltr;
+        -webkit-font-smoothing: antialiased;
+      }
+      ::-webkit-scrollbar { width: 6px; height: 6px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: rgba(183,159,255,0.2); border-radius: 3px; }
+      ::-webkit-scrollbar-thumb:hover { background: rgba(183,159,255,0.35); }
+      @media print {
+        ::-webkit-scrollbar { display: none; }
+      }
+    </style>
+  </head>
+  <body data-guide-slug={slug}>
+    <GuideReaderApp client:only="react" guideSlug={slug} />
+  </body>
+</html>

@@ -4,7 +4,8 @@
   "installCommand": "npm install",
   "framework": "astro",
   "rewrites": [
-    { "source": "/admin/:path*", "destination": "/admin" }
+    { "source": "/admin/:path*", "destination": "/admin" },
+    { "source": "/sua-biblioteca/:slug/ler/:rest*", "destination": "/sua-biblioteca/:slug/ler" }
   ]
 }
 
