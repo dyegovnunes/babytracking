@@ -1,9 +1,8 @@
 // GuideSidebar — índice hierárquico do guia.
 // Desktop: sticky 320px à esquerda. Mobile: drawer slide-in com backdrop.
-// Cada seção mostra título + tempo de leitura + indicador de progresso
-// (anel preenchido se concluída, ponto se não-iniciada).
+// Suporta swipe pra esquerda (touch) pra fechar — gesto natural de drawer.
 
-import { useMemo } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import type { Guide, GuideSection, GuideProgress } from '../../types'
 
 interface Props {
@@ -15,6 +14,9 @@ interface Props {
   open: boolean
   onClose: () => void
 }
+
+const SWIPE_CLOSE_THRESHOLD = 60   // px de drag pra esquerda dispara fechar
+const SWIPE_VELOCITY_THRESHOLD = 0.4 // px/ms — flick rápido também fecha
 
 export default function GuideSidebar({
   guide, sections, currentSectionId, progressMap, onSelectSection, open, onClose,
@@ -29,24 +31,79 @@ export default function GuideSidebar({
   const completed = Object.values(progressMap).filter(p => p.completed).length
   const progressPct = totalReadable > 0 ? Math.round(completed / totalReadable * 100) : 0
 
+  // ── Swipe-to-close (mobile) ─────────────────────────────────────────
+  const touchStart = useRef<{ x: number; y: number; t: number } | null>(null)
+  const [dragOffset, setDragOffset] = useState(0)
+
+  function onTouchStart(e: React.TouchEvent<HTMLElement>) {
+    const t = e.touches[0]
+    touchStart.current = { x: t.clientX, y: t.clientY, t: Date.now() }
+    setDragOffset(0)
+  }
+  function onTouchMove(e: React.TouchEvent<HTMLElement>) {
+    if (!touchStart.current) return
+    const t = e.touches[0]
+    const dx = t.clientX - touchStart.current.x
+    const dy = t.clientY - touchStart.current.y
+    // Só captura como swipe horizontal se o movimento é mais horizontal que vertical
+    // (senão atrapalha scroll vertical da lista)
+    if (Math.abs(dy) > Math.abs(dx) * 1.2) return
+    if (dx < 0) {
+      // Drag pra esquerda: aplica offset visual em real-time (até -100% da largura)
+      setDragOffset(Math.max(dx, -360))
+    } else {
+      setDragOffset(0)
+    }
+  }
+  function onTouchEnd() {
+    if (!touchStart.current) return
+    const elapsed = Date.now() - touchStart.current.t
+    const velocity = Math.abs(dragOffset) / Math.max(elapsed, 1)
+    const shouldClose =
+      dragOffset < -SWIPE_CLOSE_THRESHOLD ||
+      (dragOffset < -20 && velocity > SWIPE_VELOCITY_THRESHOLD)
+    setDragOffset(0)
+    touchStart.current = null
+    if (shouldClose) onClose()
+  }
+
+  // Calcula transform com base em open + drag em andamento
+  const transformValue = open
+    ? dragOffset !== 0
+      ? `translateX(${dragOffset}px)`
+      : 'translateX(0)'
+    : 'translateX(-100%)'
+
+  // Backdrop opacidade segue o drag (feedback visual durante o gesto)
+  const backdropOpacity = open
+    ? dragOffset < 0
+      ? Math.max(0, 1 - Math.abs(dragOffset) / 320)
+      : 1
+    : 0
+
   return (
     <>
-      {/* Backdrop mobile */}
+      {/* Backdrop mobile — opacidade reativa ao swipe */}
       {open && (
         <div
           onClick={onClose}
           className="reader-sidebar-backdrop"
           style={{
             position: 'fixed', inset: 0,
-            background: 'rgba(0,0,0,0.45)',
-            backdropFilter: 'blur(4px)',
+            background: `rgba(0,0,0,${0.45 * backdropOpacity})`,
+            backdropFilter: `blur(${4 * backdropOpacity}px)`,
+            WebkitBackdropFilter: `blur(${4 * backdropOpacity}px)`,
             zIndex: 40,
+            transition: dragOffset === 0 ? 'background 0.2s, backdrop-filter 0.2s' : 'none',
           }}
         />
       )}
 
       <aside
         className="reader-sidebar"
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
         style={{
           position: 'fixed',
           top: 0, bottom: 0, left: 0,
@@ -59,9 +116,14 @@ export default function GuideSidebar({
           padding: 'calc(env(safe-area-inset-top, 0px) + 64px) 0 calc(env(safe-area-inset-bottom, 0px) + 24px)',
           overflowY: 'auto',
           overscrollBehavior: 'contain',
-          transform: open ? 'translateX(0)' : 'translateX(-100%)',
-          transition: 'transform 0.25s ease, opacity 0.4s',
+          transform: transformValue,
+          // Sem transition durante drag (segue o dedo); transition rápida
+          // quando o dedo sai (snap back ou close)
+          transition: dragOffset === 0
+            ? 'transform 0.25s ease, opacity 0.4s'
+            : 'none',
           zIndex: 50,
+          touchAction: 'pan-y',         /* permite scroll vertical mas captura horizontal */
         }}
       >
         {/* Header com info do guia */}

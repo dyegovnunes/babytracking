@@ -94,7 +94,8 @@ export default function GuideTopbar({
         paddingTop: 'env(safe-area-inset-top, 0px)',
         gap: 4,
         transition: 'opacity 0.4s',
-        overflow: 'hidden',         /* nunca deixa filho estourar a viewport */
+        // overflow: visible (não 'hidden') pra dropdown do menu poder
+        // sair do header. A contenção horizontal é feita no body/reader-root.
         maxWidth: '100vw',
         width: '100%',
       }}
