@@ -13,14 +13,14 @@ export default function ChapterOpener({ section, onContinue }: Props) {
   return (
     <div style={{ maxWidth: 900, margin: '0 auto' }}>
       {section.cover_image_url && (
-        <div style={{
+        <div className="chapter-cover" style={{
           position: 'relative',
           width: '100%',
           aspectRatio: '21/9',
           maxHeight: '60vh',
           borderRadius: 20,
           overflow: 'hidden',
-          marginBottom: 48,
+          marginBottom: 'clamp(28px, 6vw, 48px)',
           border: '1px solid var(--r-border)',
         }}>
           <img
@@ -35,23 +35,28 @@ export default function ChapterOpener({ section, onContinue }: Props) {
         </div>
       )}
 
-      <div style={{ textAlign: 'center', marginBottom: 48 }}>
+      <div style={{
+        textAlign: 'center',
+        marginBottom: 'clamp(28px, 6vw, 48px)',
+      }}>
         <div style={{
-          fontSize: 12, color: 'var(--r-accent)',
+          fontSize: 11, color: 'var(--r-accent)',
           letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 700,
-          marginBottom: 16,
+          marginBottom: 14,
+          fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif',
         }}>
           {section.estimated_minutes ? `${section.estimated_minutes} min de leitura` : 'Parte'}
         </div>
         <h1 style={{
           fontFamily: 'Fraunces, serif',
-          fontSize: 'clamp(2.4rem, 6vw, 4.2rem)',
+          fontSize: 'clamp(2.1rem, 8vw, 4.2rem)',
           fontWeight: 800,
           fontVariationSettings: '"opsz" 144, "SOFT" 50',
           letterSpacing: '-0.03em',
           lineHeight: 1.05,
-          color: 'var(--r-text)',
+          color: 'var(--r-text-strong)',
           margin: 0,
+          textWrap: 'balance' as never,
         }}>
           {section.title}
         </h1>

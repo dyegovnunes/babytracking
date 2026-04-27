@@ -406,6 +406,59 @@ html.theme-dark .reader-root {
 .reader-content .highlight-pink   { background: rgba(255, 122, 144, 0.32); padding: 0.05em; border-radius: 3px; }
 .reader-content .highlight-purple { background: rgba(183, 159, 255, 0.36); padding: 0.05em; border-radius: 3px; }
 
+/* ─────────────────────────────────────────────────────────────────────────
+ * Responsividade mobile
+ * ───────────────────────────────────────────────────────────────────────── */
+
+/* Topbar: em mobile esconde "Sua Biblioteca / Título do guia" — fica só
+   o título da seção atual centralizado entre os 2 botões. O nome do guia
+   já está visível na sidebar drawer. */
+@media (max-width: 767px) {
+  .topbar-guide-title { display: none !important; }
+  .reader-main {
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+  }
+}
+
+/* Telas muito pequenas (iPhone SE 375px e abaixo): laterais ainda menores */
+@media (max-width: 379px) {
+  .reader-main {
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+  }
+}
+
+/* Tablets/desktop pequenos */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .reader-main {
+    padding-left: 32px !important;
+    padding-right: 32px !important;
+  }
+}
+
+/* ChapterOpener cover: 21:9 fica baixinho demais em mobile (87px de altura
+   pra 375px de width), perde impacto. Usa 16:10 mobile pra dar presença. */
+@media (max-width: 639px) {
+  .chapter-cover {
+    aspect-ratio: 16 / 10 !important;
+    border-radius: 14px !important;
+  }
+}
+
+/* Nav buttons (prev/next) viram stack vertical em telas estreitas
+   pra os títulos não serem truncados em ellipsis */
+@media (max-width: 599px) {
+  .reader-actions {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+  .reader-actions .nav-btn-next {
+    /* No mobile o "Próxima" sempre vem primeiro (CTA principal pra continuar) */
+    order: -1;
+  }
+}
+
 /* ── Reading mode ──────────────────────────────────────────────────────── */
 .reader-root.reading-mode .reader-topbar,
 .reader-root.reading-mode .reader-sidebar,

@@ -129,22 +129,24 @@ export default function SectionRenderer({
         {section.estimated_minutes && (
           <div style={{
             fontSize: 12, color: 'var(--r-text-subtle)',
-            letterSpacing: '0.06em', textTransform: 'uppercase', fontWeight: 600,
-            marginBottom: 8,
+            letterSpacing: '0.06em', textTransform: 'uppercase', fontWeight: 700,
+            marginBottom: 10,
+            display: 'flex', alignItems: 'center', gap: 5,
           }}>
-            <span className="material-symbols-outlined align-middle" style={{ fontSize: 14, verticalAlign: 'middle' }}>schedule</span>
-            {' '}{section.estimated_minutes} min de leitura
+            <span className="material-symbols-outlined" style={{ fontSize: 14 }}>schedule</span>
+            {section.estimated_minutes} min de leitura
           </div>
         )}
         <h1 style={{
           fontFamily: 'Fraunces, serif',
-          fontSize: '2.5em',
+          fontSize: 'clamp(1.85rem, 6.5vw, 2.6em)',
           fontWeight: 700,
           fontVariationSettings: '"opsz" 72, "SOFT" 30',
           letterSpacing: '-0.02em',
           lineHeight: 1.1,
-          color: 'var(--r-text)',
+          color: 'var(--r-text-strong)',
           margin: '0 0 0.4em',
+          textWrap: 'balance' as never,
         }}>
           {section.title}
         </h1>
@@ -188,16 +190,16 @@ export default function SectionRenderer({
       />
 
       {/* Footer da seção: botão "marcar concluída" + navegação prev/next */}
-      <div style={{ marginTop: 64, paddingTop: 32, borderTop: '1px solid var(--r-border)' }}>
+      <div style={{ marginTop: 'clamp(40px, 8vw, 64px)', paddingTop: 28, borderTop: '1px solid var(--r-border)' }}>
         <div style={{
           display: 'flex', flexDirection: 'column', alignItems: 'center',
-          gap: 16, marginBottom: 32,
+          gap: 14, marginBottom: 28,
         }}>
           <button
             onClick={handleMarkCompleted}
             disabled={completedAnimating}
             style={{
-              padding: '14px 28px',
+              padding: '13px 26px',
               borderRadius: 999,
               border: '1px solid var(--r-accent)',
               background: completedAnimating ? 'var(--r-accent)' : 'transparent',
@@ -208,6 +210,8 @@ export default function SectionRenderer({
               cursor: completedAnimating ? 'default' : 'pointer',
               display: 'flex', alignItems: 'center', gap: 8,
               transition: 'all 0.3s',
+              minHeight: 44,
+              maxWidth: '100%',
             }}
           >
             <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
@@ -228,21 +232,29 @@ export default function SectionRenderer({
           margin: '0 auto',
         }}>
           {prev ? (
-            <button onClick={() => { stopCountdown(); onNavigate(prev.id) }} style={navBtn}>
-              <span className="material-symbols-outlined" style={{ fontSize: 18 }}>arrow_back</span>
+            <button
+              onClick={() => { stopCountdown(); onNavigate(prev.id) }}
+              className="nav-btn-prev"
+              style={navBtn}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 18, flex: '0 0 auto' }}>arrow_back</span>
               <div style={{ textAlign: 'left', flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 11, color: 'var(--r-text-subtle)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>Anterior</div>
-                <div style={{ fontSize: 13, color: 'var(--r-text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{prev.title}</div>
+                <div style={{ fontSize: 11, color: 'var(--r-text-subtle)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 700 }}>Anterior</div>
+                <div style={{ fontSize: 13, color: 'var(--r-text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 500 }}>{prev.title}</div>
               </div>
             </button>
           ) : <div />}
           {next ? (
-            <button onClick={() => { stopCountdown(); onNavigate(next.id) }} style={{ ...navBtn, justifyContent: 'flex-end' }}>
+            <button
+              onClick={() => { stopCountdown(); onNavigate(next.id) }}
+              className="nav-btn-next"
+              style={{ ...navBtn, justifyContent: 'flex-end' }}
+            >
               <div style={{ textAlign: 'right', flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 11, color: 'var(--r-text-subtle)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>Próxima</div>
-                <div style={{ fontSize: 13, color: 'var(--r-text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{next.title}</div>
+                <div style={{ fontSize: 11, color: 'var(--r-text-subtle)', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 700 }}>Próxima</div>
+                <div style={{ fontSize: 13, color: 'var(--r-text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 500 }}>{next.title}</div>
               </div>
-              <span className="material-symbols-outlined" style={{ fontSize: 18 }}>arrow_forward</span>
+              <span className="material-symbols-outlined" style={{ fontSize: 18, flex: '0 0 auto' }}>arrow_forward</span>
             </button>
           ) : <div />}
         </div>
@@ -259,28 +271,31 @@ export default function SectionRenderer({
         />
       )}
 
-      {/* Floating Action Button mobile — abre notas */}
+      {/* Floating Action Button mobile — abre notas. Esconde durante
+          countdown pra não competir visualmente com o snackbar. */}
       <button
         onClick={() => setNoteOpen(true)}
         className="reader-fab"
-        aria-label="Abrir notas"
+        aria-label="Abrir notas desta seção"
         style={{
           position: 'fixed',
-          bottom: 'max(20px, env(safe-area-inset-bottom))',
-          right: 20,
-          width: 52, height: 52,
+          bottom: 'calc(max(20px, env(safe-area-inset-bottom)) + 4px)',
+          right: 16,
+          width: 48, height: 48,
           borderRadius: '50%',
           border: 'none',
           background: 'var(--r-accent)',
           color: 'var(--r-on-accent)',
           cursor: 'pointer',
-          boxShadow: '0 8px 24px rgba(183,159,255,0.35)',
+          boxShadow: '0 8px 22px color-mix(in srgb, var(--r-accent) 35%, transparent)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           zIndex: 25,
-          transition: 'opacity 0.4s',
+          opacity: countdown !== null ? 0 : 1,
+          pointerEvents: countdown !== null ? 'none' : 'auto',
+          transition: 'opacity 0.25s',
         }}
       >
-        <span className="material-symbols-outlined" style={{ fontSize: 24 }}>edit_note</span>
+        <span className="material-symbols-outlined" style={{ fontSize: 22 }}>edit_note</span>
       </button>
     </div>
   )

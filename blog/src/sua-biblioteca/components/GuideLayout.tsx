@@ -183,10 +183,10 @@ export default function GuideLayout({ guide, sections, userId }: Props) {
         className="reader-main"
         style={{
           marginLeft: 0,
-          paddingTop: 80,
-          paddingBottom: 120,
-          paddingLeft: 24,
-          paddingRight: 24,
+          paddingTop: 76,                /* topbar 56 + 20 respiro */
+          paddingBottom: 'calc(120px + env(safe-area-inset-bottom, 0px))',
+          paddingLeft: 16,                /* mobile-first: laterais menores */
+          paddingRight: 16,
           transition: 'margin-left 0.25s ease',
           minHeight: '100vh',
         }}
@@ -221,17 +221,18 @@ export default function GuideLayout({ guide, sections, userId }: Props) {
           title="Sair do modo leitura (F ou ESC)"
           style={{
             position: 'fixed',
-            top: 'calc(env(safe-area-inset-top, 0px) + 16px)',
-            right: 16,
+            top: 'calc(env(safe-area-inset-top, 0px) + 12px)',
+            right: 12,
             zIndex: 200,
             display: 'inline-flex',
             alignItems: 'center',
             gap: 6,
-            padding: '8px 14px 8px 12px',
+            padding: '10px 14px 10px 12px',
             borderRadius: 999,
             border: '1px solid var(--r-border-strong)',
             background: 'var(--r-overlay)',
             backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
             color: 'var(--r-text)',
             fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif',
             fontSize: 13,
@@ -239,8 +240,9 @@ export default function GuideLayout({ guide, sections, userId }: Props) {
             cursor: 'pointer',
             boxShadow: '0 6px 20px var(--r-shadow)',
             animation: 'reading-exit-in 0.25s ease',
-            opacity: 0.85,
+            opacity: 0.9,
             transition: 'opacity 0.2s, transform 0.15s',
+            minHeight: 44,
           }}
           onMouseEnter={e => { e.currentTarget.style.opacity = '1' }}
           onMouseLeave={e => { e.currentTarget.style.opacity = '0.85' }}

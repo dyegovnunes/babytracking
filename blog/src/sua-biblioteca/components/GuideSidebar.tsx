@@ -51,29 +51,32 @@ export default function GuideSidebar({
           position: 'fixed',
           top: 0, bottom: 0, left: 0,
           width: 320,
-          maxWidth: '85vw',
+          maxWidth: '88vw',
           background: 'var(--r-overlay)',
           backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
           borderRight: '1px solid var(--r-border)',
-          padding: '76px 0 24px',
+          padding: 'calc(env(safe-area-inset-top, 0px) + 64px) 0 calc(env(safe-area-inset-bottom, 0px) + 24px)',
           overflowY: 'auto',
+          overscrollBehavior: 'contain',
           transform: open ? 'translateX(0)' : 'translateX(-100%)',
           transition: 'transform 0.25s ease, opacity 0.4s',
           zIndex: 50,
         }}
       >
         {/* Header com info do guia */}
-        <div style={{ padding: '0 24px 20px', borderBottom: '1px solid var(--r-border)' }}>
+        <div className="reader-sidebar-header" style={{ padding: '0 20px 18px', borderBottom: '1px solid var(--r-border)' }}>
           {guide.cover_image_url && (
             <img
               src={guide.cover_image_url}
               alt={guide.title}
+              className="reader-sidebar-cover"
               style={{
                 width: '100%',
-                aspectRatio: '4/3',
+                aspectRatio: '16/10',          /* mais "wide" pra cover de livro digital */
                 objectFit: 'cover',
-                borderRadius: 8,
-                marginBottom: 12,
+                borderRadius: 10,
+                marginBottom: 14,
                 border: '1px solid var(--r-border)',
               }}
             />
@@ -119,7 +122,7 @@ export default function GuideSidebar({
         </div>
 
         {/* Lista de partes/seções */}
-        <nav style={{ padding: '12px 12px 0' }}>
+        <nav style={{ padding: '12px 10px 24px' }}>
           {parts.map((part) => {
             const partChildren = childrenOf(part.id)
             return (
@@ -194,9 +197,9 @@ function SectionItem({
         alignItems: 'center',
         gap: 10,
         width: '100%',
-        padding: isPart ? '10px 12px' : '8px 12px 8px 24px',
+        padding: isPart ? '12px 12px' : '10px 12px 10px 26px',
         marginBottom: 2,
-        background: isCurrent ? 'rgba(183,159,255,0.12)' : 'transparent',
+        background: isCurrent ? 'color-mix(in srgb, var(--r-accent) 12%, transparent)' : 'transparent',
         border: 'none',
         borderRadius: 8,
         cursor: 'pointer',
@@ -204,8 +207,9 @@ function SectionItem({
         position: 'relative',
         fontFamily: 'inherit',
         transition: 'background 0.15s',
+        minHeight: 44,                  /* touch target Apple HIG */
       }}
-      onMouseEnter={e => { if (!isCurrent) e.currentTarget.style.background = 'rgba(183,159,255,0.05)' }}
+      onMouseEnter={e => { if (!isCurrent) e.currentTarget.style.background = 'var(--r-surface-strong)' }}
       onMouseLeave={e => { if (!isCurrent) e.currentTarget.style.background = 'transparent' }}
     >
       {/* Indicador de progresso à esquerda */}

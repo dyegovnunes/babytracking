@@ -82,15 +82,16 @@ export default function GuideTopbar({
       style={{
         position: 'fixed',
         top: 0, left: 0, right: 0,
-        height: 60,
+        height: 56,
         background: 'var(--r-overlay)',
         backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
         borderBottom: '1px solid var(--r-border)',
         zIndex: 30,
         display: 'flex',
         alignItems: 'center',
-        padding: '0 16px',
-        gap: 12,
+        padding: '0 8px',
+        gap: 4,
         transition: 'opacity 0.4s',
       }}
     >
@@ -103,9 +104,9 @@ export default function GuideTopbar({
         <span className="material-symbols-outlined" style={{ fontSize: 24 }}>menu</span>
       </button>
 
-      {/* Título do guia (esquerda) */}
-      <div style={{ minWidth: 0, flex: '0 0 auto' }} className="topbar-guide-title">
-        <div style={{ fontSize: 11, color: 'var(--r-text-subtle)', letterSpacing: '0.06em', textTransform: 'uppercase', fontWeight: 600 }}>
+      {/* Título do guia (esquerda) — só desktop */}
+      <div style={{ minWidth: 0, flex: '0 0 auto', marginLeft: 4 }} className="topbar-guide-title">
+        <div style={{ fontSize: 10, color: 'var(--r-text-subtle)', letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 700, lineHeight: 1.2 }}>
           Sua Biblioteca
         </div>
         <div
@@ -119,31 +120,34 @@ export default function GuideTopbar({
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             maxWidth: 220,
+            lineHeight: 1.2,
           }}
         >
           {guide.title}
         </div>
       </div>
 
-      {/* Título da seção atual (centro) */}
+      {/* Título da seção atual (centro) — única identificação no mobile */}
       <div
         className="topbar-section-title"
         style={{
           flex: 1,
           textAlign: 'center',
           minWidth: 0,
-          padding: '0 12px',
+          padding: '0 8px',
         }}
       >
         {currentSection && (
           <div
             style={{
+              fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif',
               fontSize: 13,
-              color: 'var(--r-text-muted)',
+              color: 'var(--r-text)',
               whiteSpace: 'nowrap',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
-              fontWeight: 500,
+              fontWeight: 600,
+              lineHeight: 1.3,
             }}
           >
             {currentSection.title}
@@ -258,11 +262,14 @@ const iconBtn: React.CSSProperties = {
   border: 'none',
   color: 'var(--r-text-muted)',
   cursor: 'pointer',
-  padding: 8,
-  borderRadius: 8,
+  padding: 10,
+  borderRadius: 10,
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
   flex: '0 0 auto',
   fontFamily: 'inherit',
+  // Touch target de 44px (min Apple HIG / Material) garantido pelo padding
+  minWidth: 44,
+  minHeight: 44,
 }

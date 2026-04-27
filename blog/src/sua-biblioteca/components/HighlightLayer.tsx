@@ -83,8 +83,15 @@ export default function HighlightLayer({ sectionId, userId, contentRef }: Props)
       if (!contentRef.current?.contains(range.commonAncestorContainer)) return
 
       const rect = range.getBoundingClientRect()
+      // Clamp horizontal: deixa pelo menos 60px de margem pros bordos da
+      // viewport, evita que o popover seja cortado em mobile.
+      const popoverHalfWidth = 70
+      const x = Math.max(
+        popoverHalfWidth,
+        Math.min(window.innerWidth - popoverHalfWidth, rect.left + rect.width / 2),
+      )
       setPopoverPos({
-        x: rect.left + rect.width / 2,
+        x,
         y: rect.top + window.scrollY - 12,
         text,
       })
