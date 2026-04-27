@@ -55,7 +55,7 @@ export default function ChatInput({ disabled, placeholder, onSend }: ChatInputPr
             placeholder={placeholder ?? 'Conta pra yaIA...'}
             disabled={disabled}
             rows={1}
-            className="w-full resize-none bg-surface/70 rounded-3xl px-4 py-3 text-sm text-on-surface placeholder:text-on-surface-variant/50 outline-none ring-1 ring-outline-variant/20 focus:ring-2 focus:ring-primary/40 disabled:opacity-60 max-h-32 transition-all"
+            className="w-full resize-none bg-surface/70 rounded-3xl px-4 py-3 text-base text-on-surface placeholder:text-on-surface-variant/50 outline-none ring-1 ring-outline-variant/20 focus:ring-2 focus:ring-primary/40 disabled:opacity-60 max-h-32 transition-all"
           />
         </div>
         <motion.button
