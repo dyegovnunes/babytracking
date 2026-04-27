@@ -4,10 +4,11 @@ import type { ContentCategory } from '../types'
 
 interface Props {
   counts: Record<string, number>
+  phaseCounts: Record<string, number>
   activeCategory?: ContentCategory | null
 }
 
-const { counts, activeCategory = null } = Astro.props
+const { counts, phaseCounts, activeCategory = null } = Astro.props
 
 // Ordem visual — agrupado por fase do bebê
 const categories: ContentCategory[] = [
@@ -15,15 +16,46 @@ const categories: ContentCategory[] = [
   'sono', 'rotina', 'saude',
   'seguranca', 'desenvolvimento', 'marcos',
 ]
+
+const phases = [
+  { id: 'all',      emoji: '📚', label: 'Todos' },
+  { id: 'gestante', emoji: '🤰', label: 'Gestante' },
+  { id: '0-3m',     emoji: '👶', label: '0–3 meses' },
+  { id: '3-6m',     emoji: '🌱', label: '3–6 meses' },
+  { id: '6m+',      emoji: '🚼', label: '6 meses +' },
+] as const
 ---
 
 <!-- DESKTOP: sidebar sticky -->
 <aside class="hidden md:block w-52 shrink-0">
-  <nav
-    class="sticky top-20"
-    aria-label="Categorias"
-  >
-    <p class="font-display text-[10px] font-bold uppercase tracking-wider text-yaya-cloud/50 mb-3 px-2">
+  <nav class="sticky top-20" aria-label="Filtros">
+
+    <!-- Seção: Fase -->
+    <p class="font-display text-[10px] font-bold uppercase tracking-wider text-yaya-cloud/50 mb-2 px-2">
+      Fase
+    </p>
+    <div class="flex flex-wrap gap-1.5 px-1 mb-5">
+      {phases.map((p) => (
+        <button
+          type="button"
+          class="phase-chip shrink-0 flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-display font-bold bg-yaya-cloud/5 text-yaya-cloud/70 hover:bg-yaya-cloud/10 hover:text-yaya-cloud transition-colors data-[active=true]:bg-yaya-purple/20 data-[active=true]:text-yaya-purple"
+          data-phase={p.id}
+          data-active={p.id === 'all' ? 'true' : 'false'}
+        >
+          <span>{p.emoji}</span>
+          <span>{p.label}</span>
+          {p.id !== 'all' && phaseCounts[p.id] !== undefined && (
+            <span class="opacity-50 tabular-nums">{phaseCounts[p.id]}</span>
+          )}
+        </button>
+      ))}
+    </div>
+
+    <!-- Divider -->
+    <div class="border-t border-yaya-cloud/8 mb-4 mx-1"></div>
+
+    <!-- Seção: Categorias -->
+    <p class="font-display text-[10px] font-bold uppercase tracking-wider text-yaya-cloud/50 mb-2 px-2">
       Categorias
     </p>
     <ul class="space-y-0.5">
@@ -71,24 +103,26 @@ const categories: ContentCategory[] = [
   </nav>
 </aside>
 
-<!-- MOBILE: chips horizontais scrolláveis -->
-<nav
-  class="md:hidden mb-6 -mx-4"
-  aria-label="Categorias"
->
+<!-- MOBILE: chips horizontais scrolláveis (fases + separador + categorias) -->
+<nav class="md:hidden mb-6 -mx-4" aria-label="Filtros">
   <div class="flex gap-2 overflow-x-auto px-4 pb-1 scrollbar-hide">
-    <a
-      href="/"
-      class:list={[
-        'shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-display font-bold transition-colors',
-        activeCategory === null
-          ? 'bg-yaya-purple text-yaya-night'
-          : 'bg-yaya-cloud/5 text-yaya-cloud/80 hover:bg-yaya-cloud/10',
-      ]}
-    >
-      <span>📚</span>
-      <span>Todos</span>
-    </a>
+    <!-- Fases -->
+    {phases.map((p) => (
+      <button
+        type="button"
+        class="phase-chip shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-display font-bold bg-yaya-cloud/5 text-yaya-cloud/80 hover:bg-yaya-cloud/10 transition-colors data-[active=true]:bg-yaya-purple data-[active=true]:text-yaya-night"
+        data-phase={p.id}
+        data-active={p.id === 'all' ? 'true' : 'false'}
+      >
+        <span>{p.emoji}</span>
+        <span>{p.label}</span>
+      </button>
+    ))}
+
+    <!-- Separador visual entre fases e categorias -->
+    <span aria-hidden="true" class="shrink-0 self-center w-px h-5 bg-yaya-cloud/15 mx-1"></span>
+
+    <!-- Categorias -->
     {categories.map((cat) => {
       const active = cat === activeCategory
       return (

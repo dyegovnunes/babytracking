@@ -3,7 +3,6 @@ import BlogLayout from '../layouts/BlogLayout.astro'
 import { supabase } from '../lib/supabase'
 import type { BlogPost } from '../types'
 import CategorySidebar from '../components/CategorySidebar.astro'
-import PhaseChips from '../components/PhaseChips.astro'
 import FilterToolbar from '../components/FilterToolbar.astro'
 import PostCard from '../components/PostCard.astro'
 import HeroFeatured from '../components/HeroFeatured.astro'
@@ -85,12 +84,9 @@ const featuredPosts = [
   <!-- Posts em destaque (3 posts, priorizando com imagem + mais vistos) -->
   <HeroFeatured posts={featuredPosts} />
 
-  <!-- Chips de fase do bebê -->
-  <PhaseChips counts={countsByPhase} />
-
   <div class="max-w-5xl mx-auto px-4 pb-20 md:flex md:gap-10 md:items-start">
 
-    <CategorySidebar counts={countsByCategory} />
+    <CategorySidebar counts={countsByCategory} phaseCounts={countsByPhase} />
 
     <!-- Main: toolbar + grid de posts -->
     <main class="flex-1 min-w-0">

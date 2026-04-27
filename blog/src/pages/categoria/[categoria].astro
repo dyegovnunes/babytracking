@@ -5,7 +5,6 @@ import type { BlogPost, ContentCategory } from '../../types'
 import { CATEGORY_LABEL, CATEGORY_EMOJI } from '../../types'
 import { categoryBreadcrumbJsonLd } from '../../lib/jsonld'
 import CategorySidebar from '../../components/CategorySidebar.astro'
-import PhaseChips from '../../components/PhaseChips.astro'
 import FilterToolbar from '../../components/FilterToolbar.astro'
 import PostCard from '../../components/PostCard.astro'
 
@@ -97,11 +96,9 @@ const breadcrumbLd = categoryBreadcrumbJsonLd(cat)
     </div>
   </section>
 
-  <PhaseChips counts={countsByPhase} />
-
   <div class="max-w-5xl mx-auto px-4 pb-20 md:flex md:gap-10 md:items-start">
 
-    <CategorySidebar counts={countsByCategory} activeCategory={cat} />
+    <CategorySidebar counts={countsByCategory} phaseCounts={countsByPhase} activeCategory={cat} />
 
     <main class="flex-1 min-w-0">
       <FilterToolbar />
