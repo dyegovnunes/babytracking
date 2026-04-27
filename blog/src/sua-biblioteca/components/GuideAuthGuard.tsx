@@ -53,29 +53,28 @@ export default function GuideAuthGuard({ access, guideSlug }: Props) {
 // ── Yaya Logo ─────────────────────────────────────────────────────────────────
 function YayaLogo() {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 4 }}>
-      <svg width="28" height="28" viewBox="0 0 40 40" fill="none" aria-hidden="true">
-        <ellipse cx="20" cy="13" rx="7" ry="11" fill="url(#g1)" opacity="0.95" transform="rotate(-20 20 13)" />
-        <ellipse cx="20" cy="13" rx="7" ry="11" fill="url(#g2)" opacity="0.8" transform="rotate(20 20 13)" />
-        <circle cx="20" cy="22" r="5" fill="url(#g3)" />
-        <defs>
-          <linearGradient id="g1" x1="20" y1="2" x2="20" y2="24" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#d4c1ff" /><stop offset="1" stopColor="#b79fff" />
-          </linearGradient>
-          <linearGradient id="g2" x1="20" y1="2" x2="20" y2="24" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#ffb3cc" /><stop offset="1" stopColor="#ff96b9" />
-          </linearGradient>
-          <linearGradient id="g3" x1="15" y1="17" x2="25" y2="27" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#c9a8ff" /><stop offset="1" stopColor="#8b6df0" />
-          </linearGradient>
-        </defs>
-      </svg>
-      <span style={{ fontFamily: 'Fraunces, Georgia, serif', fontSize: 22, fontWeight: 700, color: 'var(--r-text-strong)', letterSpacing: '-0.02em', lineHeight: 1 }}>
-        Yaya
-      </span>
-      <span style={{ fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif', fontSize: 11, fontWeight: 600, color: 'var(--r-accent)', letterSpacing: '0.08em', textTransform: 'uppercase' as const, background: 'rgba(183,159,255,0.12)', padding: '2px 7px', borderRadius: 20, border: '1px solid rgba(183,159,255,0.2)', lineHeight: 1.8 }}>
-        biblioteca
-      </span>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, marginBottom: 4 }}>
+      {/* Logo oficial da marca */}
+      <img
+        src="/symbol.png"
+        alt="Yaya"
+        width={56}
+        height={56}
+        style={{
+          // Converte o rosa original para o roxo/purple da marca (#b79fff)
+          filter: 'brightness(0) saturate(100%) invert(72%) sepia(40%) saturate(1500%) hue-rotate(220deg) brightness(105%) contrast(95%)',
+          display: 'block',
+        }}
+      />
+      {/* "Yaya" em Manrope igual ao app — "Ya" branco + "ya" roxo */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <span style={{ fontFamily: 'Manrope, system-ui, sans-serif', fontSize: 28, fontWeight: 800, color: 'var(--r-text-strong)', letterSpacing: '-0.03em', lineHeight: 1 }}>
+          Ya<span style={{ color: 'var(--r-accent)' }}>ya</span>
+        </span>
+        <span style={{ fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif', fontSize: 10, fontWeight: 700, color: 'var(--r-accent)', letterSpacing: '0.1em', textTransform: 'uppercase' as const, background: 'rgba(183,159,255,0.12)', padding: '3px 8px', borderRadius: 20, border: '1px solid rgba(183,159,255,0.2)', lineHeight: 1.8 }}>
+          biblioteca
+        </span>
+      </div>
     </div>
   )
 }
@@ -398,12 +397,12 @@ const s: Record<string, React.CSSProperties> = {
     boxShadow: '0 8px 40px rgba(0,0,0,0.35), inset 0 1px 0 rgba(183,159,255,0.08)',
   },
   heading: {
-    fontFamily: 'Fraunces, Georgia, serif',
-    fontSize: 26,
-    fontWeight: 700,
+    fontFamily: 'Manrope, system-ui, sans-serif',
+    fontSize: 24,
+    fontWeight: 800,
     color: 'var(--r-text-strong)',
     margin: '0 0 8px',
-    letterSpacing: '-0.02em',
+    letterSpacing: '-0.03em',
     lineHeight: 1.25,
   },
   body: {
@@ -430,14 +429,16 @@ const s: Record<string, React.CSSProperties> = {
     boxSizing: 'border-box',
   },
   btnGoogle: {
-    background: '#fff',
-    color: '#1f1f1f',
-    boxShadow: '0 1px 4px rgba(0,0,0,0.25)',
+    background: 'rgba(255,255,255,0.08)',
+    color: 'var(--r-text-strong)',
+    border: '1px solid rgba(183,159,255,0.18)',
+    backdropFilter: 'blur(8px)',
   },
   btnApple: {
-    background: '#1a1a1a',
-    color: '#fff',
-    border: '1px solid rgba(255,255,255,0.1)',
+    background: 'rgba(255,255,255,0.08)',
+    color: 'var(--r-text-strong)',
+    border: '1px solid rgba(183,159,255,0.18)',
+    backdropFilter: 'blur(8px)',
   },
   divider: {
     display: 'flex',
