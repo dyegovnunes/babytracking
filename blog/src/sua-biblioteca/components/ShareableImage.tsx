@@ -51,72 +51,99 @@ export default function ShareableImage({ guide, caption, onShare }: Props) {
       ctx.fillStyle = glow
       ctx.fillRect(0, 0, W, 900)
 
-      // Carrega cover do guia (se disponível) e desenha
+      // Carrega cover com crossOrigin — tenta URL direta, sem proxy
       let coverImg: HTMLImageElement | null = null
       if (guide.cover_image_url) {
         try {
           coverImg = await loadImage(guide.cover_image_url)
-        } catch { /* ignore — segue sem cover */ }
+        } catch {
+          // Fallback: tenta sem crossOrigin (pode falhar toDataURL mas não trava o render)
+          try {
+            coverImg = await loadImageNoCors(guide.cover_image_url)
+          } catch { /* segue sem cover */ }
+        }
       }
 
       if (cancelled) return
 
-      // Cover centralizado, ~660x880, com border-radius simulado e shadow
+      // ── Layout novo (instagramável) ──────────────────────────────────
+      // Eyebrow no topo
+      ctx.fillStyle = '#b79fff'
+      ctx.font = '700 38px "Plus Jakarta Sans", system-ui, sans-serif'
+      ctx.textAlign = 'center'
+      ctx.letterSpacing = '5px' as never
+      ctx.fillText('VOCÊ CONCLUIU', W / 2, 180)
+      ctx.letterSpacing = '0px' as never
+      ctx.font = '400 46px serif'
+      ctx.fillText('💜', W / 2, 240)
+
+      // Cover centralizado 4:5 com border-radius e shadow
       if (coverImg) {
-        const cw = 720
-        const ch = 960
+        const cw = 860
+        const ch = 1075   // proporção 4:5
         const cx = (W - cw) / 2
-        const cy = 320
+        const cy = 310
         // Sombra
         ctx.save()
-        ctx.shadowColor = 'rgba(0, 0, 0, 0.5)'
-        ctx.shadowBlur = 60
-        ctx.shadowOffsetY = 20
-        roundRect(ctx, cx, cy, cw, ch, 36)
+        ctx.shadowColor = 'rgba(100, 60, 200, 0.45)'
+        ctx.shadowBlur = 80
+        ctx.shadowOffsetY = 30
+        roundRect(ctx, cx, cy, cw, ch, 40)
         ctx.fillStyle = '#0d0a27'
         ctx.fill()
         ctx.restore()
-
-        // Imagem clipada com radius
+        // Imagem clipada
         ctx.save()
-        roundRect(ctx, cx, cy, cw, ch, 36)
+        roundRect(ctx, cx, cy, cw, ch, 40)
         ctx.clip()
-        // cover-fit: scale pra preencher mantendo aspect
         const ar = coverImg.width / coverImg.height
         const targetAr = cw / ch
         let drawW = cw, drawH = ch, drawX = cx, drawY = cy
         if (ar > targetAr) {
-          drawW = ch * ar
-          drawX = cx - (drawW - cw) / 2
+          drawW = ch * ar; drawX = cx - (drawW - cw) / 2
         } else {
-          drawH = cw / ar
-          drawY = cy - (drawH - ch) / 2
+          drawH = cw / ar; drawY = cy - (drawH - ch) / 2
         }
         ctx.drawImage(coverImg, drawX, drawY, drawW, drawH)
+        // Gradient overlay na base da imagem
+        const imgGrad = ctx.createLinearGradient(0, cy + ch * 0.55, 0, cy + ch)
+        imgGrad.addColorStop(0, 'rgba(10,7,35,0)')
+        imgGrad.addColorStop(1, 'rgba(10,7,35,0.75)')
+        ctx.fillStyle = imgGrad
+        ctx.fillRect(cx, cy, cw, ch)
         ctx.restore()
       }
 
-      // Eyebrow "VOCÊ CONCLUIU" no topo
-      ctx.fillStyle = '#b79fff'
-      ctx.font = '700 36px "Plus Jakarta Sans", system-ui, sans-serif'
-      ctx.textAlign = 'center'
-      ctx.letterSpacing = '6px' as never
-      ctx.fillText('VOCÊ CONCLUIU 💜', W / 2, 200)
-
-      // Título do guia (caption central)
-      const titleY = 1380
+      // Título principal abaixo da imagem
+      const titleStartY = coverImg ? 1480 : 600
       ctx.fillStyle = '#ffffff'
-      ctx.font = '700 72px "Fraunces", Georgia, serif'
-      wrapText(ctx, caption, W / 2, titleY, 920, 92)
+      ctx.font = '700 76px "Fraunces", Georgia, serif'
+      ctx.letterSpacing = '-1px' as never
+      const titleLines = wrapTextLines(ctx, caption, 920, 96)
+      const titleTotalH = titleLines.length * 96
+      titleLines.forEach((line, i) => {
+        ctx.fillText(line, W / 2, titleStartY + i * 96)
+      })
 
-      // Footer com brand Yaya
-      ctx.font = '700 32px "Plus Jakarta Sans", system-ui, sans-serif'
+      // Linha separadora
+      const sepY = titleStartY + titleTotalH + 48
+      ctx.strokeStyle = 'rgba(183, 159, 255, 0.35)'
+      ctx.lineWidth = 1.5
+      ctx.beginPath()
+      ctx.moveTo(W / 2 - 80, sepY)
+      ctx.lineTo(W / 2 + 80, sepY)
+      ctx.stroke()
+
+      // Brand
+      ctx.letterSpacing = '3px' as never
+      ctx.font = '700 30px "Plus Jakarta Sans", system-ui, sans-serif'
       ctx.fillStyle = '#b79fff'
-      ctx.fillText('Sua Biblioteca Yaya', W / 2, H - 200)
+      ctx.fillText('YAYA BABY', W / 2, sepY + 60)
 
-      ctx.font = '500 26px "Plus Jakarta Sans", system-ui, sans-serif'
-      ctx.fillStyle = 'rgba(231, 226, 255, 0.6)'
-      ctx.fillText('yayababy.app', W / 2, H - 145)
+      ctx.letterSpacing = '1px' as never
+      ctx.font = '400 26px "Plus Jakarta Sans", system-ui, sans-serif'
+      ctx.fillStyle = 'rgba(231, 226, 255, 0.55)'
+      ctx.fillText('blog.yayababy.app/sua-biblioteca', W / 2, sepY + 108)
 
       if (cancelled) return
 
@@ -244,6 +271,16 @@ function loadImage(url: string): Promise<HTMLImageElement> {
     img.crossOrigin = 'anonymous'
     img.onload = () => resolve(img)
     img.onerror = reject
+    // Cache bust mínimo pra forçar o header CORS numa imagem já cacheada sem ele
+    img.src = url.includes('?') ? url : `${url}?_cors=1`
+  })
+}
+
+function loadImageNoCors(url: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.onload = () => resolve(img)
+    img.onerror = reject
     img.src = url
   })
 }
@@ -258,15 +295,13 @@ function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: numbe
   ctx.closePath()
 }
 
-/** Quebra texto multi-linha centralizado verticalmente */
-function wrapText(
+/** Retorna array de linhas quebradas pelo maxWidth */
+function wrapTextLines(
   ctx: CanvasRenderingContext2D,
   text: string,
-  centerX: number,
-  centerY: number,
   maxWidth: number,
-  lineHeight: number,
-) {
+  _lineHeight: number,
+): string[] {
   const words = text.split(' ')
   const lines: string[] = []
   let line = ''
@@ -280,10 +315,5 @@ function wrapText(
     }
   }
   if (line) lines.push(line)
-
-  const totalH = lines.length * lineHeight
-  const startY = centerY - totalH / 2
-  lines.forEach((l, i) => {
-    ctx.fillText(l, centerX, startY + (i + 0.7) * lineHeight)
-  })
+  return lines
 }

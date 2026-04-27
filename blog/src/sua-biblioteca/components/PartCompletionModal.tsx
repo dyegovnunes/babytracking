@@ -128,13 +128,13 @@ export default function PartCompletionModal({
         position: 'fixed',
         inset: 0,
         zIndex: 100,
-        background: 'var(--r-overlay)',
-        backdropFilter: 'blur(24px)',
-        WebkitBackdropFilter: 'blur(24px)',
+        background: 'radial-gradient(ellipse 120% 60% at 50% 0%, color-mix(in srgb, var(--r-accent) 22%, transparent), transparent 70%), var(--r-overlay)',
+        backdropFilter: 'blur(28px)',
+        WebkitBackdropFilter: 'blur(28px)',
         display: 'flex',
         flexDirection: 'column',
         opacity: visible ? 1 : 0,
-        transition: 'opacity 0.28s cubic-bezier(0.4, 0, 0.2, 1)',
+        transition: 'opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         overflowY: 'auto',
         WebkitOverflowScrolling: 'touch',
       }}
@@ -164,32 +164,56 @@ export default function PartCompletionModal({
         <span className="material-symbols-outlined" style={{ fontSize: 22 }}>close</span>
       </button>
 
-      {/* Cover da parte (se tiver) */}
+      {/* Cover da parte — com glow roxo atrás */}
       {part.cover_image_url && (
         <div
           style={{
             position: 'relative',
             width: '100%',
-            height: '32vh',
-            minHeight: 200,
-            maxHeight: 360,
+            height: '36vh',
+            minHeight: 220,
+            maxHeight: 400,
             overflow: 'hidden',
             flex: '0 0 auto',
           }}
         >
+          {/* Glow roxo atrás da imagem */}
+          <div style={{
+            position: 'absolute', inset: 0, zIndex: 0,
+            background: 'radial-gradient(ellipse 80% 100% at 50% 100%, color-mix(in srgb, var(--r-accent) 45%, transparent), transparent)',
+          }} />
           <img
             src={part.cover_image_url}
             alt=""
             style={{
+              position: 'relative', zIndex: 1,
               width: '100%', height: '100%', objectFit: 'cover',
-              transform: visible ? 'scale(1)' : 'scale(1.04)',
-              transition: 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
+              transform: visible ? 'scale(1)' : 'scale(1.06)',
+              transition: 'transform 0.7s cubic-bezier(0.16, 1, 0.3, 1)',
             }}
           />
           <div style={{
-            position: 'absolute', inset: 0,
-            background: 'linear-gradient(180deg, transparent 30%, var(--r-overlay) 100%)',
+            position: 'absolute', inset: 0, zIndex: 2,
+            background: 'linear-gradient(180deg, transparent 20%, var(--r-overlay) 100%)',
           }} />
+        </div>
+      )}
+
+      {/* Partículas decorativas */}
+      {visible && (
+        <div aria-hidden="true" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden', zIndex: 0 }}>
+          {[...Array(10)].map((_, i) => (
+            <span key={i} style={{
+              position: 'absolute',
+              width: 6 + (i % 3) * 3,
+              height: 6 + (i % 3) * 3,
+              borderRadius: '50%',
+              background: `color-mix(in srgb, var(--r-accent) ${40 + i * 5}%, transparent)`,
+              left: `${10 + i * 9}%`,
+              bottom: `${10 + (i % 4) * 20}%`,
+              animation: `part-particle-rise ${2.5 + i * 0.4}s ease-in ${i * 0.15}s infinite`,
+            }} />
+          ))}
         </div>
       )}
 
@@ -202,11 +226,13 @@ export default function PartCompletionModal({
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          padding: '32px 24px 48px',
+          padding: '32px 24px 52px',
           textAlign: 'center',
           maxWidth: 640,
           margin: '0 auto',
           width: '100%',
+          position: 'relative',
+          zIndex: 1,
         }}
       >
         <div
@@ -229,17 +255,17 @@ export default function PartCompletionModal({
         <h1
           style={{
             fontFamily: 'Fraunces, serif',
-            fontVariationSettings: '"opsz" 144, "SOFT" 50',
-            fontSize: 'clamp(2.1rem, 6vw, 3.4rem)',
+            fontVariationSettings: '"opsz" 144, "SOFT" 60',
+            fontSize: 'clamp(2.6rem, 7.5vw, 4.2rem)',
             fontWeight: 700,
-            letterSpacing: '-0.025em',
-            lineHeight: 1.08,
+            letterSpacing: '-0.03em',
+            lineHeight: 1.05,
             color: 'var(--r-text-strong)',
-            margin: '0 0 18px',
+            margin: '0 0 20px',
             textWrap: 'balance' as never,
             opacity: visible ? 1 : 0,
-            transform: visible ? 'translateY(0)' : 'translateY(12px)',
-            transition: 'opacity 0.5s ease 0.18s, transform 0.5s ease 0.18s',
+            transform: visible ? 'scale(1) translateY(0)' : 'scale(0.94) translateY(14px)',
+            transition: 'opacity 0.55s ease 0.18s, transform 0.55s cubic-bezier(0.34, 1.3, 0.64, 1) 0.18s',
           }}
         >
           {copy.title}
@@ -364,22 +390,22 @@ function Stat({ value, label }: { value: string; label: string }) {
   return (
     <div
       style={{
-        background: 'var(--r-surface)',
-        border: '1px solid var(--r-border)',
-        borderRadius: 14,
-        padding: '14px 12px',
+        background: 'color-mix(in srgb, var(--r-accent) 7%, var(--r-surface))',
+        border: '1px solid color-mix(in srgb, var(--r-accent) 25%, var(--r-border))',
+        borderRadius: 16,
+        padding: '16px 12px',
         textAlign: 'center',
       }}
     >
       <div style={{
         fontFamily: 'Fraunces, serif',
-        fontVariationSettings: '"opsz" 72, "SOFT" 30',
-        fontSize: 28,
+        fontVariationSettings: '"opsz" 72, "SOFT" 40',
+        fontSize: 32,
         fontWeight: 700,
         letterSpacing: '-0.02em',
-        color: 'var(--r-text-strong)',
+        color: 'var(--r-accent)',
         lineHeight: 1,
-        marginBottom: 4,
+        marginBottom: 5,
         fontVariantNumeric: 'tabular-nums',
       }}>
         {value}
@@ -387,13 +413,27 @@ function Stat({ value, label }: { value: string; label: string }) {
       <div style={{
         fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif',
         fontSize: 11,
-        fontWeight: 600,
+        fontWeight: 700,
         textTransform: 'uppercase',
-        letterSpacing: '0.06em',
+        letterSpacing: '0.07em',
         color: 'var(--r-text-muted)',
       }}>
         {label}
       </div>
     </div>
   )
+}
+
+// Keyframes injetadas no <head> uma vez
+if (typeof document !== 'undefined' && !document.getElementById('part-completion-kf')) {
+  const s = document.createElement('style')
+  s.id = 'part-completion-kf'
+  s.textContent = `
+    @keyframes part-particle-rise {
+      0%   { transform: translateY(0) scale(1); opacity: 0.7; }
+      80%  { opacity: 0.4; }
+      100% { transform: translateY(-60vh) scale(0.4); opacity: 0; }
+    }
+  `
+  document.head.appendChild(s)
 }

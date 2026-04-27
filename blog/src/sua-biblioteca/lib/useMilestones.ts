@@ -130,32 +130,24 @@ export function useMilestones({ userId, guideId, onNewMilestone }: UseMilestones
     )
   }, [milestones])
 
-  // Helper: insere milestone manualmente (pra tipos que não vêm do trigger SQL,
-  // ex: 'first-highlight', 'first-note', counts de highlights). Idempotente
-  // via UNIQUE constraint — se já existe, devolve sucesso silencioso.
+  // Helper: insere milestone manualmente via RPC SECURITY DEFINER.
+  // (INSERT direto bloqueado por RLS — só SELECT para owner)
   const record = useCallback(async (type: GuideMilestoneType, ref?: string, metadata?: Record<string, unknown>) => {
     if (!userId || !guideId) return null
     if (has(type, ref)) return null  // já achievedo, evita request
 
-    const { data, error } = await supabase
-      .from('guide_milestones')
-      .insert({
-        user_id: userId,
-        guide_id: guideId,
-        type,
-        ref: ref ?? null,
-        metadata: metadata ?? null,
-      })
-      .select()
-      .single()
+    const { error } = await supabase.rpc('record_guide_milestone', {
+      p_guide_id: guideId,
+      p_type: type,
+      p_ref: ref ?? null,
+      p_metadata: metadata ?? null,
+    })
 
     if (error) {
-      // Conflict (UNIQUE) é OK — outro caminho já registrou. Não é bug.
-      if (error.code === '23505') return null
       console.warn('[useMilestones] erro ao registrar marco:', error)
       return null
     }
-    return data as GuideMilestone
+    return null
   }, [userId, guideId, has])
 
   return { milestones, loading, has, record }

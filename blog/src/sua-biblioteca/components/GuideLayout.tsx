@@ -229,6 +229,7 @@ export default function GuideLayout({ guide, sections, userId }: Props) {
         onSelectSection={goToSection}
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
+        userId={userId}
       />
 
       <main
@@ -252,6 +253,7 @@ export default function GuideLayout({ guide, sections, userId }: Props) {
             allSections={flatSections}
             currentIdx={currentIdx}
             userId={userId}
+            isCompleted={progressMap[currentSection.id]?.completed === true}
             onNavigate={goToSection}
             onProgressUpdate={onProgressUpdate}
             mainRef={mainRef}

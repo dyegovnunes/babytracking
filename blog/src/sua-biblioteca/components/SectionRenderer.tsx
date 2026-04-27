@@ -24,6 +24,7 @@ interface Props {
   allSections: GuideSection[]
   currentIdx: number
   userId: string
+  isCompleted?: boolean
   onNavigate: (id: string) => void
   onProgressUpdate: (sectionId: string, partial: Partial<GuideProgress>) => void
   mainRef: React.RefObject<HTMLElement | null>
@@ -35,7 +36,7 @@ interface Props {
 const COUNTDOWN_SECONDS = 3
 
 export default function SectionRenderer({
-  guide, section, allSections, currentIdx, userId, onNavigate, onProgressUpdate, mainRef,
+  guide, section, allSections, currentIdx, userId, isCompleted, onNavigate, onProgressUpdate, mainRef,
   recordMilestone,
 }: Props) {
   const contentRef = useRef<HTMLDivElement>(null)
@@ -176,10 +177,10 @@ export default function SectionRenderer({
         />
       )}
 
-      {/* Checklist (section type='checklist' OU section linear com data.checklist_items) */}
+      {/* Checklist interativo — só para type='checklist' (Checklist Mestre) */}
       {(() => {
-        const items = (section.data as { checklist_items?: ChecklistItem[]; items?: ChecklistItem[] } | null)
-        const list = items?.checklist_items ?? items?.items ?? []
+        const data = section.data as { checklist_items?: ChecklistItem[]; items?: ChecklistItem[] } | null
+        const list = data?.checklist_items ?? data?.items ?? []
         if (section.type === 'checklist' && list.length > 0) {
           return (
             <InteractiveChecklist
@@ -191,16 +192,9 @@ export default function SectionRenderer({
             />
           )
         }
+        // type='linear' com checklist_items: lista informativa estática (não interativa)
         if (section.type === 'linear' && list.length > 0) {
-          return (
-            <InteractiveChecklist
-              items={list}
-              sectionId={section.id}
-              userId={userId}
-              variant="card"
-              onCompleted={() => recordMilestone?.('first-checklist-completed', section.id)}
-            />
-          )
+          return <StaticChecklistList items={list} />
         }
         return null
       })()}
@@ -228,33 +222,58 @@ export default function SectionRenderer({
           display: 'flex', flexDirection: 'column', alignItems: 'center',
           gap: 14, marginBottom: 28,
         }}>
-          <button
-            onClick={handleMarkCompleted}
-            disabled={completedAnimating}
-            style={{
-              padding: '13px 26px',
-              borderRadius: 999,
-              border: '1px solid var(--r-accent)',
-              background: completedAnimating ? 'var(--r-accent)' : 'transparent',
-              color: completedAnimating ? 'var(--r-on-accent)' : 'var(--r-accent)',
-              fontFamily: 'inherit',
-              fontSize: 14,
-              fontWeight: 700,
-              cursor: completedAnimating ? 'default' : 'pointer',
-              display: 'flex', alignItems: 'center', gap: 8,
-              transition: 'all 0.3s',
-              minHeight: 44,
-              maxWidth: '100%',
-            }}
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
-              {completedAnimating ? 'check_circle' : 'task_alt'}
-            </span>
-            {completedAnimating ? 'Concluída! 💜' : 'Marcar como concluída'}
-          </button>
-          <p style={{ fontSize: 12, color: 'var(--r-text-subtle)', margin: 0 }}>
-            Ou rola até o final pra avançar pra próxima seção
-          </p>
+          {isCompleted && !completedAnimating ? (
+            <div
+              style={{
+                padding: '13px 26px',
+                borderRadius: 999,
+                border: '1px solid color-mix(in srgb, #70e09a 40%, transparent)',
+                background: 'color-mix(in srgb, #70e09a 10%, transparent)',
+                color: '#70e09a',
+                fontFamily: 'inherit',
+                fontSize: 14,
+                fontWeight: 700,
+                display: 'flex', alignItems: 'center', gap: 8,
+                minHeight: 44,
+                maxWidth: '100%',
+              }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: '"FILL" 1' }}>
+                check_circle
+              </span>
+              Seção concluída
+            </div>
+          ) : (
+            <button
+              onClick={handleMarkCompleted}
+              disabled={completedAnimating}
+              style={{
+                padding: '13px 26px',
+                borderRadius: 999,
+                border: '1px solid var(--r-accent)',
+                background: completedAnimating ? 'var(--r-accent)' : 'transparent',
+                color: completedAnimating ? 'var(--r-on-accent)' : 'var(--r-accent)',
+                fontFamily: 'inherit',
+                fontSize: 14,
+                fontWeight: 700,
+                cursor: completedAnimating ? 'default' : 'pointer',
+                display: 'flex', alignItems: 'center', gap: 8,
+                transition: 'all 0.3s',
+                minHeight: 44,
+                maxWidth: '100%',
+              }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
+                {completedAnimating ? 'check_circle' : 'task_alt'}
+              </span>
+              {completedAnimating ? 'Concluída! 💜' : 'Marcar como concluída'}
+            </button>
+          )}
+          {!isCompleted && (
+            <p style={{ fontSize: 12, color: 'var(--r-text-subtle)', margin: 0 }}>
+              Ou rola até o final pra avançar pra próxima seção
+            </p>
+          )}
         </div>
 
         <div className="reader-actions" style={{
@@ -331,6 +350,34 @@ export default function SectionRenderer({
         <span className="material-symbols-outlined" style={{ fontSize: 22 }}>edit_note</span>
       </button>
     </div>
+  )
+}
+
+// Lista de checklist informativa (type='linear' com checklist_items) — não interativa
+function StaticChecklistList({ items }: { items: ChecklistItem[] }) {
+  return (
+    <ul style={{ listStyle: 'none', padding: 0, margin: '1.5em 0', fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif' }}>
+      {items.map(item => (
+        <li key={item.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 8 }}>
+          <span
+            className="material-symbols-outlined"
+            style={{ fontSize: 20, color: 'var(--r-accent)', opacity: 0.5, flex: '0 0 auto', marginTop: 1 }}
+          >
+            radio_button_unchecked
+          </span>
+          <span style={{ fontSize: 15, color: 'var(--r-text)', lineHeight: 1.5 }}>
+            {item.text}
+            {item.required && (
+              <span style={{
+                marginLeft: 8, fontSize: 10, fontWeight: 700, letterSpacing: '0.08em',
+                color: 'var(--r-accent)', background: 'color-mix(in srgb, var(--r-accent) 12%, transparent)',
+                padding: '2px 7px', borderRadius: 999, textTransform: 'uppercase', verticalAlign: 'middle',
+              }}>Essencial</span>
+            )}
+          </span>
+        </li>
+      ))}
+    </ul>
   )
 }
 
