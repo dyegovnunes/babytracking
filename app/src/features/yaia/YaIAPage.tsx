@@ -311,7 +311,7 @@ function InfoSheet({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="font-display text-lg text-on-surface">Sobre a yaIA</h2>
-        <div className="text-sm text-on-surface-variant space-y-2">
+        <div className="text-sm text-on-surface-variant space-y-3">
           <p>
             A yaIA é a assistente conversacional do Yaya. Ela combina diretrizes gerais
             de saúde infantil com os dados reais do seu bebê para responder de forma personalizada.
@@ -321,15 +321,17 @@ function InfoSheet({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
             As respostas são informativas e baseadas em referências de saúde infantil.
             Em qualquer dúvida clínica, procure um profissional.
           </p>
-          <div className="text-xs space-y-1">
-            <p className="font-medium text-on-surface">Fontes de referência:</p>
+
+          {/* Fontes de referência — citações obrigatórias (guideline 1.4.1) */}
+          <div className="bg-surface-container rounded-md p-3 space-y-1.5 text-xs">
+            <p className="font-semibold text-on-surface">Fontes de referência:</p>
             <a
               href="https://www.who.int/tools/child-growth-standards"
               target="_blank"
               rel="noopener noreferrer"
               className="block text-primary underline"
             >
-              OMS — Padroes de Crescimento Infantil
+              OMS — Padrões de Crescimento Infantil (WHO)
             </a>
             <a
               href="https://www.sbp.com.br"
@@ -340,8 +342,26 @@ function InfoSheet({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
               SBP — Sociedade Brasileira de Pediatria
             </a>
           </div>
+
+          {/* Dados compartilhados — disclosure obrigatório (guidelines 5.1.1 / 5.1.2) */}
+          <div className="bg-surface-container rounded-md p-3 space-y-2 text-xs">
+            <p className="font-semibold text-on-surface">Dados enviados ao processar suas perguntas:</p>
+            <ul className="space-y-1 text-on-surface-variant">
+              <li>• Nome, data de nascimento e sexo do bebê</li>
+              <li>• Registros recentes de sono, alimentação, fraldas, vacinas e marcos</li>
+              <li>• Texto das suas mensagens nesta conversa</li>
+            </ul>
+            <p className="font-semibold text-on-surface mt-1">Para quem os dados são enviados:</p>
+            <p className="text-on-surface-variant">
+              Suas perguntas e o contexto do bebê são processados por um serviço de
+              inteligência artificial de terceiro (provedor de IA em nuvem). Esses dados
+              são usados exclusivamente para gerar a resposta e não são usados para
+              treinar modelos ou compartilhados com outras partes.
+            </p>
+          </div>
+
           <p className="text-xs">
-            No plano grátis voce tem 2 perguntas por dia, ate 15 por mes. Com o Yaya+ sao ilimitadas.
+            No plano grátis você tem 2 perguntas por dia, até 15 por mês. Com o Yaya+ são ilimitadas.
           </p>
         </div>
         <button
