@@ -44,6 +44,9 @@ export default function GuideSidebar({
   // Anotações (highlights com anchor_text)
   const [highlights, setHighlights] = useState<HighlightRow[]>([])
   const [notesOpen, setNotesOpen] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editNote, setEditNote] = useState('')
+  const [savingEdit, setSavingEdit] = useState(false)
 
   // Busca anotações sempre que o painel é expandido (não apenas quando a sidebar abre),
   // garantindo que highlights salvos nessa sessão apareçam imediatamente
@@ -63,6 +66,19 @@ export default function GuideSidebar({
       })
     return () => { cancelled = true }
   }, [userId, notesOpen, sections])
+
+  async function handleDeleteHighlight(id: string) {
+    await supabase.from('guide_highlights').delete().eq('id', id)
+    setHighlights(prev => prev.filter(h => h.id !== id))
+  }
+
+  async function handleSaveEdit(id: string) {
+    setSavingEdit(true)
+    await supabase.from('guide_highlights').update({ note_md: editNote.trim() || null }).eq('id', id)
+    setHighlights(prev => prev.map(h => h.id === id ? { ...h, note_md: editNote.trim() || null } : h))
+    setSavingEdit(false)
+    setEditingId(null)
+  }
 
   // ── Swipe-to-close (mobile) ─────────────────────────────────────────
   const touchStart = useRef<{ x: number; y: number; t: number } | null>(null)
@@ -289,39 +305,107 @@ export default function GuideSidebar({
               ) : (
                 highlights.map(h => {
                   const sec = sections.find(s => s.id === h.section_id)
+                  const isEditing = editingId === h.id
                   return (
-                    <button
+                    <div
                       key={h.id}
-                      onClick={() => { onSelectSection(h.section_id); onClose() }}
                       style={{
-                        display: 'block', width: '100%', textAlign: 'left',
-                        padding: '10px 12px', marginBottom: 4,
-                        background: 'var(--r-surface)', border: '1px solid var(--r-border)',
-                        borderRadius: 10, cursor: 'pointer', fontFamily: 'inherit',
-                        transition: 'background 0.15s',
+                        marginBottom: 6,
+                        background: 'var(--r-surface)',
+                        border: '1px solid var(--r-border)',
+                        borderRadius: 10,
+                        overflow: 'hidden',
+                        fontFamily: 'inherit',
                       }}
-                      onMouseEnter={e => { e.currentTarget.style.background = 'var(--r-surface-strong)' }}
-                      onMouseLeave={e => { e.currentTarget.style.background = 'var(--r-surface)' }}
                     >
-                      {sec && (
-                        <div style={{ fontSize: 10, color: 'var(--r-accent)', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 4 }}>
-                          {sec.title}
+                      {/* Cabeçalho clicável: vai para a seção */}
+                      <button
+                        onClick={() => { onSelectSection(h.section_id); onClose() }}
+                        style={{
+                          display: 'block', width: '100%', textAlign: 'left',
+                          padding: '10px 12px 8px',
+                          background: 'transparent', border: 'none',
+                          cursor: 'pointer', fontFamily: 'inherit',
+                        }}
+                      >
+                        {sec && (
+                          <div style={{ fontSize: 10, color: 'var(--r-accent)', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 4 }}>
+                            {sec.title}
+                          </div>
+                        )}
+                        <div style={{
+                          fontSize: 12, fontStyle: 'italic', color: 'var(--r-text-muted)',
+                          background: 'color-mix(in srgb, var(--r-accent) 8%, transparent)',
+                          borderRadius: 6, padding: '4px 8px',
+                          lineHeight: 1.4,
+                        }}>
+                          "{h.anchor_text.length > 70 ? h.anchor_text.slice(0, 67) + '…' : h.anchor_text}"
+                        </div>
+                      </button>
+
+                      {/* Área de anotação */}
+                      {isEditing ? (
+                        <div style={{ padding: '0 10px 10px' }}>
+                          <textarea
+                            autoFocus
+                            value={editNote}
+                            onChange={e => setEditNote(e.target.value)}
+                            rows={2}
+                            style={{
+                              width: '100%', padding: '7px 9px',
+                              background: 'var(--r-surface-strong)',
+                              border: '1px solid var(--r-accent)',
+                              borderRadius: 7, color: 'var(--r-text)',
+                              fontFamily: 'inherit', fontSize: 12,
+                              lineHeight: 1.5, resize: 'none', outline: 'none',
+                              boxSizing: 'border-box', marginBottom: 7,
+                            }}
+                          />
+                          <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
+                            <button
+                              onClick={() => setEditingId(null)}
+                              style={{ padding: '5px 10px', borderRadius: 6, border: '1px solid var(--r-border)', background: 'transparent', color: 'var(--r-text-muted)', fontFamily: 'inherit', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}
+                            >
+                              Cancelar
+                            </button>
+                            <button
+                              onClick={() => handleSaveEdit(h.id)}
+                              disabled={savingEdit}
+                              style={{ padding: '5px 10px', borderRadius: 6, border: 'none', background: 'var(--r-accent)', color: 'var(--r-on-accent)', fontFamily: 'inherit', fontSize: 11, fontWeight: 700, cursor: 'pointer', opacity: savingEdit ? 0.6 : 1 }}
+                            >
+                              {savingEdit ? 'Salvando…' : 'Salvar'}
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div style={{ padding: '0 10px 8px' }}>
+                          {h.note_md && (
+                            <div style={{ fontSize: 12, color: 'var(--r-text)', lineHeight: 1.4, marginBottom: 6 }}>
+                              {h.note_md}
+                            </div>
+                          )}
+                          {/* Ações */}
+                          <div style={{ display: 'flex', gap: 4, justifyContent: 'flex-end' }}>
+                            <button
+                              onClick={() => { setEditingId(h.id); setEditNote(h.note_md ?? '') }}
+                              title="Editar anotação"
+                              style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 9px', borderRadius: 6, border: '1px solid var(--r-border)', background: 'transparent', color: 'var(--r-text-muted)', fontFamily: 'inherit', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}
+                            >
+                              <span className="material-symbols-outlined" style={{ fontSize: 13 }}>edit</span>
+                              Editar
+                            </button>
+                            <button
+                              onClick={() => handleDeleteHighlight(h.id)}
+                              title="Excluir anotação"
+                              style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 9px', borderRadius: 6, border: '1px solid var(--r-border)', background: 'transparent', color: 'var(--r-text-muted)', fontFamily: 'inherit', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}
+                            >
+                              <span className="material-symbols-outlined" style={{ fontSize: 13 }}>delete</span>
+                              Excluir
+                            </button>
+                          </div>
                         </div>
                       )}
-                      <div style={{
-                        fontSize: 12, fontStyle: 'italic', color: 'var(--r-text-muted)',
-                        background: 'color-mix(in srgb, var(--r-accent) 8%, transparent)',
-                        borderRadius: 6, padding: '4px 8px', marginBottom: h.note_md ? 6 : 0,
-                        lineHeight: 1.4,
-                      }}>
-                        "{h.anchor_text.length > 70 ? h.anchor_text.slice(0, 67) + '…' : h.anchor_text}"
-                      </div>
-                      {h.note_md && (
-                        <div style={{ fontSize: 12, color: 'var(--r-text)', lineHeight: 1.4 }}>
-                          {h.note_md.length > 80 ? h.note_md.slice(0, 77) + '…' : h.note_md}
-                        </div>
-                      )}
-                    </button>
+                    </div>
                   )
                 })
               )}

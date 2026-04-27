@@ -160,12 +160,40 @@ export default function SectionRenderer({
         </h1>
       </header>
 
-      {/* Markdown content */}
-      {section.content_md && (
-        <div
-          dangerouslySetInnerHTML={{ __html: renderSectionMarkdown(section.content_md) }}
-        />
-      )}
+      {/* Markdown content + StaticChecklistList inline */}
+      {section.content_md && (() => {
+        const data = section.data as { checklist_items?: ChecklistItem[]; items?: ChecklistItem[] } | null
+        const list = data?.checklist_items ?? data?.items ?? []
+        const html = renderSectionMarkdown(section.content_md)
+
+        // Para type='linear' com checklist_items: injeta o card logo após o
+        // heading h2/h3/h4 que contém "checklist" — antes do "Resumo em X pontos"
+        if (section.type === 'linear' && list.length > 0) {
+          const headingRegex = /(<h[234][^>]*>[^<]*checklist[^<]*<\/h[234]>)/i
+          const match = headingRegex.exec(html)
+          if (match) {
+            const splitIdx = match.index + match[0].length
+            const before = html.slice(0, splitIdx)
+            const after = html.slice(splitIdx)
+            return (
+              <>
+                <div dangerouslySetInnerHTML={{ __html: before }} />
+                <StaticChecklistList items={list} />
+                <div dangerouslySetInnerHTML={{ __html: after }} />
+              </>
+            )
+          }
+          // Sem heading "checklist" no markdown: renderiza após o conteúdo (fallback)
+          return (
+            <>
+              <div dangerouslySetInnerHTML={{ __html: html }} />
+              <StaticChecklistList items={list} />
+            </>
+          )
+        }
+
+        return <div dangerouslySetInnerHTML={{ __html: html }} />
+      })()}
 
       {/* Quiz entry */}
       {section.type === 'quiz' && (
@@ -178,10 +206,10 @@ export default function SectionRenderer({
       )}
 
       {/* Checklist interativo — só para type='checklist' (Checklist Mestre) */}
-      {(() => {
+      {section.type === 'checklist' && (() => {
         const data = section.data as { checklist_items?: ChecklistItem[]; items?: ChecklistItem[] } | null
         const list = data?.checklist_items ?? data?.items ?? []
-        if (section.type === 'checklist' && list.length > 0) {
+        if (list.length > 0) {
           return (
             <InteractiveChecklist
               items={list}
@@ -191,10 +219,6 @@ export default function SectionRenderer({
               onCompleted={() => recordMilestone?.('first-checklist-completed', section.id)}
             />
           )
-        }
-        // type='linear' com checklist_items: lista informativa estática (não interativa)
-        if (section.type === 'linear' && list.length > 0) {
-          return <StaticChecklistList items={list} />
         }
         return null
       })()}

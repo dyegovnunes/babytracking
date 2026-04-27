@@ -9,7 +9,7 @@
 //   4. Marca visual <mark> aplicada no texto
 //   5. Ao recarregar: busca highlights do DB e re-aplica as marcas
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { supabase } from '../../lib/supabase'
 import type { GuideHighlight } from '../../types'
 
@@ -27,12 +27,20 @@ interface PendingHighlight {
   rangeRect: DOMRect
 }
 
+interface MarkPopover {
+  x: number
+  y: number
+  highlightId: string
+}
+
 export default function HighlightLayer({ sectionId, userId, contentRef, onHighlightSaved }: Props) {
   const [pending, setPending] = useState<PendingHighlight | null>(null)
   const [note, setNote] = useState('')
   const [saving, setSaving] = useState(false)
   const [highlights, setHighlights] = useState<GuideHighlight[]>([])
   const [savedFeedback, setSavedFeedback] = useState(false)
+  const [markPopover, setMarkPopover] = useState<MarkPopover | null>(null)
+  const [editingMark, setEditingMark] = useState<{ id: string; note: string } | null>(null)
   const popoverRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -112,6 +120,41 @@ export default function HighlightLayer({ sectionId, userId, contentRef, onHighli
     return () => document.removeEventListener('pointerup', onPointerUp)
   }, [contentRef])
 
+  // Clique em mark existente → abre popover de editar/deletar
+  useEffect(() => {
+    if (!contentRef.current) return
+    function onMarkClick(e: MouseEvent) {
+      const mark = (e.target as HTMLElement).closest('mark[data-highlight-id]') as HTMLElement | null
+      if (!mark) {
+        // Clique fora fecha o mark popover
+        setMarkPopover(null)
+        return
+      }
+      e.preventDefault()
+      e.stopPropagation()
+      const rect = mark.getBoundingClientRect()
+      const popoverHalfWidth = 120
+      const x = Math.max(popoverHalfWidth, Math.min(window.innerWidth - popoverHalfWidth, rect.left + rect.width / 2))
+      setMarkPopover({ x, y: rect.top + window.scrollY - 8, highlightId: mark.dataset.highlightId! })
+    }
+    const el = contentRef.current
+    el.addEventListener('click', onMarkClick)
+    return () => el.removeEventListener('click', onMarkClick)
+  }, [contentRef, highlights])
+
+  async function handleDeleteMark(id: string) {
+    await supabase.from('guide_highlights').delete().eq('id', id)
+    setHighlights(prev => prev.filter(h => h.id !== id))
+    setMarkPopover(null)
+  }
+
+  async function handleSaveMarkEdit(id: string, newNote: string) {
+    await supabase.from('guide_highlights').update({ note_md: newNote.trim() || null }).eq('id', id)
+    setHighlights(prev => prev.map(h => h.id === id ? { ...h, note_md: newNote.trim() || null } : h))
+    setEditingMark(null)
+    setMarkPopover(null)
+  }
+
   // Foca no textarea quando popover abre
   useEffect(() => {
     if (pending) {
@@ -119,11 +162,14 @@ export default function HighlightLayer({ sectionId, userId, contentRef, onHighli
     }
   }, [pending?.text])
 
-  // ESC fecha
+  // ESC fecha qualquer popover aberto
   useEffect(() => {
-    if (!pending) return
+    if (!pending && !markPopover) return
     function onKey(e: KeyboardEvent) {
-      if (e.key === 'Escape') { setPending(null); setNote('') }
+      if (e.key === 'Escape') {
+        setPending(null); setNote('')
+        setMarkPopover(null); setEditingMark(null)
+      }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
@@ -164,10 +210,10 @@ export default function HighlightLayer({ sectionId, userId, contentRef, onHighli
     window.getSelection()?.removeAllRanges()
   }
 
-  if (!pending) return null
+  if (!pending && !markPopover) return null
 
-  // Posição do popover: aparece acima da seleção, centrado
-  const popoverStyle: React.CSSProperties = {
+  // Posição do popover de nova anotação (só quando há pending)
+  const popoverStyle: React.CSSProperties = pending ? {
     position: 'absolute',
     left: pending.x,
     top: pending.y,
@@ -183,11 +229,13 @@ export default function HighlightLayer({ sectionId, userId, contentRef, onHighli
     padding: '12px 14px',
     fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif',
     animation: 'highlight-popover-in 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) both',
-  }
+  } : {}
 
-  const preview = pending.text.length > 60 ? pending.text.slice(0, 57) + '…' : pending.text
+  const preview = pending ? (pending.text.length > 60 ? pending.text.slice(0, 57) + '…' : pending.text) : ''
 
   return (
+    <>
+    {pending && (
     <div ref={popoverRef} style={popoverStyle}>
       {/* Feedback de salvo */}
       {savedFeedback && (
@@ -287,7 +335,21 @@ export default function HighlightLayer({ sectionId, userId, contentRef, onHighli
         </>
       )}
 
-      <style>{`
+    </div>
+    )}
+    {/* Popover ao clicar em mark existente */}
+    {markPopover && (
+      <MarkActionPopover
+        markPopover={markPopover}
+        highlights={highlights}
+        editingMark={editingMark}
+        setEditingMark={setEditingMark}
+        onDelete={handleDeleteMark}
+        onSaveEdit={handleSaveMarkEdit}
+        onClose={() => { setMarkPopover(null); setEditingMark(null) }}
+      />
+    )}
+    <style>{`
         @keyframes highlight-popover-in {
           from { opacity: 0; transform: translate(-50%, -88%); }
           to   { opacity: 1; transform: translate(-50%, -100%); }
@@ -297,10 +359,109 @@ export default function HighlightLayer({ sectionId, userId, contentRef, onHighli
           border-radius: 3px;
           padding: 1px 0;
           color: inherit;
+          cursor: pointer;
+        }
+        mark[data-highlight-id]:hover {
+          background: color-mix(in srgb, var(--r-accent) 42%, transparent);
         }
       `}</style>
+    </>
+  )
+}
+
+// Popover de editar/deletar uma marca já salva
+function MarkActionPopover({
+  markPopover, highlights, editingMark, setEditingMark,
+  onDelete, onSaveEdit, onClose,
+}: {
+  markPopover: MarkPopover
+  highlights: GuideHighlight[]
+  editingMark: { id: string; note: string } | null
+  setEditingMark: React.Dispatch<React.SetStateAction<{ id: string; note: string } | null>>
+  onDelete: (id: string) => void
+  onSaveEdit: (id: string, note: string) => void
+  onClose: () => void
+}) {
+  const h = highlights.find(x => x.id === markPopover.highlightId)
+  if (!h) return null
+
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        left: markPopover.x,
+        top: markPopover.y,
+        transform: 'translate(-50%, -100%)',
+        zIndex: 72,
+        width: 'min(280px, calc(100vw - 24px))',
+        background: 'var(--r-overlay)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: '1px solid var(--r-border-strong)',
+        borderRadius: 12,
+        boxShadow: '0 12px 32px var(--r-shadow)',
+        padding: '10px 12px',
+        fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif',
+        animation: 'highlight-popover-in 0.18s cubic-bezier(0.34, 1.56, 0.64, 1) both',
+      }}
+    >
+      <div style={{ fontSize: 12, fontStyle: 'italic', color: 'var(--r-accent)', marginBottom: 8, lineHeight: 1.4 }}>
+        "{h.anchor_text.length > 55 ? h.anchor_text.slice(0, 52) + '…' : h.anchor_text}"
+      </div>
+      {editingMark?.id === h.id ? (
+        <>
+          <textarea
+            autoFocus
+            value={editingMark.note}
+            onChange={e => setEditingMark(m => m ? { ...m, note: e.target.value } : null)}
+            rows={2}
+            placeholder="Anotação..."
+            style={{
+              width: '100%', padding: '7px 9px',
+              background: 'var(--r-surface)', border: '1px solid var(--r-accent)',
+              borderRadius: 7, color: 'var(--r-text)', fontFamily: 'inherit',
+              fontSize: 12, lineHeight: 1.5, resize: 'none', outline: 'none',
+              boxSizing: 'border-box', marginBottom: 7,
+            }}
+          />
+          <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
+            <button onClick={onClose} style={miniBtn}>Cancelar</button>
+            <button onClick={() => onSaveEdit(h.id, editingMark.note)} style={{ ...miniBtn, background: 'var(--r-accent)', color: 'var(--r-on-accent)', border: 'none' }}>Salvar</button>
+          </div>
+        </>
+      ) : (
+        <>
+          {h.note_md && (
+            <div style={{ fontSize: 12, color: 'var(--r-text)', lineHeight: 1.4, marginBottom: 8 }}>{h.note_md}</div>
+          )}
+          <div style={{ display: 'flex', gap: 6 }}>
+            <button
+              onClick={() => setEditingMark({ id: h.id, note: h.note_md ?? '' })}
+              style={{ ...miniBtn, flex: 1 }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 13 }}>edit</span>
+              Editar
+            </button>
+            <button
+              onClick={() => onDelete(h.id)}
+              style={{ ...miniBtn, flex: 1, color: '#f87171', borderColor: 'rgba(248,113,113,0.35)' }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 13 }}>delete</span>
+              Excluir
+            </button>
+          </div>
+        </>
+      )}
     </div>
   )
+}
+
+const miniBtn: React.CSSProperties = {
+  display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 4,
+  padding: '5px 10px', borderRadius: 6,
+  border: '1px solid var(--r-border)', background: 'transparent',
+  color: 'var(--r-text-muted)', fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif',
+  fontSize: 11, fontWeight: 600, cursor: 'pointer',
 }
 
 function wrapTextInElement(root: HTMLElement, text: string, id: string) {
