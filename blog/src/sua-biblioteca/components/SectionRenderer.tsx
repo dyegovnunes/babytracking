@@ -207,17 +207,25 @@ export default function SectionRenderer({
 
       {/* Checklist interativo — só para type='checklist' (Checklist Mestre) */}
       {section.type === 'checklist' && (() => {
-        const data = section.data as { checklist_items?: ChecklistItem[]; items?: ChecklistItem[] } | null
+        const data = section.data as { checklist_items?: ChecklistItem[]; items?: ChecklistItem[]; footer_md?: string } | null
         const list = data?.checklist_items ?? data?.items ?? []
         if (list.length > 0) {
           return (
-            <InteractiveChecklist
-              items={list}
-              sectionId={section.id}
-              userId={userId}
-              variant="card"
-              onCompleted={() => recordMilestone?.('first-checklist-completed', section.id)}
-            />
+            <>
+              <InteractiveChecklist
+                items={list}
+                sectionId={section.id}
+                userId={userId}
+                variant="card"
+                onCompleted={() => recordMilestone?.('first-checklist-completed', section.id)}
+              />
+              {data?.footer_md && (
+                <div
+                  style={{ marginTop: 32 }}
+                  dangerouslySetInnerHTML={{ __html: renderSectionMarkdown(data.footer_md) }}
+                />
+              )}
+            </>
           )
         }
         return null
@@ -242,11 +250,12 @@ export default function SectionRenderer({
 
       {/* Footer da seção: botão "marcar concluída" + navegação prev/next */}
       <div style={{ marginTop: 'clamp(40px, 8vw, 64px)', paddingTop: 28, borderTop: '1px solid var(--r-border)' }}>
+        {/* Ferramenta (checklist) não tem botão de conclusão — é uma ferramenta, não leitura */}
         <div style={{
           display: 'flex', flexDirection: 'column', alignItems: 'center',
           gap: 14, marginBottom: 28,
         }}>
-          {(isCompleted || completedAnimating) ? (
+          {section.type === 'checklist' ? null : (isCompleted || completedAnimating) ? (
             <div
               style={{
                 padding: '13px 26px',
@@ -291,7 +300,7 @@ export default function SectionRenderer({
               Marcar como concluída
             </button>
           )}
-          {!isCompleted && (
+          {section.type !== 'checklist' && !isCompleted && (
             <p style={{ fontSize: 12, color: 'var(--r-text-subtle)', margin: 0 }}>
               Ou rola até o final pra avançar pra próxima seção
             </p>
