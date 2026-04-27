@@ -1,63 +1,120 @@
 /* ─────────────────────────────────────────────────────────────────────────
  * Sua Biblioteca Yaya — tipografia editorial premium
- * Carrega dentro do leitor; não polui o resto do blog.
+ *
+ * Referências de leitura aplicadas:
+ *   - Substack/Stripe Press/The Atlantic: serif no corpo, ~19px desktop,
+ *     line-height 1.8, max-width ~65ch, generoso espaçamento entre parágrafos
+ *   - Fraunces (variable serif moderna) com opsz adaptável: corpo 14, h2 72,
+ *     h3 32 — assim o "design" da fonte muda com o tamanho (legibilidade
+ *     em texto, drama em títulos)
+ *   - Hanging punctuation, text-wrap: pretty, hyphens auto pra fluir melhor
+ *   - Cor do texto a 88% do branco (não 100%) reduz fadiga de leitura
+ *
+ * Carrega só dentro do leitor — não polui o resto do blog.
  * ───────────────────────────────────────────────────────────────────────── */
 
 .reader-root {
   --r-bg: #0d0a27;
   --r-surface: rgba(183, 159, 255, 0.04);
-  --r-text: rgba(231, 226, 255, 0.92);
+  --r-text: rgba(231, 226, 255, 0.88);          /* corpo: 88% pra reduzir glare */
+  --r-text-strong: rgba(231, 226, 255, 1);       /* títulos, strong */
   --r-text-muted: rgba(231, 226, 255, 0.55);
   --r-text-subtle: rgba(231, 226, 255, 0.4);
   --r-accent: #b79fff;
   --r-accent-glow: #d4c1ff;
   --r-border: rgba(183, 159, 255, 0.15);
-  --r-serif: 'Fraunces', Georgia, serif;
+  --r-serif: 'Fraunces', 'Source Serif Pro', Georgia, serif;
   --r-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
   background: var(--r-bg);
   color: var(--r-text);
-  font-family: var(--r-sans);
+  font-family: var(--r-serif);
   min-height: 100vh;
 }
 
 /* ── Tipografia geral do conteúdo ──────────────────────────────────────── */
 .reader-content {
-  font-family: var(--r-sans);
-  font-size: 17px;
-  line-height: 1.75;
+  /* SERIF NO CORPO — a mudança mais impactante. Fraunces opsz 14 = otimizada
+     pra leitura de texto, não pra display. */
+  font-family: var(--r-serif);
+  font-variation-settings: 'opsz' 14, 'SOFT' 0;
+  font-size: 18px;          /* base mobile */
+  line-height: 1.8;          /* respiro vertical */
+  letter-spacing: -0.003em;  /* compactação levíssima — Fraunces é wide */
   color: var(--r-text);
-  max-width: 65ch;
+  max-width: 64ch;            /* ~640px com 18px = sweet spot leitura */
   margin: 0 auto;
+  text-wrap: pretty;          /* evita órfãs/viúvas */
+  hanging-punctuation: first last;
+  hyphens: auto;
+  -webkit-hyphens: auto;
 }
 
-@media (min-width: 768px) {
-  .reader-content { font-size: 18px; }
+/* Mobile mantém 17px pra caber bem em telas pequenas */
+@media (max-width: 639px) {
+  .reader-content {
+    font-size: 17px;
+    line-height: 1.75;
+  }
 }
 
-.reader-content > * + * { margin-top: 1.25em; }
+/* Desktop maior pra leitura confortável */
+@media (min-width: 1024px) {
+  .reader-content {
+    font-size: 19px;
+    line-height: 1.82;
+    max-width: 65ch;
+  }
+}
 
+/* Espaçamento generoso entre blocos — chave da leitura "leve" */
+.reader-content > * + * {
+  margin-top: 1.5em;
+}
+
+/* Parágrafos com extra breathing-room entre si */
+.reader-content p + p {
+  margin-top: 1.4em;
+}
+
+/* ── Headings ──────────────────────────────────────────────────────────── */
 .reader-content h2 {
   font-family: var(--r-serif);
-  font-size: 1.85em;
-  font-weight: 700;
-  font-variation-settings: 'opsz' 32, 'SOFT' 30;
+  font-variation-settings: 'opsz' 72, 'SOFT' 30;
+  font-size: 1.65em;
+  font-weight: 600;        /* serif a 600 = elegante; 700 fica pesado */
   letter-spacing: -0.02em;
   line-height: 1.2;
-  color: rgb(231, 226, 255);
-  margin-top: 2.5em;
-  margin-bottom: 0.6em;
+  color: var(--r-text-strong);
+  margin-top: 3em;          /* MAIS respiro acima de h2 */
+  margin-bottom: 0.7em;
   scroll-margin-top: 80px;
+  text-wrap: balance;       /* evita títulos com 1 palavra na 2ª linha */
 }
 
 .reader-content h3 {
   font-family: var(--r-serif);
-  font-size: 1.35em;
+  font-variation-settings: 'opsz' 32, 'SOFT' 20;
+  font-size: 1.25em;
   font-weight: 600;
-  font-variation-settings: 'opsz' 24;
-  color: rgb(231, 226, 255);
-  margin-top: 2em;
+  letter-spacing: -0.01em;
+  color: var(--r-text-strong);
+  margin-top: 2.4em;
   margin-bottom: 0.4em;
   scroll-margin-top: 80px;
+  text-wrap: balance;
+}
+
+.reader-content h4 {
+  /* Subseções (####) — não querem ter peso de heading. Renderiza como label
+     bold inline com cor do accent, dá hierarquia sem quebrar fluxo */
+  font-family: var(--r-sans);
+  font-size: 0.82em;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--r-accent);
+  margin-top: 1.8em;
+  margin-bottom: 0.5em;
 }
 
 .reader-content p {
@@ -66,17 +123,21 @@
 }
 
 .reader-content strong {
-  color: rgb(231, 226, 255);
-  font-weight: 700;
+  color: var(--r-text-strong);
+  font-weight: 600;     /* serif: 600 lê melhor que 700 em destaques */
 }
 
-.reader-content em { color: rgba(231, 226, 255, 0.95); }
+.reader-content em {
+  color: var(--r-text);
+  font-style: italic;
+}
 
 .reader-content a {
   color: var(--r-accent);
   text-decoration: underline;
-  text-underline-offset: 3px;
-  text-decoration-color: rgba(183, 159, 255, 0.4);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  text-decoration-color: rgba(183, 159, 255, 0.35);
   transition: color 0.15s, text-decoration-color 0.15s;
 }
 .reader-content a:hover {
@@ -84,47 +145,84 @@
   text-decoration-color: var(--r-accent-glow);
 }
 
+/* ── Listas ────────────────────────────────────────────────────────────── */
 .reader-content ul, .reader-content ol {
-  padding-left: 1.5em;
-  margin: 1.25em 0;
+  padding-left: 1.6em;
+  margin: 1.5em 0;
 }
 .reader-content ul { list-style: disc; }
 .reader-content ol { list-style: decimal; }
-.reader-content li { margin-bottom: 0.35em; }
+.reader-content li {
+  margin-bottom: 0.55em;
+  padding-left: 0.3em;
+}
 .reader-content li::marker { color: var(--r-accent); }
-
-.reader-content hr {
-  border: none;
-  border-top: 1px solid var(--r-border);
-  margin: 2.5em 0;
+.reader-content li > ul, .reader-content li > ol {
+  margin: 0.5em 0;
 }
 
+/* Listas de checklist (- [ ] item) viram pretty checkboxes */
+.reader-content li input[type="checkbox"] {
+  margin-right: 0.5em;
+  accent-color: var(--r-accent);
+}
+
+/* ── Separadores ───────────────────────────────────────────────────────── */
+.reader-content hr {
+  border: none;
+  text-align: center;
+  margin: 3em 0;
+  height: 0.5em;
+}
+.reader-content hr::before {
+  content: '· · ·';
+  color: var(--r-text-subtle);
+  letter-spacing: 0.6em;
+  font-size: 0.9em;
+}
+
+/* ── Code inline ───────────────────────────────────────────────────────── */
 .reader-content code {
   background: rgba(183, 159, 255, 0.1);
   padding: 0.1em 0.4em;
   border-radius: 4px;
   font-size: 0.88em;
   color: var(--r-accent);
+  font-family: 'Fira Code', Menlo, monospace;
 }
 
+/* ── Imagens ───────────────────────────────────────────────────────────── */
 .reader-content img {
   max-width: 100%;
   height: auto;
-  border-radius: 10px;
-  margin: 1.75em 0;
+  border-radius: 12px;
+  margin: 2em auto;
+  display: block;
   border: 1px solid var(--r-border);
+}
+
+.reader-content figure {
+  margin: 2.5em auto;
+}
+.reader-content figcaption {
+  font-family: var(--r-sans);
+  font-size: 0.82em;
+  color: var(--r-text-muted);
+  text-align: center;
+  margin-top: 0.6em;
+  font-style: italic;
 }
 
 /* ── Drop cap no primeiro parágrafo ────────────────────────────────────── */
 @media (min-width: 600px) {
   .reader-content p.drop-cap::first-letter {
     font-family: var(--r-serif);
-    font-size: 4.5em;
-    font-weight: 800;
-    font-variation-settings: 'opsz' 144, 'SOFT' 0;
-    line-height: 0.85;
+    font-variation-settings: 'opsz' 144, 'SOFT' 50;
+    font-size: 4.4em;
+    font-weight: 700;
+    line-height: 0.86;
     float: left;
-    margin: 0.05em 0.12em 0 -0.04em;
+    margin: 0.05em 0.12em -0.05em -0.04em;
     color: var(--r-accent);
     background: linear-gradient(135deg, var(--r-accent) 0%, var(--r-accent-glow) 100%);
     -webkit-background-clip: text;
@@ -136,50 +234,58 @@
 /* ── Pull quote ────────────────────────────────────────────────────────── */
 .reader-content .pull-quote {
   font-family: var(--r-serif);
+  font-variation-settings: 'opsz' 72, 'SOFT' 60;
   font-style: italic;
-  font-size: 1.45em;
+  font-size: 1.5em;
   font-weight: 500;
-  font-variation-settings: 'opsz' 72, 'SOFT' 50;
   line-height: 1.4;
-  color: rgb(231, 226, 255);
+  color: var(--r-text-strong);
   border: none;
   padding: 1.5em 0;
-  margin: 2em 0;
+  margin: 2.5em auto;
   position: relative;
   text-align: center;
   letter-spacing: -0.01em;
+  max-width: 90%;
 }
 .reader-content .pull-quote::before {
   content: '"';
   font-size: 4em;
   color: var(--r-accent);
   position: absolute;
-  top: -0.1em;
+  top: -0.15em;
   left: 50%;
   transform: translateX(-50%);
-  opacity: 0.4;
+  opacity: 0.35;
   line-height: 1;
   font-family: var(--r-serif);
+  font-variation-settings: 'opsz' 144;
 }
 
 /* ── Blockquote padrão ─────────────────────────────────────────────────── */
 .reader-content blockquote {
   border-left: 3px solid var(--r-accent);
-  padding-left: 1.25em;
+  padding-left: 1.4em;
+  margin: 2em 0;
   color: rgba(231, 226, 255, 0.78);
   font-style: italic;
-  margin: 1.75em 0;
+  font-size: 1.02em;
 }
 
 /* ── Caixas de destaque (callouts) ─────────────────────────────────────── */
 .reader-content .callout {
-  margin: 2em 0;
-  padding: 1.5em 1.5em 1.5em 1.75em;
+  margin: 2.5em 0;
+  padding: 1.6em 1.6em 1.4em 1.85em;
   border-radius: 14px;
   border: 1px solid var(--r-border);
   background: var(--r-surface);
   position: relative;
   overflow: hidden;
+  /* Callouts usam sans pra contrastar com serif do corpo — quebra visual
+     intencional (este é um aside, não fluxo principal) */
+  font-family: var(--r-sans);
+  font-size: 0.94em;
+  line-height: 1.65;
 }
 .reader-content .callout::before {
   content: '';
@@ -191,7 +297,7 @@
   display: flex;
   align-items: center;
   gap: 0.5em;
-  margin-bottom: 0.6em;
+  margin-bottom: 0.7em;
 }
 .reader-content .callout .callout-icon {
   font-size: 22px;
@@ -199,14 +305,15 @@
 }
 .reader-content .callout .callout-label {
   font-family: var(--r-sans);
-  font-size: 0.78em;
+  font-size: 0.82em;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
-.reader-content .callout .callout-body > * { margin: 0 0 0.6em; }
+.reader-content .callout .callout-body > * { margin: 0 0 0.7em; }
 .reader-content .callout .callout-body > *:last-child { margin-bottom: 0; }
-.reader-content .callout .callout-body { font-size: 0.96em; }
+.reader-content .callout .callout-body strong { color: var(--r-text-strong); }
+.reader-content .callout .callout-body p + p { margin-top: 0.7em; }
 
 /* Variants — gradiente lateral por tipo */
 .reader-content .callout-ciencia::before { background: linear-gradient(180deg, #b79fff 0%, #d4c1ff 100%); }
@@ -225,10 +332,40 @@
 .reader-content .callout-yaya .callout-icon,
 .reader-content .callout-yaya .callout-label { color: #70c4ff; }
 
+/* ── Tabelas (raras mas precisam ficar legíveis) ───────────────────────── */
+.reader-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 2em 0;
+  font-family: var(--r-sans);
+  font-size: 0.92em;
+  border: 1px solid var(--r-border);
+  border-radius: 10px;
+  overflow: hidden;
+  display: block;
+  overflow-x: auto;
+}
+.reader-content thead {
+  background: rgba(183,159,255,0.06);
+}
+.reader-content th {
+  padding: 0.85em 1em;
+  text-align: left;
+  font-weight: 700;
+  color: var(--r-text-strong);
+  border-bottom: 1px solid var(--r-border);
+}
+.reader-content td {
+  padding: 0.85em 1em;
+  border-bottom: 1px solid rgba(183,159,255,0.07);
+  vertical-align: top;
+}
+.reader-content tbody tr:last-child td { border-bottom: none; }
+
 /* ── Highlights aplicados ao texto ─────────────────────────────────────── */
-.reader-content .highlight-yellow { background: rgba(255, 200, 87, 0.28); padding: 0 0.05em; border-radius: 2px; }
-.reader-content .highlight-pink   { background: rgba(255, 122, 144, 0.28); padding: 0 0.05em; border-radius: 2px; }
-.reader-content .highlight-purple { background: rgba(183, 159, 255, 0.32); padding: 0 0.05em; border-radius: 2px; }
+.reader-content .highlight-yellow { background: rgba(255, 200, 87, 0.28); padding: 0.05em 0.05em; border-radius: 3px; }
+.reader-content .highlight-pink   { background: rgba(255, 122, 144, 0.28); padding: 0.05em 0.05em; border-radius: 3px; }
+.reader-content .highlight-purple { background: rgba(183, 159, 255, 0.32); padding: 0.05em 0.05em; border-radius: 3px; }
 
 /* ── Reading mode (tudo escondido exceto conteúdo) ─────────────────────── */
 .reader-root.reading-mode .reader-topbar,
@@ -246,7 +383,7 @@
 @media print {
   .reader-root { background: white !important; color: #1a1334 !important; }
   .reader-topbar, .reader-sidebar, .reader-fab, .reader-actions { display: none !important; }
-  .reader-content { max-width: none; font-size: 12pt; color: #1a1334; }
+  .reader-content { max-width: none; font-size: 12pt; color: #1a1334; line-height: 1.6; }
   .reader-content h2, .reader-content h3 { color: #1a1334; page-break-after: avoid; }
   .reader-content .callout {
     border: 1px solid #ccc;

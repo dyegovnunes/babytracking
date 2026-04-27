@@ -18,9 +18,35 @@ interface Props {
 const STORAGE_KEY_LAST_SECTION = (guideId: string) => `yaya_reader_last_section_${guideId}`
 
 export default function GuideLayout({ guide, sections, userId }: Props) {
-  // Lista plana de seções "lê-íveis" — exclui parts (que são chapter openers
-  // mostrados ao entrar na primeira seção filha)
-  const flatSections = useMemo(() => sections, [sections])
+  // Sequência hierárquica de leitura: cada part vem antes das suas filhas, na
+  // ordem editorial. Sem isso, .order('order_index') do Supabase intercala
+  // parts e sections no mesmo nível e o "próximo" pula entre partes.
+  // Resultado: [Introdução, sub_intro_1, sub_intro_2, Parte 1, 1.1, 1.2, ..., Parte 2, 2.1, ...]
+  const flatSections = useMemo(() => {
+    const parts = sections
+      .filter(s => s.parent_id === null)
+      .sort((a, b) => a.order_index - b.order_index)
+    const childrenByParent = new Map<string, typeof sections>()
+    for (const s of sections) {
+      if (s.parent_id) {
+        const list = childrenByParent.get(s.parent_id) ?? []
+        list.push(s)
+        childrenByParent.set(s.parent_id, list)
+      }
+    }
+    const ordered: typeof sections = []
+    for (const part of parts) {
+      ordered.push(part)
+      const children = (childrenByParent.get(part.id) ?? [])
+        .sort((a, b) => a.order_index - b.order_index)
+      ordered.push(...children)
+    }
+    // Sections órfãs (sem parent e que não são parts já no array) — fallback
+    for (const s of sections) {
+      if (!ordered.includes(s)) ordered.push(s)
+    }
+    return ordered
+  }, [sections])
 
   const firstSectionId = flatSections[0]?.id ?? null
 
