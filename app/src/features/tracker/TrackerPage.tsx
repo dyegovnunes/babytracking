@@ -40,6 +40,7 @@ import type { BabyVaccine } from '../vaccines/vaccineData'
 import type { BabyMilestone } from '../milestones/milestoneData'
 
 import { TrackerSkeleton } from '../../components/ui/Skeleton'
+import { useGridItems } from './useGridItems'
 import type { LogEntry } from '../../types'
 
 const PROJECTION_CATEGORIES: string[] = ['feed', 'diaper', 'sleep_nap', 'sleep_awake', 'bath']
@@ -49,6 +50,9 @@ export default function TrackerPage() {
   const dispatch = useAppDispatch()
   const { user } = useAuth()
   const myRole = useMyRole()
+  // Grid configurável: carrega baby_grid_items do Supabase.
+  // Fallback automático para DEFAULT_EVENTS se vazio ou erro — tracker nunca quebra.
+  const { gridEvents } = useGridItems(baby?.id)
   const nowRaw = useTimer()
   // Arredonda `now` pro minuto corrente. Ticks do useTimer (a cada ~30s)
   // criavam um Date novo que cascateava recálculos em useMedications.dayStatuses
@@ -324,7 +328,7 @@ export default function TrackerPage() {
     <div className="pb-4 page-enter">
       <HeroIdentity streak={myRole !== 'caregiver' ? streak : undefined} />
 
-      <ActivityGrid events={DEFAULT_EVENTS} logs={logs} onLog={handleLog} highlightedEventIds={highlightedEventIds} />
+      <ActivityGrid events={gridEvents} logs={logs} onLog={handleLog} highlightedEventIds={highlightedEventIds} />
 
       <OutOfHoursBanner />
 

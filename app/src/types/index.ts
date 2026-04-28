@@ -68,3 +68,14 @@ export interface Projection {
   lastEvent: string
   lastTime: Date
 }
+
+/** Uma linha da tabela baby_grid_items — config de visibilidade do grid por bebê */
+export interface GridItem {
+  id: string
+  eventId: string
+  enabled: boolean
+  sortOrder: number
+  suggestedAt?: string | null
+  acceptedAt?: string | null
+  dismissedAt?: string | null
+}
