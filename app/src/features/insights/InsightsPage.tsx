@@ -14,6 +14,7 @@ import { PaywallModal } from '../../components/ui/PaywallModal'
 import { hapticLight } from '../../lib/haptics'
 import { InsightsSkeleton } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
+import { ContentSection } from '../content'
 
 const FREE_INSIGHT_LIMIT = 2
 
@@ -58,6 +59,11 @@ export default function InsightsPage() {
   const hiddenCount = isPremium
     ? 0
     : Math.max(0, insights.length - FREE_INSIGHT_LIMIT)
+
+  // Idade do bebê em semanas para artigos contextuais do blog
+  const babyAgeWeeks = baby?.birthDate
+    ? Math.max(0, Math.floor((Date.now() - new Date(baby.birthDate).getTime()) / (7 * 24 * 60 * 60 * 1000)))
+    : 0
 
   const handleOpenSharedReport = () => {
     hapticLight()
@@ -128,6 +134,11 @@ export default function InsightsPage() {
             {visibleInsights.map((insight) => (
               <InsightCard key={insight.id} {...insight} />
             ))}
+
+            {/* Artigos contextuais do blog — "Entenda esta fase" */}
+            {babyAgeWeeks > 0 && (
+              <ContentSection babyAgeWeeks={babyAgeWeeks} />
+            )}
 
             {/* Paywall banner (free users com insights escondidos) */}
             {!isPremium && hiddenCount > 0 && (
