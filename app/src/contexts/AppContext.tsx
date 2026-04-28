@@ -374,6 +374,7 @@ export async function addLog(
   babyId: string,
   ml?: number,
   userId?: string,
+  payload?: Record<string, unknown> | null,
 ): Promise<LogEntry | null> {
   const timestamp = Date.now()
 
@@ -385,6 +386,7 @@ export async function addLog(
       timestamp,
       ml: ml ?? null,
       created_by: userId ?? null,
+      payload: payload ?? null,
     })
     .select()
     .single()
@@ -397,6 +399,7 @@ export async function addLog(
     timestamp: data.timestamp,
     ml: data.ml ?? undefined,
     createdBy: data.created_by ?? undefined,
+    payload: data.payload ?? undefined,
   }
 
   dispatch({ type: 'ADD_LOG', log })

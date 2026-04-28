@@ -351,6 +351,56 @@ serve(async (req) => {
         }
       }
     }
+    // ─── 2.5 PHASE TRANSITION 6 MONTHS (once per baby, lifetime dedup) ───────
+    // Fires every run but sends at most once per baby (dedup type = phase_6m_{babyId}).
+    // Checks if today (BRT) matches the baby's exact 6-month birthday.
+    {
+      const brtDateStr = new Date(now.getTime() - 3 * 3600 * 1000).toISOString().slice(0, 10);
+
+      for (const [babyId, targets] of babyTokens) {
+        const birthDate = babyBirthDates.get(babyId);
+        if (!birthDate) continue;
+
+        // Calculate exact 6-month date (setMonth handles month-length edge cases)
+        const d = new Date(birthDate);
+        d.setMonth(d.getMonth() + 6);
+        const sixMonthDateStr = d.toISOString().slice(0, 10);
+        if (brtDateStr !== sixMonthDateStr) continue;
+
+        // Lifetime dedup: only ever send once per baby
+        const dedupType = `phase_6m_${babyId}`;
+        const { data: existingLog } = await supabase
+          .from('push_log')
+          .select('id')
+          .eq('baby_id', babyId)
+          .eq('type', dedupType)
+          .limit(1);
+        if (existingLog && existingLog.length > 0) continue;
+
+        const babyName = babyNames.get(babyId) ?? 'Bebê';
+        const message: PushMessage = {
+          title: `${babyName} completa 6 meses hoje! 🎉`,
+          body: `Uma fase incrível começa: introdução alimentar, mais autonomia e muita descoberta. Registre cada momento!`,
+          type: 'phase_transition',
+        };
+
+        for (const target of targets) {
+          const prefs = prefsMap.get(`${target.userId}_${babyId}`);
+          if (prefs && !prefs.enabled) continue;
+          if (prefs && isInQuietHours(prefs, now)) continue;
+
+          pushPromises.push(
+            sendFCMPush(target.token, message).then(async (success) => {
+              if (success) {
+                totalSent++;
+                await logPush(target.userId, babyId, dedupType, message.title, message.body);
+              }
+            }),
+          );
+          break; // Send only to first token per user (avoid duplicates across devices)
+        }
+      }
+    }
     // ─────────────────────────────────────────────────────────────────────────
 
     await Promise.allSettled(pushPromises);

@@ -1,7 +1,7 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useEffect } from 'react'
 import { useAppState, useAppDispatch, addLog, updateLog, deleteLog } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
-import { DEFAULT_EVENTS } from '../../lib/constants'
+import { DEFAULT_EVENTS, EVENT_CATALOG } from '../../lib/constants'
 import { getNextProjection } from './projections'
 import { useTimer } from '../../hooks/useTimer'
 import { hapticSuccess, hapticLight, hapticMedium } from '../../lib/haptics'
@@ -41,7 +41,9 @@ import type { BabyMilestone } from '../milestones/milestoneData'
 
 import { TrackerSkeleton } from '../../components/ui/Skeleton'
 import { useGridItems } from './useGridItems'
-import type { LogEntry } from '../../types'
+import MealModal from './components/MealModal'
+import MoodSheet from './components/MoodSheet'
+import type { LogEntry, MealPayload, MoodPayload } from '../../types'
 
 const PROJECTION_CATEGORIES: string[] = ['feed', 'diaper', 'sleep_nap', 'sleep_awake', 'bath']
 
@@ -52,7 +54,14 @@ export default function TrackerPage() {
   const myRole = useMyRole()
   // Grid configurável: carrega baby_grid_items do Supabase.
   // Fallback automático para DEFAULT_EVENTS se vazio ou erro — tracker nunca quebra.
-  const { gridEvents } = useGridItems(baby?.id)
+  const {
+    gridEvents,
+    pendingSuggestions,
+    knownEventIds,
+    seedSuggestion,
+    acceptSuggestion,
+    dismissSuggestion,
+  } = useGridItems(baby?.id)
   const nowRaw = useTimer()
   // Arredonda `now` pro minuto corrente. Ticks do useTimer (a cada ~30s)
   // criavam um Date novo que cascateava recálculos em useMedications.dayStatuses
@@ -214,17 +223,33 @@ export default function TrackerPage() {
   )
 
   const [bottleModalOpen, setBottleModalOpen] = useState(false)
+  const [mealModalOpen, setMealModalOpen] = useState(false)
+  const [moodSheetOpen, setMoodSheetOpen] = useState(false)
   const [editingLog, setEditingLog] = useState<LogEntry | null>(null)
   const [toast, setToast] = useState<string | null>(null)
   const [showAdModal, setShowAdModal] = useState(false)
   const [showPaywall, setShowPaywall] = useState(false)
   const { checkAndRecord, recordsToday, dailyLimit, grantBonusRecords } = useDailyLimit()
 
+  // Semeia sugestões de eventos por faixa etária — idempotente (DB tem UNIQUE constraint)
+  useEffect(() => {
+    if (!baby || knownEventIds.size === 0) return
+    const ageMonths = ageDays > 0 ? ageDays / 30.4375 : 0
+    // Refeição sugerida a partir de 6 meses
+    if (ageMonths >= 6 && !knownEventIds.has('meal')) {
+      seedSuggestion('meal', 9)
+    }
+    // Humor sugerido a partir de 12 meses
+    if (ageMonths >= 12 && !knownEventIds.has('mood')) {
+      seedSuggestion('mood', 10)
+    }
+  }, [baby, knownEventIds, ageDays, seedSuggestion])
+
   const handleLog = useCallback(
     async (eventId: string) => {
       if (!baby) return
 
-      const event = DEFAULT_EVENTS.find((e) => e.id === eventId)
+      const event = EVENT_CATALOG.find((e) => e.id === eventId)
       if (!event) return
 
       // Check limit at click-time using real-time count (not stale state)
@@ -240,6 +265,18 @@ export default function TrackerPage() {
         return
       }
 
+      if (eventId === 'meal') {
+        hapticLight()
+        setMealModalOpen(true)
+        return
+      }
+
+      if (eventId === 'mood') {
+        hapticLight()
+        setMoodSheetOpen(true)
+        return
+      }
+
       const log = await addLog(dispatch, eventId, baby.id, undefined, user?.id)
       if (log) {
         hapticSuccess()
@@ -247,6 +284,32 @@ export default function TrackerPage() {
       }
     },
     [baby, dispatch, user, checkAndRecord],
+  )
+
+  const handleMealConfirm = useCallback(
+    async (payload: MealPayload) => {
+      if (!baby) return
+      setMealModalOpen(false)
+      const log = await addLog(dispatch, 'meal', baby.id, undefined, user?.id, payload as unknown as Record<string, unknown>)
+      if (log) {
+        hapticSuccess()
+        setToast('Refeição registrada!')
+      }
+    },
+    [baby, dispatch, user],
+  )
+
+  const handleMoodConfirm = useCallback(
+    async (payload: MoodPayload) => {
+      if (!baby) return
+      setMoodSheetOpen(false)
+      const log = await addLog(dispatch, 'mood', baby.id, undefined, user?.id, payload as unknown as Record<string, unknown>)
+      if (log) {
+        hapticSuccess()
+        setToast('Humor registrado!')
+      }
+    },
+    [baby, dispatch, user],
   )
 
   const handleBottleConfirm = useCallback(
@@ -330,6 +393,39 @@ export default function TrackerPage() {
 
       <ActivityGrid events={gridEvents} logs={logs} onLog={handleLog} highlightedEventIds={highlightedEventIds} />
 
+      {/* Cards de sugestão de novos eventos — aparecem uma vez, nunca repetem */}
+      {pendingSuggestions.map((ev) => (
+        <div key={ev.id} className="mx-5 mt-3 bg-primary/8 border border-primary/20 rounded-md p-4">
+          <div className="flex items-start gap-3">
+            <span className="text-2xl flex-shrink-0">{ev.emoji}</span>
+            <div className="flex-1 min-w-0">
+              <p className="font-label text-sm font-semibold text-on-surface">
+                Novo: {ev.label}
+              </p>
+              <p className="font-body text-xs text-on-surface-variant mt-0.5">
+                {ev.id === 'meal'
+                  ? `A ${baby?.name ?? 'bebê'} já está na fase de introdução alimentar! Quer adicionar Refeição ao painel?`
+                  : `Que tal registrar o humor de ${baby?.name ?? 'bebê'}? Adicionar ao painel?`}
+              </p>
+            </div>
+          </div>
+          <div className="flex gap-2 mt-3">
+            <button
+              onClick={() => { hapticSuccess(); acceptSuggestion(ev.id) }}
+              className="flex-1 py-2 rounded-md bg-primary text-on-primary font-label text-xs font-semibold"
+            >
+              Adicionar
+            </button>
+            <button
+              onClick={() => { hapticLight(); dismissSuggestion(ev.id) }}
+              className="px-4 py-2 rounded-md border border-outline-variant text-on-surface-variant font-label text-xs"
+            >
+              Agora não
+            </button>
+          </div>
+        </div>
+      ))}
+
       <OutOfHoursBanner />
 
       <div className="mt-4">
@@ -407,6 +503,22 @@ export default function TrackerPage() {
         onClose={() => setShowPaywall(false)}
         trigger="daily_limit"
       />
+
+      {mealModalOpen && baby && (
+        <MealModal
+          babyName={baby.name}
+          onConfirm={handleMealConfirm}
+          onClose={() => setMealModalOpen(false)}
+        />
+      )}
+
+      {moodSheetOpen && baby && (
+        <MoodSheet
+          babyName={baby.name}
+          onConfirm={handleMoodConfirm}
+          onClose={() => setMoodSheetOpen(false)}
+        />
+      )}
 
       {toast && <Toast message={toast} onDismiss={() => setToast(null)} />}
 

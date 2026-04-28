@@ -12,6 +12,22 @@ export interface EventType {
   hasDuration?: boolean
 }
 
+/** Payload de registro de refeição (armazenado em logs.payload jsonb) */
+export interface MealPayload {
+  food?: string
+  method?: 'pureed' | 'blw' | 'mixed' | 'breast_plus_solid'
+  acceptance?: 'loved' | 'accepted' | 'refused' | 'reaction'
+  isNewFood?: boolean
+  allergenKey?: string
+  reactionNote?: string
+}
+
+/** Payload de registro de humor (armazenado em logs.payload jsonb) */
+export interface MoodPayload {
+  level: 1 | 2 | 3
+  note?: string
+}
+
 export interface LogEntry {
   id: string
   eventId: string
@@ -20,6 +36,7 @@ export interface LogEntry {
   duration?: number
   notes?: string
   createdBy?: string
+  payload?: MealPayload | MoodPayload | Record<string, unknown> | null
 }
 
 export interface IntervalConfig {

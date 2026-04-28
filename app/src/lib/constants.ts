@@ -26,3 +26,15 @@ export const CATEGORY_LABELS: Record<string, string> = {
   sleep: 'Sono',
   care: 'Cuidados',
 }
+
+/**
+ * Catálogo completo de eventos — inclui os 9 padrão + eventos opcionais
+ * que podem ser sugeridos/habilitados via baby_grid_items.
+ * Usar como dicionário de resolução eventId → EventType em handlers de log.
+ * O grid do TrackerPage usa useGridItems (que resolve via EVENT_CATALOG).
+ */
+export const EVENT_CATALOG: EventType[] = [
+  ...DEFAULT_EVENTS,
+  { id: 'meal', label: 'Refeição', emoji: '🥣', icon: '', color: 'secondary', category: 'care' },
+  { id: 'mood', label: 'Humor',    emoji: '😊', icon: '', color: 'secondary', category: 'care' },
+]
