@@ -1,10 +1,10 @@
 // GuideTopbar — barra superior fixa, fina, com:
-//   - botão menu (mobile) / colapsa-sidebar (desktop)
-//   - título do guia (esquerda, pequeno) + título da seção atual (centro)
-//   - menu (sair, baixar PDF, modo leitura)
-//   - barra de progresso geral animada conforme scroll
+//   - botão voltar (esquerda) + hambúrguer (sidebar)
+//   - título do guia (esquerda, só desktop) + título da seção (centro)
+//   - ícones diretos: tema, modo leitura, imprimir (direita)
+//   - barra de progresso de scroll na seção atual (bottom)
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import type { Guide, GuideSection } from '../../types'
 
 interface Props {
@@ -23,52 +23,26 @@ export default function GuideTopbar({
   onToggleSidebar, onToggleReadingMode, readingMode,
   onToggleTheme, theme,
 }: Props) {
-  // Barra mostra apenas o progresso de scroll na seção atual.
-  // Ao trocar de seção, reseta pra 0. Quando a seção é toda visível
-  // (docHeight ≤ 0), assume 100% — leitora já viu tudo.
   const [scrollProgress, setScrollProgress] = useState(0)
-  const [menuOpen, setMenuOpen] = useState(false)
-  const menuRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    // Reset ao mudar seção (evita "começar preenchida" ao navegar)
     setScrollProgress(0)
-    // Calcula progresso inicial após layout settle
     const calc = () => {
       const docHeight = document.documentElement.scrollHeight - window.innerHeight
-      if (docHeight <= 4) {
-        // Conteúdo cabe inteiro na viewport — 100%
-        setScrollProgress(1)
-        return
-      }
-      const ratio = Math.max(0, Math.min(1, window.scrollY / docHeight))
-      setScrollProgress(ratio)
+      if (docHeight <= 4) { setScrollProgress(1); return }
+      setScrollProgress(Math.max(0, Math.min(1, window.scrollY / docHeight)))
     }
-    function onScroll() { calc() }
-    // Recalcula em scroll, resize e resize observer
-    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('scroll', calc, { passive: true })
     window.addEventListener('resize', calc)
-    // Após layout (resume reading scroll, imagens carregando, etc)
     const t1 = window.setTimeout(calc, 100)
     const t2 = window.setTimeout(calc, 800)
     return () => {
-      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('scroll', calc)
       window.removeEventListener('resize', calc)
       window.clearTimeout(t1)
       window.clearTimeout(t2)
     }
   }, [currentSection?.id])
-
-  // Fecha menu ao clicar fora
-  useEffect(() => {
-    function onClick(e: MouseEvent) {
-      if (menuOpen && menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setMenuOpen(false)
-      }
-    }
-    window.addEventListener('mousedown', onClick)
-    return () => window.removeEventListener('mousedown', onClick)
-  }, [menuOpen])
 
   function handleBackToLibrary() {
     window.location.href = 'https://blog.yayababy.app/sua-biblioteca/'
@@ -91,14 +65,11 @@ export default function GuideTopbar({
         padding: '0 8px',
         paddingTop: 'env(safe-area-inset-top, 0px)',
         gap: 4,
-        transition: 'opacity 0.4s',
-        // overflow: visible (não 'hidden') pra dropdown do menu poder
-        // sair do header. A contenção horizontal é feita no body/reader-root.
         maxWidth: '100vw',
         width: '100%',
       }}
     >
-      {/* Voltar à biblioteca */}
+      {/* Esquerda: voltar + hambúrguer */}
       <button
         onClick={handleBackToLibrary}
         aria-label="Voltar à biblioteca"
@@ -108,166 +79,107 @@ export default function GuideTopbar({
         <span className="material-symbols-outlined" style={{ fontSize: 24 }}>arrow_back</span>
       </button>
 
-      {/* Menu button */}
       <button
         onClick={onToggleSidebar}
         aria-label="Abrir índice"
+        title="Índice"
         style={iconBtn}
       >
         <span className="material-symbols-outlined" style={{ fontSize: 24 }}>menu</span>
       </button>
 
-      {/* Título do guia (esquerda) — só desktop */}
+      {/* Título do guia — só desktop */}
       <div style={{ minWidth: 0, flex: '0 0 auto', marginLeft: 4 }} className="topbar-guide-title">
         <div style={{ fontSize: 10, color: 'var(--r-text-subtle)', letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 700, lineHeight: 1.2 }}>
           Sua Biblioteca
         </div>
-        <div
-          style={{
-            fontFamily: 'Manrope, system-ui, sans-serif',
-            fontSize: 14,
-            fontWeight: 800,
-            letterSpacing: '-0.015em',
-            color: 'var(--r-text-strong)',
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            maxWidth: 220,
-            lineHeight: 1.2,
-          }}
-        >
+        <div style={{
+          fontFamily: 'Manrope, system-ui, sans-serif',
+          fontSize: 14, fontWeight: 800,
+          letterSpacing: '-0.015em',
+          color: 'var(--r-text-strong)',
+          whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+          maxWidth: 220, lineHeight: 1.2,
+        }}>
           {guide.title}
         </div>
       </div>
 
-      {/* Título da seção atual (centro) — única identificação no mobile */}
+      {/* Título da seção atual (centro) */}
       <div
         className="topbar-section-title"
-        style={{
-          flex: 1,
-          textAlign: 'center',
-          minWidth: 0,
-          padding: '0 8px',
-        }}
+        style={{ flex: 1, textAlign: 'center', minWidth: 0, padding: '0 8px' }}
       >
         {currentSection && (
-          <div
-            style={{
-              fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif',
-              fontSize: 13,
-              color: 'var(--r-text)',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              fontWeight: 600,
-              lineHeight: 1.3,
-            }}
-          >
+          <div style={{
+            fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif',
+            fontSize: 13, fontWeight: 600,
+            color: 'var(--r-text)',
+            whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+            lineHeight: 1.3,
+          }}>
             {currentSection.title}
           </div>
         )}
       </div>
 
-      {/* Menu de ações */}
-      <div ref={menuRef} style={{ position: 'relative' }}>
-        <button
-          onClick={() => setMenuOpen(o => !o)}
-          aria-label="Menu"
-          style={iconBtn}
-        >
-          <span className="material-symbols-outlined" style={{ fontSize: 22 }}>more_vert</span>
-        </button>
-        {menuOpen && (
-          <div
-            style={{
-              position: 'absolute',
-              top: '100%',
-              right: 0,
-              marginTop: 8,
-              minWidth: 220,
-              background: 'var(--r-overlay)',
-              backdropFilter: 'blur(20px)',
-              border: '1px solid var(--r-border)',
-              borderRadius: 10,
-              padding: 6,
-              boxShadow: '0 10px 40px var(--r-shadow)',
-            }}
-          >
-            <MenuItem
-              icon={theme === 'dark' ? 'light_mode' : 'dark_mode'}
-              label={theme === 'dark' ? 'Tema claro' : 'Tema escuro'}
-              onClick={() => { onToggleTheme(); setMenuOpen(false) }}
-            />
-            <MenuItem
-              icon={readingMode ? 'fullscreen_exit' : 'visibility'}
-              label={readingMode ? 'Sair do modo leitura' : 'Modo leitura (F)'}
-              onClick={() => { onToggleReadingMode(); setMenuOpen(false) }}
-            />
-            <MenuItem
-              icon="print"
-              label="Imprimir esta seção"
-              onClick={() => { window.print(); setMenuOpen(false) }}
-            />
-            <MenuDivider />
-            <MenuItem
-              icon="arrow_back"
-              label="Voltar à biblioteca"
-              onClick={handleBackToLibrary}
-            />
-          </div>
-        )}
-      </div>
+      {/* Direita: ícones de ação diretos */}
+      <button
+        onClick={onToggleTheme}
+        aria-label={theme === 'dark' ? 'Tema claro' : 'Tema escuro'}
+        title={theme === 'dark' ? 'Tema claro' : 'Tema escuro'}
+        style={iconBtn}
+      >
+        <span className="material-symbols-outlined" style={{ fontSize: 22 }}>
+          {theme === 'dark' ? 'light_mode' : 'dark_mode'}
+        </span>
+      </button>
 
-      {/* Barra de progresso de leitura da seção atual */}
-      <div
+      <button
+        onClick={onToggleReadingMode}
+        aria-label={readingMode ? 'Sair do modo leitura' : 'Modo leitura'}
+        title={readingMode ? 'Sair do modo leitura (F)' : 'Modo leitura (F)'}
         style={{
-          position: 'absolute',
-          bottom: 0, left: 0, right: 0,
-          height: 2,
-          background: 'color-mix(in srgb, var(--r-accent) 12%, transparent)',
+          ...iconBtn,
+          color: readingMode ? 'var(--r-accent)' : 'var(--r-text-muted)',
         }}
       >
-        <div
-          style={{
-            height: '100%',
-            width: `${scrollProgress * 100}%`,
-            background: 'linear-gradient(90deg, var(--r-accent) 0%, var(--r-accent-glow) 100%)',
-            transition: 'width 0.12s ease-out',
-          }}
-        />
+        <span className="material-symbols-outlined" style={{ fontSize: 22, fontVariationSettings: readingMode ? '"FILL" 1' : '"FILL" 0' }}>
+          {readingMode ? 'fullscreen_exit' : 'chrome_reader_mode'}
+        </span>
+      </button>
+
+      <button
+        onClick={() => window.print()}
+        aria-label="Imprimir esta seção"
+        title="Imprimir esta seção"
+        style={iconBtn}
+        className="topbar-print-btn"
+      >
+        <span className="material-symbols-outlined" style={{ fontSize: 22 }}>print</span>
+      </button>
+
+      {/* Print oculto em mobile — Ctrl+P sempre disponível */}
+      <style>{`
+        @media (max-width: 640px) { .topbar-print-btn { display: none !important; } }
+      `}</style>
+
+      {/* Barra de progresso de scroll */}
+      <div style={{
+        position: 'absolute',
+        bottom: 0, left: 0, right: 0,
+        height: 2,
+        background: 'color-mix(in srgb, var(--r-accent) 12%, transparent)',
+      }}>
+        <div style={{
+          height: '100%',
+          width: `${scrollProgress * 100}%`,
+          background: 'linear-gradient(90deg, var(--r-accent) 0%, var(--r-accent-glow) 100%)',
+          transition: 'width 0.12s ease-out',
+        }} />
       </div>
     </header>
   )
-}
-
-function MenuItem({ icon, label, onClick }: { icon: string; label: string; onClick: () => void }) {
-  return (
-    <button
-      onClick={onClick}
-      style={{
-        display: 'flex', alignItems: 'center', gap: 10,
-        width: '100%',
-        padding: '10px 12px',
-        background: 'transparent',
-        border: 'none',
-        color: 'var(--r-text)',
-        fontFamily: 'inherit',
-        fontSize: 14,
-        cursor: 'pointer',
-        borderRadius: 6,
-        textAlign: 'left',
-      }}
-      onMouseEnter={e => { e.currentTarget.style.background = 'var(--r-surface-strong)' }}
-      onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
-    >
-      <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--r-accent)' }}>{icon}</span>
-      {label}
-    </button>
-  )
-}
-
-function MenuDivider() {
-  return <div style={{ height: 1, background: 'var(--r-border)', margin: '4px 6px' }} />
 }
 
 const iconBtn: React.CSSProperties = {
@@ -282,7 +194,6 @@ const iconBtn: React.CSSProperties = {
   justifyContent: 'center',
   flex: '0 0 auto',
   fontFamily: 'inherit',
-  // Touch target de 44px (min Apple HIG / Material) garantido pelo padding
   minWidth: 44,
   minHeight: 44,
 }
