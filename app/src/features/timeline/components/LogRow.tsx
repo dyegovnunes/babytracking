@@ -1,5 +1,5 @@
 import type { LogEntry, Member } from '../../../types'
-import { DEFAULT_EVENTS } from '../../../lib/constants'
+import { EVENT_CATALOG } from '../../../lib/constants'
 import { formatTime } from '../../../lib/formatters'
 
 interface Props {
@@ -28,11 +28,11 @@ const iconBgMap: Record<string, string> = {
  * Extraído do antigo `history/components/TimelineEntry.tsx`.
  */
 export default function LogRow({ log, members, onEdit, pairedLog }: Props) {
-  const event = DEFAULT_EVENTS.find((e) => e.id === log.eventId)
+  const event = EVENT_CATALOG.find((e) => e.id === log.eventId)
   if (!event) return null
 
   const isMergedBoth = !!pairedLog
-  const bothEvent = isMergedBoth ? DEFAULT_EVENTS.find((e) => e.id === 'breast_both') : null
+  const bothEvent = isMergedBoth ? EVENT_CATALOG.find((e) => e.id === 'breast_both') : null
   const displayEvent = bothEvent ?? event
 
   const dotColor = dotColorMap[displayEvent.color] ?? 'bg-primary'
