@@ -214,10 +214,18 @@ function splitDayNight(
  * logs (para análises que dependem de histórico, como tendências), mas usa o
  * `ctx` para delimitar a janela principal de cada insight.
  */
+const SLEEP_REGRESSIONS = [
+  { days: 112, label: '4 meses' },
+  { days: 240, label: '8 meses' },
+  { days: 365, label: '12 meses' },
+  { days: 547, label: '18 meses' },
+]
+
 export function generateInsights(
   logs: LogEntry[],
   band: AgeBand,
   ctx: InsightContext,
+  birthDate?: string,
 ): InsightResult[] {
   const now = Date.now()
   const insights: InsightResult[] = []
@@ -444,6 +452,50 @@ export function generateInsights(
         minDataDays: 5,
       })
     }
+
+    // 1.1a — Janela de sono se abrindo (0–6m)
+    if (band === 'newborn' || band === 'early' || band === 'growing') {
+      // Calcula gaps entre sonecas consecutivas e agrupa pelo dia de início
+      // da soneca seguinte (assim o gap "pertence" ao dia em que a próxima
+      // soneca começa, que é o mesmo dia em que a vigília aconteceu).
+      const sortedPairs = [...computeSleepPairsInWindow(logs, ctx.start, ctx.end)]
+        .sort((a, b) => a.start - b.start)
+
+      const gapsByDay = new Map<string, number[]>()
+      for (let i = 1; i < sortedPairs.length; i++) {
+        const gapMin = (sortedPairs[i].start - sortedPairs[i - 1].end) / 60000
+        // Ignora gaps negativos ou absurdamente longos (>4h = provavelmente dados faltando)
+        if (gapMin > 0 && gapMin < 240) {
+          const day = getLocalDateString(new Date(sortedPairs[i].start))
+          if (!gapsByDay.has(day)) gapsByDay.set(day, [])
+          gapsByDay.get(day)!.push(gapMin)
+        }
+      }
+
+      // Média de wake window por dia (Map preserva ordem de inserção = cronológico)
+      const wakeWindowsByDay = [...gapsByDay.values()].map(
+        (gaps) => gaps.reduce((s, v) => s + v, 0) / gaps.length,
+      )
+
+      if (wakeWindowsByDay.length >= 5) {
+        const olderDays = wakeWindowsByDay.slice(0, -3)
+        const recentDays = wakeWindowsByDay.slice(-3)
+        const recentAvg = recentDays.reduce((s, v) => s + v, 0) / recentDays.length
+        const olderAvg =
+          olderDays.reduce((s, v) => s + v, 0) / Math.max(olderDays.length, 1)
+        if (olderAvg > 0 && recentAvg > olderAvg * 1.2) {
+          insights.push({
+            id: 'sleep_window_opening',
+            emoji: '🌙',
+            title: 'Janela de sono se abrindo',
+            body: `O intervalo entre as sonecas do bebê aumentou de ${formatMinutes(olderAvg)} para ${formatMinutes(recentAvg)} nos últimos 3 dias. Pode ser a janela de sono se abrindo — hora de testar sonecas mais espaçadas.`,
+            type: 'pattern',
+            priority: 2,
+            minDataDays: 5,
+          })
+        }
+      }
+    }
   }
 
   // =====================================================================
@@ -525,6 +577,60 @@ export function generateInsights(
         priority: 1,
         minDataDays: 1,
       })
+    }
+  }
+
+  // =====================================================================
+  // 1.1b — Sono bem abaixo do esperado (alerta, apenas dia completo)
+  // Não dispara em dia parcial (hoje em andamento) pois o dia ainda não acabou.
+  // =====================================================================
+
+  if (ctx.isSingleDay && !ctx.isPartialDay && totalSleepMin > 0 && totalSleepMin < sleepRef.min * 0.8) {
+    insights.push({
+      id: 'sleep_below_expected',
+      emoji: '⚠️',
+      title: 'Sono bem abaixo do esperado',
+      body: `Foram registradas ${formatMinutes(totalSleepMin)} de sono ${ctx.phrase}. A referência para essa idade é ${formatMinutesRange(sleepRef)}. Se continuar por mais 2 dias, vale comentar com o pediatra.`,
+      source: sleepRef.source,
+      type: 'alert',
+      priority: 2,
+      minDataDays: 1,
+    })
+  }
+
+  // =====================================================================
+  // 1.2 — Regressão de sono antecipada (baseado em idade, sem dados)
+  // Upcoming: 1–14 dias antes. Active: até 21 dias após.
+  // =====================================================================
+
+  if (birthDate) {
+    const ageInDays = Math.floor((now - new Date(birthDate).getTime()) / 86400000)
+    for (const regression of SLEEP_REGRESSIONS) {
+      const daysUntil = regression.days - ageInDays
+      if (daysUntil > 0 && daysUntil <= 14) {
+        insights.push({
+          id: `sleep_regression_upcoming_${regression.days}d`,
+          emoji: '🌙',
+          title: 'Regressão de sono se aproximando',
+          body: `O bebê vai completar ${regression.label} em ${daysUntil} ${daysUntil === 1 ? 'dia' : 'dias'}. Muitos bebês passam por uma regressão de sono nessa fase — o sono pode piorar temporariamente. É completamente normal e passa em 2 a 4 semanas.`,
+          type: 'pattern',
+          priority: 2,
+          minDataDays: 0,
+        })
+        break
+      }
+      if (daysUntil <= 0 && daysUntil >= -21) {
+        insights.push({
+          id: `sleep_regression_active_${regression.days}d`,
+          emoji: '🌙',
+          title: `Regressão de sono dos ${regression.label}`,
+          body: `Muitos bebês passam por uma regressão de sono nessa fase. Se o sono piorou recentemente, é normal — faz parte do desenvolvimento. Tende a passar em 2 a 4 semanas.`,
+          type: 'pattern',
+          priority: 2,
+          minDataDays: 0,
+        })
+        break
+      }
     }
   }
 

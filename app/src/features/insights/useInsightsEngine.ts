@@ -339,7 +339,7 @@ export function useInsightsEngine(
 
     // Na página de Insights não aplicamos a rotação de 48h: o usuário veio
     // aqui justamente para ver os insights, então não devemos esconder nada.
-    const insights: InsightResult[] = generateInsights(logs, band, ctx)
+    const insights: InsightResult[] = generateInsights(logs, band, ctx, birthDate)
 
     // Week trends — sempre últimos 7 dias. Usa pares clipados por dia
     // para atribuir corretamente sono que cruza a meia-noite.
