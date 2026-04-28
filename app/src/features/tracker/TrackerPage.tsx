@@ -226,6 +226,7 @@ export default function TrackerPage() {
 
   const [bottleModalOpen, setBottleModalOpen] = useState(false)
   const [mealModalOpen, setMealModalOpen] = useState(false)
+  const [editingMealLog, setEditingMealLog] = useState<LogEntry | null>(null)
   const [moodSheetOpen, setMoodSheetOpen] = useState(false)
   const [gridSettingsOpen, setGridSettingsOpen] = useState(false)
   const [editingLog, setEditingLog] = useState<LogEntry | null>(null)
@@ -302,6 +303,20 @@ export default function TrackerPage() {
     [baby, dispatch, user],
   )
 
+  const handleMealEditConfirm = useCallback(
+    async (payload: MealPayload) => {
+      if (!editingMealLog) return
+      const updated: LogEntry = {
+        ...editingMealLog,
+        payload: payload as unknown as Record<string, unknown>,
+      }
+      setEditingMealLog(null)
+      const ok = await updateLog(dispatch, updated)
+      if (ok) setToast('Refeição atualizada!')
+    },
+    [editingMealLog, dispatch],
+  )
+
   const handleMoodConfirm = useCallback(
     async (payload: MoodPayload) => {
       if (!baby) return
@@ -330,7 +345,12 @@ export default function TrackerPage() {
 
   const handleEditLog = useCallback((log: LogEntry) => {
     hapticMedium()
-    setEditingLog(log)
+    // Refeição abre o MealModal no modo edição (edita payload estruturado)
+    if (log.eventId === 'meal') {
+      setEditingMealLog(log)
+    } else {
+      setEditingLog(log)
+    }
   }, [])
 
   const handleSaveLog = useCallback(
@@ -521,6 +541,15 @@ export default function TrackerPage() {
           babyName={baby.name}
           onConfirm={handleMealConfirm}
           onClose={() => setMealModalOpen(false)}
+        />
+      )}
+
+      {editingMealLog && baby && (
+        <MealModal
+          babyName={baby.name}
+          initialPayload={editingMealLog.payload as MealPayload | undefined}
+          onConfirm={handleMealEditConfirm}
+          onClose={() => setEditingMealLog(null)}
         />
       )}
 

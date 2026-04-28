@@ -1,15 +1,24 @@
-import { useState } from 'react'
+/**
+ * MealModal — registro e edição de refeição.
+ *
+ * - Seletor hierárquico de alimentos (5 categorias → itens, múltipla seleção)
+ * - "Outro" manual: campo de texto com botão + que adiciona à lista
+ * - Aceita initialPayload para modo edição (log existente)
+ */
+
+import { useState, useRef } from 'react'
 import { useSheetBackClose } from '../../../hooks/useSheetBackClose'
 import { hapticLight, hapticSuccess } from '../../../lib/haptics'
 import type { MealPayload } from '../../../types'
 
 interface Props {
   babyName: string
+  initialPayload?: MealPayload
   onConfirm: (payload: MealPayload) => void
   onClose: () => void
 }
 
-/* ─── Catálogo de alimentos por categoria ─── */
+/* ─── Catálogo ─── */
 interface FoodCategory {
   id: string
   label: string
@@ -17,44 +26,40 @@ interface FoodCategory {
   items: string[]
 }
 
-const FOOD_CATEGORIES: FoodCategory[] = [
+export const FOOD_CATEGORIES: FoodCategory[] = [
   {
-    id: 'frutas',
-    label: 'Frutas',
-    emoji: '🍎',
-    items: ['Banana', 'Maçã', 'Pera', 'Mamão', 'Melão', 'Abacate', 'Manga', 'Pêssego', 'Ameixa', 'Uva'],
+    id: 'frutas', label: 'Frutas', emoji: '🍎',
+    items: ['Banana', 'Maçã', 'Pera', 'Mamão', 'Melão', 'Abacate', 'Manga', 'Pêssego', 'Ameixa', 'Uva', 'Kiwi', 'Laranja'],
   },
   {
-    id: 'legumes',
-    label: 'Legumes',
-    emoji: '🥕',
-    items: ['Cenoura', 'Batata doce', 'Inhame', 'Mandioquinha', 'Abobrinha', 'Abóbora', 'Beterraba', 'Chuchu', 'Brócolis', 'Couve-flor'],
+    id: 'legumes', label: 'Legumes', emoji: '🥕',
+    items: ['Cenoura', 'Batata doce', 'Inhame', 'Mandioquinha', 'Abobrinha', 'Abóbora', 'Beterraba', 'Chuchu', 'Brócolis', 'Couve-flor', 'Espinafre', 'Ervilha'],
   },
   {
-    id: 'cereais',
-    label: 'Cereais',
-    emoji: '🌾',
-    items: ['Arroz', 'Aveia', 'Milho', 'Macarrão', 'Quinoa', 'Polenta'],
+    id: 'cereais', label: 'Cereais', emoji: '🌾',
+    items: ['Arroz', 'Aveia', 'Milho', 'Macarrão', 'Polenta', 'Quinoa', 'Pão'],
   },
   {
-    id: 'proteinas',
-    label: 'Proteínas',
-    emoji: '🍗',
-    items: ['Frango', 'Carne bovina', 'Peixe', 'Ovo', 'Feijão', 'Lentilha', 'Grão-de-bico', 'Tofu'],
+    id: 'proteinas', label: 'Proteínas', emoji: '🍗',
+    items: ['Frango', 'Carne bovina', 'Peixe', 'Ovo', 'Feijão', 'Lentilha', 'Grão-de-bico', 'Tofu', 'Carne de porco'],
   },
   {
-    id: 'laticinios',
-    label: 'Laticínios',
-    emoji: '🧀',
-    items: ['Iogurte natural', 'Queijo', 'Leite de vaca'],
+    id: 'laticinios', label: 'Laticínios', emoji: '🧀',
+    items: ['Iogurte natural', 'Queijo', 'Leite de vaca', 'Requeijão'],
   },
 ]
 
+/* helpers */
+function initialFoodsFromPayload(p?: MealPayload): string[] {
+  if (!p?.food) return []
+  return p.food.split(', ').filter(Boolean)
+}
+
 const METHODS: { id: MealPayload['method']; label: string; emoji: string }[] = [
-  { id: 'pureed',            label: 'Papinha',       emoji: '🥣' },
-  { id: 'blw',               label: 'BLW',           emoji: '✋' },
-  { id: 'mixed',             label: 'Misto',         emoji: '🍽️' },
-  { id: 'breast_plus_solid', label: 'Peito + sólido', emoji: '🤱' },
+  { id: 'pureed',             label: 'Papinha',        emoji: '🥣' },
+  { id: 'blw',                label: 'BLW',            emoji: '✋' },
+  { id: 'mixed',              label: 'Misto',          emoji: '🍽️' },
+  { id: 'breast_plus_solid',  label: 'Peito + sólido', emoji: '🤱' },
 ]
 
 const ACCEPTANCES: { id: MealPayload['acceptance']; label: string; emoji: string }[] = [
@@ -75,25 +80,51 @@ const ALLERGENS: { id: string; label: string }[] = [
   { id: 'frutos_mar',  label: 'Frutos do mar' },
 ]
 
-export default function MealModal({ babyName, onConfirm, onClose }: Props) {
+export default function MealModal({ babyName, initialPayload, onConfirm, onClose }: Props) {
   useSheetBackClose(true, onClose)
 
-  const [food, setFood]             = useState('')
-  const [activeCat, setActiveCat]   = useState<string | null>(null)
-  const [method, setMethod]         = useState<MealPayload['method']>()
-  const [acceptance, setAcceptance] = useState<MealPayload['acceptance']>()
-  const [isNewFood, setIsNewFood]   = useState(false)
-  const [allergenKey, setAllergenKey] = useState<string>()
+  const isEdit = !!initialPayload
 
-  function selectFood(name: string) {
+  /* state */
+  const [selectedFoods, setSelectedFoods] = useState<string[]>(initialFoodsFromPayload(initialPayload))
+  const [customInput,   setCustomInput]   = useState('')
+  const [activeCat,     setActiveCat]     = useState<string | null>(null)
+  const [method,        setMethod]        = useState<MealPayload['method']>(initialPayload?.method)
+  const [acceptance,    setAcceptance]    = useState<MealPayload['acceptance']>(initialPayload?.acceptance)
+  const [isNewFood,     setIsNewFood]     = useState(initialPayload?.isNewFood ?? false)
+  const [allergenKey,   setAllergenKey]   = useState<string | undefined>(initialPayload?.allergenKey)
+  const customRef = useRef<HTMLInputElement>(null)
+
+  /* helpers */
+  function toggleFood(name: string) {
     hapticLight()
-    setFood(name)
-    setActiveCat(null) // fecha o sub-painel após selecionar
+    setSelectedFoods((prev) =>
+      prev.includes(name) ? prev.filter((f) => f !== name) : [...prev, name],
+    )
   }
 
+  function addCustom() {
+    const trimmed = customInput.trim()
+    if (!trimmed) return
+    hapticLight()
+    if (!selectedFoods.includes(trimmed)) {
+      setSelectedFoods((prev) => [...prev, trimmed])
+    }
+    setCustomInput('')
+    customRef.current?.focus()
+  }
+
+  function removeFood(name: string) {
+    hapticLight()
+    setSelectedFoods((prev) => prev.filter((f) => f !== name))
+  }
+
+  /* submit */
   const handleConfirm = () => {
+    const allFoods = [...selectedFoods]
+    if (customInput.trim()) allFoods.push(customInput.trim())
     const payload: MealPayload = {
-      food: food.trim() || undefined,
+      food: allFoods.length > 0 ? allFoods.join(', ') : undefined,
       method,
       acceptance,
       isNewFood: isNewFood || undefined,
@@ -113,11 +144,13 @@ export default function MealModal({ babyName, onConfirm, onClose }: Props) {
       <div className="w-full max-w-lg bg-surface-container-highest rounded-t-md pb-sheet animate-slide-up max-h-[92vh] overflow-y-auto">
 
         {/* ── Header sticky ── */}
-        <div className="flex items-center justify-between px-5 pt-5 pb-4 sticky top-0 bg-surface-container-highest z-10">
+        <div className="flex items-center justify-between px-5 pt-5 pb-4 sticky top-0 bg-surface-container-highest z-10 border-b border-outline-variant/20">
           <div className="flex items-center gap-2">
             <span className="text-2xl">🥣</span>
             <div>
-              <h2 className="font-headline text-base font-bold text-on-surface">Refeição</h2>
+              <h2 className="font-headline text-base font-bold text-on-surface">
+                {isEdit ? 'Editar refeição' : 'Refeição'}
+              </h2>
               <p className="font-label text-xs text-on-surface-variant">{babyName}</p>
             </div>
           </div>
@@ -126,69 +159,109 @@ export default function MealModal({ babyName, onConfirm, onClose }: Props) {
           </button>
         </div>
 
-        <div className="px-5 space-y-5 pb-4">
+        <div className="px-5 space-y-5 pt-4 pb-4">
 
-          {/* ── Seletor de alimento ── */}
+          {/* ── Seleção de alimentos ── */}
           <div>
             <p className="font-label text-xs text-on-surface-variant mb-2">
-              O que comeu? <span className="text-on-surface-variant/50">(opcional)</span>
+              O que comeu?
+              <span className="text-on-surface-variant/50"> (pode selecionar vários)</span>
             </p>
 
-            {/* Chips de categoria */}
-            <div className="flex gap-2 overflow-x-auto pb-1 mb-3 scrollbar-none">
-              {FOOD_CATEGORIES.map((cat) => (
-                <button
-                  key={cat.id}
-                  onClick={() => {
-                    hapticLight()
-                    setActiveCat(activeCat === cat.id ? null : cat.id)
-                  }}
-                  className={[
-                    'flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-label whitespace-nowrap shrink-0 transition-colors',
-                    activeCat === cat.id
-                      ? 'bg-primary/15 border-primary/40 text-primary font-semibold'
-                      : 'bg-surface-container border-outline-variant text-on-surface-variant',
-                  ].join(' ')}
-                >
-                  <span>{cat.emoji}</span>
-                  <span>{cat.label}</span>
-                </button>
-              ))}
+            {/* Chips selecionados */}
+            {selectedFoods.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 mb-3">
+                {selectedFoods.map((f) => (
+                  <span
+                    key={f}
+                    className="flex items-center gap-1 pl-2.5 pr-1.5 py-1 rounded-md bg-primary/12 border border-primary/30 text-primary text-xs font-label"
+                  >
+                    {f}
+                    <button
+                      onClick={() => removeFood(f)}
+                      className="ml-0.5 rounded active:opacity-60"
+                    >
+                      <span className="material-symbols-outlined text-[13px]">close</span>
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* Chips de categoria — flex-wrap, sem scroll */}
+            <div className="flex flex-wrap gap-2 mb-3">
+              {FOOD_CATEGORIES.map((cat) => {
+                const isActive = activeCat === cat.id
+                return (
+                  <button
+                    key={cat.id}
+                    onClick={() => {
+                      hapticLight()
+                      setActiveCat(isActive ? null : cat.id)
+                    }}
+                    className={[
+                      'flex items-center gap-1.5 px-3 py-1.5 rounded-md border text-xs font-label transition-colors',
+                      isActive
+                        ? 'bg-primary/12 border-primary/30 text-primary font-semibold'
+                        : 'bg-surface-container border-outline-variant text-on-surface-variant',
+                    ].join(' ')}
+                  >
+                    <span className="text-base leading-none">{cat.emoji}</span>
+                    <span>{cat.label}</span>
+                    <span className={`material-symbols-outlined text-[13px] transition-transform ${isActive ? 'rotate-180' : ''}`}>
+                      expand_more
+                    </span>
+                  </button>
+                )
+              })}
             </div>
 
             {/* Sub-painel com itens da categoria ativa */}
             {activeCatData && (
               <div className="mb-3 p-3 bg-surface-container rounded-md border border-outline-variant/40">
-                <p className="font-label text-[10px] text-on-surface-variant uppercase tracking-wide mb-2">
-                  {activeCatData.emoji} {activeCatData.label}
-                </p>
                 <div className="flex flex-wrap gap-1.5">
-                  {activeCatData.items.map((item) => (
-                    <button
-                      key={item}
-                      onClick={() => selectFood(item)}
-                      className={[
-                        'px-2.5 py-1 rounded-full border text-xs font-body transition-colors',
-                        food === item
-                          ? 'bg-primary text-on-primary border-primary'
-                          : 'bg-surface border-outline-variant text-on-surface active:bg-surface-container',
-                      ].join(' ')}
-                    >
-                      {item}
-                    </button>
-                  ))}
+                  {activeCatData.items.map((item) => {
+                    const sel = selectedFoods.includes(item)
+                    return (
+                      <button
+                        key={item}
+                        onClick={() => toggleFood(item)}
+                        className={[
+                          'px-2.5 py-1 rounded-md border text-xs font-body transition-colors',
+                          sel
+                            ? 'bg-primary text-on-primary border-primary'
+                            : 'bg-surface border-outline-variant text-on-surface active:bg-surface-container',
+                        ].join(' ')}
+                      >
+                        {sel && <span className="material-symbols-outlined text-[11px] mr-0.5 align-middle">check</span>}
+                        {item}
+                      </button>
+                    )
+                  })}
                 </div>
               </div>
             )}
 
-            {/* Campo de texto livre */}
-            <input
-              type="text"
-              value={food}
-              onChange={(e) => setFood(e.target.value)}
-              placeholder="Ou escreva: ex. arroz com feijão..."
-              className="w-full px-3 py-2.5 rounded-md bg-surface-container border border-outline-variant text-on-surface font-body text-sm focus:outline-none focus:border-primary"
-            />
+            {/* Outro — campo + botão adicionar */}
+            <div className="flex gap-2">
+              <input
+                ref={customRef}
+                type="text"
+                value={customInput}
+                onChange={(e) => setCustomInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && addCustom()}
+                placeholder="Outro alimento..."
+                className="flex-1 px-3 py-2 rounded-md bg-surface-container border border-outline-variant text-on-surface font-body text-sm focus:outline-none focus:border-primary"
+              />
+              <button
+                onClick={addCustom}
+                disabled={!customInput.trim()}
+                className="flex items-center gap-1 px-3 py-2 rounded-md bg-surface-container border border-outline-variant text-on-surface-variant font-label text-sm disabled:opacity-40 active:bg-surface-container-high"
+              >
+                <span className="material-symbols-outlined text-base">add</span>
+                Adicionar
+              </button>
+            </div>
           </div>
 
           {/* ── Método ── */}
@@ -198,7 +271,7 @@ export default function MealModal({ babyName, onConfirm, onClose }: Props) {
               {METHODS.map((m) => (
                 <button
                   key={m.id}
-                  onClick={() => { hapticLight(); setMethod(m.id) }}
+                  onClick={() => { hapticLight(); setMethod(method === m.id ? undefined : m.id) }}
                   className={`flex items-center gap-2 px-3 py-2.5 rounded-md border text-sm font-label transition-colors ${
                     method === m.id
                       ? 'border-primary bg-primary/10 text-primary font-semibold'
@@ -219,7 +292,7 @@ export default function MealModal({ babyName, onConfirm, onClose }: Props) {
               {ACCEPTANCES.map((a) => (
                 <button
                   key={a.id}
-                  onClick={() => { hapticLight(); setAcceptance(a.id) }}
+                  onClick={() => { hapticLight(); setAcceptance(acceptance === a.id ? undefined : a.id) }}
                   className={`flex items-center gap-2 px-3 py-2.5 rounded-md border text-sm font-label transition-colors ${
                     acceptance === a.id
                       ? 'border-primary bg-primary/10 text-primary font-semibold'
@@ -275,7 +348,7 @@ export default function MealModal({ babyName, onConfirm, onClose }: Props) {
             onClick={handleConfirm}
             className="w-full py-3 rounded-md bg-primary text-on-primary font-label font-semibold text-sm active:bg-primary/90"
           >
-            Registrar refeição
+            {isEdit ? 'Salvar alterações' : 'Registrar refeição'}
           </button>
         </div>
       </div>

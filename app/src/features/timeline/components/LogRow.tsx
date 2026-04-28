@@ -1,4 +1,4 @@
-import type { LogEntry, Member } from '../../../types'
+import type { LogEntry, Member, MealPayload, MoodPayload } from '../../../types'
 import { EVENT_CATALOG } from '../../../lib/constants'
 import { formatTime } from '../../../lib/formatters'
 
@@ -12,20 +12,39 @@ interface Props {
 
 const dotColorMap: Record<string, string> = {
   tertiary: 'bg-tertiary',
-  primary: 'bg-primary',
-  secondary: 'bg-secondary',
+  primary:  'bg-primary',
+  secondary:'bg-secondary',
 }
 
 const iconBgMap: Record<string, string> = {
   tertiary: 'bg-tertiary/15 text-tertiary',
-  primary: 'bg-primary/15 text-primary',
-  secondary: 'bg-secondary/15 text-secondary',
+  primary:  'bg-primary/15 text-primary',
+  secondary:'bg-secondary/15 text-secondary',
+}
+
+const ACCEPTANCE_LABEL: Record<string, string> = {
+  loved:    '😋 Adorou',
+  accepted: '🙂 Aceitou',
+  refused:  '🙅 Recusou',
+  reaction: '⚠️ Reação',
+}
+
+const METHOD_LABEL: Record<string, string> = {
+  pureed:             'Papinha',
+  blw:                'BLW',
+  mixed:              'Misto',
+  breast_plus_solid:  'Peito + sólido',
+}
+
+const MOOD_LABEL: Record<number, string> = {
+  1: '😢 Baixo',
+  2: '😐 Neutro',
+  3: '😊 Bem',
 }
 
 /**
- * Row de log (atividade recorrente: amamentação, fralda, sono, banho).
+ * Row de log (atividade recorrente: amamentação, fralda, sono, banho, refeição, humor).
  * Tap abre modal de edição inline (via callback).
- * Extraído do antigo `history/components/TimelineEntry.tsx`.
  */
 export default function LogRow({ log, members, onEdit, pairedLog }: Props) {
   const event = EVENT_CATALOG.find((e) => e.id === log.eventId)
@@ -36,12 +55,20 @@ export default function LogRow({ log, members, onEdit, pairedLog }: Props) {
   const displayEvent = bothEvent ?? event
 
   const dotColor = dotColorMap[displayEvent.color] ?? 'bg-primary'
-  const iconBg = iconBgMap[displayEvent.color] ?? 'bg-primary/15 text-primary'
+  const iconBg   = iconBgMap[displayEvent.color]   ?? 'bg-primary/15 text-primary'
   const memberName = log.createdBy ? members[log.createdBy]?.displayName : undefined
 
   const displayTime = isMergedBoth
     ? new Date(Math.min(log.timestamp, pairedLog!.timestamp))
     : new Date(log.timestamp)
+
+  /* Payload info */
+  const mealPayload = log.eventId === 'meal' && log.payload
+    ? (log.payload as MealPayload)
+    : null
+  const moodPayload = log.eventId === 'mood' && log.payload
+    ? (log.payload as MoodPayload)
+    : null
 
   return (
     <button
@@ -59,9 +86,7 @@ export default function LogRow({ log, members, onEdit, pairedLog }: Props) {
         {displayEvent.emoji ? (
           <span className="text-lg leading-none">{displayEvent.emoji}</span>
         ) : (
-          <span className="material-symbols-outlined text-lg">
-            {displayEvent.icon}
-          </span>
+          <span className="material-symbols-outlined text-lg">{displayEvent.icon}</span>
         )}
       </div>
 
@@ -69,6 +94,42 @@ export default function LogRow({ log, members, onEdit, pairedLog }: Props) {
         <p className="font-body text-sm font-medium text-on-surface">
           {isMergedBoth ? 'Ambos os peitos' : event.label}
         </p>
+
+        {/* Detalhes de refeição */}
+        {mealPayload && (
+          <div className="mt-0.5 space-y-0.5">
+            {mealPayload.food && (
+              <p className="font-label text-xs text-on-surface-variant truncate">
+                🍽 {mealPayload.food}
+              </p>
+            )}
+            <div className="flex items-center gap-2 flex-wrap">
+              {mealPayload.acceptance && (
+                <span className="font-label text-[11px] text-on-surface-variant">
+                  {ACCEPTANCE_LABEL[mealPayload.acceptance] ?? mealPayload.acceptance}
+                </span>
+              )}
+              {mealPayload.method && (
+                <span className="font-label text-[11px] text-on-surface-variant/60">
+                  · {METHOD_LABEL[mealPayload.method] ?? mealPayload.method}
+                </span>
+              )}
+              {mealPayload.isNewFood && (
+                <span className="font-label text-[11px] text-primary">· Novo alimento</span>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Detalhes de humor */}
+        {moodPayload && (
+          <p className="font-label text-xs text-on-surface-variant mt-0.5">
+            {MOOD_LABEL[moodPayload.level] ?? `Nível ${moodPayload.level}`}
+            {moodPayload.note && ` · ${moodPayload.note}`}
+          </p>
+        )}
+
+        {/* Padrão: peito, fralda, sono etc. */}
         {isMergedBoth && (
           <p className="font-label text-xs text-tertiary">Esq. + Dir.</p>
         )}
@@ -79,15 +140,11 @@ export default function LogRow({ log, members, onEdit, pairedLog }: Props) {
           <p className="font-label text-xs text-on-surface-variant truncate">{log.notes}</p>
         )}
         {memberName && (
-          <p className="font-label text-[10px] text-on-surface-variant/60">
-            por {memberName}
-          </p>
+          <p className="font-label text-[10px] text-on-surface-variant/60">por {memberName}</p>
         )}
       </div>
 
-      <span className="material-symbols-outlined text-on-surface-variant/50 text-base">
-        edit
-      </span>
+      <span className="material-symbols-outlined text-on-surface-variant/50 text-base">edit</span>
     </button>
   )
 }

@@ -430,6 +430,7 @@ export async function updateLog(
       ml: log.ml ?? null,
       duration: log.duration ?? null,
       notes: log.notes ?? null,
+      payload: log.payload ?? null,
     })
     .eq('id', log.id)
 
