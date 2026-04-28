@@ -110,30 +110,16 @@ export default function LogRow({ log, members, onEdit, pairedLog }: Props) {
           {isMergedBoth ? 'Ambos os peitos' : event.label}
         </p>
 
-        {/* Detalhes de refeição */}
+        {/* Detalhes de refeição — linha única compacta */}
         {mealPayload && (
-          <div className="mt-0.5 space-y-0.5">
-            {mealPayload.food && (
-              <p className="font-label text-xs text-on-surface-variant truncate">
-                🍽 {mealPayload.food}
-              </p>
-            )}
-            <div className="flex items-center gap-2 flex-wrap">
-              {mealPayload.acceptance && (
-                <span className="font-label text-[11px] text-on-surface-variant">
-                  {ACCEPTANCE_LABEL[mealPayload.acceptance] ?? mealPayload.acceptance}
-                </span>
-              )}
-              {mealPayload.method && (
-                <span className="font-label text-[11px] text-on-surface-variant/60">
-                  · {METHOD_LABEL[mealPayload.method] ?? mealPayload.method}
-                </span>
-              )}
-              {mealPayload.isNewFood && (
-                <span className="font-label text-[11px] text-primary">· Novo alimento</span>
-              )}
-            </div>
-          </div>
+          <p className="font-label text-xs text-on-surface-variant mt-0.5 truncate">
+            {[
+              mealPayload.food,
+              mealPayload.acceptance ? ACCEPTANCE_LABEL[mealPayload.acceptance] : null,
+              mealPayload.method ? METHOD_LABEL[mealPayload.method] : null,
+              mealPayload.isNewFood ? 'Novo' : null,
+            ].filter(Boolean).join(' · ')}
+          </p>
         )}
 
         {/* Detalhes de humor */}

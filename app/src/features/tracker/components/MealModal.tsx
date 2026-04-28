@@ -91,6 +91,33 @@ const ALLERGENS: { id: string; label: string }[] = [
   { id: 'frutos_mar',  label: 'Frutos do mar' },
 ]
 
+/** Alimentos do catálogo que são alérgenos — detectados automaticamente */
+const FOOD_ALLERGEN_MAP: Record<string, string> = {
+  'Ovo':             'ovo',
+  'Peixe':           'peixe',
+  'Tofu':            'soja',
+  'Leite de vaca':   'leite_vaca',
+  'Iogurte natural': 'leite_vaca',
+  'Queijo':          'leite_vaca',
+  'Requeijão':       'leite_vaca',
+  'Macarrão':        'trigo',
+  'Pão':             'trigo',
+  'Aveia':           'trigo',
+}
+
+const ALLERGEN_LABEL: Record<string, string> = {
+  leite_vaca:  'Leite de vaca',
+  ovo:         'Ovo',
+  amendoim:    'Amendoim',
+  trigo:       'Trigo/Glúten',
+  soja:        'Soja',
+  oleaginosas: 'Oleaginosas',
+  peixe:       'Peixe',
+  frutos_mar:  'Frutos do mar',
+}
+
+const ALL_CATALOG_ITEMS = new Set(FOOD_CATEGORIES.flatMap((c) => c.items))
+
 /* helpers */
 function parseFoods(food?: string): string[] {
   if (!food) return []
@@ -156,17 +183,25 @@ export default function MealModal({ babyName, initialLog, onConfirm, onDelete, o
     const allFoods = [...selectedFoods]
     if (customInput.trim()) allFoods.push(customInput.trim())
     const payload: MealPayload = {
-      food:       allFoods.length > 0 ? allFoods.join(', ') : undefined,
+      food:        allFoods.length > 0 ? allFoods.join(', ') : undefined,
       method,
       acceptance,
-      isNewFood:  isNewFood || undefined,
-      allergenKey: isNewFood ? allergenKey : undefined,
+      isNewFood:   isNewFood || undefined,
+      allergenKey: isNewFood ? (autoDetectedAllergen ?? allergenKey) : undefined,
     }
     hapticSuccess()
     onConfirm(payload, isEdit ? buildTimestamp() : undefined)
   }
 
   const activeCatData = FOOD_CATEGORIES.find((c) => c.id === activeCat)
+
+  /** Alérgeno detectado automaticamente a partir dos alimentos selecionados do catálogo */
+  const autoDetectedAllergen = selectedFoods
+    .map((f) => FOOD_ALLERGEN_MAP[f])
+    .find(Boolean) as string | undefined
+
+  /** Verdadeiro se há algum alimento digitado manualmente (não está no catálogo) */
+  const hasCustomFoodSelected = selectedFoods.some((f) => !ALL_CATALOG_ITEMS.has(f))
 
   return (
     <div
@@ -370,11 +405,23 @@ export default function MealModal({ babyName, initialLog, onConfirm, onDelete, o
             <span className="font-body text-sm text-on-surface">Alimento novo (primeira vez)</span>
           </button>
 
-          {/* ── Alérgeno ── */}
-          {isNewFood && (
+          {/* ── Alérgeno ── auto-detectado do catálogo, ou picker manual p/ "Outro" */}
+          {isNewFood && autoDetectedAllergen && (
+            <div className="flex items-center gap-2 px-3 py-2.5 bg-amber-500/8 border border-amber-500/20 rounded-md">
+              <span className="text-base leading-none">⚠️</span>
+              <p className="font-label text-xs text-on-surface-variant">
+                Alérgeno detectado:{' '}
+                <span className="font-semibold text-amber-400">
+                  {ALLERGEN_LABEL[autoDetectedAllergen] ?? autoDetectedAllergen}
+                </span>
+              </p>
+            </div>
+          )}
+          {isNewFood && !autoDetectedAllergen && hasCustomFoodSelected && (
             <div>
               <p className="font-label text-xs text-on-surface-variant mb-2">
-                É um dos principais alérgenos? <span className="text-on-surface-variant/50">(opcional)</span>
+                É um dos principais alérgenos?{' '}
+                <span className="text-on-surface-variant/50">(opcional)</span>
               </p>
               <div className="grid grid-cols-2 gap-1.5">
                 {ALLERGENS.map((al) => (
