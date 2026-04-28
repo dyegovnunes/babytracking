@@ -31,7 +31,7 @@ interface Caregiver {
 }
 
 export default function ProfilePage() {
-  const { baby, members, loading, babiesWithRole } = useAppState()
+  const { baby, members, logs, loading, babiesWithRole } = useAppState()
   const { user } = useAuth()
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
@@ -148,6 +148,28 @@ export default function ProfilePage() {
 
   const isParent = can.manageMembers(myRole)
   const parentCount = Object.values(members).filter(m => m.role === 'parent').length
+
+  // 3.4 — Dimensão do casal: distribuição de registros por autor nos últimos 7 dias.
+  // Só aparece quando ≥ 2 membros diferentes têm logs na semana.
+  const coupleActivity = useMemo(() => {
+    if (!logs || !members) return null
+    const weekAgo = Date.now() - 7 * 86400000
+    const recentLogs = logs.filter((l) => l.timestamp >= weekAgo && l.createdBy)
+    if (recentLogs.length === 0) return null
+    const counts = new Map<string, number>()
+    for (const log of recentLogs) {
+      if (log.createdBy) counts.set(log.createdBy, (counts.get(log.createdBy) ?? 0) + 1)
+    }
+    if (counts.size < 2) return null
+    const total = [...counts.values()].reduce((a, b) => a + b, 0)
+    return [...counts.entries()]
+      .sort(([, a], [, b]) => b - a)
+      .map(([uid, count]) => ({
+        name: members[uid]?.displayName ?? 'Membro',
+        count,
+        pct: Math.round((count / total) * 100),
+      }))
+  }, [logs, members])
 
   const handlePromote = useCallback(async (userId: string, currentRole: string) => {
     if (!baby) return
@@ -267,7 +289,38 @@ export default function ProfilePage() {
         <BabyCard baby={baby} onSave={handleSaveBaby} canEdit={can.editBaby(myRole)} />
 
         {/* ===== CRESCIMENTO ===== */}
-        {canShowGrowth && <GrowthSection babyId={baby.id} readOnly={myRole === 'caregiver'} />}
+        {canShowGrowth && (
+          <GrowthSection
+            babyId={baby.id}
+            readOnly={myRole === 'caregiver'}
+            birthDate={baby.birthDate}
+            gender={baby.gender}
+          />
+        )}
+
+        {/* ===== DIMENSÃO DO CASAL ===== */}
+        {coupleActivity && (
+          <div className="bg-surface-container rounded-md p-4">
+            <div className="flex items-center gap-3 mb-3">
+              <span className="material-symbols-outlined text-primary text-xl">group</span>
+              <h3 className="text-on-surface font-headline text-sm font-bold flex-1">Esta semana</h3>
+            </div>
+            <div className="space-y-2">
+              {coupleActivity.map(({ name, pct }) => (
+                <div key={name}>
+                  <div className="flex justify-between text-xs mb-0.5">
+                    <span className="font-body text-on-surface">{name}</span>
+                    <span className="font-label text-on-surface-variant">{pct}%</span>
+                  </div>
+                  <div className="h-1.5 bg-surface-container-low rounded-full overflow-hidden">
+                    <div className="h-full bg-primary/60 rounded-full transition-all" style={{ width: `${pct}%` }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+            <p className="font-label text-[10px] text-on-surface-variant mt-2">Registros dos últimos 7 dias</p>
+          </div>
+        )}
 
         {/* ===== MARCOS DO DESENVOLVIMENTO ===== */}
         {canShowMilestones && (

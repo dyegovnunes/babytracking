@@ -3,6 +3,7 @@ import { supabase } from '../../../lib/supabase';
 import { hapticSuccess, hapticLight } from '../../../lib/haptics';
 import { useBabyPremium } from '../../../hooks/useBabyPremium';
 import { showRewardedAd } from '../../../lib/admob';
+import { getPercentileResult, ageInMonthsAt, type BabyGender } from '../../../lib/omsReference';
 
 interface Measurement {
   id: string;
@@ -16,6 +17,10 @@ interface GrowthSectionProps {
   babyId: string;
   /** Caregiver com permission show_growth: vê, mas não edita. */
   readOnly?: boolean;
+  /** Data de nascimento para cálculo de percentil OMS (YYYY-MM-DD) */
+  birthDate?: string;
+  /** Gênero do bebê para cálculo de percentil por sexo */
+  gender?: BabyGender;
 }
 
 /** Máscara de peso: direita para esquerda, 1 decimal. Ex: "36" → "3,6", "360" → "36,0" */
@@ -46,7 +51,7 @@ function parseValue(input: string): number {
   return parseFloat(input.replace(',', '.'));
 }
 
-export default function GrowthSection({ babyId, readOnly = false }: GrowthSectionProps) {
+export default function GrowthSection({ babyId, readOnly = false, birthDate, gender }: GrowthSectionProps) {
   const isPremium = useBabyPremium();
   const [measurements, setMeasurements] = useState<Measurement[]>([]);
   const [weightInput, setWeightInput] = useState('');
@@ -331,6 +336,47 @@ export default function GrowthSection({ babyId, readOnly = false }: GrowthSectio
           )}
         </div>
       </div>
+
+      {/* ── Interpretação OMS ── */}
+      {birthDate && (latestWeight || latestHeight) && (() => {
+        const refDate = (latestWeight || latestHeight)!.measured_at
+        const ageMonths = ageInMonthsAt(birthDate, refDate)
+        const weightResult = latestWeight
+          ? getPercentileResult(latestWeight.value, ageMonths, gender, 'weight')
+          : null
+        const heightResult = latestHeight
+          ? getPercentileResult(latestHeight.value, ageMonths, gender, 'height')
+          : null
+
+        if (!weightResult && !heightResult) return null
+
+        const bandColor = (band: string) => {
+          if (band === 'below_p3' || band === 'above_p97') return 'text-amber-400'
+          if (band === 'p3_p15') return 'text-yellow-400'
+          return 'text-primary'
+        }
+
+        return (
+          <div className="mb-3 space-y-1.5">
+            {weightResult && (
+              <div className="flex items-start gap-1.5 rounded-md bg-surface-container-low px-3 py-2">
+                <span className={`material-symbols-outlined text-sm mt-0.5 ${bandColor(weightResult.band)}`}>
+                  {weightResult.band === 'below_p3' || weightResult.band === 'above_p97' ? 'info' : 'check_circle'}
+                </span>
+                <p className="font-body text-xs text-on-surface-variant leading-snug">{weightResult.comment}</p>
+              </div>
+            )}
+            {heightResult && (
+              <div className="flex items-start gap-1.5 rounded-md bg-surface-container-low px-3 py-2">
+                <span className={`material-symbols-outlined text-sm mt-0.5 ${bandColor(heightResult.band)}`}>
+                  {heightResult.band === 'below_p3' || heightResult.band === 'above_p97' ? 'info' : 'check_circle'}
+                </span>
+                <p className="font-body text-xs text-on-surface-variant leading-snug">{heightResult.comment}</p>
+              </div>
+            )}
+          </div>
+        )
+      })()}
 
       {measurements.length === 0 ? (
         <div className="space-y-2">

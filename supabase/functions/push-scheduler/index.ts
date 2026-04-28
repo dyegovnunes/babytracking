@@ -142,15 +142,17 @@ serve(async (req) => {
       recentPushSet.add(`${p.user_id}_${p.baby_id}_${p.type}`);
     }
 
-    // 6. Get babies info for names
+    // 6. Get babies info for names and birth_date (birth_date needed for sleep insight)
     const { data: babies } = await supabase
       .from('babies')
-      .select('id, name')
+      .select('id, name, birth_date')
       .in('id', babyIds);
 
     const babyNames = new Map<string, string>();
+    const babyBirthDates = new Map<string, string>();
     for (const b of babies ?? []) {
       babyNames.set(b.id, b.name);
+      if (b.birth_date) babyBirthDates.set(b.id, b.birth_date);
     }
 
     // 7. Process each baby and generate push messages
@@ -267,6 +269,89 @@ serve(async (req) => {
         }
       }
     }
+
+    // ─── 1.3 SLEEP INSIGHT (once per day at BRT 21h) ──────────────────────────
+    // Fires during the 21h BRT window. Checks if each baby's total sleep today
+    // is below 80% of the minimum reference for their age band. Dedup: once
+    // per baby per calendar day (BRT) using type = sleep_insight_YYYY-MM-DD.
+    if (brtHour === 21) {
+      const brtDateStr = new Date(now.getTime() - 3 * 3600 * 1000).toISOString().slice(0, 10);
+      const dedupType = `sleep_insight_${brtDateStr}`;
+
+      // BRT midnight = UTC 03:00 on the same BRT calendar date.
+      const brtMidnightUTC = new Date(brtDateStr + 'T03:00:00.000Z');
+      const brtMidnightMs = brtMidnightUTC.getTime();
+
+      // Check which (user, baby) pairs already got this push today.
+      const { data: todayInsights } = await supabase
+        .from('push_log')
+        .select('user_id, baby_id')
+        .eq('type', dedupType)
+        .gte('sent_at', brtMidnightUTC.toISOString());
+      const insightSentToday = new Set(
+        (todayInsights ?? []).map((r: { user_id: string; baby_id: string }) => `${r.user_id}_${r.baby_id}`),
+      );
+
+      // Fetch today's sleep/wake logs for all babies.
+      const { data: todaySleepLogs } = await supabase
+        .from('logs')
+        .select('baby_id, event_id, timestamp')
+        .in('baby_id', babyIds)
+        .in('event_id', ['sleep_start', 'sleep', 'sleep_end', 'wake'])
+        .gte('timestamp', brtMidnightMs)
+        .order('timestamp', { ascending: true });
+
+      for (const [babyId, targets] of babyTokens) {
+        const birthDate = babyBirthDates.get(babyId);
+        if (!birthDate) continue;
+
+        const ageMonths = (nowTs - new Date(birthDate).getTime()) / (30.4375 * 86400000);
+        const minSleepMin = getSleepMinMinutes(ageMonths);
+        if (!minSleepMin) continue; // no reference for this age (>30m)
+
+        const sleepLogs = (todaySleepLogs ?? []).filter(
+          (l: { baby_id: string; event_id: string; timestamp: number }) => l.baby_id === babyId,
+        );
+        const totalSleepMin = computeTotalSleepMinutes(sleepLogs, nowTs);
+
+        // Only push if below 80% of minimum reference.
+        if (totalSleepMin >= minSleepMin * 0.8) continue;
+
+        const babyName = babyNames.get(babyId) ?? 'Bebê';
+        const sleepH = Math.floor(totalSleepMin / 60);
+        const sleepM = totalSleepMin % 60;
+        const sleepStr = sleepH > 0
+          ? `${sleepH}h${sleepM > 0 ? sleepM + 'min' : ''}`
+          : `${sleepM}min`;
+        const message: PushMessage = {
+          title: `Sono de ${babyName} hoje 😴`,
+          body: totalSleepMin === 0
+            ? `Nenhum registro de sono de ${babyName} hoje ainda.`
+            : `${babyName} dormiu ${sleepStr} hoje, menos do que o esperado para a idade.`,
+          type: 'sleep_insight',
+        };
+
+        for (const target of targets) {
+          if (insightSentToday.has(`${target.userId}_${babyId}`)) continue;
+
+          const prefs = prefsMap.get(`${target.userId}_${babyId}`);
+          if (prefs && !prefs.enabled) continue;
+          if (prefs && !isCategoryEnabled(prefs, 'sleep_nap')) continue;
+          if (prefs && isInQuietHours(prefs, now)) continue;
+
+          insightSentToday.add(`${target.userId}_${babyId}`); // optimistic dedup
+          pushPromises.push(
+            sendFCMPush(target.token, message).then(async (success) => {
+              if (success) {
+                totalSent++;
+                await logPush(target.userId, babyId, dedupType, message.title, message.body);
+              }
+            }),
+          );
+        }
+      }
+    }
+    // ─────────────────────────────────────────────────────────────────────────
 
     await Promise.allSettled(pushPromises);
 
@@ -535,4 +620,49 @@ function jsonResponse(data: any, status = 200): Response {
     status,
     headers: { 'Content-Type': 'application/json' },
   });
+}
+
+// ─── SLEEP INSIGHT HELPERS ──────────────────────────────────────────────────
+
+/**
+ * Minimum sleep minutes per day by age band (WHO/NSF reference).
+ * Returns null if age is outside the 0–30m range we cover.
+ */
+function getSleepMinMinutes(ageMonths: number): number | null {
+  if (ageMonths < 0 || ageMonths > 30) return null;
+  if (ageMonths < 3)  return 840;  // 14h min (0–3m)
+  if (ageMonths < 6)  return 720;  // 12h min (3–6m)
+  if (ageMonths < 9)  return 720;  // 12h min (6–9m)
+  if (ageMonths < 12) return 660;  // 11h min (9–12m)
+  return 660;                       // 11h min (12–30m)
+}
+
+/**
+ * Computes total sleep in minutes from an ordered list of sleep/wake events.
+ * Pairs sleep_start/sleep → sleep_end/wake. Truncates open sessions at nowTs.
+ */
+function computeTotalSleepMinutes(
+  logs: Array<{ event_id: string; timestamp: number }>,
+  nowTs: number,
+): number {
+  const SLEEP_STARTS = new Set(['sleep_start', 'sleep']);
+  const SLEEP_ENDS   = new Set(['sleep_end', 'wake']);
+
+  let totalMs = 0;
+  let sleepStart: number | null = null;
+
+  for (const log of logs) {
+    if (SLEEP_STARTS.has(log.event_id)) {
+      if (sleepStart === null) sleepStart = log.timestamp;
+    } else if (SLEEP_ENDS.has(log.event_id) && sleepStart !== null) {
+      totalMs += log.timestamp - sleepStart;
+      sleepStart = null;
+    }
+  }
+  // If baby is still sleeping, count up to now
+  if (sleepStart !== null) {
+    totalMs += nowTs - sleepStart;
+  }
+
+  return Math.round(totalMs / 60_000);
 }

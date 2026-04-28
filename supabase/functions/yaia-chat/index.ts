@@ -188,7 +188,33 @@ serve(async (req) => {
       `alimentação, desenvolvimento, saltos, marcos, comportamento, brincadeiras, ` +
       `vacinas, saúde), chame search_blog_yaya ANTES de responder e cite o ` +
       `artigo achado no campo "sources".]\n\n`;
-    const messageWithGrounding = groundingPrefix + message;
+    // 3.6 / 2.4 — Blocos de contexto adaptativos por fase etária.
+    // Ativados somente quando age_months está na faixa. Adicionados ao
+    // grounding prefix para que o AI Agent do n8n receba contexto certo.
+    let phaseContext = '';
+    const ageMonths = babyBasics.age_months ?? 0;
+
+    if (ageMonths >= 6 && ageMonths < 12) {
+      phaseContext +=
+        `\n[CONTEXTO DE FASE: bebê em introdução alimentar (${Math.round(ageMonths)} meses). ` +
+        `Ao responder sobre alimentação, inclua contexto de BLW, papinha, alimentos seguros e introdução progressiva. ` +
+        `Chame search_blog_yaya ANTES de qualquer conselho alimentar específico.]`;
+    }
+    if (ageMonths >= 12) {
+      phaseContext +=
+        `\n[CONTEXTO DE FASE: fase toddler (${Math.round(ageMonths)} meses). ` +
+        `Ao responder sobre comportamento (birra, choro, seletividade alimentar, agitação), ` +
+        `SEMPRE normalize antes de informar: comece com "Isso é comum nessa fase..." ` +
+        `antes de qualquer orientação prática.]`;
+    }
+    if (ageMonths >= 18) {
+      phaseContext +=
+        `\n[CONTEXTO DE FASE: fase desfralde e linguagem (${Math.round(ageMonths)} meses). ` +
+        `Ao responder sobre penico, primeiras palavras, birra intensa ou adaptação à creche, ` +
+        `inclua contexto de desenvolvimento de linguagem e autonomia.]`;
+    }
+
+    const messageWithGrounding = groundingPrefix + (phaseContext ? phaseContext + '\n\n' : '') + message;
 
     // Chamada slim pro n8n. O nome do bebê vai tanto no campo `baby` (pro
     // system prompt usar) quanto prefixado na `message` (defense in depth).
