@@ -43,6 +43,7 @@ import { TrackerSkeleton } from '../../components/ui/Skeleton'
 import { useGridItems } from './useGridItems'
 import MealModal from './components/MealModal'
 import MoodSheet from './components/MoodSheet'
+import GridSettingsSheet from './components/GridSettingsSheet'
 import type { LogEntry, MealPayload, MoodPayload } from '../../types'
 
 const PROJECTION_CATEGORIES: string[] = ['feed', 'diaper', 'sleep_nap', 'sleep_awake', 'bath']
@@ -61,6 +62,7 @@ export default function TrackerPage() {
     seedSuggestion,
     acceptSuggestion,
     dismissSuggestion,
+    toggleEvent,
   } = useGridItems(baby?.id)
   const nowRaw = useTimer()
   // Arredonda `now` pro minuto corrente. Ticks do useTimer (a cada ~30s)
@@ -225,6 +227,7 @@ export default function TrackerPage() {
   const [bottleModalOpen, setBottleModalOpen] = useState(false)
   const [mealModalOpen, setMealModalOpen] = useState(false)
   const [moodSheetOpen, setMoodSheetOpen] = useState(false)
+  const [gridSettingsOpen, setGridSettingsOpen] = useState(false)
   const [editingLog, setEditingLog] = useState<LogEntry | null>(null)
   const [toast, setToast] = useState<string | null>(null)
   const [showAdModal, setShowAdModal] = useState(false)
@@ -393,6 +396,15 @@ export default function TrackerPage() {
 
       <ActivityGrid events={gridEvents} logs={logs} onLog={handleLog} highlightedEventIds={highlightedEventIds} />
 
+      {/* Botão discreto de personalização do painel */}
+      <button
+        onClick={() => { hapticLight(); setGridSettingsOpen(true) }}
+        className="flex items-center gap-1 mx-5 mt-1 text-on-surface-variant/60 font-label text-xs active:text-on-surface-variant"
+      >
+        <span className="material-symbols-outlined text-sm">tune</span>
+        Personalizar painel
+      </button>
+
       {/* Cards de sugestão de novos eventos — aparecem uma vez, nunca repetem */}
       {pendingSuggestions.map((ev) => (
         <div key={ev.id} className="mx-5 mt-3 bg-primary/8 border border-primary/20 rounded-md p-4">
@@ -517,6 +529,16 @@ export default function TrackerPage() {
           babyName={baby.name}
           onConfirm={handleMoodConfirm}
           onClose={() => setMoodSheetOpen(false)}
+        />
+      )}
+
+      {baby && (
+        <GridSettingsSheet
+          babyId={baby.id}
+          isOpen={gridSettingsOpen}
+          onClose={() => setGridSettingsOpen(false)}
+          gridEvents={gridEvents}
+          onToggle={toggleEvent}
         />
       )}
 

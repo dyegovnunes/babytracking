@@ -86,6 +86,12 @@ interface UseGridItemsResult {
   dismissSuggestion: (eventId: string) => Promise<void>
   /** Semeia uma nova sugestão na tabela (idempotente via ON CONFLICT DO NOTHING) */
   seedSuggestion: (eventId: string, sortOrder: number) => Promise<void>
+  /**
+   * Liga/desliga um evento manualmente (painel de personalização).
+   * Se a row não existir → insere com enabled=true.
+   * Se estiver habilitando → limpa dismissed_at e seta accepted_at.
+   */
+  toggleEvent: (eventId: string, enabled: boolean) => Promise<void>
 }
 
 export function useGridItems(babyId: string | undefined): UseGridItemsResult {
@@ -178,6 +184,45 @@ export function useGridItems(babyId: string | undefined): UseGridItemsResult {
       // ignores conflict (UNIQUE constraint) silently
   }, [babyId])
 
+  const toggleEvent = useCallback(async (eventId: string, enabled: boolean) => {
+    if (!babyId) return
+
+    // Invalidate cache so next read is fresh
+    try { localStorage.removeItem(cacheKey(babyId)) } catch { /* noop */ }
+
+    const now = new Date().toISOString()
+
+    // Try UPDATE first
+    const { data: updated } = await supabase
+      .from('baby_grid_items')
+      .update(
+        enabled
+          ? { enabled: true, dismissed_at: null, accepted_at: now }
+          : { enabled: false },
+      )
+      .eq('baby_id', babyId)
+      .eq('event_id', eventId)
+      .select('id')
+
+    // If no row existed, INSERT
+    if (!updated || updated.length === 0) {
+      const sortOrder = EVENT_CATALOG.findIndex((e) => e.id === eventId)
+      await supabase
+        .from('baby_grid_items')
+        .insert({
+          baby_id: babyId,
+          event_id: eventId,
+          enabled: true,
+          sort_order: sortOrder >= 0 ? sortOrder : 99,
+          accepted_at: now,
+        })
+        .maybeSingle()
+        .then(() => {})
+    }
+
+    fetchGrid(babyId)
+  }, [babyId, fetchGrid])
+
   return {
     gridEvents,
     pendingSuggestions,
@@ -186,5 +231,6 @@ export function useGridItems(babyId: string | undefined): UseGridItemsResult {
     acceptSuggestion,
     dismissSuggestion,
     seedSuggestion,
+    toggleEvent,
   }
 }
