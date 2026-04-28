@@ -5,7 +5,6 @@ import type { Guide } from '../../types'
 
 const SITE = 'https://blog.yayababy.app'
 
-// Busca todos os guias publicados
 const { data } = await supabase
   .from('guides')
   .select('id, slug, title, subtitle, description, price_cents, cover_image_url, status, audience, target_week_start, target_week_end')
@@ -14,7 +13,6 @@ const { data } = await supabase
 
 const guides = (data ?? []) as Guide[]
 
-// JSON-LD: ItemList
 const itemListLd = {
   '@context': 'https://schema.org',
   '@type': 'ItemList',
@@ -51,27 +49,37 @@ function audienceLabel(g: Guide): string {
 >
   <script type="application/ld+json" set:html={JSON.stringify(itemListLd)} />
 
-  <!-- Hero editorial -->
+  <!-- Hero editorial premium -->
   <section class="max-w-4xl mx-auto px-4 pt-14 pb-10 text-center">
-    <p class="text-yaya-purple font-display text-xs font-bold uppercase tracking-widest mb-4">
-      Sua Biblioteca Yaya
-    </p>
+
+    <!-- Linha dourada decorativa -->
+    <div class="flex items-center justify-center gap-3 mb-5">
+      <div class="h-px w-12 bg-gradient-to-r from-transparent to-[#f5c842]/50"></div>
+      <span class="text-[10px] font-display font-bold uppercase tracking-[0.2em]" style="color: #f5c842;">
+        ✦ Biblioteca Yaya ✦
+      </span>
+      <div class="h-px w-12 bg-gradient-to-l from-transparent to-[#f5c842]/50"></div>
+    </div>
+
     <h1
-      class="font-serif text-4xl md:text-5xl font-bold text-yaya-cloud leading-tight tracking-tight mb-4"
+      class="font-bold text-4xl md:text-5xl text-yaya-cloud leading-tight tracking-tight mb-4"
       style="font-family: 'Fraunces', Georgia, serif;"
     >
       Guias que acompanham<br class="hidden md:block" />
       <span class="text-yaya-purple">cada etapa com você.</span>
     </h1>
-    <p class="text-yaya-cloud/60 text-base font-sans max-w-xl mx-auto leading-relaxed mb-8">
-      Conteúdo aprofundado, baseado em evidências — empacotado em guias práticos para quem está
-      na gestação ou nos primeiros meses com o bebê.
+    <p class="text-yaya-cloud/55 text-base font-sans max-w-xl mx-auto leading-relaxed mb-8">
+      Conteúdo aprofundado, baseado em evidências — empacotado em guias práticos
+      para quem está na gestação ou nos primeiros meses com o bebê.
     </p>
 
     <!-- Yaya+ badge -->
-    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-yaya-purple/10 border border-yaya-purple/20 text-sm font-sans">
-      <span class="text-yaya-purple font-bold">Yaya+</span>
-      <span class="text-yaya-cloud/60">desbloqueia toda a biblioteca</span>
+    <div
+      class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-sans"
+      style="background: rgba(245,200,66,0.08); border: 1px solid rgba(245,200,66,0.25); color: #f5c842;"
+    >
+      <span class="font-bold">Yaya+</span>
+      <span style="color: rgba(245,200,66,0.7);">desbloqueia toda a biblioteca</span>
     </div>
   </section>
 
@@ -89,83 +97,125 @@ function audienceLabel(g: Guide): string {
         const price = formatPrice(guide.price_cents)
         const badge = audienceLabel(guide)
         return (
-          <a
-            href={`/sua-biblioteca/${guide.slug}`}
-            class="group block rounded-2xl overflow-hidden border border-yaya-cloud/8 bg-yaya-cloud/3 hover:border-yaya-purple/30 hover:bg-yaya-purple/5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-yaya-purple/5"
+          /* Wrapper do gradiente dourado — cria a borda premium */
+          <div
+            class="guide-card-wrapper rounded-2xl p-px transition-all duration-300"
+            style="background: linear-gradient(135deg, rgba(245,200,66,0.35) 0%, rgba(183,159,255,0.25) 50%, rgba(245,200,66,0.2) 100%);"
           >
-            <!-- Cover image -->
-            <div class="relative aspect-[3/2] bg-yaya-purple/10 overflow-hidden">
-              {guide.cover_image_url
-                ? (
-                  <img
-                    src={guide.cover_image_url}
-                    alt={guide.title}
-                    class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                )
-                : (
-                  <div class="w-full h-full flex items-center justify-center">
-                    <img src="/symbol.png" alt="" class="h-14 w-auto opacity-25" />
-                  </div>
-                )
-              }
-              <!-- Gradiente overlay -->
-              <div class="absolute inset-0 bg-gradient-to-t from-yaya-night/70 via-transparent to-transparent" />
-              <!-- Badge -->
-              <span class="absolute bottom-3 left-3 text-xs font-display font-bold px-2.5 py-1 rounded-full bg-yaya-night/70 text-yaya-cloud/80 backdrop-blur-sm border border-yaya-cloud/10">
-                {badge}
-              </span>
-            </div>
+            <a
+              href={`/sua-biblioteca/${guide.slug}`}
+              class="group guide-card-inner block rounded-2xl overflow-hidden bg-yaya-night transition-all duration-300"
+            >
+              <!-- Cover image -->
+              <div class="relative aspect-[3/2] overflow-hidden" style="background: rgba(183,159,255,0.08);">
+                {guide.cover_image_url
+                  ? (
+                    <img
+                      src={guide.cover_image_url}
+                      alt={guide.title}
+                      class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  )
+                  : (
+                    <div class="w-full h-full flex items-center justify-center">
+                      <img src="/symbol.png" alt="" class="h-14 w-auto opacity-20" />
+                    </div>
+                  )
+                }
+                <!-- Overlay gradiente -->
+                <div class="absolute inset-0 bg-gradient-to-t from-yaya-night/80 via-transparent to-transparent" />
 
-            <!-- Conteúdo do card -->
-            <div class="p-5">
-              <h2
-                class="text-yaya-cloud font-bold text-lg leading-snug mb-1 group-hover:text-yaya-purple transition-colors line-clamp-2"
-                style="font-family: 'Fraunces', Georgia, serif;"
-              >
-                {guide.title}
-              </h2>
-              {guide.subtitle && (
-                <p class="text-yaya-cloud/55 text-sm font-sans leading-snug mb-4 line-clamp-2">
-                  {guide.subtitle}
-                </p>
-              )}
-
-              <!-- Rodapé do card: preço + CTA -->
-              <div class="flex items-center justify-between mt-auto pt-3 border-t border-yaya-cloud/6">
-                <div>
-                  <span class="text-yaya-purple font-display font-bold text-sm">{price}</span>
-                  <span class="text-yaya-cloud/35 text-xs font-sans ml-1.5">ou Yaya+</span>
+                <!-- Coroa premium (top-right) -->
+                <div
+                  class="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-display font-bold backdrop-blur-sm"
+                  style="background: rgba(13,10,39,0.75); border: 1px solid rgba(245,200,66,0.4); color: #f5c842;"
+                >
+                  👑 Premium
                 </div>
-                <span class="text-yaya-purple text-xs font-display font-bold group-hover:translate-x-0.5 transition-transform">
-                  Ver detalhes →
+
+                <!-- Badge de fase (bottom-left) -->
+                <span class="absolute bottom-3 left-3 text-xs font-display font-bold px-2.5 py-1 rounded-full backdrop-blur-sm" style="background: rgba(13,10,39,0.7); color: rgba(231,226,255,0.8); border: 1px solid rgba(231,226,255,0.1);">
+                  {badge}
                 </span>
               </div>
-            </div>
-          </a>
+
+              <!-- Conteúdo do card -->
+              <div class="p-5">
+                <h2
+                  class="text-yaya-cloud font-bold text-lg leading-snug mb-1.5 line-clamp-2 transition-colors duration-200 group-hover:text-yaya-purple"
+                  style="font-family: 'Fraunces', Georgia, serif;"
+                >
+                  {guide.title}
+                </h2>
+                {guide.subtitle && (
+                  <p class="text-yaya-cloud/50 text-sm font-sans leading-snug mb-4 line-clamp-2">
+                    {guide.subtitle}
+                  </p>
+                )}
+
+                <!-- Rodapé: preço + CTA -->
+                <div class="flex items-center justify-between pt-3" style="border-top: 1px solid rgba(245,200,66,0.1);">
+                  <div>
+                    <span class="font-display font-bold text-base" style="color: #f5c842;">{price}</span>
+                    <span class="text-yaya-cloud/30 text-xs font-sans ml-1.5">ou Yaya+</span>
+                  </div>
+                  <span class="text-yaya-purple text-xs font-display font-bold transition-transform duration-200 group-hover:translate-x-0.5">
+                    Ver detalhes →
+                  </span>
+                </div>
+              </div>
+            </a>
+          </div>
         )
       })}
     </div>
 
-    <!-- Bloco Yaya+ contextual (abaixo do grid) -->
+    <!-- Bloco Yaya+ (abaixo do grid) -->
     {guides.length > 0 && (
-      <div class="mt-12 rounded-2xl border border-yaya-purple/20 bg-yaya-purple/6 p-8 text-center">
-        <p class="text-yaya-purple font-display font-bold text-xs uppercase tracking-widest mb-3">Yaya+</p>
-        <p class="text-yaya-cloud font-sans text-base mb-2">
-          Assine o Yaya+ e acesse <strong>toda a biblioteca</strong> sem pagar por guia.
-        </p>
-        <p class="text-yaya-cloud/50 text-sm font-sans mb-5">
-          O app acompanha a rotina do bebê e, com Yaya+, você ainda leva todos os guias junto.
-        </p>
-        <a
-          href="https://yayababy.app"
-          class="inline-block bg-yaya-purple hover:bg-yaya-glow text-yaya-night font-display font-bold text-sm px-6 py-3 rounded-xl transition-colors"
-        >
-          Conhecer o Yaya+
-        </a>
+      <div
+        class="mt-14 rounded-2xl p-px"
+        style="background: linear-gradient(135deg, rgba(245,200,66,0.2) 0%, rgba(183,159,255,0.2) 100%);"
+      >
+        <div class="rounded-2xl p-8 text-center" style="background: rgba(13,10,39,0.95);">
+          <p
+            class="font-display font-bold text-xs uppercase tracking-widest mb-3"
+            style="color: #f5c842;"
+          >
+            ✦ Yaya+
+          </p>
+          <p class="text-yaya-cloud font-sans text-base mb-2">
+            Assine o Yaya+ e acesse <strong>toda a biblioteca</strong> sem pagar por guia.
+          </p>
+          <p class="text-yaya-cloud/50 text-sm font-sans mb-6">
+            O app acompanha a rotina do bebê e, com Yaya+, você ainda leva todos os guias junto.
+          </p>
+          <a
+            href="https://yayababy.app"
+            class="inline-block font-display font-bold text-sm px-7 py-3 rounded-xl transition-colors"
+            style="background: linear-gradient(135deg, #f5c842 0%, #f0a020 100%); color: #0d0a27;"
+          >
+            Conhecer o Yaya+
+          </a>
+          <p class="mt-4 text-yaya-cloud/30 text-xs font-sans">
+            Já é assinante?{' '}
+            <a href="/minha-biblioteca" class="hover:text-yaya-cloud transition-colors" style="color: rgba(245,200,66,0.6);">Entrar na biblioteca →</a>
+          </p>
+        </div>
       </div>
     )}
   </section>
 </BlogLayout>
+
+<style>
+  /* Glow dourado no hover do card */
+  .guide-card-wrapper:hover {
+    box-shadow: 0 0 40px rgba(245, 200, 66, 0.12), 0 8px 32px rgba(0, 0, 0, 0.4);
+    transform: translateY(-2px);
+  }
+  /* Intensifica borda dourada no hover */
+  .guide-card-wrapper:hover {
+    background: linear-gradient(135deg, rgba(245,200,66,0.6) 0%, rgba(183,159,255,0.4) 50%, rgba(245,200,66,0.4) 100%) !important;
+  }
+</style>
