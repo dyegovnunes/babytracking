@@ -18,6 +18,7 @@ import QuizFullscreen from './QuizFullscreen'
 import HighlightLayer from './HighlightLayer'
 import NoteDrawer from './NoteDrawer'
 import NpsBlock from './NpsBlock'
+import FlashcardSection from './FlashcardSection'
 
 interface Props {
   guide: Guide
@@ -121,6 +122,15 @@ export default function SectionRenderer({
   }
 
   // ── Render por tipo ──────────────────────────────────────────────────────
+
+  if (section.type === 'flashcards') {
+    return (
+      <FlashcardSection
+        section={section}
+        onContinue={() => next && onNavigate(next.id)}
+      />
+    )
+  }
 
   if (section.type === 'part') {
     return (

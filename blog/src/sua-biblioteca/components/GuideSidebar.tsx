@@ -37,7 +37,7 @@ export default function GuideSidebar({
     sections.filter(s => s.parent_id === parentId).sort((a, b) => a.order_index - b.order_index)
 
   // Calcula progresso geral
-  const totalReadable = sections.filter(s => s.type !== 'part').length
+  const totalReadable = sections.filter(s => s.type !== 'part' && s.type !== 'flashcards').length
   const completed = Object.values(progressMap).filter(p => p.completed).length
   const progressPct = totalReadable > 0 ? Math.round(completed / totalReadable * 100) : 0
 

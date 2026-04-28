@@ -197,7 +197,7 @@ export default function GuideLayout({ guide, sections, userId }: Props) {
 
   const currentSection = flatSections.find(s => s.id === currentSectionId) ?? flatSections[0]
   const currentIdx = flatSections.findIndex(s => s.id === currentSection?.id)
-  const totalSections = flatSections.filter(s => s.type !== 'part').length
+  const totalSections = flatSections.filter(s => s.type !== 'part' && s.type !== 'flashcards').length
   const completedCount = Object.values(progressMap).filter(p => p.completed).length
   const overallProgress = totalSections > 0 ? completedCount / totalSections : 0
 
