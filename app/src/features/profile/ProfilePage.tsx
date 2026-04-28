@@ -298,30 +298,6 @@ export default function ProfilePage() {
           />
         )}
 
-        {/* ===== DIMENSÃO DO CASAL ===== */}
-        {coupleActivity && (
-          <div className="bg-surface-container rounded-md p-4">
-            <div className="flex items-center gap-3 mb-3">
-              <span className="material-symbols-outlined text-primary text-xl">group</span>
-              <h3 className="text-on-surface font-headline text-sm font-bold flex-1">Esta semana</h3>
-            </div>
-            <div className="space-y-2">
-              {coupleActivity.map(({ name, pct }) => (
-                <div key={name}>
-                  <div className="flex justify-between text-xs mb-0.5">
-                    <span className="font-body text-on-surface">{name}</span>
-                    <span className="font-label text-on-surface-variant">{pct}%</span>
-                  </div>
-                  <div className="h-1.5 bg-surface-container-low rounded-full overflow-hidden">
-                    <div className="h-full bg-primary/60 rounded-full transition-all" style={{ width: `${pct}%` }} />
-                  </div>
-                </div>
-              ))}
-            </div>
-            <p className="font-label text-[10px] text-on-surface-variant mt-2">Registros dos últimos 7 dias</p>
-          </div>
-        )}
-
         {/* ===== MARCOS DO DESENVOLVIMENTO ===== */}
         {canShowMilestones && (
           <button
@@ -523,6 +499,24 @@ export default function ProfilePage() {
               )
             })}
           </div>
+
+          {/* Esta semana — distribuição de registros por membro (discreto) */}
+          {coupleActivity && (
+            <div className="border-t border-outline-variant/30 pt-3 mb-4">
+              <p className="font-label text-[10px] text-on-surface-variant uppercase tracking-wide mb-2">Esta semana</p>
+              <div className="space-y-1.5">
+                {coupleActivity.map(({ name, pct }) => (
+                  <div key={name} className="flex items-center gap-2">
+                    <span className="font-body text-xs text-on-surface-variant w-20 truncate">{name}</span>
+                    <div className="flex-1 h-1 bg-surface-container-low rounded-full overflow-hidden">
+                      <div className="h-full bg-on-surface-variant/30 rounded-full" style={{ width: `${pct}%` }} />
+                    </div>
+                    <span className="font-label text-[10px] text-on-surface-variant w-7 text-right">{pct}%</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Invite section */}
           {inviteCode ? (
