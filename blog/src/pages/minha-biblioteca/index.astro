@@ -1,0 +1,16 @@
+---
+// Minha Biblioteca — área pessoal do usuário.
+// Mostra apenas os guias que o usuário tem acesso (compra ou Yaya+).
+// Toda a lógica é client:only via React (precisa de auth state).
+
+import BlogLayout from '../../layouts/BlogLayout.astro'
+import MinhaBliotecaApp from '../../sua-biblioteca/components/MinhaBliotecaApp'
+---
+
+<BlogLayout
+  title="Minha Biblioteca — Yaya Baby"
+  description="Seus guias da Biblioteca Yaya. Acesse os materiais que você adquiriu ou tem via Yaya+."
+  noIndex={true}
+>
+  <MinhaBliotecaApp client:only="react" />
+</BlogLayout>

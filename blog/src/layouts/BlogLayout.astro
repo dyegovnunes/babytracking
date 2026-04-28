@@ -8,9 +8,10 @@ interface Props {
   description?: string
   image?: string
   canonicalUrl?: string
+  noIndex?: boolean
 }
 
-const { title, description, image, canonicalUrl } = Astro.props
+const { title, description, image, canonicalUrl, noIndex = false } = Astro.props
 const fullTitle = title.includes('Yaya') ? title : `${title} | Yaya Baby`
 
 // GA4 measurement ID via env var. Se não estiver definido (dev local sem
@@ -37,7 +38,7 @@ const GA_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID as string | undefined
         } catch(e) {}
       })();
     </script>
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content={noIndex ? 'noindex, nofollow' : 'index, follow'} />
 
     <title>{fullTitle}</title>
     {description && <meta name="description" content={description} />}
@@ -138,7 +139,7 @@ const GA_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID as string | undefined
         <div class="flex items-center gap-2">
           <!-- CTAs desktop (sm+) -->
           <a
-            href="/sua-biblioteca"
+            href="/minha-biblioteca"
             class="hidden sm:inline-block border border-yaya-purple/50 text-yaya-purple hover:bg-yaya-purple/10 font-display font-bold text-xs px-4 py-2 rounded-md transition-colors whitespace-nowrap"
           >
             Minha biblioteca
@@ -188,7 +189,7 @@ const GA_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID as string | undefined
         </a>
         <div class="mt-3 pt-3 border-t border-yaya-cloud/5 flex gap-2">
           <a
-            href="/sua-biblioteca"
+            href="/minha-biblioteca"
             class="flex-1 text-center border border-yaya-purple/50 text-yaya-purple hover:bg-yaya-purple/10 font-display font-bold text-xs px-4 py-2.5 rounded-md transition-colors"
           >
             Minha biblioteca
