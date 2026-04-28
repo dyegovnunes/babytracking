@@ -287,6 +287,27 @@ export default function FlashcardSection({ section, onContinue }: Props) {
               </button>
             </div>
           )}
+
+          {/* ── Avançar — sempre visível, discreto ── */}
+          <div style={{ textAlign: 'center', marginTop: 28 }}>
+            <button
+              onClick={onContinue}
+              style={{
+                background: 'none', border: 'none', cursor: 'pointer',
+                display: 'inline-flex', alignItems: 'center', gap: 5,
+                fontSize: 13, fontWeight: 600,
+                color: 'var(--r-text-subtle)',
+                fontFamily: 'inherit',
+                padding: '6px 8px',
+                transition: 'color 0.15s',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.color = 'var(--r-text)' }}
+              onMouseLeave={e => { e.currentTarget.style.color = 'var(--r-text-subtle)' }}
+            >
+              Pular para a próxima seção
+              <span className="material-symbols-outlined" style={{ fontSize: 15 }}>arrow_forward</span>
+            </button>
+          </div>
         </>
       )}
     </div>
