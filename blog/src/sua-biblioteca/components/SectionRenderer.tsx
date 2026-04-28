@@ -436,8 +436,8 @@ function YayaCtaBlock() {
     <div style={{
       marginTop: '2.5em',
       padding: '18px 20px',
-      background: 'var(--r-surface)',
-      border: '1px solid var(--r-border)',
+      background: 'color-mix(in srgb, #059669 7%, var(--r-surface))',
+      border: '1px solid color-mix(in srgb, #059669 25%, transparent)',
       borderRadius: 14,
       display: 'flex',
       alignItems: 'flex-start',
@@ -446,7 +446,7 @@ function YayaCtaBlock() {
     }}>
       <span
         className="material-symbols-outlined"
-        style={{ fontSize: 22, color: 'var(--r-accent)', flex: '0 0 auto', marginTop: 2 }}
+        style={{ fontSize: 22, color: '#059669', flex: '0 0 auto', marginTop: 2 }}
       >
         phone_iphone
       </span>
@@ -463,35 +463,19 @@ function YayaCtaBlock() {
         <p style={{ fontSize: 13, color: 'var(--r-text-muted)', lineHeight: 1.55, margin: '0 0 12px' }}>
           Você ganhou 30 dias de Yaya+ com a compra do guia. Registre sono, mamadas e fraldas e chegue na primeira consulta com tudo anotado.
         </p>
-        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-          <a
-            href="https://play.google.com/store/apps/details?id=app.yayababy"
-            target="_blank" rel="noopener noreferrer"
-            style={{
-              padding: '8px 14px', borderRadius: 999,
-              background: 'var(--r-accent)', color: 'var(--r-on-accent)',
-              fontWeight: 700, fontSize: 12, textDecoration: 'none',
-              display: 'inline-flex', alignItems: 'center', gap: 5,
-            }}
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: 14 }}>android</span>
-            Android
-          </a>
-          <a
-            href="https://apps.apple.com/br/app/yaya-bebe/id6741482602"
-            target="_blank" rel="noopener noreferrer"
-            style={{
-              padding: '8px 14px', borderRadius: 999,
-              border: '1px solid var(--r-border)', color: 'var(--r-text-muted)',
-              fontWeight: 700, fontSize: 12, textDecoration: 'none',
-              display: 'inline-flex', alignItems: 'center', gap: 5,
-              background: 'transparent',
-            }}
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: 14 }}>apple</span>
-            iPhone
-          </a>
-        </div>
+        <a
+          href="https://yayababy.app"
+          target="_blank" rel="noopener noreferrer"
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            padding: '9px 18px', borderRadius: 999,
+            background: '#059669', color: '#ffffff',
+            fontWeight: 700, fontSize: 13, textDecoration: 'none',
+          }}
+        >
+          <span className="material-symbols-outlined" style={{ fontSize: 15 }}>download</span>
+          Baixe o app
+        </a>
       </div>
     </div>
   )

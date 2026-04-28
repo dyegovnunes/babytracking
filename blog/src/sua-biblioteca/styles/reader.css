@@ -297,23 +297,6 @@ html.theme-dark .reader-root {
   font-style: italic;
 }
 
-/* ── Drop cap no primeiro parágrafo ────────────────────────────────────── */
-@media (min-width: 600px) {
-  .reader-content p.drop-cap::first-letter {
-    font-family: var(--r-serif);
-    font-variation-settings: 'opsz' 144, 'SOFT' 50;
-    font-size: 4.4em;
-    font-weight: 700;
-    line-height: 0.86;
-    float: left;
-    margin: 0.05em 0.12em -0.05em -0.04em;
-    color: var(--r-accent);
-    background: linear-gradient(135deg, var(--r-accent) 0%, var(--r-accent-glow) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-}
 
 /* ── Pull quote ────────────────────────────────────────────────────────── */
 .reader-content .pull-quote {

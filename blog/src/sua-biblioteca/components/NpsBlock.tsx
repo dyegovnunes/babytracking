@@ -72,8 +72,8 @@ export default function NpsBlock({ guideId, sectionId, userId }: Props) {
     <div style={{
       marginTop: '2.5em',
       padding: '20px 16px',
-      background: 'var(--r-surface)',
-      border: '1px solid var(--r-border)',
+      background: 'color-mix(in srgb, #f59e0b 8%, var(--r-surface))',
+      border: '1px solid color-mix(in srgb, #f59e0b 30%, transparent)',
       borderRadius: 14,
       textAlign: 'center',
       fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif',
@@ -140,13 +140,13 @@ export default function NpsBlock({ guideId, sectionId, userId }: Props) {
                   className="material-symbols-outlined"
                   style={{
                     fontSize: 28,
-                    color: star <= displayRating ? 'var(--r-accent)' : 'var(--r-text-subtle)',
-                    fontVariationSettings: star <= displayRating ? '"FILL" 1' : '"FILL" 0',
-                    transition: 'color 0.15s, font-variation-settings 0.15s',
+                    color: star <= displayRating ? '#f59e0b' : 'var(--r-text-subtle)',
+                    fontVariationSettings: '"FILL" 1',
+                    transition: 'color 0.15s',
                     display: 'block',
                   }}
                 >
-                  star
+                  {star <= displayRating ? 'star' : 'star_border'}
                 </span>
               </button>
             ))}
