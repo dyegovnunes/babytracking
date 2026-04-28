@@ -625,21 +625,12 @@ export default function TrackerPage() {
             </div>
           </div>
           <div className="flex gap-2 mt-3">
-            {gridEvents.length >= 9 ? (
-              <button
-                onClick={() => { hapticLight(); setGridSettingsOpen(true) }}
-                className="flex-1 py-2 rounded-md bg-primary text-on-primary font-label text-xs font-semibold"
-              >
-                Abrir configurações
-              </button>
-            ) : (
-              <button
-                onClick={() => { hapticSuccess(); acceptSuggestion(ev.id) }}
-                className="flex-1 py-2 rounded-md bg-primary text-on-primary font-label text-xs font-semibold"
-              >
-                Adicionar
-              </button>
-            )}
+            <button
+              onClick={() => { hapticSuccess(); acceptSuggestion(ev.id) }}
+              className="flex-1 py-2 rounded-md bg-primary text-on-primary font-label text-xs font-semibold"
+            >
+              Adicionar
+            </button>
             <button
               onClick={() => { hapticLight(); dismissSuggestion(ev.id) }}
               className="px-4 py-2 rounded-md border border-outline-variant text-on-surface-variant font-label text-xs"
