@@ -328,12 +328,12 @@ export default function TrackerPage() {
       }
 
       // Auto-sono: se bebê está dormindo e registrou amamentação/fralda,
-      // insere "acordou" 1 min antes e "dormiu" 1 min depois automaticamente.
+      // insere "acordou" 5 min antes e "dormiu" 30 min depois automaticamente.
       if (isBabySleeping && WAKE_TRIGGER_EVENTS.includes(eventId)) {
         const ts = Date.now()
-        await addLog(dispatch, 'wake',  baby.id, undefined, user?.id, null, ts - 60_000)
+        await addLog(dispatch, 'wake',  baby.id, undefined, user?.id, null, ts - 5 * 60_000)
         const log = await addLog(dispatch, eventId, baby.id, undefined, user?.id, null, ts)
-        await addLog(dispatch, 'sleep', baby.id, undefined, user?.id, null, ts + 60_000)
+        await addLog(dispatch, 'sleep', baby.id, undefined, user?.id, null, ts + 30 * 60_000)
         if (log) {
           hapticSuccess()
           setToast(`${event.label} + sono automático registrado`)
