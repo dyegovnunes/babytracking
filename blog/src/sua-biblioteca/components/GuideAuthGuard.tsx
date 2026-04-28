@@ -367,6 +367,14 @@ function NoAccessCTA({ guideSlug, guideTitle, email }: { guideSlug: string; guid
         <a href={`/sua-biblioteca/${guideSlug}`} style={{ ...s.btnPrimary, display: 'block', textDecoration: 'none', textAlign: 'center' as const }}>
           Ver detalhes e adquirir
         </a>
+
+        {/* Yaya+ — alternativa via assinatura */}
+        <div style={{ marginTop: 14, padding: '12px 16px', background: 'rgba(183,159,255,0.07)', border: '1px solid rgba(183,159,255,0.15)', borderRadius: 10, textAlign: 'left' as const }}>
+          <p style={{ ...s.body, fontSize: 12, margin: 0, lineHeight: 1.6 }}>
+            <strong style={{ color: 'var(--r-accent)' }}>Incluso no Yaya+</strong> — assine pelo app e acesse toda a biblioteca sem pagar por guia.
+          </p>
+        </div>
+
         {email && (
           <button onClick={signOut} style={s.btnSecondary}>Entrar com outro email</button>
         )}

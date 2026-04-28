@@ -1,0 +1,381 @@
+---
+import BlogLayout from '../../layouts/BlogLayout.astro'
+import { supabase } from '../../lib/supabase'
+import type { Guide, GuideSection } from '../../types'
+import { marked } from 'marked'
+import GuideCTA from '../../sua-biblioteca/components/GuideCTA'
+
+const SITE = 'https://blog.yayababy.app'
+
+export async function getStaticPaths() {
+  const { data } = await supabase
+    .from('guides')
+    .select('slug')
+    .eq('status', 'published')
+  return (data ?? []).map((g) => ({ params: { slug: g.slug } }))
+}
+
+const { slug } = Astro.params
+
+// Busca guia + seções em paralelo
+const [{ data: guideData, error }, { data: sectionsData }] = await Promise.all([
+  supabase
+    .from('guides')
+    .select('*')
+    .eq('slug', slug)
+    .eq('status', 'published')
+    .single(),
+  supabase
+    .from('guide_sections')
+    .select('id, guide_id, parent_id, order_index, slug, title, cover_image_url, estimated_minutes, content_md, type, is_preview')
+    .order('order_index', { ascending: true }),
+])
+
+if (error || !guideData) {
+  return Astro.redirect('/sua-biblioteca')
+}
+
+const guide = guideData as Guide
+const allSections = (sectionsData ?? []) as GuideSection[]
+
+// Filtra só seções deste guia
+const guideSections = allSections.filter((s) => s.guide_id === guide.id)
+
+// Partes (type=part, sem parent)
+const parts = guideSections.filter((s) => s.type === 'part' && !s.parent_id)
+// Seções filhas (agrupadas por parte)
+const sectionsByPart: Record<string, GuideSection[]> = {}
+for (const s of guideSections) {
+  if (s.type !== 'part' && s.parent_id) {
+    if (!sectionsByPart[s.parent_id]) sectionsByPart[s.parent_id] = []
+    sectionsByPart[s.parent_id].push(s)
+  }
+}
+
+// Seções de amostra grátis (is_preview=true, apenas não-part)
+const previewSections = guideSections.filter((s) => s.is_preview && s.type !== 'part')
+
+// Tempo total estimado
+const totalMinutes = guideSections.reduce((acc, s) => acc + (s.estimated_minutes ?? 0), 0)
+
+function formatPrice(cents: number): string {
+  return `R$ ${Math.floor(cents / 100)}`
+}
+
+// Renderiza markdown das seções de preview
+marked.setOptions({ gfm: true })
+const previewHtml: Record<string, string> = {}
+for (const s of previewSections) {
+  if (s.content_md) {
+    previewHtml[s.id] = await marked.parse(s.content_md)
+  }
+}
+
+const canonicalUrl = `${SITE}/sua-biblioteca/${slug}`
+const priceFormatted = formatPrice(guide.price_cents)
+
+// JSON-LD: BreadcrumbList
+const breadcrumbLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Blog', item: SITE },
+    { '@type': 'ListItem', position: 2, name: 'Biblioteca Yaya', item: `${SITE}/sua-biblioteca` },
+    { '@type': 'ListItem', position: 3, name: guide.title, item: canonicalUrl },
+  ],
+}
+
+// JSON-LD: Product
+const productLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: guide.title,
+  description: guide.description ?? guide.subtitle ?? '',
+  image: guide.cover_image_url ? [guide.cover_image_url] : undefined,
+  url: canonicalUrl,
+  brand: { '@type': 'Brand', name: 'Yaya Baby' },
+  offers: {
+    '@type': 'Offer',
+    price: (guide.price_cents / 100).toFixed(2),
+    priceCurrency: 'BRL',
+    availability: 'https://schema.org/InStock',
+    url: canonicalUrl,
+    seller: { '@type': 'Organization', name: 'Yaya Baby' },
+  },
+}
+---
+
+<BlogLayout
+  title={`${guide.title} — Sua Biblioteca Yaya`}
+  description={guide.description ?? guide.subtitle ?? `Guia completo: ${guide.title}. Conteúdo baseado em evidências para quem cuida.`}
+  canonicalUrl={canonicalUrl}
+  image={guide.cover_image_url ?? undefined}
+>
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(productLd)} />
+
+  <!-- Breadcrumb -->
+  <nav class="max-w-4xl mx-auto px-4 pt-8 pb-0">
+    <ol class="flex items-center gap-1.5 text-xs font-sans text-yaya-cloud/40 flex-wrap">
+      <li><a href="/" class="hover:text-yaya-cloud transition-colors">Blog</a></li>
+      <li aria-hidden="true" class="text-yaya-cloud/25">›</li>
+      <li><a href="/sua-biblioteca" class="hover:text-yaya-cloud transition-colors">Biblioteca Yaya</a></li>
+      <li aria-hidden="true" class="text-yaya-cloud/25">›</li>
+      <li class="text-yaya-cloud/70 font-medium truncate max-w-[180px]">{guide.title}</li>
+    </ol>
+  </nav>
+
+  <!-- Hero: cover image + título -->
+  <section class="max-w-4xl mx-auto px-4 pt-6 pb-10">
+    {guide.cover_image_url && (
+      <div class="relative rounded-2xl overflow-hidden mb-8" style="aspect-ratio: 21/9;">
+        <img
+          src={guide.cover_image_url}
+          alt={guide.title}
+          class="w-full h-full object-cover"
+          loading="eager"
+          decoding="async"
+        />
+        <!-- Overlay gradiente -->
+        <div class="absolute inset-0 bg-gradient-to-t from-yaya-night/85 via-yaya-night/30 to-transparent" />
+        <!-- Título sobre a imagem -->
+        <div class="absolute bottom-0 left-0 right-0 p-6 md:p-8">
+          <h1
+            class="text-white font-bold text-3xl md:text-4xl leading-tight tracking-tight"
+            style="font-family: 'Fraunces', Georgia, serif; text-shadow: 0 2px 12px rgba(0,0,0,0.5);"
+          >
+            {guide.title}
+          </h1>
+          {guide.subtitle && (
+            <p class="text-white/75 text-sm md:text-base font-sans mt-2 max-w-xl leading-relaxed">
+              {guide.subtitle}
+            </p>
+          )}
+        </div>
+      </div>
+    )}
+
+    {/* Quando não tem cover image — título inline */}
+    {!guide.cover_image_url && (
+      <div class="mb-10">
+        <h1
+          class="text-yaya-cloud font-bold text-3xl md:text-4xl leading-tight tracking-tight mb-3"
+          style="font-family: 'Fraunces', Georgia, serif;"
+        >
+          {guide.title}
+        </h1>
+        {guide.subtitle && (
+          <p class="text-yaya-cloud/60 text-base font-sans leading-relaxed max-w-2xl">
+            {guide.subtitle}
+          </p>
+        )}
+      </div>
+    )}
+
+    <!-- Meta stats -->
+    <div class="flex flex-wrap items-center gap-4 text-xs font-sans text-yaya-cloud/50 mb-8">
+      {totalMinutes > 0 && (
+        <span class="flex items-center gap-1.5">
+          <span>⏱</span>
+          <span>~{totalMinutes} min de leitura</span>
+        </span>
+      )}
+      {parts.length > 0 && (
+        <span class="flex items-center gap-1.5">
+          <span>📖</span>
+          <span>{parts.length} {parts.length === 1 ? 'parte' : 'partes'}</span>
+        </span>
+      )}
+      {previewSections.length > 0 && (
+        <span class="flex items-center gap-1.5 text-yaya-purple/70">
+          <span>🔓</span>
+          <span>Amostra grátis disponível</span>
+        </span>
+      )}
+    </div>
+
+    <!-- Layout em duas colunas: conteúdo + sidebar de compra -->
+    <div class="flex flex-col lg:flex-row gap-10 lg:items-start">
+
+      <!-- Coluna esquerda: sumário + amostra -->
+      <div class="flex-1 min-w-0">
+
+        <!-- Descrição -->
+        {guide.description && (
+          <div class="mb-8">
+            <p class="text-yaya-cloud/70 font-sans text-base leading-relaxed">
+              {guide.description}
+            </p>
+          </div>
+        )}
+
+        <!-- O que você vai encontrar -->
+        {parts.length > 0 && (
+          <div class="mb-10">
+            <h2
+              class="text-yaya-cloud font-bold text-xl mb-4"
+              style="font-family: 'Fraunces', Georgia, serif;"
+            >
+              O que você vai encontrar
+            </h2>
+            <div class="space-y-3">
+              {parts.map((part, i) => {
+                const children = sectionsByPart[part.id] ?? []
+                return (
+                  <details class="group rounded-xl border border-yaya-cloud/8 bg-yaya-cloud/3 hover:border-yaya-cloud/12 transition-colors">
+                    <summary class="flex items-center gap-3 px-4 py-3.5 cursor-pointer list-none">
+                      <span class="flex-none w-6 h-6 rounded-full bg-yaya-purple/15 text-yaya-purple text-xs font-display font-bold flex items-center justify-center">
+                        {i + 1}
+                      </span>
+                      <span class="flex-1 text-yaya-cloud font-sans font-semibold text-sm leading-snug">
+                        {part.title}
+                      </span>
+                      {part.estimated_minutes && (
+                        <span class="text-yaya-cloud/35 text-xs font-sans shrink-0">
+                          {part.estimated_minutes} min
+                        </span>
+                      )}
+                      <span class="text-yaya-cloud/30 text-xs shrink-0 group-open:rotate-180 transition-transform">▾</span>
+                    </summary>
+                    {children.length > 0 && (
+                      <ul class="px-4 pb-4 pt-1 space-y-1.5">
+                        {children.map((child) => (
+                          <li class="flex items-center gap-2.5 text-xs font-sans text-yaya-cloud/55">
+                            <span class="text-yaya-cloud/25 shrink-0">○</span>
+                            <span class="leading-snug">{child.title}</span>
+                            {child.is_preview && (
+                              <span class="ml-auto shrink-0 text-yaya-purple/70 font-bold uppercase tracking-wide text-[10px]">
+                                grátis
+                              </span>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </details>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
+        <!-- Amostra grátis -->
+        {previewSections.length > 0 && (
+          <div class="mb-10">
+            <div class="flex items-center gap-2 mb-5">
+              <span class="flex-none w-px h-5 bg-yaya-purple/50" />
+              <h2
+                class="text-yaya-cloud font-bold text-xl"
+                style="font-family: 'Fraunces', Georgia, serif;"
+              >
+                Amostra grátis
+              </h2>
+            </div>
+
+            <div class="space-y-8">
+              {previewSections.map((section) => (
+                <div class="rounded-xl border border-yaya-cloud/8 bg-yaya-cloud/2 p-5 md:p-6">
+                  <h3 class="text-yaya-purple font-display font-bold text-xs uppercase tracking-widest mb-3">
+                    {section.title}
+                  </h3>
+                  <div
+                    class="prose-yaya text-yaya-cloud/75 font-sans text-sm leading-relaxed"
+                    set:html={previewHtml[section.id] ?? ''}
+                  />
+                  {/* Fade-out no final da amostra */}
+                  <div class="relative -mb-6 -mx-5 md:-mx-6 mt-4 h-16 bg-gradient-to-t from-yaya-night/95 to-transparent rounded-b-xl pointer-events-none" />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <!-- Sidebar de compra (sticky no desktop) -->
+      <aside class="lg:w-72 shrink-0">
+        <div class="sticky top-24 rounded-2xl border border-yaya-cloud/10 bg-yaya-cloud/3 p-6 shadow-xl shadow-black/20">
+
+          <!-- Preço -->
+          <div class="mb-5 text-center">
+            <p class="text-yaya-cloud/50 text-xs font-sans uppercase tracking-wider mb-1">Acesso completo</p>
+            <div class="flex items-baseline justify-center gap-2">
+              <span
+                class="text-yaya-purple font-bold text-4xl tracking-tight"
+                style="font-family: 'Fraunces', Georgia, serif;"
+              >
+                {priceFormatted}
+              </span>
+              <span class="text-yaya-cloud/40 text-sm font-sans">único</span>
+            </div>
+          </div>
+
+          <!-- Benefícios rápidos -->
+          <ul class="space-y-2 mb-6 text-xs font-sans text-yaya-cloud/65">
+            <li class="flex items-start gap-2">
+              <span class="text-yaya-purple shrink-0 mt-0.5">✓</span>
+              <span>Acesso completo + atualizações inclusas</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-yaya-purple shrink-0 mt-0.5">✓</span>
+              <span>30 dias de Yaya+ grátis após a compra</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-yaya-purple shrink-0 mt-0.5">✓</span>
+              <span>Leia no celular, tablet ou computador</span>
+            </li>
+          </ul>
+
+          <!-- CTA dinâmico (ilha React) -->
+          <GuideCTA client:only="react" guideSlug={slug} priceFormatted={priceFormatted} />
+
+          <p class="mt-4 text-center text-yaya-cloud/30 text-xs font-sans">
+            Pagamento seguro via Stripe
+          </p>
+        </div>
+      </aside>
+
+    </div>
+  </section>
+</BlogLayout>
+
+<style is:global>
+  /* Estilo básico pra markdown nas seções de amostra (sem sobrescrever estilos do blog) */
+  .prose-yaya h2,
+  .prose-yaya h3,
+  .prose-yaya h4 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 700;
+    color: rgba(231, 226, 255, 0.9);
+    margin: 1.25em 0 0.5em;
+    line-height: 1.3;
+  }
+  .prose-yaya h2 { font-size: 1.15rem; }
+  .prose-yaya h3 { font-size: 1rem; }
+  .prose-yaya p {
+    margin: 0 0 0.9em;
+    line-height: 1.75;
+  }
+  .prose-yaya p:last-child { margin-bottom: 0; }
+  .prose-yaya ul,
+  .prose-yaya ol {
+    padding-left: 1.25em;
+    margin: 0 0 0.9em;
+  }
+  .prose-yaya li { margin-bottom: 0.3em; line-height: 1.65; }
+  .prose-yaya strong { color: rgba(231,226,255,0.9); font-weight: 700; }
+  .prose-yaya em { font-style: italic; }
+  .prose-yaya blockquote {
+    border-left: 3px solid rgba(183,159,255,0.4);
+    margin-left: 0;
+    padding-left: 1em;
+    color: rgba(231,226,255,0.55);
+    font-style: italic;
+  }
+  .prose-yaya a { color: #b79fff; text-underline-offset: 3px; }
+  .prose-yaya code {
+    font-size: 0.85em;
+    background: rgba(183,159,255,0.1);
+    border-radius: 4px;
+    padding: 0.15em 0.35em;
+  }
+</style>

@@ -1,0 +1,171 @@
+---
+import BlogLayout from '../../layouts/BlogLayout.astro'
+import { supabase } from '../../lib/supabase'
+import type { Guide } from '../../types'
+
+const SITE = 'https://blog.yayababy.app'
+
+// Busca todos os guias publicados
+const { data } = await supabase
+  .from('guides')
+  .select('id, slug, title, subtitle, description, price_cents, cover_image_url, status, audience, target_week_start, target_week_end')
+  .eq('status', 'published')
+  .order('created_at', { ascending: true })
+
+const guides = (data ?? []) as Guide[]
+
+// JSON-LD: ItemList
+const itemListLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'Biblioteca Yaya — Guias para gestantes e pais',
+  description: 'Guias práticos baseados em evidências para gestantes e pais. Acesse avulso ou com Yaya+.',
+  url: `${SITE}/sua-biblioteca`,
+  numberOfItems: guides.length,
+  itemListElement: guides.map((g, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    url: `${SITE}/sua-biblioteca/${g.slug}`,
+    name: g.title,
+  })),
+}
+
+function formatPrice(cents: number): string {
+  return `R$ ${Math.floor(cents / 100)}`
+}
+
+function audienceLabel(g: Guide): string {
+  if (g.audience === 'gestante') return '🤰 Gestação'
+  const w = g.target_week_start ?? 0
+  if (w <= 0) return '👶 Bebê'
+  if (w <= 12) return '👶 0–3 meses'
+  if (w <= 26) return '🌱 3–6 meses'
+  return '🚼 6 meses +'
+}
+---
+
+<BlogLayout
+  title="Sua Biblioteca Yaya — Guias para gestantes e pais"
+  description="Guias práticos sobre gestação, recém-nascido e primeiros meses do bebê. Conteúdo baseado em evidências, feito para quem cuida. Acesse avulso ou com o Yaya+."
+  canonicalUrl={`${SITE}/sua-biblioteca`}
+>
+  <script type="application/ld+json" set:html={JSON.stringify(itemListLd)} />
+
+  <!-- Hero editorial -->
+  <section class="max-w-4xl mx-auto px-4 pt-14 pb-10 text-center">
+    <p class="text-yaya-purple font-display text-xs font-bold uppercase tracking-widest mb-4">
+      Sua Biblioteca Yaya
+    </p>
+    <h1
+      class="font-serif text-4xl md:text-5xl font-bold text-yaya-cloud leading-tight tracking-tight mb-4"
+      style="font-family: 'Fraunces', Georgia, serif;"
+    >
+      Guias que acompanham<br class="hidden md:block" />
+      <span class="text-yaya-purple">cada etapa com você.</span>
+    </h1>
+    <p class="text-yaya-cloud/60 text-base font-sans max-w-xl mx-auto leading-relaxed mb-8">
+      Conteúdo aprofundado, baseado em evidências — empacotado em guias práticos para quem está
+      na gestação ou nos primeiros meses com o bebê.
+    </p>
+
+    <!-- Yaya+ badge -->
+    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-yaya-purple/10 border border-yaya-purple/20 text-sm font-sans">
+      <span class="text-yaya-purple font-bold">Yaya+</span>
+      <span class="text-yaya-cloud/60">desbloqueia toda a biblioteca</span>
+    </div>
+  </section>
+
+  <!-- Grid de guias -->
+  <section class="max-w-4xl mx-auto px-4 pb-24">
+    {guides.length === 0 && (
+      <div class="text-center py-20">
+        <img src="/symbol.png" alt="" class="h-12 w-auto mx-auto mb-5 opacity-30" />
+        <p class="text-yaya-cloud/50 font-sans">Em breve novos guias por aqui.</p>
+      </div>
+    )}
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {guides.map((guide) => {
+        const price = formatPrice(guide.price_cents)
+        const badge = audienceLabel(guide)
+        return (
+          <a
+            href={`/sua-biblioteca/${guide.slug}`}
+            class="group block rounded-2xl overflow-hidden border border-yaya-cloud/8 bg-yaya-cloud/3 hover:border-yaya-purple/30 hover:bg-yaya-purple/5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-yaya-purple/5"
+          >
+            <!-- Cover image -->
+            <div class="relative aspect-[3/2] bg-yaya-purple/10 overflow-hidden">
+              {guide.cover_image_url
+                ? (
+                  <img
+                    src={guide.cover_image_url}
+                    alt={guide.title}
+                    class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                )
+                : (
+                  <div class="w-full h-full flex items-center justify-center">
+                    <img src="/symbol.png" alt="" class="h-14 w-auto opacity-25" />
+                  </div>
+                )
+              }
+              <!-- Gradiente overlay -->
+              <div class="absolute inset-0 bg-gradient-to-t from-yaya-night/70 via-transparent to-transparent" />
+              <!-- Badge -->
+              <span class="absolute bottom-3 left-3 text-xs font-display font-bold px-2.5 py-1 rounded-full bg-yaya-night/70 text-yaya-cloud/80 backdrop-blur-sm border border-yaya-cloud/10">
+                {badge}
+              </span>
+            </div>
+
+            <!-- Conteúdo do card -->
+            <div class="p-5">
+              <h2
+                class="text-yaya-cloud font-bold text-lg leading-snug mb-1 group-hover:text-yaya-purple transition-colors line-clamp-2"
+                style="font-family: 'Fraunces', Georgia, serif;"
+              >
+                {guide.title}
+              </h2>
+              {guide.subtitle && (
+                <p class="text-yaya-cloud/55 text-sm font-sans leading-snug mb-4 line-clamp-2">
+                  {guide.subtitle}
+                </p>
+              )}
+
+              <!-- Rodapé do card: preço + CTA -->
+              <div class="flex items-center justify-between mt-auto pt-3 border-t border-yaya-cloud/6">
+                <div>
+                  <span class="text-yaya-purple font-display font-bold text-sm">{price}</span>
+                  <span class="text-yaya-cloud/35 text-xs font-sans ml-1.5">ou Yaya+</span>
+                </div>
+                <span class="text-yaya-purple text-xs font-display font-bold group-hover:translate-x-0.5 transition-transform">
+                  Ver detalhes →
+                </span>
+              </div>
+            </div>
+          </a>
+        )
+      })}
+    </div>
+
+    <!-- Bloco Yaya+ contextual (abaixo do grid) -->
+    {guides.length > 0 && (
+      <div class="mt-12 rounded-2xl border border-yaya-purple/20 bg-yaya-purple/6 p-8 text-center">
+        <p class="text-yaya-purple font-display font-bold text-xs uppercase tracking-widest mb-3">Yaya+</p>
+        <p class="text-yaya-cloud font-sans text-base mb-2">
+          Assine o Yaya+ e acesse <strong>toda a biblioteca</strong> sem pagar por guia.
+        </p>
+        <p class="text-yaya-cloud/50 text-sm font-sans mb-5">
+          O app acompanha a rotina do bebê e, com Yaya+, você ainda leva todos os guias junto.
+        </p>
+        <a
+          href="https://yayababy.app"
+          class="inline-block bg-yaya-purple hover:bg-yaya-glow text-yaya-night font-display font-bold text-sm px-6 py-3 rounded-xl transition-colors"
+        >
+          Conhecer o Yaya+
+        </a>
+      </div>
+    )}
+  </section>
+</BlogLayout>

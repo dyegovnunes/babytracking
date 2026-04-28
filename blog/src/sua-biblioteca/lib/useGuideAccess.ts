@@ -2,8 +2,8 @@
 // Status:
 //   loading      → ainda checando
 //   no-session   → não logado (precisa magic link)
-//   no-access    → logado mas sem compra completed (mostra CTA pra comprar)
-//   authorized   → tem compra → libera leitura
+//   no-access    → logado mas sem compra completed e sem Yaya+ (mostra CTA pra comprar)
+//   authorized   → tem compra OU is_premium = true → libera leitura
 //   error        → falha de rede/RLS
 
 import { useEffect, useState } from 'react'
@@ -17,6 +17,7 @@ export interface AccessState {
   guide: Guide | null
   userId: string | null
   email: string | null
+  accessVia?: 'purchase' | 'premium'
   errorMsg?: string
 }
 
@@ -68,6 +69,26 @@ export function useGuideAccess(guideSlug: string): AccessState {
         if (cancelled) return
 
         if (!purchases || purchases.length === 0) {
+          // 3b. Sem compra direta — verificar Yaya+ (is_premium desbloqueia todos os guias)
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('is_premium')
+            .eq('id', session.user.id)
+            .single()
+
+          if (cancelled) return
+
+          if (profile?.is_premium) {
+            setState({
+              status: 'authorized',
+              guide,
+              userId: session.user.id,
+              email: session.user.email ?? null,
+              accessVia: 'premium',
+            })
+            return
+          }
+
           setState({
             status: 'no-access',
             guide,
@@ -82,6 +103,7 @@ export function useGuideAccess(guideSlug: string): AccessState {
           guide,
           userId: session.user.id,
           email: session.user.email ?? null,
+          accessVia: 'purchase',
         })
       } catch (err) {
         if (cancelled) return
