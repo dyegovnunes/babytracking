@@ -47,6 +47,7 @@ import SickModal from './components/SickModal'
 import GridSettingsSheet from './components/GridSettingsSheet'
 import AllergenPanel from './components/AllergenPanel'
 import PottyPanel from './components/PottyPanel'
+import TwoYearSummaryModal from './components/TwoYearSummaryModal'
 import type { LogEntry, MealPayload, MoodPayload, SickPayload } from '../../types'
 
 const PROJECTION_CATEGORIES: string[] = ['feed', 'diaper', 'sleep_nap', 'sleep_awake', 'bath']
@@ -235,10 +236,15 @@ export default function TrackerPage() {
     ],
   )
 
+  // Card comemorativo de 2 anos
+  const [twoYearOpen, setTwoYearOpen]               = useState(false)
+  const [twoYearCardDismissed, setTwoYearCardDismissed] = useState(false)
+
   // Cards de sugestão de amamentação — persistidos em localStorage por babyId
   const [dismissedBreastCards, setDismissedBreastCards] = useState<Set<string>>(() => new Set())
   useEffect(() => {
     if (!baby) return
+    setTwoYearCardDismissed(localStorage.getItem(`yaya_2yr_${baby.id}`) === '1')
     const dismissed = new Set<string>()
     if (localStorage.getItem(`yaya_bss_${baby.id}`) === '1') dismissed.add('simplify')
     if (localStorage.getItem(`yaya_bsd_${baby.id}`) === '1') dismissed.add('disable')
@@ -556,6 +562,46 @@ export default function TrackerPage() {
         </button>
       </div>
 
+      {/* Card comemorativo 2 anos — aparece quando bebê completa 24 meses */}
+      {ageDays >= 730 && !twoYearCardDismissed && baby && (
+        <div className="mx-5 mt-3 rounded-md overflow-hidden border border-[#ffd77a]/30"
+             style={{ background: 'linear-gradient(135deg, #1a1145 0%, #0d0a27 100%)' }}>
+          <div className="p-4">
+            <div className="flex items-start gap-3">
+              <span className="text-3xl flex-shrink-0 mt-0.5">🎂</span>
+              <div className="flex-1 min-w-0">
+                <p className="font-label text-sm font-bold text-white">
+                  {baby.name} faz 2 anos!
+                </p>
+                <p className="font-body text-xs text-white/60 mt-0.5">
+                  Dois anos de registros, marcos e cuidados. Veja o resumo especial da jornada.
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-2 mt-3">
+              <button
+                onClick={() => { hapticSuccess(); setTwoYearOpen(true) }}
+                className="flex-1 py-2 rounded-md font-label text-xs font-bold flex items-center justify-center gap-1.5"
+                style={{ background: 'linear-gradient(135deg, #b79fff, #ffd77a)', color: '#1a1145' }}
+              >
+                <span className="material-symbols-outlined text-sm">celebration</span>
+                Ver resumo
+              </button>
+              <button
+                onClick={() => {
+                  hapticLight()
+                  localStorage.setItem(`yaya_2yr_${baby.id}`, '1')
+                  setTwoYearCardDismissed(true)
+                }}
+                className="px-4 py-2 rounded-md border border-white/20 text-white/60 font-label text-xs"
+              >
+                Depois
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Cards de sugestão de novos eventos — aparecem uma vez, nunca repetem */}
       {pendingSuggestions.map((ev) => (
         <div key={ev.id} className="mx-5 mt-3 bg-primary/8 border border-primary/20 rounded-md p-4">
@@ -812,6 +858,16 @@ export default function TrackerPage() {
           onClose={() => setGridSettingsOpen(false)}
           gridEvents={gridEvents}
           onToggle={toggleEvent}
+        />
+      )}
+
+      {twoYearOpen && baby && (
+        <TwoYearSummaryModal
+          baby={baby}
+          logs={logs}
+          milestoneCount={milestoneRecords.length}
+          longestStreak={(streak as { longestStreak?: number } | null)?.longestStreak ?? 0}
+          onClose={() => setTwoYearOpen(false)}
         />
       )}
 
