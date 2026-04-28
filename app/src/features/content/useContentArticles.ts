@@ -4,6 +4,10 @@
 // category, title, meta_description, image_url.
 //
 // Dismiss por 7 dias via localStorage (chave: yb_content_dismissed → JSON obj).
+//
+// Motor de relevância client-side:
+//   score = proximidade do midpoint + penalidade por range muito amplo
+//   Artigos escritos especificamente para a semana atual aparecem primeiro.
 
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../../lib/supabase'
@@ -58,6 +62,28 @@ function mapPost(p: RawPost, utmMedium: string): ContentArticle {
     targetWeekEnd: p.target_week_end,
     blogUrl: buildUrl(p.slug, utmMedium),
   }
+}
+
+/**
+ * Relevância de um artigo para a semana atual do bebê.
+ * Score mais baixo = mais relevante.
+ *
+ * Lógica:
+ * - Distância do midpoint do range até a semana atual (componente principal)
+ * - Penalidade proporcional à largura do range (artigos mais específicos ganham)
+ *
+ * Exemplos para bebê de 26 semanas:
+ *   range 24-28  → score ≈  0 + 0.4 = 0.4  ← muito específico, aparece primeiro
+ *   range 0-52   → score ≈  0 + 5.2 = 5.2  ← genérico, cai no ranking
+ *   range 0-16   → score ≈ 18 + 1.6 = 19.6 ← passou da fase, fica lá atrás
+ */
+function relevanceScore(post: RawPost, babyAgeWeeks: number): number {
+  const start = post.target_week_start ?? 0
+  const end = post.target_week_end ?? 52
+  const midpoint = (start + end) / 2
+  const distance = Math.abs(midpoint - babyAgeWeeks)
+  const width = end - start
+  return distance + width * 0.1
 }
 
 interface Options {
@@ -122,13 +148,19 @@ export function useContentArticles(
         query = query.eq('category', category)
       }
 
-      // Busca mais do que o limite para filtrar dismissals depois
-      const { data } = await query.limit(limit * 4)
+      // Busca pool amplo para o motor de relevância ter mais opções para escolher
+      const { data } = await query.limit(40)
 
       if (cancelled) return
 
       const posts = (data ?? []) as RawPost[]
-      const mapped = posts.map((p) => mapPost(p, utmMedium))
+
+      // Ordena por relevância: midpoint mais próximo da semana atual + penaliza ranges amplos
+      const sorted = [...posts].sort(
+        (a, b) => relevanceScore(a, babyAgeWeeks) - relevanceScore(b, babyAgeWeeks),
+      )
+
+      const mapped = sorted.map((p) => mapPost(p, utmMedium))
 
       const filtered = filterDismissed
         ? mapped.filter((a) => !isDismissed(a.slug))

@@ -1,6 +1,5 @@
-// Card compacto de artigo contextual — aparece na TrackerPage (Home)
-// entre o HighlightsStrip e o RecentLogs.
-//
+// Card de artigo contextual na TrackerPage (Home).
+// Layout: imagem em destaque (topo, 16:9) + kicker + título + "Ler artigo".
 // Toque em qualquer área (exceto ✕) abre o artigo via Capacitor Browser.
 // Toque em ✕ chama onDismiss (remove por 7 dias, gerenciado pelo hook).
 
@@ -36,46 +35,72 @@ export default function ContentArticleCard({ article, onDismiss }: Props) {
         aria-label={`Abrir artigo: ${article.title}`}
       >
         <div
-          className="flex items-center gap-3 rounded-md p-3"
+          className="rounded-md overflow-hidden"
           style={{
             background: 'rgba(183,159,255,0.05)',
             border: '1px solid rgba(183,159,255,0.12)',
           }}
         >
-          {/* Thumbnail */}
+          {/* Imagem de destaque — aspect 16:9 */}
           <div
-            className="shrink-0 rounded"
-            style={{
-              width: 56,
-              height: 56,
-              background: 'rgba(183,159,255,0.1)',
-              overflow: 'hidden',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 24,
-            }}
+            className="relative w-full"
+            style={{ aspectRatio: '16/9', background: 'rgba(183,159,255,0.1)' }}
           >
             {article.imageUrl ? (
               <img
                 src={article.imageUrl}
                 alt=""
                 aria-hidden
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                 loading="lazy"
               />
             ) : (
-              <span aria-hidden>{emoji}</span>
+              /* Placeholder com emoji centralizado quando não há imagem */
+              <div
+                className="w-full h-full flex items-center justify-center"
+                style={{ fontSize: 36 }}
+                aria-hidden
+              >
+                {emoji}
+              </div>
             )}
+
+            {/* Gradient overlay sutil no fundo da imagem para legibilidade */}
+            <div
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background: 'linear-gradient(to bottom, transparent 50%, rgba(15,11,26,0.55) 100%)',
+              }}
+            />
+
+            {/* Botão fechar — canto superior direito */}
+            <button
+              type="button"
+              aria-label="Dispensar sugestão"
+              className="absolute top-2 right-2 flex items-center justify-center rounded-full text-white/80 hover:text-white transition-colors"
+              style={{
+                background: 'rgba(0,0,0,0.45)',
+                width: 28,
+                height: 28,
+                backdropFilter: 'blur(4px)',
+              }}
+              onClick={(e) => {
+                e.stopPropagation()
+                hapticLight()
+                onDismiss()
+              }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>close</span>
+            </button>
           </div>
 
-          {/* Texto */}
-          <div className="flex-1 min-w-0">
-            <p className="font-label text-[10px] uppercase tracking-wider text-primary/70 font-bold mb-0.5">
+          {/* Texto abaixo da imagem */}
+          <div className="px-3 py-2.5">
+            <p className="font-label text-[10px] uppercase tracking-wider text-primary/70 font-bold mb-1">
               {emoji} Para você
             </p>
             <p
-              className="font-label text-sm font-semibold text-on-surface leading-snug"
+              className="font-label text-sm font-semibold text-on-surface leading-snug mb-1.5"
               style={{
                 display: '-webkit-box',
                 WebkitLineClamp: 2,
@@ -85,24 +110,10 @@ export default function ContentArticleCard({ article, onDismiss }: Props) {
             >
               {article.title}
             </p>
-            <p className="font-label text-xs text-primary mt-1 font-medium">
+            <p className="font-label text-xs text-primary font-medium">
               Ler artigo →
             </p>
           </div>
-
-          {/* Botão fechar */}
-          <button
-            type="button"
-            aria-label="Dispensar sugestão"
-            className="shrink-0 p-1.5 -mr-1 text-on-surface-variant/40 hover:text-on-surface-variant transition-colors"
-            onClick={(e) => {
-              e.stopPropagation()
-              hapticLight()
-              onDismiss()
-            }}
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>close</span>
-          </button>
         </div>
       </button>
     </section>
