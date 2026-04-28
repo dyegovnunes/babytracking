@@ -134,5 +134,6 @@ export function matchesFilter(item: TimelineItem, filter: TimelineFilter): boole
   if (filter === 'activities') return item.kind === 'log' || item.kind === 'shift'
   if (filter === 'health') return item.kind === 'vaccine' || item.kind === 'medication'
   if (filter === 'milestones') return item.kind === 'milestone'
+  if (filter === 'meals') return item.kind === 'log' && (item.data as { eventId: string }).eventId === 'meal'
   return true
 }

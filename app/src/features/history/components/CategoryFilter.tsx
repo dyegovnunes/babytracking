@@ -6,9 +6,10 @@ interface Props {
 }
 
 const categories: { id: TimelineFilter; label: string }[] = [
-  { id: 'all', label: 'Tudo' },
+  { id: 'all',        label: 'Tudo' },
   { id: 'activities', label: 'Atividades' },
-  { id: 'health', label: 'Saúde' },
+  { id: 'meals',      label: 'Refeições' },
+  { id: 'health',     label: 'Saúde' },
   { id: 'milestones', label: 'Marcos' },
 ]
 

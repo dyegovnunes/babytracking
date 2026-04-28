@@ -42,4 +42,4 @@ export type TimelineItem =
       medication: Medication
     }
 
-export type TimelineFilter = 'all' | 'activities' | 'health' | 'milestones'
+export type TimelineFilter = 'all' | 'activities' | 'health' | 'milestones' | 'meals'

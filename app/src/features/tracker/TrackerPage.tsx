@@ -44,6 +44,7 @@ import { useGridItems } from './useGridItems'
 import MealModal from './components/MealModal'
 import MoodSheet from './components/MoodSheet'
 import GridSettingsSheet from './components/GridSettingsSheet'
+import AllergenPanel from './components/AllergenPanel'
 import type { LogEntry, MealPayload, MoodPayload } from '../../types'
 
 const PROJECTION_CATEGORIES: string[] = ['feed', 'diaper', 'sleep_nap', 'sleep_awake', 'bath']
@@ -522,6 +523,9 @@ export default function TrackerPage() {
           </div>
         </section>
       )}
+
+      {/* Rastreio de alérgenos — aparece a partir de 6 meses */}
+      <AllergenPanel logs={logs} ageDays={ageDays} />
 
       {/* Acompanhe a jornada: saltos, marcos, (futuro) vacinas e remédios */}
       {baby && (can.viewLeaps(myRole) || can.viewMilestones(myRole)) && (

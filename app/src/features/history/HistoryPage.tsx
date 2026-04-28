@@ -10,6 +10,7 @@ import {
 } from '../timeline'
 import type { TimelineFilter, TimelineItem } from '../timeline/types'
 import EditModal from '../../components/ui/EditModal'
+import MealModal from '../tracker/components/MealModal'
 import Toast from '../../components/ui/Toast'
 import { HistorySkeleton } from '../../components/ui/Skeleton'
 import EmptyState from '../../components/ui/EmptyState'
@@ -21,6 +22,7 @@ import ShiftDetailModal from '../tracker/components/ShiftDetailModal'
 import ResumoDoDiaSheet from '../tracker/components/ResumoDoDiaSheet'
 import { useAuth } from '../../contexts/AuthContext'
 import { useMyRole } from '../../hooks/useMyRole'
+import type { MealPayload } from '../../types'
 import { useCaregiverSchedule, isInWorkWindow } from '../profile/useCaregiverSchedule'
 import { useVaccines } from '../vaccines'
 import { useMilestones } from '../milestones'
@@ -128,6 +130,7 @@ export default function HistoryPage() {
 
   const [filter, setFilter] = useState<TimelineFilter>('all')
   const [editingLog, setEditingLog] = useState<LogEntry | null>(null)
+  const [editingMealLog, setEditingMealLog] = useState<LogEntry | null>(null)
   const [toast, setToast] = useState<string | null>(null)
   const [showPaywall, setShowPaywall] = useState(false)
   const [timelineVaccine, setTimelineVaccine] = useState<BabyVaccine | null>(null)
@@ -166,7 +169,8 @@ export default function HistoryPage() {
 
   const handleEditLog = useCallback((log: LogEntry) => {
     hapticMedium()
-    setEditingLog(log)
+    if (log.eventId === 'meal') setEditingMealLog(log)
+    else setEditingLog(log)
   }, [])
 
   const handleSave = useCallback(
@@ -265,6 +269,29 @@ export default function HistoryPage() {
           onSave={handleSave}
           onDelete={handleDelete}
           onClose={() => setEditingLog(null)}
+        />
+      )}
+
+      {editingMealLog && baby && (
+        <MealModal
+          babyName={baby.name}
+          initialLog={editingMealLog}
+          onConfirm={async (payload: MealPayload, timestamp?: number) => {
+            const updated: LogEntry = {
+              ...editingMealLog,
+              payload: payload as unknown as Record<string, unknown>,
+              timestamp: timestamp ?? editingMealLog.timestamp,
+            }
+            setEditingMealLog(null)
+            const ok = await updateLog(dispatch, updated)
+            if (ok) setToast('Refeição atualizada!')
+          }}
+          onDelete={async () => {
+            setEditingMealLog(null)
+            const ok = await deleteLog(dispatch, editingMealLog.id)
+            if (ok) setToast('Registro excluído!')
+          }}
+          onClose={() => setEditingMealLog(null)}
         />
       )}
 
