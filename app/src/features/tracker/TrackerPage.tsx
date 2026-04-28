@@ -603,43 +603,62 @@ export default function TrackerPage() {
       )}
 
       {/* Cards de sugestão de novos eventos — aparecem uma vez, nunca repetem */}
-      {pendingSuggestions.map((ev) => (
-        <div key={ev.id} className="mx-5 mt-3 bg-primary/8 border border-primary/20 rounded-md p-4">
-          <div className="flex items-start gap-3">
-            <span className="text-2xl flex-shrink-0">{ev.emoji}</span>
-            <div className="flex-1 min-w-0">
-              <p className="font-label text-sm font-semibold text-on-surface">
-                Novo: {ev.label}
-              </p>
-              <p className="font-body text-xs text-on-surface-variant mt-0.5">
-                {ev.id === 'meal'
-                  ? `A ${baby?.name ?? 'bebê'} já está na fase de introdução alimentar! Quer adicionar Refeição ao painel?`
-                  : ev.id === 'mood'
-                  ? `Que tal registrar o humor de ${baby?.name ?? 'bebê'}? Adicionar ao painel?`
-                  : ev.id === 'potty_pee'
-                  ? `${baby?.name ?? 'Bebê'} já pode estar pronta(o) para o penico! Quer adicionar ao painel?`
-                  : ev.id === 'potty_poop'
-                  ? `Registrar cocô no penico junto com o xixi?`
-                  : `Quer adicionar ${ev.label} ao painel?`}
-              </p>
+      {pendingSuggestions.map((ev) => {
+        const gridFull = gridEvents.length >= 9
+        return (
+          <div key={ev.id} className="mx-5 mt-3 bg-primary/8 border border-primary/20 rounded-md p-4">
+            <div className="flex items-start gap-3">
+              <span className="text-2xl flex-shrink-0">{ev.emoji}</span>
+              <div className="flex-1 min-w-0">
+                <p className="font-label text-sm font-semibold text-on-surface">
+                  Novo: {ev.label}
+                </p>
+                <p className="font-body text-xs text-on-surface-variant mt-0.5">
+                  {ev.id === 'meal'
+                    ? `A ${baby?.name ?? 'bebê'} já está na fase de introdução alimentar! Quer adicionar Refeição ao painel?`
+                    : ev.id === 'mood'
+                    ? `Que tal registrar o humor de ${baby?.name ?? 'bebê'}? Adicionar ao painel?`
+                    : ev.id === 'potty_pee'
+                    ? `${baby?.name ?? 'Bebê'} já pode estar pronta(o) para o penico! Quer adicionar ao painel?`
+                    : ev.id === 'potty_poop'
+                    ? `Registrar cocô no penico junto com o xixi?`
+                    : `Quer adicionar ${ev.label} ao painel?`}
+                </p>
+                {gridFull && (
+                  <p className="font-label text-[11px] text-on-surface-variant/60 mt-1.5 flex items-center gap-1">
+                    <span className="material-symbols-outlined text-sm">info</span>
+                    Painel cheio (9/9) — desabilite um botão para liberar espaço.
+                  </p>
+                )}
+              </div>
+            </div>
+            <div className="flex gap-2 mt-3">
+              {gridFull ? (
+                <button
+                  onClick={() => { hapticLight(); setGridSettingsOpen(true) }}
+                  className="flex-1 py-2 rounded-md border border-primary/40 text-primary font-label text-xs font-semibold flex items-center justify-center gap-1"
+                >
+                  <span className="material-symbols-outlined text-sm">tune</span>
+                  Fazer espaço
+                </button>
+              ) : (
+                <button
+                  onClick={() => { hapticSuccess(); acceptSuggestion(ev.id) }}
+                  className="flex-1 py-2 rounded-md bg-primary text-on-primary font-label text-xs font-semibold"
+                >
+                  Adicionar
+                </button>
+              )}
+              <button
+                onClick={() => { hapticLight(); dismissSuggestion(ev.id) }}
+                className="px-4 py-2 rounded-md border border-outline-variant text-on-surface-variant font-label text-xs"
+              >
+                Agora não
+              </button>
             </div>
           </div>
-          <div className="flex gap-2 mt-3">
-            <button
-              onClick={() => { hapticSuccess(); acceptSuggestion(ev.id) }}
-              className="flex-1 py-2 rounded-md bg-primary text-on-primary font-label text-xs font-semibold"
-            >
-              Adicionar
-            </button>
-            <button
-              onClick={() => { hapticLight(); dismissSuggestion(ev.id) }}
-              className="px-4 py-2 rounded-md border border-outline-variant text-on-surface-variant font-label text-xs"
-            >
-              Agora não
-            </button>
-          </div>
-        </div>
-      ))}
+        )
+      })}
 
       {/* 2.6: Simplificação de amamentação — frequência caiu, sugerir usar só "Ambos" */}
       {showBreastSimplify && baby && (
