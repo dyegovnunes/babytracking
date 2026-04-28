@@ -1,65 +1,76 @@
 /**
  * MealModal — registro e edição de refeição.
  *
- * - Seletor hierárquico de alimentos (5 categorias → itens, múltipla seleção)
- * - "Outro" manual: campo de texto com botão + que adiciona à lista
- * - Aceita initialPayload para modo edição (log existente)
+ * - Grid 2 linhas de categorias com cor por categoria
+ * - Múltipla seleção sem × (clicar no item faz uncheck)
+ * - Itens selecionados aparecem abaixo do campo "Outro"
+ * - Modo edição: horário + data editáveis + botão excluir
  */
 
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import { useSheetBackClose } from '../../../hooks/useSheetBackClose'
 import { hapticLight, hapticSuccess } from '../../../lib/haptics'
-import type { MealPayload } from '../../../types'
+import type { LogEntry, MealPayload } from '../../../types'
 
 interface Props {
   babyName: string
-  initialPayload?: MealPayload
-  onConfirm: (payload: MealPayload) => void
+  /** Passar o log completo para modo edição (pré-popula tudo + habilita excluir) */
+  initialLog?: LogEntry
+  onConfirm: (payload: MealPayload, timestamp?: number) => void
+  onDelete?: () => void
   onClose: () => void
 }
 
-/* ─── Catálogo ─── */
+/* ─── Catálogo de alimentos ─── */
 interface FoodCategory {
   id: string
   label: string
   emoji: string
+  /** Classes Tailwind para o chip inativo */
+  idleCls: string
+  /** Classes Tailwind para o chip ativo */
+  activeCls: string
   items: string[]
 }
 
 export const FOOD_CATEGORIES: FoodCategory[] = [
   {
     id: 'frutas', label: 'Frutas', emoji: '🍎',
+    idleCls:   'bg-[#FF8A65]/12 border-[#FF8A65]/30 text-[#FF8A65]',
+    activeCls: 'bg-[#FF8A65]/28 border-[#FF8A65]/55 text-[#FF8A65] font-semibold',
     items: ['Banana', 'Maçã', 'Pera', 'Mamão', 'Melão', 'Abacate', 'Manga', 'Pêssego', 'Ameixa', 'Uva', 'Kiwi', 'Laranja'],
   },
   {
     id: 'legumes', label: 'Legumes', emoji: '🥕',
+    idleCls:   'bg-[#81C784]/12 border-[#81C784]/30 text-[#81C784]',
+    activeCls: 'bg-[#81C784]/28 border-[#81C784]/55 text-[#81C784] font-semibold',
     items: ['Cenoura', 'Batata doce', 'Inhame', 'Mandioquinha', 'Abobrinha', 'Abóbora', 'Beterraba', 'Chuchu', 'Brócolis', 'Couve-flor', 'Espinafre', 'Ervilha'],
   },
   {
     id: 'cereais', label: 'Cereais', emoji: '🌾',
+    idleCls:   'bg-[#FFD54F]/12 border-[#FFD54F]/30 text-[#FFD54F]',
+    activeCls: 'bg-[#FFD54F]/28 border-[#FFD54F]/55 text-[#FFD54F] font-semibold',
     items: ['Arroz', 'Aveia', 'Milho', 'Macarrão', 'Polenta', 'Quinoa', 'Pão'],
   },
   {
     id: 'proteinas', label: 'Proteínas', emoji: '🍗',
+    idleCls:   'bg-[#EF9A9A]/12 border-[#EF9A9A]/30 text-[#EF9A9A]',
+    activeCls: 'bg-[#EF9A9A]/28 border-[#EF9A9A]/55 text-[#EF9A9A] font-semibold',
     items: ['Frango', 'Carne bovina', 'Peixe', 'Ovo', 'Feijão', 'Lentilha', 'Grão-de-bico', 'Tofu', 'Carne de porco'],
   },
   {
     id: 'laticinios', label: 'Laticínios', emoji: '🧀',
+    idleCls:   'bg-[#90CAF9]/12 border-[#90CAF9]/30 text-[#90CAF9]',
+    activeCls: 'bg-[#90CAF9]/28 border-[#90CAF9]/55 text-[#90CAF9] font-semibold',
     items: ['Iogurte natural', 'Queijo', 'Leite de vaca', 'Requeijão'],
   },
 ]
 
-/* helpers */
-function initialFoodsFromPayload(p?: MealPayload): string[] {
-  if (!p?.food) return []
-  return p.food.split(', ').filter(Boolean)
-}
-
 const METHODS: { id: MealPayload['method']; label: string; emoji: string }[] = [
-  { id: 'pureed',             label: 'Papinha',        emoji: '🥣' },
-  { id: 'blw',                label: 'BLW',            emoji: '✋' },
-  { id: 'mixed',              label: 'Misto',          emoji: '🍽️' },
-  { id: 'breast_plus_solid',  label: 'Peito + sólido', emoji: '🤱' },
+  { id: 'pureed',            label: 'Papinha',        emoji: '🥣' },
+  { id: 'blw',               label: 'BLW',            emoji: '✋' },
+  { id: 'mixed',             label: 'Misto',          emoji: '🍽️' },
+  { id: 'breast_plus_solid', label: 'Peito + sólido', emoji: '🤱' },
 ]
 
 const ACCEPTANCES: { id: MealPayload['acceptance']; label: string; emoji: string }[] = [
@@ -80,20 +91,42 @@ const ALLERGENS: { id: string; label: string }[] = [
   { id: 'frutos_mar',  label: 'Frutos do mar' },
 ]
 
-export default function MealModal({ babyName, initialPayload, onConfirm, onClose }: Props) {
+/* helpers */
+function parseFoods(food?: string): string[] {
+  if (!food) return []
+  return food.split(', ').filter(Boolean)
+}
+
+function tsToTimeDate(ts?: number) {
+  const d = ts ? new Date(ts) : new Date()
+  const time = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+  const date = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+  return { time, date }
+}
+
+export default function MealModal({ babyName, initialLog, onConfirm, onDelete, onClose }: Props) {
   useSheetBackClose(true, onClose)
 
-  const isEdit = !!initialPayload
+  const isEdit = !!initialLog
+  const initPayload = initialLog?.payload as MealPayload | undefined
 
-  /* state */
-  const [selectedFoods, setSelectedFoods] = useState<string[]>(initialFoodsFromPayload(initialPayload))
+  /* ─ food state ─ */
+  const [selectedFoods, setSelectedFoods] = useState<string[]>(parseFoods(initPayload?.food))
   const [customInput,   setCustomInput]   = useState('')
   const [activeCat,     setActiveCat]     = useState<string | null>(null)
-  const [method,        setMethod]        = useState<MealPayload['method']>(initialPayload?.method)
-  const [acceptance,    setAcceptance]    = useState<MealPayload['acceptance']>(initialPayload?.acceptance)
-  const [isNewFood,     setIsNewFood]     = useState(initialPayload?.isNewFood ?? false)
-  const [allergenKey,   setAllergenKey]   = useState<string | undefined>(initialPayload?.allergenKey)
-  const customRef = useRef<HTMLInputElement>(null)
+
+  /* ─ metadata state ─ */
+  const [method,      setMethod]      = useState<MealPayload['method']>(initPayload?.method)
+  const [acceptance,  setAcceptance]  = useState<MealPayload['acceptance']>(initPayload?.acceptance)
+  const [isNewFood,   setIsNewFood]   = useState(initPayload?.isNewFood ?? false)
+  const [allergenKey, setAllergenKey] = useState<string | undefined>(initPayload?.allergenKey)
+
+  /* ─ time/date (edit mode only) ─ */
+  const init = tsToTimeDate(initialLog?.timestamp)
+  const [timeVal, setTimeVal] = useState(init.time)
+  const [dateVal, setDateVal] = useState(init.date)
+
+  const [confirmDel, setConfirmDel] = useState(false)
 
   /* helpers */
   function toggleFood(name: string) {
@@ -111,27 +144,26 @@ export default function MealModal({ babyName, initialPayload, onConfirm, onClose
       setSelectedFoods((prev) => [...prev, trimmed])
     }
     setCustomInput('')
-    customRef.current?.focus()
   }
 
-  function removeFood(name: string) {
-    hapticLight()
-    setSelectedFoods((prev) => prev.filter((f) => f !== name))
+  function buildTimestamp(): number {
+    const [h, m] = timeVal.split(':').map(Number)
+    const [y, mo, day] = dateVal.split('-').map(Number)
+    return new Date(y, mo - 1, day, h, m).getTime()
   }
 
-  /* submit */
-  const handleConfirm = () => {
+  function handleConfirm() {
     const allFoods = [...selectedFoods]
     if (customInput.trim()) allFoods.push(customInput.trim())
     const payload: MealPayload = {
-      food: allFoods.length > 0 ? allFoods.join(', ') : undefined,
+      food:       allFoods.length > 0 ? allFoods.join(', ') : undefined,
       method,
       acceptance,
-      isNewFood: isNewFood || undefined,
+      isNewFood:  isNewFood || undefined,
       allergenKey: isNewFood ? allergenKey : undefined,
     }
     hapticSuccess()
-    onConfirm(payload)
+    onConfirm(payload, isEdit ? buildTimestamp() : undefined)
   }
 
   const activeCatData = FOOD_CATEGORIES.find((c) => c.id === activeCat)
@@ -161,6 +193,30 @@ export default function MealModal({ babyName, initialPayload, onConfirm, onClose
 
         <div className="px-5 space-y-5 pt-4 pb-4">
 
+          {/* ── Horário (modo edição) ── */}
+          {isEdit && (
+            <div className="flex gap-3">
+              <div className="flex-1">
+                <p className="font-label text-xs text-on-surface-variant mb-1.5">Data</p>
+                <input
+                  type="date"
+                  value={dateVal}
+                  onChange={(e) => setDateVal(e.target.value)}
+                  className="w-full px-3 py-2 rounded-md bg-surface-container border border-outline-variant text-on-surface font-body text-sm focus:outline-none focus:border-primary"
+                />
+              </div>
+              <div className="flex-1">
+                <p className="font-label text-xs text-on-surface-variant mb-1.5">Horário</p>
+                <input
+                  type="time"
+                  value={timeVal}
+                  onChange={(e) => setTimeVal(e.target.value)}
+                  className="w-full px-3 py-2 rounded-md bg-surface-container border border-outline-variant text-on-surface font-body text-sm focus:outline-none focus:border-primary"
+                />
+              </div>
+            </div>
+          )}
+
           {/* ── Seleção de alimentos ── */}
           <div>
             <p className="font-label text-xs text-on-surface-variant mb-2">
@@ -168,28 +224,8 @@ export default function MealModal({ babyName, initialPayload, onConfirm, onClose
               <span className="text-on-surface-variant/50"> (pode selecionar vários)</span>
             </p>
 
-            {/* Chips selecionados */}
-            {selectedFoods.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 mb-3">
-                {selectedFoods.map((f) => (
-                  <span
-                    key={f}
-                    className="flex items-center gap-1 pl-2.5 pr-1.5 py-1 rounded-md bg-primary/12 border border-primary/30 text-primary text-xs font-label"
-                  >
-                    {f}
-                    <button
-                      onClick={() => removeFood(f)}
-                      className="ml-0.5 rounded active:opacity-60"
-                    >
-                      <span className="material-symbols-outlined text-[13px]">close</span>
-                    </button>
-                  </span>
-                ))}
-              </div>
-            )}
-
-            {/* Chips de categoria — flex-wrap, sem scroll */}
-            <div className="flex flex-wrap gap-2 mb-3">
+            {/* Grid 3 colunas — max 2 linhas para 5 categorias (3+2) */}
+            <div className="grid grid-cols-3 gap-2 mb-3">
               {FOOD_CATEGORIES.map((cat) => {
                 const isActive = activeCat === cat.id
                 return (
@@ -200,17 +236,12 @@ export default function MealModal({ babyName, initialPayload, onConfirm, onClose
                       setActiveCat(isActive ? null : cat.id)
                     }}
                     className={[
-                      'flex items-center gap-1.5 px-3 py-1.5 rounded-md border text-xs font-label transition-colors',
-                      isActive
-                        ? 'bg-primary/12 border-primary/30 text-primary font-semibold'
-                        : 'bg-surface-container border-outline-variant text-on-surface-variant',
+                      'flex flex-col items-center justify-center gap-0.5 py-2.5 px-1 rounded-md border text-xs font-label transition-colors',
+                      isActive ? cat.activeCls : cat.idleCls,
                     ].join(' ')}
                   >
-                    <span className="text-base leading-none">{cat.emoji}</span>
-                    <span>{cat.label}</span>
-                    <span className={`material-symbols-outlined text-[13px] transition-transform ${isActive ? 'rotate-180' : ''}`}>
-                      expand_more
-                    </span>
+                    <span className="text-xl leading-none">{cat.emoji}</span>
+                    <span className="text-[11px] mt-0.5 truncate w-full text-center">{cat.label}</span>
                   </button>
                 )
               })}
@@ -218,7 +249,10 @@ export default function MealModal({ babyName, initialPayload, onConfirm, onClose
 
             {/* Sub-painel com itens da categoria ativa */}
             {activeCatData && (
-              <div className="mb-3 p-3 bg-surface-container rounded-md border border-outline-variant/40">
+              <div className="mb-3 p-3 bg-surface-container rounded-md border border-outline-variant/30">
+                <p className="font-label text-[10px] text-on-surface-variant/70 uppercase tracking-wide mb-2">
+                  {activeCatData.emoji} {activeCatData.label} — toque para selecionar
+                </p>
                 <div className="flex flex-wrap gap-1.5">
                   {activeCatData.items.map((item) => {
                     const sel = selectedFoods.includes(item)
@@ -229,11 +263,11 @@ export default function MealModal({ babyName, initialPayload, onConfirm, onClose
                         className={[
                           'px-2.5 py-1 rounded-md border text-xs font-body transition-colors',
                           sel
-                            ? 'bg-primary text-on-primary border-primary'
-                            : 'bg-surface border-outline-variant text-on-surface active:bg-surface-container',
+                            ? 'bg-primary/20 border-primary/40 text-on-surface font-medium'
+                            : 'bg-surface border-outline-variant/50 text-on-surface-variant active:bg-surface-container',
                         ].join(' ')}
                       >
-                        {sel && <span className="material-symbols-outlined text-[11px] mr-0.5 align-middle">check</span>}
+                        {sel && <span className="material-symbols-outlined text-primary text-[11px] align-middle mr-0.5">check</span>}
                         {item}
                       </button>
                     )
@@ -242,10 +276,9 @@ export default function MealModal({ babyName, initialPayload, onConfirm, onClose
               </div>
             )}
 
-            {/* Outro — campo + botão adicionar */}
+            {/* Campo "Outro" */}
             <div className="flex gap-2">
               <input
-                ref={customRef}
                 type="text"
                 value={customInput}
                 onChange={(e) => setCustomInput(e.target.value)}
@@ -256,12 +289,30 @@ export default function MealModal({ babyName, initialPayload, onConfirm, onClose
               <button
                 onClick={addCustom}
                 disabled={!customInput.trim()}
-                className="flex items-center gap-1 px-3 py-2 rounded-md bg-surface-container border border-outline-variant text-on-surface-variant font-label text-sm disabled:opacity-40 active:bg-surface-container-high"
+                className="flex items-center gap-1 px-3 py-2 rounded-md bg-surface-container border border-outline-variant text-on-surface-variant font-label text-xs disabled:opacity-40 active:bg-surface-container-high"
               >
                 <span className="material-symbols-outlined text-base">add</span>
-                Adicionar
+                Add
               </button>
             </div>
+
+            {/* Chips dos selecionados — abaixo do campo Outro, sem × */}
+            {selectedFoods.length > 0 && (
+              <div className="mt-2.5 flex flex-wrap gap-1.5">
+                <p className="w-full font-label text-[10px] text-on-surface-variant/60 mb-0.5">
+                  Selecionados (toque para remover):
+                </p>
+                {selectedFoods.map((f) => (
+                  <button
+                    key={f}
+                    onClick={() => toggleFood(f)}
+                    className="px-2.5 py-1 rounded-md bg-primary/15 border border-primary/30 text-on-surface font-label text-xs active:bg-primary/25"
+                  >
+                    {f}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* ── Método ── */}
@@ -311,7 +362,7 @@ export default function MealModal({ babyName, initialPayload, onConfirm, onClose
             onClick={() => { hapticLight(); setIsNewFood(!isNewFood) }}
             className="flex items-center gap-3 w-full"
           >
-            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
+            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-colors ${
               isNewFood ? 'border-primary bg-primary' : 'border-outline-variant bg-transparent'
             }`}>
               {isNewFood && <span className="material-symbols-outlined text-on-primary text-[14px]">check</span>}
@@ -350,6 +401,34 @@ export default function MealModal({ babyName, initialPayload, onConfirm, onClose
           >
             {isEdit ? 'Salvar alterações' : 'Registrar refeição'}
           </button>
+
+          {/* ── Excluir (modo edição) ── */}
+          {isEdit && onDelete && (
+            confirmDel ? (
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setConfirmDel(false)}
+                  className="flex-1 py-2.5 rounded-md border border-outline-variant text-on-surface-variant font-label text-sm"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={() => { hapticLight(); onDelete() }}
+                  className="flex-1 py-2.5 rounded-md bg-error/15 border border-error/30 text-error font-label text-sm font-semibold"
+                >
+                  Confirmar exclusão
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => { hapticLight(); setConfirmDel(true) }}
+                className="w-full py-2.5 rounded-md border border-outline-variant/50 text-on-surface-variant/60 font-label text-sm flex items-center justify-center gap-1.5 active:text-error active:border-error/30"
+              >
+                <span className="material-symbols-outlined text-base">delete</span>
+                Excluir registro
+              </button>
+            )
+          )}
         </div>
       </div>
     </div>

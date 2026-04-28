@@ -77,6 +77,14 @@ export default function TrackerPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [Math.floor(nowRaw.getTime() / 60000)])
 
+  // Detecta se o bebê está dormindo agora (último evento de sono foi "sleep")
+  const isBabySleeping = useMemo(() => {
+    const sleepLogs = logs
+      .filter((l) => l.eventId === 'sleep' || l.eventId === 'wake')
+      .sort((a, b) => b.timestamp - a.timestamp)
+    return sleepLogs.length > 0 && sleepLogs[0].eventId === 'sleep'
+  }, [logs])
+
   // Shifts do bebê — aparecem mesclados no RecentLogs (que já limita a 5
   // após ordenar por timestamp). Sem filtro de data: um shift enviado ontem
   // à noite continua aparecendo na Home depois da meia-noite.
@@ -249,6 +257,9 @@ export default function TrackerPage() {
     }
   }, [baby, knownEventIds, ageDays, seedSuggestion])
 
+  // Eventos que indicam que o bebê acordou (alimentação ou troca de fralda)
+  const WAKE_TRIGGER_EVENTS = ['breast_left', 'breast_right', 'breast_both', 'bottle', 'diaper_wet', 'diaper_dirty']
+
   const handleLog = useCallback(
     async (eventId: string) => {
       if (!baby) return
@@ -281,13 +292,28 @@ export default function TrackerPage() {
         return
       }
 
+      // Auto-sono: se bebê está dormindo e registrou amamentação/fralda,
+      // insere "acordou" 1 min antes e "dormiu" 1 min depois automaticamente.
+      if (isBabySleeping && WAKE_TRIGGER_EVENTS.includes(eventId)) {
+        const ts = Date.now()
+        await addLog(dispatch, 'wake',  baby.id, undefined, user?.id, null, ts - 60_000)
+        const log = await addLog(dispatch, eventId, baby.id, undefined, user?.id, null, ts)
+        await addLog(dispatch, 'sleep', baby.id, undefined, user?.id, null, ts + 60_000)
+        if (log) {
+          hapticSuccess()
+          setToast(`${event.label} + sono automático registrado`)
+        }
+        return
+      }
+
       const log = await addLog(dispatch, eventId, baby.id, undefined, user?.id)
       if (log) {
         hapticSuccess()
         setToast(`${event.label} registrado!`)
       }
     },
-    [baby, dispatch, user, checkAndRecord],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [baby, dispatch, user, checkAndRecord, isBabySleeping],
   )
 
   const handleMealConfirm = useCallback(
@@ -304,15 +330,26 @@ export default function TrackerPage() {
   )
 
   const handleMealEditConfirm = useCallback(
-    async (payload: MealPayload) => {
+    async (payload: MealPayload, timestamp?: number) => {
       if (!editingMealLog) return
       const updated: LogEntry = {
         ...editingMealLog,
         payload: payload as unknown as Record<string, unknown>,
+        timestamp: timestamp ?? editingMealLog.timestamp,
       }
       setEditingMealLog(null)
       const ok = await updateLog(dispatch, updated)
       if (ok) setToast('Refeição atualizada!')
+    },
+    [editingMealLog, dispatch],
+  )
+
+  const handleMealEditDelete = useCallback(
+    async () => {
+      if (!editingMealLog) return
+      setEditingMealLog(null)
+      const ok = await deleteLog(dispatch, editingMealLog.id)
+      if (ok) setToast('Registro excluído!')
     },
     [editingMealLog, dispatch],
   )
@@ -416,13 +453,14 @@ export default function TrackerPage() {
 
       <ActivityGrid events={gridEvents} logs={logs} onLog={handleLog} highlightedEventIds={highlightedEventIds} />
 
-      {/* Botão discreto de personalização do painel */}
+      {/* Botão de personalização do painel */}
       <button
         onClick={() => { hapticLight(); setGridSettingsOpen(true) }}
-        className="flex items-center gap-1 mx-5 mt-1 text-on-surface-variant/60 font-label text-xs active:text-on-surface-variant"
+        className="mx-5 mt-2 flex items-center gap-2 px-4 py-2.5 rounded-md bg-surface-container border border-outline-variant/40 w-full active:bg-surface-container-high transition-colors"
       >
-        <span className="material-symbols-outlined text-sm">tune</span>
-        Personalizar painel
+        <span className="material-symbols-outlined text-base text-on-surface-variant/70">tune</span>
+        <span className="flex-1 text-left font-label text-sm text-on-surface-variant">Personalizar painel</span>
+        <span className="material-symbols-outlined text-base text-on-surface-variant/30">chevron_right</span>
       </button>
 
       {/* Cards de sugestão de novos eventos — aparecem uma vez, nunca repetem */}
@@ -547,8 +585,9 @@ export default function TrackerPage() {
       {editingMealLog && baby && (
         <MealModal
           babyName={baby.name}
-          initialPayload={editingMealLog.payload as MealPayload | undefined}
+          initialLog={editingMealLog}
           onConfirm={handleMealEditConfirm}
+          onDelete={handleMealEditDelete}
           onClose={() => setEditingMealLog(null)}
         />
       )}

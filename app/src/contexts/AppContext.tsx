@@ -375,15 +375,17 @@ export async function addLog(
   ml?: number,
   userId?: string,
   payload?: Record<string, unknown> | null,
+  /** Timestamp personalizado em ms (ex: auto-sono). Default = Date.now() */
+  timestamp?: number,
 ): Promise<LogEntry | null> {
-  const timestamp = Date.now()
+  const ts = timestamp ?? Date.now()
 
   const { data, error } = await supabase
     .from('logs')
     .insert({
       baby_id: babyId,
       event_id: eventId,
-      timestamp,
+      timestamp: ts,
       ml: ml ?? null,
       created_by: userId ?? null,
       payload: payload ?? null,
@@ -396,7 +398,7 @@ export async function addLog(
   const log: LogEntry = {
     id: data.id,
     eventId: data.event_id,
-    timestamp: data.timestamp,
+    timestamp: data.timestamp ?? ts,
     ml: data.ml ?? undefined,
     createdBy: data.created_by ?? undefined,
     payload: data.payload ?? undefined,
