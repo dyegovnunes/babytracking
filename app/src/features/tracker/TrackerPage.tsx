@@ -46,6 +46,7 @@ import MoodSheet from './components/MoodSheet'
 import SickModal from './components/SickModal'
 import GridSettingsSheet from './components/GridSettingsSheet'
 import AllergenPanel from './components/AllergenPanel'
+import PottyPanel from './components/PottyPanel'
 import type { LogEntry, MealPayload, MoodPayload, SickPayload } from '../../types'
 
 const PROJECTION_CATEGORIES: string[] = ['feed', 'diaper', 'sleep_nap', 'sleep_awake', 'bath']
@@ -234,6 +235,17 @@ export default function TrackerPage() {
     ],
   )
 
+  // Cards de sugestão de amamentação — persistidos em localStorage por babyId
+  const [dismissedBreastCards, setDismissedBreastCards] = useState<Set<string>>(() => new Set())
+  useEffect(() => {
+    if (!baby) return
+    const dismissed = new Set<string>()
+    if (localStorage.getItem(`yaya_bss_${baby.id}`) === '1') dismissed.add('simplify')
+    if (localStorage.getItem(`yaya_bsd_${baby.id}`) === '1') dismissed.add('disable')
+    setDismissedBreastCards(dismissed)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [baby?.id])
+
   const [bottleModalOpen, setBottleModalOpen] = useState(false)
   const [mealModalOpen, setMealModalOpen] = useState(false)
   const [editingMealLog, setEditingMealLog] = useState<LogEntry | null>(null)
@@ -258,6 +270,13 @@ export default function TrackerPage() {
     // Humor sugerido a partir de 12 meses
     if (ageMonths >= 12 && !knownEventIds.has('mood')) {
       seedSuggestion('mood', 10)
+    }
+    // Penico sugerido a partir de 18 meses
+    if (ageMonths >= 18 && !knownEventIds.has('potty_pee')) {
+      seedSuggestion('potty_pee', 11)
+    }
+    if (ageMonths >= 18 && !knownEventIds.has('potty_poop')) {
+      seedSuggestion('potty_poop', 12)
     }
   }, [baby, knownEventIds, ageDays, seedSuggestion])
 
@@ -457,6 +476,37 @@ export default function TrackerPage() {
     setDismissedProjections(prev => new Set(prev).add(label))
   }, [])
 
+  // 2.6: Simplificação de amamentação (≥ 8m, low frequency, left/right ainda no grid)
+  const showBreastSimplify = useMemo(() => {
+    if (!baby || dismissedBreastCards.has('simplify')) return false
+    if (ageDays < 243) return false // < 8 meses
+    const hasBreastSides = gridEvents.some((e) => e.id === 'breast_left' || e.id === 'breast_right')
+    if (!hasBreastSides) return false
+    const fourteenDaysAgo = Date.now() - 14 * 24 * 60 * 60 * 1000
+    const recent = logs.filter(
+      (l) => (l.eventId === 'breast_left' || l.eventId === 'breast_right') && l.timestamp >= fourteenDaysAgo,
+    ).length
+    return recent < 14 // menos de 1 sessão/dia em média nos últimos 14 dias
+  }, [baby, ageDays, gridEvents, logs, dismissedBreastCards])
+
+  // 3.5: Sugestão de desabilitar amamentação (≥ 12m, zero registros em 30 dias)
+  const showBreastDisable = useMemo(() => {
+    if (!baby || dismissedBreastCards.has('disable')) return false
+    if (showBreastSimplify) return false // não exibe os dois ao mesmo tempo
+    if (ageDays < 365) return false // < 12 meses
+    const hasAnyBreast = gridEvents.some(
+      (e) => e.id === 'breast_left' || e.id === 'breast_right' || e.id === 'breast_both',
+    )
+    if (!hasAnyBreast) return false
+    const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000
+    const recentBreast = logs.filter(
+      (l) =>
+        (l.eventId === 'breast_left' || l.eventId === 'breast_right' || l.eventId === 'breast_both') &&
+        l.timestamp >= thirtyDaysAgo,
+    ).length
+    return recentBreast === 0
+  }, [baby, ageDays, gridEvents, logs, dismissedBreastCards, showBreastSimplify])
+
   // Memoizamos projections pra evitar o "piscar" durante renders sucessivos
   // (useTimer tickava a cada ~30s e recalculava sem cache, alternando com
   // o loading do useMedications).
@@ -518,7 +568,13 @@ export default function TrackerPage() {
               <p className="font-body text-xs text-on-surface-variant mt-0.5">
                 {ev.id === 'meal'
                   ? `A ${baby?.name ?? 'bebê'} já está na fase de introdução alimentar! Quer adicionar Refeição ao painel?`
-                  : `Que tal registrar o humor de ${baby?.name ?? 'bebê'}? Adicionar ao painel?`}
+                  : ev.id === 'mood'
+                  ? `Que tal registrar o humor de ${baby?.name ?? 'bebê'}? Adicionar ao painel?`
+                  : ev.id === 'potty_pee'
+                  ? `${baby?.name ?? 'Bebê'} já pode estar pronta(o) para o penico! Quer adicionar ao painel?`
+                  : ev.id === 'potty_poop'
+                  ? `Registrar cocô no penico junto com o xixi?`
+                  : `Quer adicionar ${ev.label} ao painel?`}
               </p>
             </div>
           </div>
@@ -538,6 +594,88 @@ export default function TrackerPage() {
           </div>
         </div>
       ))}
+
+      {/* 2.6: Simplificação de amamentação — frequência caiu, sugerir usar só "Ambos" */}
+      {showBreastSimplify && baby && (
+        <div className="mx-5 mt-3 bg-surface-container border border-outline-variant/30 rounded-md p-4">
+          <div className="flex items-start gap-3">
+            <span className="text-2xl flex-shrink-0">🤱</span>
+            <div className="flex-1 min-w-0">
+              <p className="font-label text-sm font-semibold text-on-surface">Menos mamadas agora?</p>
+              <p className="font-body text-xs text-on-surface-variant mt-0.5">
+                Nessa fase muitas mães usam só "Ambos os peitos" para registrar mais rápido.
+              </p>
+            </div>
+          </div>
+          <div className="flex gap-2 mt-3">
+            <button
+              onClick={() => {
+                hapticSuccess()
+                toggleEvent('breast_left', false)
+                toggleEvent('breast_right', false)
+                toggleEvent('breast_both', true)
+                localStorage.setItem(`yaya_bss_${baby.id}`, '1')
+                setDismissedBreastCards((prev) => new Set([...prev, 'simplify']))
+                setToast('Painel simplificado!')
+              }}
+              className="flex-1 py-2 rounded-md bg-surface-container-high border border-outline-variant text-on-surface font-label text-xs font-semibold"
+            >
+              Simplificar
+            </button>
+            <button
+              onClick={() => {
+                hapticLight()
+                localStorage.setItem(`yaya_bss_${baby.id}`, '1')
+                setDismissedBreastCards((prev) => new Set([...prev, 'simplify']))
+              }}
+              className="px-4 py-2 rounded-md border border-outline-variant text-on-surface-variant font-label text-xs"
+            >
+              Manter
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 3.5: Sem amamentação há 30 dias — sugerir desabilitar */}
+      {showBreastDisable && baby && (
+        <div className="mx-5 mt-3 bg-surface-container border border-outline-variant/30 rounded-md p-4">
+          <div className="flex items-start gap-3">
+            <span className="text-2xl flex-shrink-0">🤱</span>
+            <div className="flex-1 min-w-0">
+              <p className="font-label text-sm font-semibold text-on-surface">Desmame concluído?</p>
+              <p className="font-body text-xs text-on-surface-variant mt-0.5">
+                Não há registros de amamentação há mais de 30 dias. Quer remover do painel?
+              </p>
+            </div>
+          </div>
+          <div className="flex gap-2 mt-3">
+            <button
+              onClick={() => {
+                hapticSuccess()
+                toggleEvent('breast_left', false)
+                toggleEvent('breast_right', false)
+                toggleEvent('breast_both', false)
+                localStorage.setItem(`yaya_bsd_${baby.id}`, '1')
+                setDismissedBreastCards((prev) => new Set([...prev, 'disable']))
+                setToast('Botões de amamentação removidos!')
+              }}
+              className="flex-1 py-2 rounded-md bg-surface-container-high border border-outline-variant text-on-surface font-label text-xs font-semibold"
+            >
+              Remover
+            </button>
+            <button
+              onClick={() => {
+                hapticLight()
+                localStorage.setItem(`yaya_bsd_${baby.id}`, '1')
+                setDismissedBreastCards((prev) => new Set([...prev, 'disable']))
+              }}
+              className="px-4 py-2 rounded-md border border-outline-variant text-on-surface-variant font-label text-xs"
+            >
+              Manter
+            </button>
+          </div>
+        </div>
+      )}
 
       <OutOfHoursBanner />
 
@@ -567,6 +705,9 @@ export default function TrackerPage() {
 
       {/* Rastreio de alérgenos — aparece a partir de 6 meses */}
       <AllergenPanel logs={logs} ageDays={ageDays} />
+
+      {/* Painel de desfralde — aparece a partir de 18 meses quando há registros */}
+      <PottyPanel logs={logs} ageDays={ageDays} gridEvents={gridEvents} />
 
       {/* Acompanhe a jornada: saltos, marcos, (futuro) vacinas e remédios */}
       {baby && (can.viewLeaps(myRole) || can.viewMilestones(myRole)) && (
