@@ -624,12 +624,6 @@ export default function TrackerPage() {
                     ? `Registrar cocô no penico junto com o xixi?`
                     : `Quer adicionar ${ev.label} ao painel?`}
                 </p>
-                {gridFull && (
-                  <p className="font-label text-[11px] text-on-surface-variant/60 mt-1.5 flex items-center gap-1">
-                    <span className="material-symbols-outlined text-sm">info</span>
-                    Painel cheio (9/9) — desabilite um botão para liberar espaço.
-                  </p>
-                )}
               </div>
             </div>
             <div className="flex gap-2 mt-3">
