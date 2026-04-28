@@ -58,8 +58,9 @@ export default function YaIAIntroModal({ isOpen, onAccept, onClose }: YaIAIntroM
             </ul>
             <p className="font-semibold text-on-surface mt-2">Para quem os dados são enviados:</p>
             <p className="text-on-surface-variant">
-              Suas perguntas e o contexto do bebê são processados por um serviço de
-              inteligência artificial de terceiro (provedor de IA em nuvem). Esses dados
+              Suas perguntas e o contexto do bebê são processados pela{' '}
+              <strong className="text-on-surface">Anthropic</strong> (Claude AI),
+              serviço de inteligência artificial utilizado pelo Yaya. Esses dados
               são usados exclusivamente para gerar a resposta e não são usados para
               treinar modelos ou compartilhados com outras partes.
             </p>
