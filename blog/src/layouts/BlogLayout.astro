@@ -1,6 +1,7 @@
 ---
 import CookieConsent from '../components/CookieConsent.astro'
 import ThemeToggle from '../components/ThemeToggle.astro'
+import HeaderAuthButton from '../components/HeaderAuthButton'
 import '../styles/theme.css'
 
 interface Props {
@@ -135,9 +136,7 @@ const GA_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID as string | undefined
             Conheça o app
           </a>
           <span aria-hidden="true" class="text-yaya-cloud/25 select-none">·</span>
-          <a href="/minha-biblioteca" class="px-2.5 py-1.5 text-yaya-cloud/55 hover:text-yaya-purple transition-colors whitespace-nowrap">
-            Entrar
-          </a>
+          <HeaderAuthButton client:only="react" />
         </nav>
 
         <div class="flex items-center gap-2">
