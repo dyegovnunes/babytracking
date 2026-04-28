@@ -5,7 +5,6 @@
 //   - barra de progresso geral animada conforme scroll
 
 import { useState, useEffect, useRef } from 'react'
-import { supabase } from '../../lib/supabase'
 import type { Guide, GuideSection } from '../../types'
 
 interface Props {
@@ -71,9 +70,8 @@ export default function GuideTopbar({
     return () => window.removeEventListener('mousedown', onClick)
   }, [menuOpen])
 
-  async function handleSignOut() {
-    await supabase.auth.signOut()
-    window.location.href = '/'
+  function handleBackToLibrary() {
+    window.location.href = 'https://blog.yayababy.app/sua-biblioteca/'
   }
 
   return (
@@ -100,6 +98,16 @@ export default function GuideTopbar({
         width: '100%',
       }}
     >
+      {/* Voltar à biblioteca */}
+      <button
+        onClick={handleBackToLibrary}
+        aria-label="Voltar à biblioteca"
+        title="Voltar à biblioteca"
+        style={iconBtn}
+      >
+        <span className="material-symbols-outlined" style={{ fontSize: 24 }}>arrow_back</span>
+      </button>
+
       {/* Menu button */}
       <button
         onClick={onToggleSidebar}
@@ -202,9 +210,9 @@ export default function GuideTopbar({
             />
             <MenuDivider />
             <MenuItem
-              icon="logout"
-              label="Sair"
-              onClick={handleSignOut}
+              icon="arrow_back"
+              label="Voltar à biblioteca"
+              onClick={handleBackToLibrary}
             />
           </div>
         )}
