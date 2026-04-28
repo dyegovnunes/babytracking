@@ -178,6 +178,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         duration: row.duration ?? undefined,
         notes: row.notes ?? undefined,
         createdBy: row.created_by ?? undefined,
+        payload: row.payload ?? undefined,
       }))
 
       const members: Record<string, Member> = {}
@@ -314,6 +315,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           duration: row.duration ?? undefined,
           notes: row.notes ?? undefined,
           createdBy: row.created_by ?? undefined,
+          payload: row.payload ?? undefined,
         }))
 
         // Only update if logs actually changed
@@ -593,6 +595,7 @@ export async function switchBaby(
     duration: row.duration ?? undefined,
     notes: row.notes ?? undefined,
     createdBy: row.created_by ?? undefined,
+    payload: row.payload ?? undefined,
   }))
 
   const members: Record<string, Member> = {}
