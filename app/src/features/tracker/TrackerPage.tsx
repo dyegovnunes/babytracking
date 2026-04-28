@@ -647,7 +647,7 @@ export default function TrackerPage() {
           <div className="flex items-start gap-3">
             <span className="text-2xl flex-shrink-0">🤱</span>
             <div className="flex-1 min-w-0">
-              <p className="font-label text-sm font-semibold text-on-surface">Menos mamadas agora?</p>
+              <p className="font-label text-sm font-semibold text-on-surface">Amamentando menos agora?</p>
               <p className="font-body text-xs text-on-surface-variant mt-0.5">
                 Nessa fase muitas mães usam só "Ambos os peitos" para registrar mais rápido.
               </p>

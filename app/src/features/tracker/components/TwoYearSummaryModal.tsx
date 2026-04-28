@@ -122,7 +122,7 @@ async function buildCanvas(
   const statCards = [
     { value: totalLogs.toLocaleString('pt-BR'), label: 'registros no total' },
     { value: String(milestoneCount),            label: 'marcos atingidos' },
-    { value: feedSessions.toLocaleString('pt-BR'), label: 'mamadas registradas' },
+    { value: feedSessions.toLocaleString('pt-BR'), label: 'amamentações' },
     { value: `${longestStreak}d`,               label: 'maior sequência' },
   ]
 
@@ -255,7 +255,7 @@ export default function TwoYearSummaryModal({ baby, logs, milestoneCount, longes
   // ── stat cards para a UI ──
   const STAT_CARDS = [
     { emoji: '📝', value: stats.totalLogs.toLocaleString('pt-BR'), label: 'Registros no total' },
-    { emoji: '🤱', value: stats.feedSessions.toLocaleString('pt-BR'), label: 'Mamadas' },
+    { emoji: '🤱', value: stats.feedSessions.toLocaleString('pt-BR'), label: 'Amamentações' },
     { emoji: '💧', value: stats.diapers.toLocaleString('pt-BR'), label: 'Trocas de fralda' },
     { emoji: '🛁', value: stats.baths.toLocaleString('pt-BR'), label: 'Banhos' },
     { emoji: '🏆', value: String(milestoneCount), label: 'Marcos atingidos' },
