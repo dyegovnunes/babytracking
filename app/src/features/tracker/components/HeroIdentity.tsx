@@ -49,18 +49,20 @@ export default function HeroIdentity({ streak }: HeroIdentityProps) {
             className="flex items-center gap-3 min-w-0 flex-1 cursor-pointer active:opacity-80 transition-opacity bg-transparent border-0 p-0 text-left"
           >
             {avatar}
-            <div className="flex-1 min-w-0 flex items-baseline gap-1.5 overflow-hidden">
-              <span className="font-headline text-base font-bold text-on-surface truncate shrink">
-                {baby.name}
-              </span>
-              <span className="text-on-surface-variant font-label text-xs whitespace-nowrap shrink-0">
-                · {formatAge(baby.birthDate)}
-              </span>
-              {hasMultiple && (
-                <span className="material-symbols-outlined text-on-surface-variant text-base shrink-0">
-                  expand_more
+            <div className="flex-1 min-w-0 flex flex-col gap-0">
+              <div className="flex items-center gap-1 min-w-0">
+                <span className="font-headline text-base font-bold text-on-surface truncate">
+                  {baby.name}
                 </span>
-              )}
+                {hasMultiple && (
+                  <span className="material-symbols-outlined text-on-surface-variant text-base shrink-0">
+                    expand_more
+                  </span>
+                )}
+              </div>
+              <span className="text-on-surface-variant font-label text-xs leading-tight">
+                {formatAge(baby.birthDate)}
+              </span>
             </div>
           </button>
           {streak && <StreakBadge streak={streak} />}
