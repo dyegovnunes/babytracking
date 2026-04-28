@@ -453,15 +453,16 @@ export default function TrackerPage() {
 
       <ActivityGrid events={gridEvents} logs={logs} onLog={handleLog} highlightedEventIds={highlightedEventIds} />
 
-      {/* Botão de personalização do painel */}
-      <button
-        onClick={() => { hapticLight(); setGridSettingsOpen(true) }}
-        className="mx-5 mt-2 flex items-center gap-2 px-4 py-2.5 rounded-md bg-surface-container border border-outline-variant/40 w-full active:bg-surface-container-high transition-colors"
-      >
-        <span className="material-symbols-outlined text-base text-on-surface-variant/70">tune</span>
-        <span className="flex-1 text-left font-label text-sm text-on-surface-variant">Personalizar painel</span>
-        <span className="material-symbols-outlined text-base text-on-surface-variant/30">chevron_right</span>
-      </button>
+      {/* Link discreto de personalização — alinhado à direita, abaixo do grid */}
+      <div className="flex justify-end px-5 mt-1">
+        <button
+          onClick={() => { hapticLight(); setGridSettingsOpen(true) }}
+          className="flex items-center gap-1 px-2 py-1 text-on-surface-variant/40 font-label text-[11px] active:text-on-surface-variant/70"
+        >
+          <span className="material-symbols-outlined text-[13px]">tune</span>
+          <span>Personalizar</span>
+        </button>
+      </div>
 
       {/* Cards de sugestão de novos eventos — aparecem uma vez, nunca repetem */}
       {pendingSuggestions.map((ev) => (
