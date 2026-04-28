@@ -122,31 +122,31 @@ export default function LogRow({ log, members, onEdit, pairedLog }: Props) {
           </p>
         )}
 
-        {/* Detalhes de humor */}
+        {/* Detalhes de humor — linha única compacta */}
         {moodPayload && (
-          <p className="font-label text-xs text-on-surface-variant mt-0.5">
-            {MOOD_LABEL[moodPayload.level] ?? `Nível ${moodPayload.level}`}
-            {moodPayload.note && ` · ${moodPayload.note}`}
+          <p className="font-label text-xs text-on-surface-variant mt-0.5 truncate">
+            {[
+              MOOD_LABEL[moodPayload.level] ?? `Nível ${moodPayload.level}`,
+              moodPayload.note,
+            ].filter(Boolean).join(' · ')}
           </p>
         )}
 
-        {/* Detalhes de doença */}
+        {/* Detalhes de doença — linha única compacta */}
         {sickPayload && (
-          <div className="mt-0.5 space-y-0.5">
+          <p className="font-label text-xs text-on-surface-variant mt-0.5 truncate">
             {sickPayload.temp !== undefined && (
-              <p className={`font-label text-xs ${sickPayload.temp >= 37.8 ? 'text-red-400' : 'text-on-surface-variant'}`}>
+              <span className={sickPayload.temp >= 37.8 ? 'text-red-400' : ''}>
                 🌡️ {sickPayload.temp}°C{sickPayload.temp >= 37.8 ? ' · Febre' : ''}
-              </p>
+              </span>
             )}
-            {sickPayload.symptoms && sickPayload.symptoms.length > 0 && (
-              <p className="font-label text-xs text-on-surface-variant truncate">
-                {sickPayload.symptoms.map((s) => SYMPTOM_LABEL[s] ?? s).join(' · ')}
-              </p>
-            )}
-            {sickPayload.note && (
-              <p className="font-label text-xs text-on-surface-variant/60 truncate">{sickPayload.note}</p>
-            )}
-          </div>
+            {sickPayload.temp !== undefined &&
+              (sickPayload.symptoms?.length || sickPayload.note) && ' · '}
+            {[
+              ...(sickPayload.symptoms?.map((s) => SYMPTOM_LABEL[s] ?? s) ?? []),
+              sickPayload.note,
+            ].filter(Boolean).join(' · ')}
+          </p>
         )}
 
         {/* Padrão: peito, fralda, sono etc. */}
