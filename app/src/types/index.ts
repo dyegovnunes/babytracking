@@ -28,6 +28,13 @@ export interface MoodPayload {
   note?: string
 }
 
+/** Payload de registro de doença/sintomas (armazenado em logs.payload jsonb) */
+export interface SickPayload {
+  temp?: number           // graus Celsius
+  symptoms?: string[]     // ids: 'fever' | 'cough' | 'runny_nose' | 'vomit' | 'diarrhea' | 'crying' | 'no_appetite' | 'other'
+  note?: string
+}
+
 export interface LogEntry {
   id: string
   eventId: string

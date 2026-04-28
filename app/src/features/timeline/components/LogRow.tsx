@@ -1,4 +1,4 @@
-import type { LogEntry, Member, MealPayload, MoodPayload } from '../../../types'
+import type { LogEntry, Member, MealPayload, MoodPayload, SickPayload } from '../../../types'
 import { EVENT_CATALOG } from '../../../lib/constants'
 import { formatTime } from '../../../lib/formatters'
 
@@ -42,6 +42,18 @@ const MOOD_LABEL: Record<number, string> = {
   3: '😊 Bem',
 }
 
+const SYMPTOM_LABEL: Record<string, string> = {
+  fever:       'Febre',
+  cough:       'Tosse',
+  runny_nose:  'Coriza',
+  vomit:       'Vômito',
+  diarrhea:    'Diarreia',
+  crying:      'Choro excessivo',
+  no_appetite: 'Recusa alimentar',
+  rash:        'Erupção na pele',
+  other:       'Outro',
+}
+
 /**
  * Row de log (atividade recorrente: amamentação, fralda, sono, banho, refeição, humor).
  * Tap abre modal de edição inline (via callback).
@@ -68,6 +80,9 @@ export default function LogRow({ log, members, onEdit, pairedLog }: Props) {
     : null
   const moodPayload = log.eventId === 'mood' && log.payload
     ? (log.payload as MoodPayload)
+    : null
+  const sickPayload = log.eventId === 'sick_log' && log.payload
+    ? (log.payload as SickPayload)
     : null
 
   return (
@@ -127,6 +142,25 @@ export default function LogRow({ log, members, onEdit, pairedLog }: Props) {
             {MOOD_LABEL[moodPayload.level] ?? `Nível ${moodPayload.level}`}
             {moodPayload.note && ` · ${moodPayload.note}`}
           </p>
+        )}
+
+        {/* Detalhes de doença */}
+        {sickPayload && (
+          <div className="mt-0.5 space-y-0.5">
+            {sickPayload.temp !== undefined && (
+              <p className={`font-label text-xs ${sickPayload.temp >= 37.8 ? 'text-red-400' : 'text-on-surface-variant'}`}>
+                🌡️ {sickPayload.temp}°C{sickPayload.temp >= 37.8 ? ' · Febre' : ''}
+              </p>
+            )}
+            {sickPayload.symptoms && sickPayload.symptoms.length > 0 && (
+              <p className="font-label text-xs text-on-surface-variant truncate">
+                {sickPayload.symptoms.map((s) => SYMPTOM_LABEL[s] ?? s).join(' · ')}
+              </p>
+            )}
+            {sickPayload.note && (
+              <p className="font-label text-xs text-on-surface-variant/60 truncate">{sickPayload.note}</p>
+            )}
+          </div>
         )}
 
         {/* Padrão: peito, fralda, sono etc. */}

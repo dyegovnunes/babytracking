@@ -35,6 +35,7 @@ export const CATEGORY_LABELS: Record<string, string> = {
  */
 export const EVENT_CATALOG: EventType[] = [
   ...DEFAULT_EVENTS,
-  { id: 'meal', label: 'Refeição', emoji: '🥣', icon: '', color: 'secondary', category: 'care' },
-  { id: 'mood', label: 'Humor',    emoji: '😊', icon: '', color: 'secondary', category: 'care' },
+  { id: 'meal',     label: 'Refeição',   emoji: '🥣', icon: '', color: 'secondary', category: 'care' },
+  { id: 'mood',     label: 'Humor',      emoji: '😊', icon: '', color: 'secondary', category: 'care' },
+  { id: 'sick_log', label: 'Doente',     emoji: '🤒', icon: '', color: 'secondary', category: 'care' },
 ]

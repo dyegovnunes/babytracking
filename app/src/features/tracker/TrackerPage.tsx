@@ -43,9 +43,10 @@ import { TrackerSkeleton } from '../../components/ui/Skeleton'
 import { useGridItems } from './useGridItems'
 import MealModal from './components/MealModal'
 import MoodSheet from './components/MoodSheet'
+import SickModal from './components/SickModal'
 import GridSettingsSheet from './components/GridSettingsSheet'
 import AllergenPanel from './components/AllergenPanel'
-import type { LogEntry, MealPayload, MoodPayload } from '../../types'
+import type { LogEntry, MealPayload, MoodPayload, SickPayload } from '../../types'
 
 const PROJECTION_CATEGORIES: string[] = ['feed', 'diaper', 'sleep_nap', 'sleep_awake', 'bath']
 
@@ -237,6 +238,8 @@ export default function TrackerPage() {
   const [mealModalOpen, setMealModalOpen] = useState(false)
   const [editingMealLog, setEditingMealLog] = useState<LogEntry | null>(null)
   const [moodSheetOpen, setMoodSheetOpen] = useState(false)
+  const [sickModalOpen, setSickModalOpen] = useState(false)
+  const [editingSickLog, setEditingSickLog] = useState<LogEntry | null>(null)
   const [gridSettingsOpen, setGridSettingsOpen] = useState(false)
   const [editingLog, setEditingLog] = useState<LogEntry | null>(null)
   const [toast, setToast] = useState<string | null>(null)
@@ -290,6 +293,12 @@ export default function TrackerPage() {
       if (eventId === 'mood') {
         hapticLight()
         setMoodSheetOpen(true)
+        return
+      }
+
+      if (eventId === 'sick_log') {
+        hapticLight()
+        setSickModalOpen(true)
         return
       }
 
@@ -368,6 +377,41 @@ export default function TrackerPage() {
     [baby, dispatch, user],
   )
 
+  const handleSickConfirm = useCallback(
+    async (payload: SickPayload) => {
+      if (!baby) return
+      setSickModalOpen(false)
+      const log = await addLog(dispatch, 'sick_log', baby.id, undefined, user?.id, payload as unknown as Record<string, unknown>)
+      if (log) {
+        hapticSuccess()
+        setToast('Registro salvo!')
+      }
+    },
+    [baby, dispatch, user],
+  )
+
+  const handleSickEditConfirm = useCallback(
+    async (payload: SickPayload, timestamp?: number) => {
+      if (!editingSickLog) return
+      const updated: LogEntry = {
+        ...editingSickLog,
+        payload: payload as unknown as Record<string, unknown>,
+        timestamp: timestamp ?? editingSickLog.timestamp,
+      }
+      setEditingSickLog(null)
+      const ok = await updateLog(dispatch, updated)
+      if (ok) setToast('Registro atualizado!')
+    },
+    [editingSickLog, dispatch],
+  )
+
+  const handleSickEditDelete = useCallback(async () => {
+    if (!editingSickLog) return
+    setEditingSickLog(null)
+    const ok = await deleteLog(dispatch, editingSickLog.id)
+    if (ok) setToast('Registro excluído!')
+  }, [editingSickLog, dispatch])
+
   const handleBottleConfirm = useCallback(
     async (ml: number) => {
       if (!baby) return
@@ -383,12 +427,9 @@ export default function TrackerPage() {
 
   const handleEditLog = useCallback((log: LogEntry) => {
     hapticMedium()
-    // Refeição abre o MealModal no modo edição (edita payload estruturado)
-    if (log.eventId === 'meal') {
-      setEditingMealLog(log)
-    } else {
-      setEditingLog(log)
-    }
+    if (log.eventId === 'meal')     { setEditingMealLog(log); return }
+    if (log.eventId === 'sick_log') { setEditingSickLog(log); return }
+    setEditingLog(log)
   }, [])
 
   const handleSaveLog = useCallback(
@@ -602,6 +643,24 @@ export default function TrackerPage() {
           babyName={baby.name}
           onConfirm={handleMoodConfirm}
           onClose={() => setMoodSheetOpen(false)}
+        />
+      )}
+
+      {sickModalOpen && baby && (
+        <SickModal
+          babyName={baby.name}
+          onConfirm={handleSickConfirm}
+          onClose={() => setSickModalOpen(false)}
+        />
+      )}
+
+      {editingSickLog && baby && (
+        <SickModal
+          babyName={baby.name}
+          initialLog={editingSickLog}
+          onConfirm={handleSickEditConfirm}
+          onDelete={handleSickEditDelete}
+          onClose={() => setEditingSickLog(null)}
         />
       )}
 
