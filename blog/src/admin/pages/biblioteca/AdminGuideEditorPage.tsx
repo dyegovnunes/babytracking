@@ -19,7 +19,7 @@ const EMPTY_GUIDE: Partial<Guide> = {
 }
 
 const TYPE_ICON: Record<GuideSectionType, string> = {
-  part: 'bookmark', linear: 'article', quiz: 'quiz', checklist: 'checklist',
+  part: 'bookmark', linear: 'article', quiz: 'quiz', checklist: 'checklist', flashcards: 'style',
 }
 
 function slugify(text: string) {

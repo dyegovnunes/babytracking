@@ -2,8 +2,8 @@
 // Status:
 //   loading      → ainda checando
 //   no-session   → não logado (precisa magic link)
-//   no-access    → logado mas sem compra completed e sem Yaya+ (mostra CTA pra comprar)
-//   authorized   → tem compra OU is_premium = true → libera leitura
+//   no-access    → logado mas sem compra completed e sem Yaya+ Anual/Vitalício
+//   authorized   → tem compra OU subscription_plan IN ('annual','lifetime') → libera leitura
 //   error        → falha de rede/RLS
 
 import { useEffect, useState } from 'react'
@@ -72,13 +72,14 @@ export function useGuideAccess(guideSlug: string): AccessState {
           // 3b. Sem compra direta — verificar Yaya+ (is_premium desbloqueia todos os guias)
           const { data: profile } = await supabase
             .from('profiles')
-            .select('is_premium')
+            .select('is_premium, subscription_plan')
             .eq('id', session.user.id)
             .single()
 
           if (cancelled) return
 
-          if (profile?.is_premium) {
+          const planUnlocks = profile?.subscription_plan === 'annual' || profile?.subscription_plan === 'lifetime'
+          if (profile?.is_premium && planUnlocks) {
             setState({
               status: 'authorized',
               guide,

@@ -50,11 +50,11 @@ export default function GuideCTA({ guideSlug, priceFormatted }: Props) {
     )
   }
 
-  // ── Autorizado via Yaya+ ────────────────────────────────────────────────────
+  // ── Autorizado via Yaya+ Anual/Vitalício ───────────────────────────────────
   if (access.status === 'authorized' && access.accessVia === 'premium') {
     return (
       <a href={`/sua-biblioteca/${guideSlug}/ler`} style={{ ...s.btnPrimary, textDecoration: 'none', display: 'block', textAlign: 'center' as const }}>
-        <span style={{ marginRight: 6 }}>💜</span> Acessar — incluso no Yaya+
+        <span style={{ marginRight: 6 }}>💜</span> Acessar — incluso no seu plano
       </a>
     )
   }
@@ -85,10 +85,10 @@ export default function GuideCTA({ guideSlug, priceFormatted }: Props) {
         </p>
       )}
 
-      {/* Yaya+ — alternativa via assinatura */}
+      {/* Yaya+ Anual/Vitalício — alternativa via assinatura */}
       <div style={s.premiumBox}>
         <p style={{ ...s.bodySmall, margin: 0 }}>
-          <strong style={{ color: '#b79fff' }}>Incluso no Yaya+</strong>
+          <strong style={{ color: '#b79fff' }}>Incluso no Yaya+ Anual e Vitalício</strong>
           {' '}— assine pelo app e acesse toda a biblioteca sem pagar por guia.{' '}
           <a href="https://yayababy.app" style={{ color: '#b79fff', textDecoration: 'underline' }}>
             Saiba mais

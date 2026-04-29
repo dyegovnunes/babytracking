@@ -56,7 +56,7 @@ export interface BlogPost {
 // ── Sua Biblioteca Yaya — infoprodutos ─────────────────────────────────────
 
 export type GuideStatus = 'draft' | 'published' | 'archived'
-export type GuideSectionType = 'linear' | 'quiz' | 'checklist' | 'part'
+export type GuideSectionType = 'linear' | 'quiz' | 'checklist' | 'part' | 'flashcards'
 export type PurchaseStatus = 'pending' | 'completed' | 'refunded' | 'failed'
 export type PurchaseProvider = 'stripe' | 'hotmart' | 'manual'
 export type HighlightColor = 'yellow' | 'pink' | 'purple'
@@ -150,6 +150,7 @@ export const GUIDE_SECTION_TYPE_LABEL: Record<GuideSectionType, string> = {
   linear: 'Leitura',
   quiz: 'Quiz',
   checklist: 'Checklist',
+  flashcards: 'Flashcards',
 }
 
 export const PURCHASE_STATUS_LABEL: Record<PurchaseStatus, string> = {

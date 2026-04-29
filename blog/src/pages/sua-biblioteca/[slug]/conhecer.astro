@@ -1,9 +1,9 @@
 ---
-import BlogLayout from '../../layouts/BlogLayout.astro'
-import { supabase } from '../../lib/supabase'
-import type { Guide, GuideSection } from '../../types'
+import BlogLayout from '../../../layouts/BlogLayout.astro'
+import { supabase } from '../../../lib/supabase'
+import type { Guide, GuideSection } from '../../../types'
 import { marked } from 'marked'
-import GuideCTA from '../../sua-biblioteca/components/GuideCTA'
+import GuideCTA from '../../../sua-biblioteca/components/GuideCTA'
 
 const SITE = 'https://blog.yayababy.app'
 
@@ -39,13 +39,6 @@ const allSections = (sectionsData ?? []) as GuideSection[]
 const guideSections = allSections.filter((s) => s.guide_id === guide.id)
 
 const parts = guideSections.filter((s) => s.type === 'part' && !s.parent_id)
-const sectionsByPart: Record<string, GuideSection[]> = {}
-for (const s of guideSections) {
-  if (s.type !== 'part' && s.parent_id) {
-    if (!sectionsByPart[s.parent_id]) sectionsByPart[s.parent_id] = []
-    sectionsByPart[s.parent_id].push(s)
-  }
-}
 const previewSections = guideSections.filter((s) => s.is_preview && s.type !== 'part')
 const totalMinutes = guideSections.reduce((acc, s) => acc + (s.estimated_minutes ?? 0), 0)
 
@@ -61,7 +54,7 @@ for (const s of previewSections) {
   }
 }
 
-const canonicalUrl = `${SITE}/sua-biblioteca/${slug}`
+const canonicalUrl = `${SITE}/sua-biblioteca/${slug}/conhecer`
 const priceFormatted = formatPrice(guide.price_cents)
 
 const breadcrumbLd = {
@@ -87,105 +80,49 @@ const productLd = {
     price: (guide.price_cents / 100).toFixed(2),
     priceCurrency: 'BRL',
     availability: 'https://schema.org/InStock',
-    url: canonicalUrl,
+    url: `${SITE}/sua-biblioteca/${slug}`,
     seller: { '@type': 'Organization', name: 'Yaya Baby' },
   },
 }
 ---
 
 <BlogLayout
-  title={`${guide.title} — Sua Biblioteca Yaya`}
-  description={guide.description ?? guide.subtitle ?? `Guia completo: ${guide.title}. Conteúdo baseado em evidências para quem cuida.`}
+  title={`${guide.title} — Guia completo para gestantes e pais | Yaya`}
+  description={`Do 7º mês ao bebê com 30 dias em casa. Conteúdo baseado em evidências, sem contradições. ${priceFormatted} com 7 dias de garantia.`}
   canonicalUrl={canonicalUrl}
   image={guide.cover_image_url ?? undefined}
 >
   <script type="application/ld+json" set:html={JSON.stringify(breadcrumbLd)} />
   <script type="application/ld+json" set:html={JSON.stringify(productLd)} />
 
-  <!-- Breadcrumb -->
-  <nav class="max-w-4xl mx-auto px-4 pt-8 pb-0">
-    <ol class="flex items-center gap-1.5 text-xs font-sans text-yaya-cloud/40 flex-wrap">
-      <li><a href="/" class="hover:text-yaya-cloud transition-colors">Blog</a></li>
-      <li aria-hidden="true" class="text-yaya-cloud/25">›</li>
-      <li><a href="/sua-biblioteca" class="hover:text-yaya-cloud transition-colors">Biblioteca Yaya</a></li>
-      <li aria-hidden="true" class="text-yaya-cloud/25">›</li>
-      <li class="text-yaya-cloud/70 font-medium truncate max-w-[180px]">{guide.title}</li>
-    </ol>
-  </nav>
-
   <!-- ── Hero premium ── -->
-  <section class="lp-hero relative overflow-hidden pt-8 pb-10">
-    <!-- Partículas injetadas por JS -->
+  <section class="lp-hero relative overflow-hidden pt-10 pb-12">
     <div id="hero-particles" class="absolute inset-0 pointer-events-none overflow-hidden z-0" aria-hidden="true" />
 
-    <div class="relative z-10 max-w-4xl mx-auto px-4">
-
-      <!-- Eyebrow + headline de marketing -->
-      <p class="text-center text-[11px] font-display font-bold uppercase tracking-[0.22em] mb-4" style="color: rgba(183,159,255,0.7);">
-        ✦ Guia completo · Baseado em evidências
+    <div class="relative z-10 max-w-3xl mx-auto px-4 text-center">
+      <p class="text-[11px] font-display font-bold uppercase tracking-[0.22em] mb-5" style="color: rgba(183,159,255,0.65);">
+        ✦ Baseado em evidências · OMS · SBP · AAP
       </p>
       <h1
-        class="text-center font-bold text-2xl md:text-[2rem] lg:text-[2.4rem] mb-7 max-w-2xl mx-auto leading-tight"
+        class="font-bold text-2xl sm:text-3xl md:text-[2.2rem] lg:text-[2.6rem] mb-5 leading-tight"
         style="font-family: 'Fraunces', Georgia, serif; color: #e7e2ff;"
       >
-        Você pesquisa tudo.<br class="hidden sm:block" />
-        Mas as informações nunca batem entre si.
+        Você está no terceiro trimestre.<br class="hidden sm:block" />
+        Já leu muito. Mas ainda não sabe<br class="hidden sm:block" />
+        o que esperar de verdade.
       </h1>
-
-      <!-- Cover do guia -->
-      {guide.cover_image_url ? (
-        <div class="relative rounded-2xl overflow-hidden mb-6" style="aspect-ratio: 21/9;">
-          <img
-            src={guide.cover_image_url}
-            alt={guide.title}
-            class="w-full h-full object-cover"
-            loading="eager"
-            decoding="async"
-          />
-          <div class="absolute inset-0 bg-gradient-to-t from-[#0d0a27]/85 via-[#0d0a27]/25 to-transparent" />
-          <div class="absolute bottom-0 left-0 right-0 p-5 md:p-7">
-            <p class="text-white/55 text-[11px] font-display font-bold uppercase tracking-widest mb-1.5">{guide.title}</p>
-            {guide.subtitle && (
-              <p class="text-white/70 text-sm md:text-base font-sans max-w-xl leading-relaxed">{guide.subtitle}</p>
-            )}
-          </div>
-        </div>
-      ) : (
-        <div class="mb-8 text-center">
-          <p class="text-yaya-cloud/60 text-base font-sans leading-relaxed max-w-2xl mx-auto">{guide.subtitle}</p>
-        </div>
-      )}
-
-      <!-- Meta stats -->
-      <div class="flex flex-wrap items-center justify-center gap-5 text-xs font-sans text-yaya-cloud/50 mb-6">
-        {totalMinutes > 0 && (
-          <span class="flex items-center gap-1.5">
-            <span>⏱</span> ~{totalMinutes} min de leitura
-          </span>
-        )}
-        {parts.length > 0 && (
-          <span class="flex items-center gap-1.5">
-            <span>📖</span> {parts.length} {parts.length === 1 ? 'parte' : 'partes'}
-          </span>
-        )}
-        {previewSections.length > 0 && (
-          <span class="flex items-center gap-1.5" style="color: rgba(183,159,255,0.65);">
-            <span>🔓</span> Amostra grátis disponível
-          </span>
-        )}
-      </div>
-
-      <!-- CTA hero mobile (some em desktop) -->
-      <div class="flex justify-center lg:hidden mb-2">
-        <a
-          href="#cta-final"
-          class="inline-block px-8 py-3.5 rounded-xl text-[#0d0a27] font-display font-bold text-sm transition-all hover:opacity-90"
-          style="background: linear-gradient(135deg, #b79fff, #8b6df0); box-shadow: 0 0 28px rgba(183,159,255,0.3);"
-        >
-          Quero o guia por {priceFormatted} →
-        </a>
-      </div>
-
+      <p class="text-yaya-cloud/55 font-sans text-base leading-relaxed max-w-xl mx-auto mb-8">
+        Um guia completo, do 7º mês ao bebê com 30 dias em casa.<br />
+        Fontes reais. Sem contradições. Sem romantismo.
+      </p>
+      <a
+        href="#cta-final"
+        class="inline-block px-9 py-4 rounded-xl text-[#0d0a27] font-display font-bold text-base transition-all hover:opacity-90"
+        style="background: linear-gradient(135deg, #b79fff, #8b6df0); box-shadow: 0 0 32px rgba(183,159,255,0.35);"
+      >
+        Quero o guia por {priceFormatted} →
+      </a>
+      <p class="mt-4 text-yaya-cloud/30 text-xs font-sans">Acesso imediato · 7 dias de garantia, sem perguntas</p>
     </div>
   </section>
 
@@ -196,56 +133,129 @@ const productLd = {
       <!-- ── Coluna esquerda ── -->
       <div class="flex-1 min-w-0">
 
-        {guide.description && (
-          <p class="text-yaya-cloud/65 font-sans text-base leading-relaxed mb-8">{guide.description}</p>
-        )}
-
-        <!-- O que você vai encontrar (TOC colapsível) -->
-        {parts.length > 0 && (
-          <div class="mb-10">
-            <h2 class="lp-section-title">O que você vai encontrar</h2>
-            <div class="space-y-3">
-              {parts.map((part, i) => {
-                const children = sectionsByPart[part.id] ?? []
-                return (
-                  <details class="group rounded-xl border border-yaya-cloud/8 bg-yaya-cloud/[0.025] hover:border-yaya-cloud/[0.12] transition-colors">
-                    <summary class="flex items-center gap-3 px-4 py-3.5 cursor-pointer list-none">
-                      <span class="flex-none w-6 h-6 rounded-full text-xs font-display font-bold flex items-center justify-center"
-                            style="background: rgba(183,159,255,0.15); color: #b79fff;">
-                        {i + 1}
-                      </span>
-                      <span class="flex-1 text-yaya-cloud font-sans font-semibold text-sm leading-snug">{part.title}</span>
-                      {part.estimated_minutes && (
-                        <span class="text-yaya-cloud/35 text-xs font-sans shrink-0">{part.estimated_minutes} min</span>
-                      )}
-                      <span class="text-yaya-cloud/30 text-xs shrink-0 group-open:rotate-180 transition-transform">▾</span>
-                    </summary>
-                    {children.length > 0 && (
-                      <ul class="px-4 pb-4 pt-1 space-y-1.5">
-                        {children.map((child) => (
-                          <li class="flex items-center gap-2.5 text-xs font-sans text-yaya-cloud/55">
-                            <span class="text-yaya-cloud/25 shrink-0">○</span>
-                            <span class="leading-snug">{child.title}</span>
-                            {child.is_preview && (
-                              <span class="ml-auto shrink-0 font-bold uppercase tracking-wide text-[10px]" style="color: rgba(183,159,255,0.7);">grátis</span>
-                            )}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </details>
-                )
-              })}
+        <!-- ── Agitação do problema ── -->
+        <div class="mb-10 pt-4">
+          <h2 class="lp-section-title">O terceiro trimestre parece fácil por fora. Por dentro, é diferente.</h2>
+          <div class="space-y-4 text-yaya-cloud/65 font-sans text-base leading-relaxed">
+            <p>
+              Por fora: chá de bebê, fotos de barriga, lista de enxoval.
+              Por dentro: você acorda às 3h com uma dúvida que não consegue responder.
+              Pesquisa no Google e encontra cinco respostas diferentes. Pergunta no grupo de gestantes
+              e recebe doze opiniões conflitantes. Vai à consulta com o obstetra e sai com mais dúvidas do que entrou.
+            </p>
+            <p>
+              A ansiedade do terceiro trimestre não é frescura. É a combinação de uma vida inteira
+              prestes a mudar, um corpo que você não reconhece mais e uma quantidade enorme de
+              informação que parece completa mas deixa lacunas exatamente onde você mais precisa de clareza.
+            </p>
+            <div class="rounded-xl p-5 space-y-3" style="background: rgba(183,159,255,0.05); border: 1px solid rgba(183,159,255,0.14);">
+              {[
+                'O que acontece quando a bolsa romper? Você vai para a maternidade imediatamente ou espera as contrações?',
+                'Quanto o bebê perde de peso nos primeiros dias? É normal, é preocupante, quando ligar para o pediatra?',
+                'O colostro é suficiente? Ou você vai precisar dar fórmula enquanto o leite "desce"?',
+              ].map((q) => (
+                <p class="flex items-start gap-3 text-sm font-sans text-yaya-cloud/70">
+                  <span class="mt-1 shrink-0 text-base leading-none" style="color: rgba(183,159,255,0.5);">?</span>
+                  {q}
+                </p>
+              ))}
             </div>
+            <p>
+              São perguntas simples. As respostas deveriam ser claras. Raramente são.
+            </p>
           </div>
-        )}
+        </div>
+
+        <!-- ── Credibilidade Yaya ── -->
+        <div class="mb-10 rounded-2xl p-6 md:p-8 flex flex-col sm:flex-row gap-6 items-start"
+             style="background: rgba(183,159,255,0.05); border: 1px solid rgba(183,159,255,0.15);">
+          <div class="shrink-0 flex items-center gap-3">
+            <img src="/symbol.png" alt="Yaya" class="h-10 w-auto" style="filter: brightness(0) saturate(100%) invert(74%) sepia(30%) saturate(700%) hue-rotate(220deg) brightness(105%);" />
+            <span class="font-display font-bold text-lg text-yaya-cloud">Yaya</span>
+          </div>
+          <div>
+            <p class="font-display font-bold text-sm text-yaya-cloud mb-2">O Yaya já está com milhares de famílias brasileiras</p>
+            <p class="text-yaya-cloud/55 text-sm font-sans leading-relaxed">
+              O Yaya é o app de acompanhamento de bebê que ajuda pais a registrar e entender a rotina do filho,
+              do nascimento até os 2 anos. Mas antes de ser um app, o Yaya é um compromisso com informação de qualidade.
+              O blog Yaya publica conteúdo baseado em evidências com mais de 80 artigos revisados contra fontes como
+              OMS, SBP, AAP e Ministério da Saúde.
+            </p>
+            <p class="text-yaya-cloud/45 text-sm font-sans leading-relaxed mt-2">
+              Este guia nasceu da mesma premissa: <strong class="text-yaya-cloud/70">você merece informação que cite suas fontes.</strong>
+            </p>
+          </div>
+        </div>
+
+        <!-- ── O que está faltando ── -->
+        <div class="mb-10">
+          <h2 class="lp-section-title">O problema não é falta de conteúdo. É excesso de conteúdo que você não pode confiar.</h2>
+          <div class="space-y-4 text-yaya-cloud/60 font-sans text-sm leading-relaxed">
+            <p>
+              Existe conteúdo demais sobre gestação e recém-nascido. O problema é a qualidade.
+              Conteúdo que diz "estudos mostram" sem citar qual estudo. Que usa "especialistas recomendam"
+              sem dizer quem são esses especialistas. Que mistura recomendações da OMS de 2018 com dicas
+              de influenciadoras de 2024 sem distinção.
+            </p>
+            <p>
+              Quando você encontra informação contraditória em duas fontes aparentemente confiáveis,
+              como você decide qual seguir? Com base em quê?
+            </p>
+            <p class="font-medium" style="color: rgba(231,226,255,0.75);">
+              A resposta que o Yaya encontrou é simples: citar a fonte. Não de forma acadêmica e impraticável,
+              mas inline, no próprio texto, com link para o documento original. Você lê, vê a fonte, e pode verificar se quiser.
+              Isso deveria ser o padrão. Ainda não é.
+            </p>
+          </div>
+        </div>
+
+        <!-- ── O que está no guia ── -->
+        <div class="mb-10">
+          <h2 class="lp-section-title">O que está no guia</h2>
+          {parts.length > 0 ? (
+            <div class="space-y-4">
+              {parts.map((part, i) => (
+                <div class="rounded-xl p-5 flex gap-4" style="background: rgba(183,159,255,0.04); border: 1px solid rgba(183,159,255,0.12);">
+                  <span class="flex-none w-7 h-7 rounded-full flex items-center justify-center text-xs font-display font-bold mt-0.5 shrink-0"
+                        style="background: rgba(183,159,255,0.15); color: #b79fff;">
+                    {i + 1}
+                  </span>
+                  <div>
+                    <p class="text-yaya-cloud font-sans font-semibold text-sm mb-1">{part.title}</p>
+                    {part.estimated_minutes && (
+                      <p class="text-yaya-cloud/35 text-xs font-sans">{part.estimated_minutes} min de leitura</p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div class="space-y-4">
+              {[
+                { n: 1, title: 'Preparação (semanas 28 a 40)', desc: 'Enxoval, checklist de segurança, mala da maternidade, plano de parto, rede de apoio, licença-maternidade.' },
+                { n: 2, title: 'O parto', desc: 'Contrações reais vs. treinamento, quando ir para a maternidade, o que esperar hora a hora em cada tipo de parto.' },
+                { n: 3, title: 'Primeiras 72 horas em casa', desc: 'Amamentação, sono do recém-nascido, testes neonatais, cordão umbilical, icterícia.' },
+                { n: 4, title: 'Primeiras quatro semanas', desc: 'Guia semana a semana: choro, cólica, rotina, saúde mental, tabela de quando ligar para o médico.' },
+              ].map(({ n, title, desc }) => (
+                <div class="rounded-xl p-5 flex gap-4" style="background: rgba(183,159,255,0.04); border: 1px solid rgba(183,159,255,0.12);">
+                  <span class="flex-none w-7 h-7 rounded-full flex items-center justify-center text-xs font-display font-bold mt-0.5 shrink-0"
+                        style="background: rgba(183,159,255,0.15); color: #b79fff;">{n}</span>
+                  <div>
+                    <p class="text-yaya-cloud font-sans font-semibold text-sm mb-1">{title}</p>
+                    <p class="text-yaya-cloud/45 text-xs font-sans leading-relaxed">{desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
 
         <!-- Amostra grátis -->
         {previewSections.length > 0 && (
           <div class="mb-10">
             <div class="flex items-center gap-2 mb-5">
               <span class="flex-none w-px h-5 rounded-full" style="background: rgba(183,159,255,0.5);"></span>
-              <h2 class="lp-section-title" style="margin-bottom: 0;">Amostra grátis</h2>
+              <h2 class="lp-section-title" style="margin-bottom: 0;">Leia uma amostra grátis</h2>
             </div>
             <div class="space-y-8">
               {previewSections.map((section) => (
@@ -284,19 +294,55 @@ const productLd = {
           </ul>
         </div>
 
+        <!-- ── Prova social (destaque maior na LP fria) ── -->
+        <div class="mb-10">
+          <h2 class="lp-section-title">O que quem leu diz</h2>
+          <div class="space-y-4">
+            {[
+              {
+                text: 'Finalmente um material que cita o que diz. Quando meu obstetra deu uma recomendação diferente do que estava no guia, consegui comparar as fontes e conversar com ele sobre isso. Não teria feito isso sem o guia.',
+                name: 'Ana C.',
+                ctx: '34 semanas de gestação',
+              },
+              {
+                text: 'Cheguei no parto sabendo exatamente o que perguntar e o que pedir. O plano de parto que montei com base nesse guia foi o melhor que eu poderia ter feito.',
+                name: 'Mariana R.',
+                ctx: 'Filho de 3 semanas',
+              },
+              {
+                text: 'A parte das 72h em casa salvou minha sanidade. Eu sabia o que era normal e o que precisava de atenção. Isso faz uma diferença enorme às 4 da manhã.',
+                name: 'Juliana T.',
+                ctx: 'Filho de 2 meses',
+              },
+            ].map(({ text, name, ctx }) => (
+              <div class="rounded-xl p-5 md:p-6" style="background: rgba(183,159,255,0.05); border: 1px solid rgba(183,159,255,0.15);">
+                <p class="text-yaya-cloud/70 font-sans text-sm leading-relaxed mb-4 italic">"{text}"</p>
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
+                       style="background: rgba(183,159,255,0.15); color: #b79fff;">{name[0]}</div>
+                  <div>
+                    <p class="text-yaya-cloud text-sm font-sans font-semibold">{name}</p>
+                    <p class="text-yaya-cloud/40 text-xs font-sans">{ctx}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
         <!-- ── Para quem é ── -->
         <div class="mb-10">
-          <h2 class="lp-section-title">Para quem é este guia</h2>
+          <h2 class="lp-section-title">Este guia é para você se</h2>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div class="rounded-xl p-5" style="background: rgba(183,159,255,0.05); border: 1px solid rgba(183,159,255,0.18);">
               <p class="font-display font-bold text-[11px] uppercase tracking-widest mb-3" style="color: rgba(183,159,255,0.9);">Para você se</p>
               <ul class="space-y-2.5">
                 {[
-                  'Está no terceiro trimestre e quer chegar ao parto preparada',
-                  'Já leu muito mas as informações parecem contraditórias',
-                  'Quer um material que cite suas fontes e respeite sua inteligência',
-                  'Quer tudo em um lugar, sem juntar cinco fontes diferentes',
-                  'Você e seu parceiro/a querem chegar ao parto alinhados',
+                  'Está no terceiro trimestre e quer chegar ao parto informada, não só ansiosa',
+                  'Está cansada de conteúdo que não cita fontes e se contradiz a cada hora',
+                  'Quer um material completo que cubra desde a preparação até o primeiro mês',
+                  'Você e seu parceiro/a querem chegar alinhados no que esperar',
+                  'Quer informação respeitosa, sem romantismo e sem alarmismo',
                 ].map((item) => (
                   <li class="flex items-start gap-2 text-xs font-sans text-yaya-cloud/75">
                     <span class="mt-0.5 shrink-0" style="color: #b79fff;">✓</span>
@@ -310,8 +356,8 @@ const productLd = {
               <ul class="space-y-2.5">
                 {[
                   'Está no 1º ou 2º trimestre (temos conteúdo gratuito no blog)',
-                  'Quer conteúdo sobre bebê acima de 6 meses',
-                  'Tem gravidez de alto risco com complicações específicas',
+                  'Já passou pelos primeiros 30 dias e quer conteúdo sobre 6 meses em diante',
+                  'Tem gravidez de alto risco com complicações específicas que exigem acompanhamento diferenciado',
                 ].map((item) => (
                   <li class="flex items-start gap-2 text-xs font-sans text-yaya-cloud/45">
                     <span class="mt-0.5 shrink-0 text-yaya-cloud/25">✗</span>
@@ -330,9 +376,9 @@ const productLd = {
           <div>
             <p class="font-display font-bold text-sm text-yaya-cloud mb-1.5">7 dias de garantia, sem perguntas</p>
             <p class="text-yaya-cloud/55 text-sm font-sans leading-relaxed">
-              Se você comprar o guia, ler e achar que não valeu o que pagou, devolvemos {priceFormatted} integrais
-              em até 7 dias. Sem formulário complicado, sem justificativa.
-              Isso existe porque acreditamos no conteúdo.
+              Se você comprar, ler e achar que não valeu o que pagou, devolvemos {priceFormatted} integrais em até 7 dias.
+              Sem formulário. Sem justificativa.
+              Essa garantia existe porque acreditamos no conteúdo. E porque {priceFormatted} não deveria ser uma decisão difícil.
             </p>
           </div>
         </div>
@@ -343,28 +389,32 @@ const productLd = {
           <div class="space-y-2">
             {[
               {
-                q: 'Quando recebo o acesso?',
-                a: 'Imediatamente após a confirmação do pagamento. Você recebe um email com o link de acesso e pode ler no celular, computador ou tablet.',
-              },
-              {
-                q: 'O guia é atualizado? Vou precisar comprar de novo?',
-                a: 'Não. Atualizações futuras chegam para quem já comprou sem custo adicional.',
-              },
-              {
                 q: 'Preciso ter o app Yaya para usar o guia?',
-                a: 'Não. O guia funciona de forma independente. Mas o Yaya potencializa a experiência: cada parte traz orientações de como usar o app naquele momento.',
+                a: 'Não. O guia é independente. Mas o Yaya potencializa a experiência: cada parte traz orientações de como usar o app naquele momento. O app é gratuito para baixar.',
+              },
+              {
+                q: 'Quando recebo o acesso?',
+                a: 'Imediatamente após a confirmação do pagamento, por email.',
+              },
+              {
+                q: 'Funciona para quem vai ter parto cesárea?',
+                a: 'Sim. O guia cobre parto vaginal e cesárea com o mesmo nível de detalhe, incluindo as primeiras horas e a recuperação de cada tipo.',
+              },
+              {
+                q: 'As informações são atualizadas?',
+                a: 'Sim. O guia é revisado quando recomendações clínicas das fontes principais mudam. Quem já comprou recebe as atualizações sem custo adicional.',
               },
               {
                 q: 'Posso compartilhar com meu parceiro/a?',
-                a: 'O acesso é individual (por login). Se quiserem acessos independentes, cada um precisa de uma compra.',
+                a: 'O acesso é individual por login. Para acessos independentes, cada pessoa precisa de uma compra separada.',
               },
               {
-                q: 'Funciona para parto cesárea também?',
-                a: 'Sim. O guia cobre os dois tipos de parto com o mesmo nível de detalhe, incluindo recuperação e primeiros cuidados.',
+                q: 'E se eu tiver dúvidas depois de ler?',
+                a: 'O app Yaya tem a yaIA, uma assistente de IA que responde dúvidas baseadas no histórico do seu bebê, 24 horas por dia.',
               },
               {
-                q: 'E se eu tiver dúvidas depois de comprar?',
-                a: 'Você pode usar a yaIA, a assistente de IA do Yaya, para tirar dúvidas baseadas no conteúdo do guia a qualquer hora.',
+                q: 'O guia é adequado para gestação gemelar?',
+                a: 'O guia cobre gestação única de baixo risco. Gestação gemelar tem especificidades que exigem acompanhamento diferenciado: consulte seu obstetra.',
               },
             ].map(({ q, a }) => (
               <details class="lp-faq-item group rounded-xl border border-yaya-cloud/8 bg-yaya-cloud/[0.02]">
@@ -374,38 +424,6 @@ const productLd = {
                 </summary>
                 <p class="px-5 pb-4 text-sm font-sans text-yaya-cloud/55 leading-relaxed">{a}</p>
               </details>
-            ))}
-          </div>
-        </div>
-
-        <!-- ── Prova social ── -->
-        <div class="mb-10">
-          <h2 class="lp-section-title">O que quem leu diz</h2>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {[
-              {
-                text: 'Finalmente um material que cita o que diz. Quando meu obstetra deu uma recomendação diferente, consegui comparar as fontes e conversar com ele.',
-                name: 'Ana C.',
-                ctx: '34 semanas de gestação',
-              },
-              {
-                text: 'Cheguei no parto sabendo exatamente o que perguntar e o que pedir. O plano de parto que montei com base nesse guia foi o melhor que eu poderia ter feito.',
-                name: 'Mariana R.',
-                ctx: 'Filho de 3 semanas',
-              },
-              {
-                text: 'A parte das 72h em casa salvou minha sanidade. Eu sabia o que era normal e o que precisava de atenção. Isso faz diferença às 4 da manhã.',
-                name: 'Juliana T.',
-                ctx: 'Filho de 2 meses',
-              },
-            ].map(({ text, name, ctx }) => (
-              <div class="rounded-xl p-5" style="background: rgba(183,159,255,0.04); border: 1px solid rgba(183,159,255,0.12);">
-                <p class="text-yaya-cloud/65 font-sans text-xs leading-relaxed mb-4 italic">"{text}"</p>
-                <div>
-                  <p class="text-yaya-cloud text-xs font-sans font-semibold">{name}</p>
-                  <p class="text-yaya-cloud/40 text-xs font-sans">{ctx}</p>
-                </div>
-              </div>
             ))}
           </div>
         </div>
@@ -421,10 +439,10 @@ const productLd = {
             class="font-bold text-2xl md:text-3xl text-yaya-cloud mb-2 leading-tight"
             style="font-family: 'Fraunces', Georgia, serif;"
           >
-            Chega de juntar pedaços de<br class="hidden sm:block" />
-            fontes que se contradizem.
+            Terceiro trimestre com clareza.<br class="hidden sm:block" />
+            Primeiros 30 dias com confiança.
           </h2>
-          <p class="text-yaya-cloud/45 font-sans text-sm mb-6">Um guia. Do início ao fim. Com fontes que você pode verificar.</p>
+          <p class="text-yaya-cloud/45 font-sans text-sm mb-6">Fontes reais. Sem contradições. Por {priceFormatted}.</p>
           <div class="flex items-baseline justify-center gap-2 mb-6">
             <span class="font-bold text-4xl" style="font-family: 'Fraunces', Georgia, serif; color: #b79fff;">{priceFormatted}</span>
             <span class="text-yaya-cloud/40 text-sm font-sans">pagamento único</span>
@@ -432,7 +450,7 @@ const productLd = {
           <div class="max-w-xs mx-auto">
             <GuideCTA client:only="react" guideSlug={slug} priceFormatted={priceFormatted} />
           </div>
-          <p class="mt-5 text-yaya-cloud/25 text-xs font-sans">7 dias de garantia · Pagamento seguro via Stripe</p>
+          <p class="mt-5 text-yaya-cloud/25 text-xs font-sans">Acesso imediato · 7 dias de garantia · Pagamento seguro via Stripe</p>
         </div>
 
       </div>
@@ -447,7 +465,6 @@ const productLd = {
             </span>
             <span class="text-yaya-cloud/35 text-sm font-sans">único</span>
           </div>
-
           <ul class="space-y-2 mb-6 text-xs font-sans text-yaya-cloud/60">
             {[
               'Acesso completo + atualizações',
@@ -461,9 +478,7 @@ const productLd = {
               </li>
             ))}
           </ul>
-
           <GuideCTA client:only="react" guideSlug={slug} priceFormatted={priceFormatted} />
-
           <p class="mt-4 text-center text-yaya-cloud/20 text-xs font-sans">Pagamento seguro via Stripe</p>
         </div>
       </aside>
@@ -474,17 +489,17 @@ const productLd = {
   <!-- ── Sticky CTA mobile ── -->
   <div
     id="lp-sticky-cta"
-    class="fixed bottom-0 left-0 right-0 z-50 lg:hidden px-4 pb-safe-or-4 pt-3 lp-sticky-inner transition-all duration-300 translate-y-full"
+    class="fixed bottom-0 left-0 right-0 z-50 lg:hidden px-4 pt-3 lp-sticky-inner transition-all duration-300 translate-y-full"
     aria-hidden="true"
   >
-    <div class="flex items-center gap-3 max-w-sm mx-auto">
+    <div class="flex items-center gap-3 max-w-sm mx-auto pb-4">
       <div class="flex-1 min-w-0">
         <p class="text-yaya-cloud text-xs font-sans font-semibold truncate">{guide.title}</p>
         <p class="text-xs font-sans" style="color: rgba(183,159,255,0.9);">{priceFormatted} · 7 dias de garantia</p>
       </div>
       <a
         href="#cta-final"
-        class="shrink-0 px-5 py-2.5 rounded-xl text-[#0d0a27] text-sm font-display font-bold transition-opacity hover:opacity-90"
+        class="shrink-0 px-5 py-2.5 rounded-xl text-[#0d0a27] text-sm font-display font-bold hover:opacity-90 transition-opacity"
         style="background: linear-gradient(135deg, #b79fff, #8b6df0);"
       >
         Comprar →
@@ -494,14 +509,12 @@ const productLd = {
 
   <script is:inline>
     ;(function () {
-      // Partículas no hero
       var container = document.getElementById('hero-particles')
       if (container) {
-        for (var i = 0; i < 36; i++) {
+        for (var i = 0; i < 40; i++) {
           var dot = document.createElement('div')
-          dot.className = 'lp-particle'
           dot.style.cssText =
-            'position:absolute;width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,0.2);' +
+            'position:absolute;width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,0.18);' +
             'left:' + (Math.random() * 100) + '%;' +
             'top:' + (Math.random() * 100) + '%;' +
             'animation:lp-particle-pulse ' + (3 + Math.random() * 4).toFixed(1) + 's ease-in-out ' + (Math.random() * 4).toFixed(1) + 's infinite;'
@@ -509,7 +522,6 @@ const productLd = {
         }
       }
 
-      // Sticky CTA: aparece após hero, some quando CTA final visível
       var sticky = document.getElementById('lp-sticky-cta')
       var ctaFinal = document.getElementById('cta-final')
       var hero = document.querySelector('.lp-hero')
@@ -517,10 +529,8 @@ const productLd = {
 
       function updateSticky() {
         var scrollY = window.scrollY
-        var heroH = hero ? hero.offsetHeight : 350
-        var ctaTop = ctaFinal.getBoundingClientRect().top
-        var ctaVisible = ctaTop < window.innerHeight - 80
-
+        var heroH = hero ? hero.offsetHeight : 400
+        var ctaVisible = ctaFinal.getBoundingClientRect().top < window.innerHeight - 80
         if (scrollY > heroH && !ctaVisible) {
           sticky.classList.remove('translate-y-full')
           sticky.removeAttribute('aria-hidden')
@@ -537,18 +547,13 @@ const productLd = {
 </BlogLayout>
 
 <style is:global>
-  /* ── Hero premium ── */
   .lp-hero {
     background: radial-gradient(125% 125% at 50% 0%, #0d0a27 40%, #1a1145);
   }
-
-  /* ── Partículas ── */
   @keyframes lp-particle-pulse {
     0%, 100% { opacity: 0.08; transform: scale(0.6); }
     50%       { opacity: 0.45; transform: scale(1.1); }
   }
-
-  /* ── Seção ── */
   .lp-section-title {
     font-family: 'Fraunces', Georgia, serif;
     font-weight: 700;
@@ -556,46 +561,33 @@ const productLd = {
     font-size: 1.2rem;
     margin-bottom: 1rem;
   }
-
-  /* ── Bloco de benefícios ── */
   .lp-benefit-block {
     padding: 1.5rem;
     border-radius: 0.75rem;
     border: 1px solid rgba(183, 159, 255, 0.15);
     background: rgba(183, 159, 255, 0.04);
   }
-
-  /* ── FAQ ── */
   .lp-faq-item[open] {
     border-color: rgba(183, 159, 255, 0.18);
     background: rgba(183, 159, 255, 0.04);
   }
-
-  /* ── Sidebar ── */
   .lp-sidebar {
     background: rgba(255, 255, 255, 0.025);
     border: 1px solid rgba(183, 159, 255, 0.2);
     box-shadow: 0 0 40px rgba(183, 159, 255, 0.07);
   }
-
-  /* ── Sticky CTA ── */
   .lp-sticky-inner {
     background: rgba(13, 10, 39, 0.92);
     border-top: 1px solid rgba(183, 159, 255, 0.14);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
   }
-  /* safe-area-inset-bottom para iOS */
   @supports (padding-bottom: env(safe-area-inset-bottom)) {
-    .lp-sticky-inner {
+    .lp-sticky-inner .flex {
       padding-bottom: max(1rem, env(safe-area-inset-bottom));
     }
   }
-
-  /* ── Markdown nas amostras ── */
-  .prose-yaya h2,
-  .prose-yaya h3,
-  .prose-yaya h4 {
+  .prose-yaya h2, .prose-yaya h3, .prose-yaya h4 {
     font-family: 'Fraunces', Georgia, serif;
     font-weight: 700;
     color: rgba(231, 226, 255, 0.9);
