@@ -67,7 +67,7 @@ export default function AllergenPanel({ logs, ageDays }: Props) {
     <div className="mx-5 mt-3 flex items-start gap-3 px-4 py-3 bg-amber-500/8 border border-amber-500/20 rounded-md">
       <span className="text-base leading-none mt-0.5">⚠️</span>
       <div>
-        <p className="font-label text-sm font-semibold text-amber-400">Janela de segurança ativa</p>
+        <p className="font-label text-sm font-semibold text-amber-600">Janela de segurança ativa</p>
         <p className="font-label text-xs text-on-surface-variant mt-0.5">
           <span className="font-medium text-on-surface">{windowInfo.allergenName}</span> introduzido.{' '}
           Aguarde mais {windowInfo.daysLeft} dia{windowInfo.daysLeft !== 1 ? 's' : ''} antes de

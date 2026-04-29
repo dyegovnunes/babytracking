@@ -331,7 +331,7 @@ function InfoSheet({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
               rel="noopener noreferrer"
               className="block text-primary underline"
             >
-              OMS — Padrões de Crescimento Infantil (WHO)
+              OMS: Padrões de Crescimento Infantil (WHO)
             </a>
             <a
               href="https://www.sbp.com.br"
@@ -339,7 +339,7 @@ function InfoSheet({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }
               rel="noopener noreferrer"
               className="block text-primary underline"
             >
-              SBP — Sociedade Brasileira de Pediatria
+              SBP: Sociedade Brasileira de Pediatria
             </a>
           </div>
 

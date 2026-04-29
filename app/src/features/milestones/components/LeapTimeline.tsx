@@ -142,7 +142,7 @@ function IntervalItem({
       {/* Content */}
       <div className="flex-1 pb-4 pt-0.5">
         <p className="font-label text-xs text-on-surface-variant/70 font-medium">
-          {isFirst ? 'Primeiras semanas' : 'Intervalo — hora de praticar!'}
+          {isFirst ? 'Primeiras semanas' : 'Intervalo: hora de praticar!'}
         </p>
         {isCurrentlyHere ? (
           <p className="text-xs text-green-400 font-semibold mt-0.5">

@@ -23,7 +23,7 @@ const TRIGGER_MESSAGES: Record<string, { title: string; description: string }> =
   },
   multi_caregiver: {
     title: 'Convide mais cuidadores',
-    description: 'No plano grátis você pode convidar 1 pessoa. Com o Yaya+, convide pai, mãe, avós e babá — sem limite.',
+    description: 'No plano grátis você pode convidar 1 pessoa. Com o Yaya+, convide pai, mãe, avós e babá, sem limite.',
   },
   multi_profile: {
     title: 'Mais de um bebê',
@@ -183,8 +183,8 @@ export function PaywallModal({ isOpen, onClose, trigger = 'generic', resetWhen }
   if (!isOpen) return null;
 
   const ctaText = selectedPlan === 'lifetime'
-    ? `Comprar Yaya+ — ${selected.price}`
-    : `Assinar Yaya+ — ${selected.price}`;
+    ? `Comprar Yaya+ · ${selected.price}`
+    : `Assinar Yaya+ · ${selected.price}`;
 
   return (
     <div role="dialog" aria-modal="true" aria-label="Upgrade Yaya Plus" className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm" style={{ zIndex: 60 }}>

@@ -141,7 +141,7 @@ export default function GridSettingsSheet({
                       >
                         <span
                           className={[
-                            'absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow-sm transition-transform duration-200',
+                            'absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-surface shadow-sm transition-transform duration-200',
                             isEnabled ? 'translate-x-5' : 'translate-x-0',
                           ].join(' ')}
                         />

@@ -19,7 +19,7 @@ import EmptyState from '../../components/ui/EmptyState'
 import type { Medication, MedicationDayStatus, MedicationLog } from './medicationData'
 
 const DISCLAIMER =
-  'O Yaya ajuda a organizar a rotina de medicamentos. Sempre siga as orientações do pediatra — dosagens, horários e duração devem ser prescritos por um profissional.'
+  'O Yaya ajuda a organizar a rotina de medicamentos. Sempre siga as orientações do pediatra. Dosagens, horários e duração devem ser prescritos por um profissional.'
 
 export default function MedicationsPage() {
   const navigate = useNavigate()

@@ -660,7 +660,7 @@ export default function SharedReportPage() {
       title: 'Recomende o Yaya para seus pacientes',
       subtitle: 'Pais organizados trazem dados melhores para a consulta.',
       btnLabel: 'Compartilhar no WhatsApp',
-      whatsappText: 'Conheça o Yaya — o app que ajuda pais a acompanhar a rotina do bebê com calma e clareza.\n\nhttps://yayababy.app',
+      whatsappText: 'Conheça o Yaya, o app que ajuda pais a acompanhar a rotina do bebê com calma e clareza.\n\nhttps://yayababy.app',
     };
   }, [audience, babyName]);
 
@@ -752,7 +752,7 @@ export default function SharedReportPage() {
     }));
   }, [data?.medications, data?.medicationLogs]);
 
-  if (data) document.title = `Yaya — Resumo de ${data.baby.name}`;
+  if (data) document.title = `Yaya: Resumo de ${data.baby.name}`;
 
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
@@ -878,7 +878,7 @@ export default function SharedReportPage() {
                   backgroundRepeat: 'no-repeat', backgroundPosition: 'right 8px center', paddingRight: '24px' }}>
                 {visibleFilters.map((f) => <option key={f.key} value={f.key}>{f.label}</option>)}
               </select>
-              <p className="text-[10px] mt-1" style={{ color: c.faint }}>{periodStart} — {periodEnd}</p>
+              <p className="text-[10px] mt-1" style={{ color: c.faint }}>{periodStart} a {periodEnd}</p>
             </div>
           </div>
           {stats.effectiveDays < 7 && stats.effectiveDays > 0 && (
@@ -908,7 +908,7 @@ export default function SharedReportPage() {
                 <div className="p-3 rounded-md" style={{ backgroundColor: c.card, border: `1px solid ${c.cardBorder}`, boxShadow: c.shadow }}>
                   <div className="flex items-center gap-1.5 mb-1">
                     <span className="material-symbols-outlined text-sm" style={{ color: c.accent }}>restaurant</span>
-                    <p className="text-[9px] font-semibold uppercase tracking-wider" style={{ color: c.muted }}>Última mamada</p>
+                    <p className="text-[9px] font-semibold uppercase tracking-wider" style={{ color: c.muted }}>Última amamentação</p>
                   </div>
                   <p className="text-base font-extrabold" style={{ fontFamily: 'Manrope, sans-serif', color: c.text }}>
                     {liveSnapshot.feed.clock || '—'}

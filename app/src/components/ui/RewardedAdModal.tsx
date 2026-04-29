@@ -44,7 +44,7 @@ export function RewardedAdModal({
   const resolvedDescription = description ??
     `Você já fez ${recordsToday ?? 0} de ${dailyLimit ?? 5} registros hoje. Assista um vídeo curto para liberar mais 2.`;
   const resolvedAdLabel = adButtonLabel ?? 'Assistir vídeo (+2 registros)';
-  const resolvedUpgradeLabel = upgradeButtonLabel ?? 'Conhecer Yaya+ — Registros ilimitados';
+  const resolvedUpgradeLabel = upgradeButtonLabel ?? 'Conhecer Yaya+: Registros ilimitados';
 
   const handleWatchAd = async () => {
     setWatching(true);

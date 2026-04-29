@@ -136,16 +136,16 @@ export default function SickModal({ babyName, initialLog, onConfirm, onDelete, o
                 placeholder="37.0"
                 className={`w-full px-3 py-2.5 rounded-md border font-body text-sm focus:outline-none pr-10 ${
                   hasFever
-                    ? 'bg-red-500/10 border-red-400/50 text-on-surface focus:border-red-400'
+                    ? 'bg-error/10 border-error/50 text-on-surface focus:border-error'
                     : 'bg-surface-container border-outline-variant text-on-surface focus:border-primary'
                 }`}
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2 font-label text-xs text-on-surface-variant">°C</span>
             </div>
             {hasFever && (
-              <p className="font-label text-xs text-red-400 mt-1 flex items-center gap-1">
+              <p className="font-label text-xs text-error mt-1 flex items-center gap-1">
                 <span className="material-symbols-outlined text-sm">warning</span>
-                Febre detectada — verifique com o pediatra
+                Febre detectada. Verifique com o pediatra.
               </p>
             )}
           </div>

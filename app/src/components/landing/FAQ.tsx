@@ -21,7 +21,7 @@ const faqs = [
   },
   {
     q: 'Posso acompanhar mais de um bebê?',
-    a: 'Sim, no Yaya+. Gêmeos, irmãos — cada um com seu perfil e insights.',
+    a: 'Sim, no Yaya+. Gêmeos, irmãos, cada um com seu perfil e insights.',
   },
   {
     q: 'O que é o relatório para o pediatra?',

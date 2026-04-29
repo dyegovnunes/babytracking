@@ -351,8 +351,8 @@ export default function GrowthSection({ babyId, readOnly = false, birthDate, gen
         if (!weightResult && !heightResult) return null
 
         const bandColor = (band: string) => {
-          if (band === 'below_p3' || band === 'above_p97') return 'text-amber-400'
-          if (band === 'p3_p15') return 'text-yellow-400'
+          if (band === 'below_p3' || band === 'above_p97') return 'text-amber-600'
+          if (band === 'p3_p15') return 'text-amber-500'
           return 'text-primary'
         }
 
@@ -420,7 +420,7 @@ export default function GrowthSection({ babyId, readOnly = false, birthDate, gen
                 <button onClick={handleAddRetro} disabled={saving || !retroDate || (!retroWeight && !retroHeight)}
                   className="flex-1 py-2 rounded-md bg-primary/10 text-primary font-label text-xs font-semibold disabled:opacity-30">Salvar</button>
                 <button onClick={() => { setShowAddRetro(false); setRetroDate(''); setRetroWeight(''); setRetroHeight(''); }}
-                  className="flex-1 py-2 rounded-md bg-white/5 text-on-surface-variant font-label text-xs">Cancelar</button>
+                  className="flex-1 py-2 rounded-md bg-surface-container text-on-surface-variant font-label text-xs">Cancelar</button>
               </div>
             </div>
           ) : null}
@@ -599,7 +599,7 @@ export default function GrowthSection({ babyId, readOnly = false, birthDate, gen
                     </button>
                     <button
                       onClick={() => { setShowAddRetro(false); setRetroDate(''); setRetroWeight(''); setRetroHeight(''); }}
-                      className="flex-1 py-2 rounded-md bg-white/5 text-on-surface-variant font-label text-xs"
+                      className="flex-1 py-2 rounded-md bg-surface-container text-on-surface-variant font-label text-xs"
                     >
                       Cancelar
                     </button>

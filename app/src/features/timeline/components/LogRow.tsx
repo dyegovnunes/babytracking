@@ -136,7 +136,7 @@ export default function LogRow({ log, members, onEdit, pairedLog }: Props) {
         {sickPayload && (
           <p className="font-label text-xs text-on-surface-variant mt-0.5 truncate">
             {sickPayload.temp !== undefined && (
-              <span className={sickPayload.temp >= 37.8 ? 'text-red-400' : ''}>
+              <span className={sickPayload.temp >= 37.8 ? 'text-error' : ''}>
                 🌡️ {sickPayload.temp}°C{sickPayload.temp >= 37.8 ? ' · Febre' : ''}
               </span>
             )}

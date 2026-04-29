@@ -411,7 +411,7 @@ export default function MealModal({ babyName, initialLog, onConfirm, onDelete, o
               <span className="text-base leading-none">⚠️</span>
               <p className="font-label text-xs text-on-surface-variant">
                 Alérgeno detectado:{' '}
-                <span className="font-semibold text-amber-400">
+                <span className="font-semibold text-amber-600">
                   {ALLERGEN_LABEL[autoDetectedAllergen] ?? autoDetectedAllergen}
                 </span>
               </p>

@@ -94,7 +94,7 @@ export default function MedicationProjectionCard({ projection, onConfirm }: Prop
       </div>
       <div className="flex-1 min-w-0">
         <p className="font-label text-xs text-on-surface-variant capitalize truncate">
-          {done ? 'Dose registrada' : `${medication.name} — ${slotTime}`}
+          {done ? 'Dose registrada' : `${medication.name} · ${slotTime}`}
         </p>
         <p className={`font-headline text-sm font-bold ${palette.textColor}`}>
           {done ? medication.dosage : timeLabel}

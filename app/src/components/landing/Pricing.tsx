@@ -22,7 +22,7 @@ const plans = [
     name: 'Yaya+',
     price: 'R$ 20,83',
     period: '/mês',
-    subtitle: 'a partir de — planos mensal, anual e vitalício',
+    subtitle: 'planos mensal, anual e vitalício',
     features: [
       { text: 'Registros ilimitados', included: true },
       { text: 'Histórico completo', included: true },
