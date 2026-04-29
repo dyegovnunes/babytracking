@@ -92,7 +92,7 @@ export default function MilestoneRegister({
             min={birthDate}
             max={today}
             onChange={(e) => setAchievedAt(e.target.value)}
-            className="w-full bg-surface-container rounded-md px-4 py-3 text-on-surface font-body text-base outline-none focus:ring-2 focus:ring-primary/40"
+            className="w-full bg-surface-container rounded-md px-4 py-3 text-on-surface font-body text-base outline-none focus:ring-2 focus:ring-primary/40 min-h-[44px]"
           />
         </label>
 

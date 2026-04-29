@@ -400,7 +400,7 @@ export default function GrowthSection({ babyId, readOnly = false, birthDate, gen
                 type="date"
                 value={retroDate}
                 onChange={(e) => setRetroDate(e.target.value)}
-                className="w-full bg-surface-container rounded px-2 py-1.5 text-on-surface font-body text-sm outline-none focus:ring-2 focus:ring-primary/40"
+                className="w-full bg-surface-container rounded px-2 py-1.5 text-on-surface font-body text-sm outline-none focus:ring-2 focus:ring-primary/40 min-h-[44px]"
               />
               <div className="grid grid-cols-2 gap-2">
                 <div className="relative">
@@ -448,7 +448,7 @@ export default function GrowthSection({ babyId, readOnly = false, birthDate, gen
                         type="date"
                         value={editDate}
                         onChange={(e) => setEditDate(e.target.value)}
-                        className="w-full bg-surface-container rounded px-2 py-1 text-on-surface font-body text-xs outline-none"
+                        className="w-full bg-surface-container rounded px-2 py-1 text-on-surface font-body text-xs outline-none min-h-[44px]"
                       />
                       <div className="flex gap-2">
                         {editingId === entry.weight?.id && (
@@ -563,7 +563,7 @@ export default function GrowthSection({ babyId, readOnly = false, birthDate, gen
                     type="date"
                     value={retroDate}
                     onChange={(e) => setRetroDate(e.target.value)}
-                    className="w-full bg-surface-container rounded px-2 py-1.5 text-on-surface font-body text-sm outline-none focus:ring-2 focus:ring-primary/40"
+                    className="w-full bg-surface-container rounded px-2 py-1.5 text-on-surface font-body text-sm outline-none focus:ring-2 focus:ring-primary/40 min-h-[44px]"
                   />
                   <div className="grid grid-cols-2 gap-2">
                     <div className="relative">

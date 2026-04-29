@@ -120,7 +120,7 @@ export default function VaccineApplySheet({
             min={birthDate}
             max={today}
             onChange={(e) => setDate(e.target.value)}
-            className="w-full bg-surface-container rounded-md px-3 py-2.5 text-sm font-body text-on-surface outline-none focus:ring-2 focus:ring-primary/40"
+            className="w-full bg-surface-container rounded-md px-3 py-3 text-sm font-body text-on-surface outline-none focus:ring-2 focus:ring-primary/40 min-h-[44px]"
           />
         </Field>
 

@@ -444,8 +444,8 @@ export default function SharedReports() {
                       type="date"
                       value={customDate}
                       onChange={(e) => setCustomDate(e.target.value)}
-                      min={new Date().toISOString().split('T')[0]}
-                      className="w-full mt-2 bg-white/[0.06] rounded-md px-4 py-3 text-on-surface font-body text-sm outline-none focus:ring-2 focus:ring-primary/40"
+                      min={new Date().toLocaleDateString('sv')}
+                      className="w-full mt-2 bg-white/[0.06] rounded-md px-4 py-3 text-on-surface font-body text-sm outline-none focus:ring-2 focus:ring-primary/40 min-h-[44px]"
                     />
                   )}
                 </div>

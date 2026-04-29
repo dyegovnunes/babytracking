@@ -185,7 +185,7 @@ export default function BabyCard({ baby, onSave, canEdit = true }: Props) {
               type="date"
               value={birthDate}
               onChange={(e) => setBirthDate(e.target.value)}
-              className="w-full bg-surface-container-low rounded-md px-4 py-3 text-on-surface font-body text-base outline-none focus:ring-2 focus:ring-primary/40"
+              className="w-full bg-surface-container-low rounded-md px-4 py-3 text-on-surface font-body text-base outline-none focus:ring-2 focus:ring-primary/40 min-h-[44px]"
             />
           </div>
           <div className="flex gap-3 pt-1">

@@ -31,7 +31,7 @@ export default function BathHourPickerModal({ isOpen, onPick, onClose }: Props) 
               const h = parseInt(e.target.value.split(':')[0], 10)
               if (!isNaN(h)) onPick(h)
             }}
-            className="bg-surface-container-low rounded-md px-6 py-4 text-on-surface font-headline text-3xl text-center outline-none focus:ring-2 focus:ring-primary/40"
+            className="bg-surface-container-low rounded-md px-6 py-4 text-on-surface font-headline text-3xl text-center outline-none focus:ring-2 focus:ring-primary/40 min-h-[44px]"
           />
         </div>
         <button
