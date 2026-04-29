@@ -356,6 +356,31 @@ html.theme-light .shadow-soft {
   }
 }
 
+/*
+ * Glass card — usado na landing page.
+ * Fundo translucido com borda sutil, funciona no tema escuro do app.
+ */
+.glass {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(183, 159, 255, 0.12);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/*
+ * Reveal on scroll — IntersectionObserver adiciona .visible quando
+ * o elemento entra na viewport. Usado pelos componentes da landing.
+ */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 /* Safe area insets for mobile */
 @supports (padding-bottom: env(safe-area-inset-bottom)) {
   .pb-safe {

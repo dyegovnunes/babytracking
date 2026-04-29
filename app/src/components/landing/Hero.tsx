@@ -1,253 +1,150 @@
-import { motion, useMotionTemplate, useMotionValue, animate } from 'framer-motion'
-import { ChevronDown } from 'lucide-react'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import yayaLogo from '../../assets/yaya-logo.png'
+import yayaMockup from '../../assets/yaya-mockup.png'
 
-const words = ['A rotina do seu bebê,', 'com 1 toque,', 'na palma da sua mão.']
-
-// Subtle brand color animation — stays close to base
-const COLORS = ['#1a1145', '#1e1652', '#1a1348', '#1d1450']
-
-function useAnimatedGradient() {
-  const color = useMotionValue(COLORS[0])
-
-  useEffect(() => {
-    const controls = animate(color, COLORS, {
-      ease: 'easeInOut',
-      duration: 10,
-      repeat: Infinity,
-      repeatType: 'mirror',
-    })
-    return controls.stop
-  }, [color])
-
-  const backgroundImage = useMotionTemplate`radial-gradient(125% 125% at 50% 0%, #0d0a27 40%, ${color})`
-  const border = useMotionTemplate`1px solid ${color}`
-  const boxShadow = useMotionTemplate`0 2px 12px ${color}`
-
-  return { backgroundImage, border, boxShadow }
-}
-
-// Separate subtle glow for buttons
-function useButtonGlow() {
-  const color = useMotionValue('#b79fff20')
-
-  useEffect(() => {
-    const controls = animate(color, ['#b79fff20', '#ab8ffe30', '#ff96b920', '#9580e625'], {
-      ease: 'easeInOut',
-      duration: 8,
-      repeat: Infinity,
-      repeatType: 'mirror',
-    })
-    return controls.stop
-  }, [color])
-
-  const border = useMotionTemplate`1px solid ${color}`
-  const boxShadow = useMotionTemplate`0 2px 16px ${color}`
-
-  return { border, boxShadow }
-}
-
-function Particles() {
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {Array.from({ length: 40 }).map((_, i) => (
-        <motion.div
-          key={i}
-          className="absolute w-1 h-1 rounded-full bg-white/20"
-          style={{
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
-          }}
-          animate={{
-            opacity: [0.1, 0.5, 0.1],
-            scale: [0.5, 1, 0.5],
-          }}
-          transition={{
-            duration: 3 + Math.random() * 4,
-            repeat: Infinity,
-            delay: Math.random() * 3,
-          }}
-        />
-      ))}
-    </div>
-  )
-}
-
-function StoreBadges({ border, boxShadow }: { border: any; boxShadow: any }) {
-  return (
-    <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3">
-      <motion.a
-        href="https://apps.apple.com/app/yaya-baby"
-        target="_blank"
-        rel="noopener noreferrer"
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.97 }}
-        style={{ border, boxShadow }}
-        className="inline-flex items-center gap-3 px-6 py-3.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] transition-colors backdrop-blur-sm"
-      >
-        <svg className="w-7 h-7" viewBox="0 0 24 24" fill="white">
-          <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
-        </svg>
-        <div className="text-left">
-          <div className="text-[10px] text-white/70 leading-none">Disponível na</div>
-          <div className="text-base font-semibold text-white leading-tight">App Store</div>
-        </div>
-      </motion.a>
-      <motion.a
-        href="https://play.google.com/store/apps/details?id=app.yayababy"
-        target="_blank"
-        rel="noopener noreferrer"
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.97 }}
-        style={{ border, boxShadow }}
-        className="inline-flex items-center gap-3 px-6 py-3.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] transition-colors backdrop-blur-sm"
-      >
-        <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none">
-          <path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92z" fill="#4285F4"/>
-          <path d="M17.556 8.235l-3.764 3.764 3.764 3.765 4.247-2.39a1 1 0 000-1.748l-4.247-2.39z" fill="#FBBC04"/>
-          <path d="M3.609 1.814L13.792 12l3.764-3.765-9.72-5.473a1.003 1.003 0 00-4.227-.948z" fill="#34A853"/>
-          <path d="M13.792 12L3.61 22.186a1.003 1.003 0 004.227-.948l9.72-5.473L13.791 12z" fill="#EA4335"/>
-        </svg>
-        <div className="text-left">
-          <div className="text-[10px] text-white/70 leading-none">Disponível no</div>
-          <div className="text-base font-semibold text-white leading-tight">Google Play</div>
-        </div>
-      </motion.a>
-    </div>
-  )
+function isMobileUA() {
+  const ua = navigator.userAgent
+  return /iPad|iPhone|iPod|Android/i.test(ua)
 }
 
 export default function Hero() {
-  const { backgroundImage } = useAnimatedGradient()
-  const { border: btnBorder, boxShadow: btnShadow } = useButtonGlow()
+  const [mobile, setMobile] = useState(false)
+
+  useEffect(() => {
+    setMobile(isMobileUA())
+  }, [])
 
   return (
-    <motion.section
-      className="relative min-h-screen flex flex-col overflow-hidden"
-      style={{ backgroundImage }}
-    >
-      {/* Header */}
-      <motion.header
-        className="relative z-20 w-full max-w-6xl mx-auto px-6 py-5 flex items-center justify-between"
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
-        <img
-          src="./landing/logo-light.png"
-          alt="Yaya"
-          className="h-8"
-        />
-        <nav className="hidden sm:flex items-center gap-6">
-          <a href="#funcionalidades" className="text-sm text-[#b0adc4] hover:text-white transition-colors">
-            Funcionalidades
-          </a>
-          <a href="#precos" className="text-sm text-[#b0adc4] hover:text-white transition-colors">
-            Preços
-          </a>
-        </nav>
-        <motion.a
-          href="#baixar"
-          className="px-5 py-2 rounded-lg bg-gradient-to-r from-[#6b4ec9] to-[#9580e6] text-white text-sm font-semibold hover:opacity-90 transition-opacity"
-          whileHover={{ scale: 1.015 }}
-          whileTap={{ scale: 0.985 }}
-        >
-          Baixar
-        </motion.a>
-      </motion.header>
+    <section className="relative min-h-dvh flex items-start lg:items-center overflow-hidden pt-16 lg:pt-0">
+      {/* Ambient glow */}
+      <div
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] pointer-events-none"
+        style={{ background: 'radial-gradient(circle, rgba(171,142,254,0.12) 0%, transparent 60%)' }}
+      />
 
-      <Particles />
-
-      <div className="relative z-10 flex-1 flex items-center w-full max-w-6xl mx-auto px-6 py-12 lg:py-20">
-        <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Text */}
-          <div className="text-center lg:text-left">
-            <div className="mb-6">
-              {words.map((word, i) => (
-                <motion.span
-                  key={i}
-                  className="block font-extrabold text-3xl sm:text-4xl lg:text-5xl leading-tight"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.3 + i * 0.2 }}
-                >
-                  {i === 2 ? (
-                    <span className="text-transparent bg-clip-text bg-gradient-to-br from-white to-[#b0adc4]">
-                      {word}
-                    </span>
-                  ) : (
-                    <span className="text-white">{word}</span>
-                  )}
-                </motion.span>
-              ))}
+      <div className="relative z-10 max-w-6xl mx-auto px-5 py-20 w-full">
+        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
+          {/* Left — copy */}
+          <div className="flex-1 text-center lg:text-left">
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/20 bg-primary/[0.08] mb-8">
+              <img src={yayaLogo} alt="" className="h-4 w-4 object-contain" aria-hidden />
+              <span className="font-body text-sm text-primary font-medium">
+                App Store · Google Play
+              </span>
             </div>
 
-            <motion.p
-              className="text-base sm:text-lg text-[#b0adc4] max-w-md mx-auto lg:mx-0 leading-relaxed mb-8"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6, delay: 1 }}
-            >
-              Acompanhe amamentação, sono, fraldas e mais.
-              <br />
-              Insights inteligentes que crescem com seu filho.
-            </motion.p>
+            {/* H1 */}
+            <h1 className="font-headline text-4xl md:text-5xl lg:text-6xl font-extrabold leading-[1.1] mb-6">
+              O companheiro que{' '}
+              <br className="hidden sm:block" />
+              voce precisa as{' '}
+              <br className="hidden sm:block" />
+              <span className="text-primary">3 da manha.</span>
+            </h1>
 
-            <motion.div
-              id="baixar"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 1.2 }}
-            >
-              <StoreBadges border={btnBorder} boxShadow={btnShadow} />
-            </motion.div>
+            <p className="font-body text-on-surface-variant text-base md:text-lg mb-10 max-w-lg mx-auto lg:mx-0">
+              Registre mamadas, fraldas, sono e mais com um toque.
+              Sem acender a luz. Sem acordar o bebe. Sem esquecer nada.
+            </p>
 
-            <motion.p
-              className="mt-4 text-xs text-[#7a7890] text-center lg:text-left"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1.5 }}
-            >
-              Grátis para começar. Yaya+ para ir além.
-            </motion.p>
+            {/* CTAs */}
+            <div className="flex flex-col sm:flex-row items-center lg:items-start gap-3 justify-center lg:justify-start">
+              {mobile ? (
+                <>
+                  <a
+                    href="https://apps.apple.com/app/yaya-baby"
+                    className="w-full sm:w-auto inline-flex items-center gap-3 px-5 py-3 rounded-xl glass hover:bg-white/[0.08] transition-colors"
+                  >
+                    <AppleIcon />
+                    <div>
+                      <div className="text-[9px] text-white/50 leading-none">Disponivel na</div>
+                      <div className="text-sm font-semibold text-white leading-tight">App Store</div>
+                    </div>
+                  </a>
+                  <a
+                    href="https://play.google.com/store/apps/details?id=app.yayababy"
+                    className="w-full sm:w-auto inline-flex items-center gap-3 px-5 py-3 rounded-xl glass hover:bg-white/[0.08] transition-colors"
+                  >
+                    <PlayIcon />
+                    <div>
+                      <div className="text-[9px] text-white/50 leading-none">Disponivel no</div>
+                      <div className="text-sm font-semibold text-white leading-tight">Google Play</div>
+                    </div>
+                  </a>
+                </>
+              ) : (
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <a
+                    href="https://apps.apple.com/app/yaya-baby"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-3 px-5 py-3 rounded-xl glass hover:bg-white/[0.08] transition-colors"
+                  >
+                    <AppleIcon />
+                    <div>
+                      <div className="text-[9px] text-white/50 leading-none">Disponivel na</div>
+                      <div className="text-sm font-semibold text-white leading-tight">App Store</div>
+                    </div>
+                  </a>
+                  <a
+                    href="https://play.google.com/store/apps/details?id=app.yayababy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-3 px-5 py-3 rounded-xl glass hover:bg-white/[0.08] transition-colors"
+                  >
+                    <PlayIcon />
+                    <div>
+                      <div className="text-[9px] text-white/50 leading-none">Disponivel no</div>
+                      <div className="text-sm font-semibold text-white leading-tight">Google Play</div>
+                    </div>
+                  </a>
+                  <a
+                    href="#planos"
+                    className="self-center text-sm text-primary/70 hover:text-primary transition-colors underline underline-offset-4"
+                  >
+                    Ver planos Yaya+ →
+                  </a>
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* Phone Mockup */}
-          <motion.div
-            className="flex justify-center lg:justify-end"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.5 }}
-          >
-            <motion.div
-              className="relative w-64 sm:w-72"
-              animate={{ y: [0, -12, 0] }}
-              transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-            >
-              {/* Phone frame */}
-              <div className="relative rounded-[2.5rem] overflow-hidden shadow-2xl shadow-purple-500/20 border-2 border-white/10 bg-[#0d0a27]">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-28 h-6 bg-[#0d0a27] rounded-b-2xl z-10" />
-                <img
-                  src="./landing/screen-home.png"
-                  alt="Yaya - Tela principal"
-                  className="w-full"
-                />
-              </div>
-              {/* Glow */}
-              <div className="absolute -inset-4 bg-gradient-to-r from-purple-500/10 via-purple-400/5 to-purple-600/10 rounded-[3rem] blur-2xl -z-10" />
-            </motion.div>
-          </motion.div>
+          {/* Right — mockup */}
+          <div className="flex-1 flex items-center justify-center lg:justify-end relative">
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-0 -z-10 rounded-full blur-3xl opacity-25"
+              style={{ background: 'radial-gradient(circle at center, hsl(268 85% 60% / 0.55) 0%, transparent 70%)' }}
+            />
+            <img
+              src={yayaMockup}
+              alt="App Yaya mostrando rotina do bebe"
+              className="w-full max-w-xs lg:max-w-sm xl:max-w-md object-contain drop-shadow-2xl"
+              loading="eager"
+            />
+          </div>
         </div>
       </div>
+    </section>
+  )
+}
 
-      {/* Scroll indicator */}
-      <motion.div
-        className="absolute bottom-8 left-1/2 -translate-x-1/2"
-        animate={{ y: [0, 8, 0] }}
-        transition={{ duration: 1.5, repeat: Infinity }}
-      >
-        <ChevronDown className="w-6 h-6 text-white/30" />
-      </motion.div>
-    </motion.section>
+function AppleIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="white" aria-hidden="true">
+      <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
+    </svg>
+  )
+}
+
+function PlayIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92z" fill="#4285F4"/>
+      <path d="M17.556 8.235l-3.764 3.764 3.764 3.765 4.247-2.39a1 1 0 000-1.748l-4.247-2.39z" fill="#FBBC04"/>
+      <path d="M3.609 1.814L13.792 12l3.764-3.765-9.72-5.473a1.003 1.003 0 00-4.227-.948z" fill="#34A853"/>
+      <path d="M13.792 12L3.61 22.186a1.003 1.003 0 004.227-.948l9.72-5.473L13.791 12z" fill="#EA4335"/>
+    </svg>
   )
 }

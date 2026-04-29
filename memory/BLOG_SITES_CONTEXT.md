@@ -9,7 +9,7 @@
 
 | URL | Stack | Vercel Project | Status |
 |---|---|---|---|
-| `yayababy.app` | React + Vite (`landing-app/`) | `prj_MMh2T3ulYSV2YhbBxWg00FDZInDu` | Ativo |
+| `yayababy.app` | React SPA (`app/`) | Vercel: `babytracking-h1nj` (root dir: `app/`) | Ativo |
 | `blog.yayababy.app` | Astro SSG (`blog/`) | Projeto blog no Vercel | Ativo |
 | `blog.yayababy.app/biblioteca-yaya` | Astro SSG | — | Catálogo de guias |
 | `blog.yayababy.app/biblioteca-yaya/[slug]/ler` | SPA React (client:only) | — | Leitor de guias |
@@ -141,6 +141,31 @@ Posts tipo 'regressao' so aparecem em contexto de regressao de sono detectada pe
 
 Status: cowork atualizou posts mas campos ainda nao foram localizados/aplicados no DB.
 Verificar existencia de colunas `tipo` e `gatilho` em `blog_posts` antes de usar.
+
+---
+
+## Landing page do app (yayababy.app)
+
+**REGRA: Quando o usuario falar em "landing page do app" ou "landing page do yayababy.app", estamos sempre falando de:**
+- Pagina: `app/src/pages/LandingPage.tsx`
+- Componentes: `app/src/components/landing/` (Hero, Features, Pricing, etc.)
+- Vercel: projeto `babytracking-h1nj`, root dir `app/`
+- Rotas do app (ex: `/login`, `/tracker`) continuam funcionando normalmente na mesma URL
+
+A landing e uma rota `/` dentro do React Router da web app. NAO e um projeto separado.
+
+Referencia de design: `lovable-waitlist/src/components/lp/` (projeto separado em `github.com/dyegovnunes/remix-of-yaya-waitlist-launch`). Os componentes Lp* sao a fonte de verdade visual.
+
+---
+
+## Ecossistema Vercel (estado 2026-04-29)
+
+| Projeto Vercel | Root Dir | Dominio | Status |
+|---|---|---|---|
+| `babytracking-h1nj` | `app/` | `yayababy.app` | Ativo — web app + landing |
+| `babytracking-blog` | `blog/` | `blog.yayababy.app` | Ativo — blog Astro |
+| `babytracking` | `./` | nenhum | Desconectado do Git (nao desperdiça mais deploy slots) |
+| `lovable-waitlist` | — | `lovable-waitlist.vercel.app` | Ativo — repo proprio |
 
 ---
 

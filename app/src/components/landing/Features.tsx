@@ -1,98 +1,65 @@
-import { motion } from 'framer-motion'
-import { Baby, Moon, Droplets, BarChart3, Users, FileText } from 'lucide-react'
+import { useReveal } from '../../hooks/useReveal'
 
 const features = [
   {
-    icon: Baby,
-    title: 'Registro em 1 toque',
-    description: 'Timer, lado, duração. Sem formulários.',
-    label: 'Amamentação',
-    gradient: 'from-purple-500/10 to-purple-600/5',
+    emoji: '🤱',
+    title: 'Amamentacao',
+    desc: 'Cronometre mama esquerda e direita. Nunca mais esqueca qual lado foi.',
   },
   {
-    icon: Moon,
-    title: 'Sono monitorado',
-    description: 'Início, fim, tempo total. Previsão inteligente.',
-    label: 'Sono',
-    gradient: 'from-indigo-500/10 to-indigo-600/5',
+    emoji: '💧',
+    title: 'Fraldas',
+    desc: 'Xixi, coco ou os dois. Registre em um segundo.',
   },
   {
-    icon: Droplets,
-    title: 'Fraldas rastreadas',
-    description: 'Xixi, cocô, contagem diária.',
-    label: 'Fraldas',
-    gradient: 'from-sky-500/10 to-sky-600/5',
+    emoji: '🌙',
+    title: 'Sono',
+    desc: 'Timer automatico. Veja quantas horas ele dormiu de verdade.',
   },
   {
-    icon: BarChart3,
-    title: 'Insights por fase',
-    description: 'Dados que evoluem com seu bebê, de 0 a 24 meses.',
-    label: 'Insights',
-    gradient: 'from-emerald-500/10 to-emerald-600/5',
+    emoji: '🛁',
+    title: 'Banho e cuidados',
+    desc: 'Horarios agendados com lembrete 15 min antes.',
   },
   {
-    icon: Users,
-    title: 'Família conectada',
-    description: 'Babá, avó, pai — todos registram juntos.',
-    label: 'Compartilhar',
-    gradient: 'from-pink-500/10 to-pink-600/5',
+    emoji: '👨‍👩‍👧',
+    title: 'Multi-cuidador',
+    desc: 'Compartilhe com o parceiro, avos ou baba. Todo mundo sincronizado.',
   },
   {
-    icon: FileText,
-    title: 'Relatório pro pediatra',
-    description: 'PDF profissional com 30 dias de dados. 1 clique.',
-    label: 'Pediatra',
-    gradient: 'from-amber-500/10 to-amber-600/5',
+    emoji: '🩺',
+    title: 'Relatorio pediatra',
+    desc: 'Relatorio completo para levar na consulta. Seu pediatra vai agradecer.',
   },
 ]
 
 export default function Features() {
-  return (
-    <section className="bg-[#13103a] py-24 sm:py-32">
-      <div className="max-w-6xl mx-auto px-6">
-        <motion.div
-          className="text-center mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-4">
-            Tudo que você precisa,
-            <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#9580e6] to-[#c4b8f0]">
-              nada que você não precisa.
-            </span>
-          </h2>
-          <p className="text-[#b0adc4] text-base sm:text-lg max-w-md mx-auto">
-            Simples de usar, mesmo com uma mão só e o bebê no colo.
-          </p>
-        </motion.div>
+  const ref = useReveal()
 
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-          {features.map((feature, i) => {
-            const Icon = feature.icon
-            return (
-              <motion.div
-                key={i}
-                className={`group relative rounded-2xl border border-white/5 bg-gradient-to-br ${feature.gradient} backdrop-blur-sm p-5 flex flex-col transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-purple-500/5 hover:border-white/10`}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.08 }}
-              >
-                <div className="w-9 h-9 rounded-lg bg-[#9580e6]/10 flex items-center justify-center mb-3 group-hover:bg-[#9580e6]/20 transition-colors">
-                  <Icon className="w-4.5 h-4.5 text-[#9580e6]" />
-                </div>
-                <h3 className="text-sm sm:text-base font-bold text-white mb-1">
-                  {feature.title}
-                </h3>
-                <p className="text-xs sm:text-sm text-[#b0adc4] leading-relaxed">
-                  {feature.description}
-                </p>
-              </motion.div>
-            )
-          })}
+  return (
+    <section ref={ref} className="reveal py-20 px-5" id="features">
+      <div className="max-w-5xl mx-auto">
+        <div className="text-center mb-12">
+          <p className="font-headline text-xs font-bold text-primary/70 uppercase tracking-widest mb-3">
+            Funcionalidades
+          </p>
+          <h2 className="font-headline text-2xl md:text-3xl font-extrabold">
+            Tudo que pais de recem-nascido{' '}
+            <span className="text-primary">realmente precisam.</span>
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {features.map((f) => (
+            <div
+              key={f.title}
+              className="glass rounded-2xl p-6 hover:border-primary/25 transition-colors"
+            >
+              <span className="text-3xl mb-4 block">{f.emoji}</span>
+              <h3 className="font-headline text-base font-bold text-on-surface mb-2">{f.title}</h3>
+              <p className="font-body text-sm text-on-surface-variant leading-relaxed">{f.desc}</p>
+            </div>
+          ))}
         </div>
       </div>
     </section>
