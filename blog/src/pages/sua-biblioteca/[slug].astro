@@ -103,7 +103,7 @@ const productLd = {
   <script type="application/ld+json" set:html={JSON.stringify(productLd)} />
 
   <!-- Breadcrumb -->
-  <nav class="max-w-4xl mx-auto px-4 pt-8 pb-0">
+  <nav class="max-w-5xl mx-auto px-4 pt-6 pb-0">
     <ol class="flex items-center gap-1.5 text-xs font-sans text-yaya-cloud/40 flex-wrap">
       <li><a href="/" class="hover:text-yaya-cloud transition-colors">Blog</a></li>
       <li aria-hidden="true" class="text-yaya-cloud/25">›</li>
@@ -113,84 +113,80 @@ const productLd = {
     </ol>
   </nav>
 
-  <!-- ── Hero premium ── -->
-  <section class="lp-hero relative overflow-hidden pt-8 pb-10">
-    <!-- Partículas injetadas por JS -->
-    <div id="hero-particles" class="absolute inset-0 pointer-events-none overflow-hidden z-0" aria-hidden="true" />
+  <!-- ── Hero split ── -->
+  <section class="lp-hero relative overflow-hidden">
+    <!-- Glow blob suave (topo direito) -->
+    <div class="lp-glow-blob" aria-hidden="true" />
 
-    <div class="relative z-10 max-w-4xl mx-auto px-4">
+    <div class="relative z-10 max-w-5xl mx-auto px-4 py-14 md:py-20">
+      <div class="flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
 
-      <!-- Eyebrow + headline de marketing -->
-      <p class="text-center text-[11px] font-display font-bold uppercase tracking-[0.22em] mb-4" style="color: rgba(183,159,255,0.7);">
-        ✦ Guia completo · Baseado em evidências
-      </p>
-      <h1
-        class="text-center font-display font-bold text-2xl md:text-[2rem] lg:text-[2.4rem] mb-7 max-w-2xl mx-auto leading-tight"
-        style="color: #e7e2ff;"
-      >
-        Você pesquisa tudo.<br class="hidden sm:block" />
-        Mas as informações nunca batem entre si.
-      </h1>
+        <!-- Imagem do guia (esquerda) -->
+        {guide.cover_image_url && (
+          <div class="w-full lg:w-[44%] shrink-0">
+            <div class="relative rounded-2xl overflow-hidden shadow-2xl" style="aspect-ratio: 3/4;">
+              <img
+                src={guide.cover_image_url}
+                alt={guide.title}
+                class="w-full h-full object-cover"
+                loading="eager"
+                decoding="async"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-[#0d0a27]/60 via-transparent to-transparent" />
+            </div>
+          </div>
+        )}
 
-      <!-- Cover do guia -->
-      {guide.cover_image_url ? (
-        <div class="relative rounded-2xl overflow-hidden mb-6" style="aspect-ratio: 21/9;">
-          <img
-            src={guide.cover_image_url}
-            alt={guide.title}
-            class="w-full h-full object-cover"
-            loading="eager"
-            decoding="async"
-          />
-          <div class="absolute inset-0 bg-gradient-to-t from-[#0d0a27]/85 via-[#0d0a27]/25 to-transparent" />
-          <div class="absolute bottom-0 left-0 right-0 p-5 md:p-7">
-            <p class="text-white/55 text-[11px] font-display font-bold uppercase tracking-widest mb-1.5">{guide.title}</p>
-            {guide.subtitle && (
-              <p class="text-white/70 text-sm md:text-base font-sans max-w-xl leading-relaxed">{guide.subtitle}</p>
+        <!-- Copy + CTA (direita) -->
+        <div class={`flex-1 ${guide.cover_image_url ? 'text-center lg:text-left' : 'text-center max-w-2xl mx-auto'}`}>
+          <p class="text-[11px] font-display font-bold uppercase tracking-[0.22em] mb-4" style="color: rgba(183,159,255,0.7);">
+            ✦ Guia completo · Baseado em evidências
+          </p>
+          <h1
+            class="font-display font-bold text-3xl md:text-4xl lg:text-[2.6rem] mb-4 leading-[1.15]"
+            style="color: #e7e2ff;"
+          >
+            Você pesquisa tudo.<br />
+            <span style="color: #b79fff;">Mas as informações<br class="hidden sm:block" /> nunca batem entre si.</span>
+          </h1>
+
+          {guide.description && (
+            <p class="text-yaya-cloud/55 font-sans text-base leading-relaxed mb-7 max-w-md">
+              {guide.description}
+            </p>
+          )}
+
+          <!-- Meta stats -->
+          <div class="flex flex-wrap items-center gap-4 text-xs font-sans text-yaya-cloud/45 mb-8 justify-center lg:justify-start">
+            {totalMinutes > 0 && (
+              <span class="flex items-center gap-1.5">⏱ ~{totalMinutes} min de leitura</span>
+            )}
+            {parts.length > 0 && (
+              <span class="flex items-center gap-1.5">📖 {parts.length} {parts.length === 1 ? 'parte' : 'partes'}</span>
+            )}
+            {previewSections.length > 0 && (
+              <span class="flex items-center gap-1.5" style="color: rgba(183,159,255,0.6);">🔓 Amostra grátis</span>
             )}
           </div>
+
+          <!-- CTA hero -->
+          <div class="flex flex-col items-center lg:items-start gap-3 max-w-xs mx-auto lg:mx-0">
+            <a
+              href="#cta-final"
+              class="lp-btn-primary w-full text-center"
+            >
+              Quero o guia por {priceFormatted} →
+            </a>
+            <p class="text-yaya-cloud/30 text-xs font-sans">7 dias de garantia · Acesso imediato · Stripe</p>
+          </div>
         </div>
-      ) : (
-        <div class="mb-8 text-center">
-          <p class="text-yaya-cloud/60 text-base font-sans leading-relaxed max-w-2xl mx-auto">{guide.subtitle}</p>
-        </div>
-      )}
 
-      <!-- Meta stats -->
-      <div class="flex flex-wrap items-center justify-center gap-5 text-xs font-sans text-yaya-cloud/50 mb-6">
-        {totalMinutes > 0 && (
-          <span class="flex items-center gap-1.5">
-            <span>⏱</span> ~{totalMinutes} min de leitura
-          </span>
-        )}
-        {parts.length > 0 && (
-          <span class="flex items-center gap-1.5">
-            <span>📖</span> {parts.length} {parts.length === 1 ? 'parte' : 'partes'}
-          </span>
-        )}
-        {previewSections.length > 0 && (
-          <span class="flex items-center gap-1.5" style="color: rgba(183,159,255,0.65);">
-            <span>🔓</span> Amostra grátis disponível
-          </span>
-        )}
       </div>
-
-      <!-- CTA hero mobile (some em desktop) -->
-      <div class="flex justify-center lg:hidden mb-2">
-        <a
-          href="#cta-final"
-          class="inline-block px-8 py-3.5 rounded-xl text-[#0d0a27] font-display font-bold text-sm transition-all hover:opacity-90"
-          style="background: linear-gradient(135deg, #b79fff, #8b6df0); box-shadow: 0 0 28px rgba(183,159,255,0.3);"
-        >
-          Quero o guia por {priceFormatted} →
-        </a>
-      </div>
-
     </div>
   </section>
 
   <!-- ── Layout principal: conteúdo + sidebar ── -->
-  <section class="max-w-4xl mx-auto px-4 pb-36">
+  <section class="max-w-5xl mx-auto px-4 pb-36">
     <div class="flex flex-col lg:flex-row gap-10 lg:items-start">
 
       <!-- ── Coluna esquerda ── -->
@@ -483,8 +479,7 @@ const productLd = {
       </div>
       <a
         href="#cta-final"
-        class="shrink-0 px-5 py-2.5 rounded-xl text-[#0d0a27] text-sm font-display font-bold transition-opacity hover:opacity-90"
-        style="background: linear-gradient(135deg, #b79fff, #8b6df0);"
+        class="lp-btn-primary shrink-0 px-5 py-2.5 text-sm"
       >
         Comprar →
       </a>
@@ -493,21 +488,6 @@ const productLd = {
 
   <script is:inline>
     ;(function () {
-      // Partículas no hero
-      var container = document.getElementById('hero-particles')
-      if (container) {
-        for (var i = 0; i < 36; i++) {
-          var dot = document.createElement('div')
-          dot.className = 'lp-particle'
-          dot.style.cssText =
-            'position:absolute;width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,0.2);' +
-            'left:' + (Math.random() * 100) + '%;' +
-            'top:' + (Math.random() * 100) + '%;' +
-            'animation:lp-particle-pulse ' + (3 + Math.random() * 4).toFixed(1) + 's ease-in-out ' + (Math.random() * 4).toFixed(1) + 's infinite;'
-          container.appendChild(dot)
-        }
-      }
-
       // Sticky CTA: aparece após hero, some quando CTA final visível
       var sticky = document.getElementById('lp-sticky-cta')
       var ctaFinal = document.getElementById('cta-final')
@@ -536,16 +516,45 @@ const productLd = {
 </BlogLayout>
 
 <style is:global>
-  /* ── Hero premium ── */
+  /* ── Hero ── */
   .lp-hero {
-    background: radial-gradient(125% 125% at 50% 0%, #0d0a27 40%, #1a1145);
+    background: #0d0a27;
   }
 
-  /* ── Partículas ── */
-  @keyframes lp-particle-pulse {
-    0%, 100% { opacity: 0.08; transform: scale(0.6); }
-    50%       { opacity: 0.45; transform: scale(1.1); }
+  /* ── Glow blob suave (canto superior direito, como no yayababy.app) ── */
+  .lp-glow-blob {
+    position: absolute;
+    top: -10%;
+    right: -5%;
+    width: 55%;
+    height: 80%;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at center,
+      rgba(168, 85, 247, 0.18) 0%,
+      rgba(236, 72, 153, 0.08) 40%,
+      transparent 70%);
+    pointer-events: none;
+    z-index: 0;
   }
+
+  /* ── Botão primário rosa-magenta ── */
+  .lp-btn-primary {
+    display: inline-block;
+    padding: 14px 28px;
+    border-radius: 12px;
+    border: none;
+    background: linear-gradient(135deg, #ec4899 0%, #a855f7 100%);
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Manrope', system-ui, sans-serif;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.2s;
+    box-shadow: 0 0 32px rgba(236, 72, 153, 0.25);
+  }
+  .lp-btn-primary:hover { opacity: 0.88; }
 
   /* ── Seção ── */
   .lp-section-title {
@@ -584,7 +593,6 @@ const productLd = {
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
   }
-  /* safe-area-inset-bottom para iOS */
   @supports (padding-bottom: env(safe-area-inset-bottom)) {
     .lp-sticky-inner {
       padding-bottom: max(1rem, env(safe-area-inset-bottom));
