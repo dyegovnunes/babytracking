@@ -1,4 +1,4 @@
-// GuideTopbar — barra superior fixa, fina, com:
+﻿// GuideTopbar — barra superior fixa, fina, com:
 //   - botão voltar (esquerda) + hambúrguer (sidebar)
 //   - título do guia (esquerda, só desktop) + título da seção (centro)
 //   - ícones diretos: tema, modo leitura, imprimir (direita)
@@ -45,7 +45,7 @@ export default function GuideTopbar({
   }, [currentSection?.id])
 
   function handleBackToLibrary() {
-    window.location.href = 'https://blog.yayababy.app/sua-biblioteca/'
+    window.location.href = 'https://blog.yayababy.app/biblioteca-yaya/'
   }
 
   return (

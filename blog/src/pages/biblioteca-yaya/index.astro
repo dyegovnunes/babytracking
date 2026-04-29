@@ -1,4 +1,4 @@
----
+﻿---
 import BlogLayout from '../../layouts/BlogLayout.astro'
 import { supabase } from '../../lib/supabase'
 import type { Guide } from '../../types'
@@ -18,12 +18,12 @@ const itemListLd = {
   '@type': 'ItemList',
   name: 'Biblioteca Yaya — Guias para gestantes e pais',
   description: 'Guias práticos baseados em evidências para gestantes e pais. Acesse avulso ou com Yaya+.',
-  url: `${SITE}/sua-biblioteca`,
+  url: `${SITE}/biblioteca-yaya`,
   numberOfItems: guides.length,
   itemListElement: guides.map((g, i) => ({
     '@type': 'ListItem',
     position: i + 1,
-    url: `${SITE}/sua-biblioteca/${g.slug}`,
+    url: `${SITE}/biblioteca-yaya/${g.slug}`,
     name: g.title,
   })),
 }
@@ -45,7 +45,7 @@ function audienceLabel(g: Guide): string {
 <BlogLayout
   title="Sua Biblioteca Yaya — Guias para gestantes e pais"
   description="Guias práticos sobre gestação, recém-nascido e primeiros meses do bebê. Conteúdo baseado em evidências, feito para quem cuida. Acesse avulso ou com o Yaya+."
-  canonicalUrl={`${SITE}/sua-biblioteca`}
+  canonicalUrl={`${SITE}/biblioteca-yaya`}
 >
   <script type="application/ld+json" set:html={JSON.stringify(itemListLd)} />
 
@@ -102,7 +102,7 @@ function audienceLabel(g: Guide): string {
             style="background: linear-gradient(135deg, rgba(245,200,66,0.35) 0%, rgba(183,159,255,0.25) 50%, rgba(245,200,66,0.2) 100%);"
           >
             <a
-              href={`/sua-biblioteca/${guide.slug}`}
+              href={`/biblioteca-yaya/${guide.slug}`}
               class="group guide-card-inner block rounded-2xl overflow-hidden bg-yaya-night transition-all duration-300"
             >
               <!-- Cover image -->

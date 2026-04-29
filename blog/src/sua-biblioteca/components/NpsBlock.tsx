@@ -1,4 +1,4 @@
-// NpsBlock — avaliação de 1-5 estrelas com comentário opcional.
+﻿// NpsBlock — avaliação de 1-5 estrelas com comentário opcional.
 // Mostrado no final da seção de conclusão (data.show_nps = true).
 // Persiste em guide_ratings (1 avaliação por usuário por guia).
 // Se nota >= 4: exibe CTA de compartilhamento no WhatsApp.
@@ -15,7 +15,7 @@ interface Props {
 type Status = 'loading' | 'pending' | 'submitting' | 'submitted'
 
 const WHATSAPP_TEXT = encodeURIComponent(
-  'Acabei de concluir o Guia das Últimas Semanas do Yaya 💜 Vale muito pra quem está esperando um bebê! blog.yayababy.app/sua-biblioteca'
+  'Acabei de concluir o Guia das Últimas Semanas do Yaya 💜 Vale muito pra quem está esperando um bebê! blog.yayababy.app/biblioteca-yaya'
 )
 
 export default function NpsBlock({ guideId, sectionId, userId }: Props) {

@@ -1,4 +1,4 @@
-// ShareableImage — gera uma imagem 9:16 (Stories) compartilhável quando
+﻿// ShareableImage — gera uma imagem 9:16 (Stories) compartilhável quando
 // o leitor conclui o guia. Implementação client-side com Canvas 2D
 // (sem html2canvas) — controle total e sem dependência extra.
 //
@@ -143,7 +143,7 @@ export default function ShareableImage({ guide, caption, onShare }: Props) {
       ctx.letterSpacing = '1px' as never
       ctx.font = '400 26px "Plus Jakarta Sans", system-ui, sans-serif'
       ctx.fillStyle = 'rgba(231, 226, 255, 0.55)'
-      ctx.fillText('blog.yayababy.app/sua-biblioteca', W / 2, sepY + 108)
+      ctx.fillText('blog.yayababy.app/biblioteca-yaya', W / 2, sepY + 108)
 
       if (cancelled) return
 

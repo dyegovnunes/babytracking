@@ -1,4 +1,4 @@
-// GuideCTA — ilha React para a landing pública de cada guia.
+﻿// GuideCTA — ilha React para a landing pública de cada guia.
 // Verifica sessão + compra + is_premium e exibe o CTA correto.
 // Renderizado apenas no client (client:only="react") pois depende de auth state.
 
@@ -26,8 +26,8 @@ export default function GuideCTA({ guideSlug, priceFormatted }: Props) {
         {
           body: {
             guide_slug: guideSlug,
-            success_url: `${origin}/sua-biblioteca/checkout/sucesso?slug=${guideSlug}`,
-            cancel_url: `${origin}/sua-biblioteca/${guideSlug}`,
+            success_url: `${origin}/biblioteca-yaya/checkout/sucesso?slug=${guideSlug}`,
+            cancel_url: `${origin}/biblioteca-yaya/${guideSlug}`,
           },
         }
       )
@@ -53,7 +53,7 @@ export default function GuideCTA({ guideSlug, priceFormatted }: Props) {
   // ── Autorizado via Yaya+ Anual/Vitalício ───────────────────────────────────
   if (access.status === 'authorized' && access.accessVia === 'premium') {
     return (
-      <a href={`/sua-biblioteca/${guideSlug}/ler`} style={{ ...s.btnPrimary, textDecoration: 'none', display: 'block', textAlign: 'center' as const }}>
+      <a href={`/biblioteca-yaya/${guideSlug}/ler`} style={{ ...s.btnPrimary, textDecoration: 'none', display: 'block', textAlign: 'center' as const }}>
         <span style={{ marginRight: 6 }}>💜</span> Acessar — incluso no seu plano
       </a>
     )
@@ -62,7 +62,7 @@ export default function GuideCTA({ guideSlug, priceFormatted }: Props) {
   // ── Autorizado via compra ───────────────────────────────────────────────────
   if (access.status === 'authorized') {
     return (
-      <a href={`/sua-biblioteca/${guideSlug}/ler`} style={{ ...s.btnPrimary, textDecoration: 'none', display: 'block', textAlign: 'center' as const }}>
+      <a href={`/biblioteca-yaya/${guideSlug}/ler`} style={{ ...s.btnPrimary, textDecoration: 'none', display: 'block', textAlign: 'center' as const }}>
         Continuar lendo →
       </a>
     )
@@ -99,7 +99,7 @@ export default function GuideCTA({ guideSlug, priceFormatted }: Props) {
       {/* "Já tenho acesso" — visível quando não tem sessão */}
       {access.status === 'no-session' && (
         <a
-          href={`/sua-biblioteca/${guideSlug}/ler`}
+          href={`/biblioteca-yaya/${guideSlug}/ler`}
           style={{ ...s.btnSecondary, textDecoration: 'none', display: 'block', textAlign: 'center' as const }}
         >
           Já tenho acesso — entrar

@@ -1,15 +1,15 @@
----
+﻿---
 import BlogLayout from '../../../layouts/BlogLayout.astro'
 
 const SITE = 'https://blog.yayababy.app'
 const slug = Astro.url.searchParams.get('slug') ?? ''
-const readerUrl = slug ? `/sua-biblioteca/${slug}/ler` : '/minha-biblioteca'
+const readerUrl = slug ? `/biblioteca-yaya/${slug}/ler` : '/minha-biblioteca'
 ---
 
 <BlogLayout
   title="Acesso confirmado — Sua Biblioteca Yaya"
   description="Seu guia está pronto. Verifique seu email para acessar."
-  canonicalUrl={`${SITE}/sua-biblioteca/checkout/sucesso`}
+  canonicalUrl={`${SITE}/biblioteca-yaya/checkout/sucesso`}
   noindex={true}
 >
   <section class="success-hero min-h-[80vh] flex items-center justify-center px-4 py-20">
@@ -48,7 +48,7 @@ const readerUrl = slug ? `/sua-biblioteca/${slug}/ler` : '/minha-biblioteca'
           </a>
         )}
         <a
-          href="/sua-biblioteca"
+          href="/biblioteca-yaya"
           class="inline-block px-7 py-3.5 rounded-xl text-yaya-cloud/60 font-sans text-sm transition-colors hover:text-yaya-cloud"
           style="border: 1px solid rgba(231,226,255,0.1);"
         >

@@ -1,4 +1,4 @@
-// GuideAuthGuard — renderiza a UI correta pra cada estado de acesso.
+﻿// GuideAuthGuard — renderiza a UI correta pra cada estado de acesso.
 //   no-session  → tela de login (Google, Apple, email + OTP de 6 dígitos)
 //   no-access   → CTA pra landing do guia
 //   error       → mensagem amigável
@@ -93,7 +93,7 @@ function LoginPrompt({ guideSlug }: { guideSlug: string }) {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([])
 
   const redirectTo = typeof window !== 'undefined'
-    ? `${window.location.origin}/sua-biblioteca/${guideSlug}/ler`
+    ? `${window.location.origin}/biblioteca-yaya/${guideSlug}/ler`
     : ''
 
   // Countdown do reenvio
@@ -364,7 +364,7 @@ function NoAccessCTA({ guideSlug, guideTitle, email }: { guideSlug: string; guid
           {email ? <><strong style={{ color: 'var(--r-text-strong)' }}>{email}</strong> não tem acesso ao <em>{guideTitle}</em>. </> : null}
           Adquira na biblioteca para liberar o conteúdo completo.
         </p>
-        <a href={`/sua-biblioteca/${guideSlug}`} style={{ ...s.btnPrimary, display: 'block', textDecoration: 'none', textAlign: 'center' as const }}>
+        <a href={`/biblioteca-yaya/${guideSlug}`} style={{ ...s.btnPrimary, display: 'block', textDecoration: 'none', textAlign: 'center' as const }}>
           Ver detalhes e adquirir
         </a>
 

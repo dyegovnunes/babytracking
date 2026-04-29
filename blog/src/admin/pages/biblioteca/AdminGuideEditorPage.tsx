@@ -1,4 +1,4 @@
-// AdminGuideEditorPage — edita metadata do guia + lista de seções (parts > sections)
+﻿// AdminGuideEditorPage — edita metadata do guia + lista de seções (parts > sections)
 // Reorder via setas (drag-drop é overkill pra ~30 seções)
 
 import { useEffect, useState, useCallback } from 'react'
@@ -195,7 +195,7 @@ export default function AdminGuideEditorPage() {
               placeholder="Da semana 28 ao primeiro mês com o bebê em casa"
             />
           </Field>
-          <Field label="Slug (URL)" required hint={`/sua-biblioteca/${guide.slug || 'slug-aqui'}`}>
+          <Field label="Slug (URL)" required hint={`/biblioteca-yaya/${guide.slug || 'slug-aqui'}`}>
             <Input
               value={guide.slug ?? ''}
               onChange={v => updateField('slug', v)}

@@ -1,4 +1,4 @@
-// MinhaBliotecaApp — área pessoal do usuário.
+﻿// MinhaBliotecaApp — área pessoal do usuário.
 // Mostra apenas os guias que o usuário tem acesso (compra ou Yaya+).
 // Renderizado client:only pois depende de auth state.
 
@@ -134,12 +134,12 @@ export default function MinhaBliotecaApp() {
           <p style={{ ...s.body, marginBottom: 28 }}>
             Entre com a conta que você usou na compra para ver seus guias.
           </p>
-          <a href="/sua-biblioteca/ultimas-semanas/ler" style={{ ...s.btnPrimary, display: 'block', textDecoration: 'none', marginBottom: 14 }}>
+          <a href="/biblioteca-yaya/ultimas-semanas/ler" style={{ ...s.btnPrimary, display: 'block', textDecoration: 'none', marginBottom: 14 }}>
             Entrar na biblioteca
           </a>
           <p style={{ fontSize: 12, color: 'rgba(231,226,255,0.35)', fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif' }}>
             Ainda não tem nenhum guia?{' '}
-            <a href="/sua-biblioteca" style={{ color: '#b79fff', textDecoration: 'underline' }}>Ver catálogo</a>
+            <a href="/biblioteca-yaya" style={{ color: '#b79fff', textDecoration: 'underline' }}>Ver catálogo</a>
           </p>
         </div>
       </div>
@@ -170,7 +170,7 @@ export default function MinhaBliotecaApp() {
             <p style={{ ...s.body, marginBottom: 24 }}>
               Você ainda não tem nenhum guia na biblioteca.
             </p>
-            <a href="/sua-biblioteca" style={{ ...s.btnPrimary, display: 'inline-block', textDecoration: 'none' }}>
+            <a href="/biblioteca-yaya" style={{ ...s.btnPrimary, display: 'inline-block', textDecoration: 'none' }}>
               Ver catálogo de guias
             </a>
           </div>
@@ -196,7 +196,7 @@ export default function MinhaBliotecaApp() {
         {!isPremium && (
           <p style={{ marginTop: 28, fontSize: 12, color: 'rgba(231,226,255,0.35)', textAlign: 'center', fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif' }}>
             Quer mais guias?{' '}
-            <a href="/sua-biblioteca" style={{ color: '#b79fff', textDecoration: 'underline' }}>Ver catálogo</a>
+            <a href="/biblioteca-yaya" style={{ color: '#b79fff', textDecoration: 'underline' }}>Ver catálogo</a>
           </p>
         )}
       </div>
@@ -241,7 +241,7 @@ function GuideRow({ guide }: { guide: GuideCard }) {
         <p style={s.cardTitle}>{guide.title}</p>
         {guide.subtitle && <p style={s.cardSubtitle}>{guide.subtitle}</p>}
       </div>
-      <a href={`/sua-biblioteca/${guide.slug}/ler`} style={s.btnRead}>
+      <a href={`/biblioteca-yaya/${guide.slug}/ler`} style={s.btnRead}>
         Ler →
       </a>
     </div>

@@ -1,4 +1,4 @@
-// GuideCompletionScreen — comemoração final ao concluir o guia inteiro.
+﻿// GuideCompletionScreen — comemoração final ao concluir o guia inteiro.
 // Estilo: Spotify Wrapped reduzido + premium-acolhedor. Hero com cover,
 // título celebratório, stats de jornada, imagem compartilhável,
 // CTAs (continue no app / próximo guia / voltar à leitura).
@@ -308,7 +308,7 @@ export default function GuideCompletionScreen({
             <span className="material-symbols-outlined" style={{ fontSize: 18 }}>open_in_new</span>
           </a>
           <a
-            href="/sua-biblioteca"
+            href="/biblioteca-yaya"
             style={{
               padding: '12px 22px',
               borderRadius: 999,

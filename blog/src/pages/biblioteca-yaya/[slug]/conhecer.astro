@@ -1,9 +1,9 @@
----
+﻿---
 import BlogLayout from '../../../layouts/BlogLayout.astro'
 import { supabase } from '../../../lib/supabase'
 import type { Guide, GuideSection } from '../../../types'
 import { marked } from 'marked'
-import GuideCTA from '../../../sua-biblioteca/components/GuideCTA'
+import GuideCTA from '../../../biblioteca-yaya/components/GuideCTA'
 
 const SITE = 'https://blog.yayababy.app'
 
@@ -31,7 +31,7 @@ const [{ data: guideData, error }, { data: sectionsData }] = await Promise.all([
 ])
 
 if (error || !guideData) {
-  return Astro.redirect('/sua-biblioteca')
+  return Astro.redirect('/biblioteca-yaya')
 }
 
 const guide = guideData as Guide
@@ -54,7 +54,7 @@ for (const s of previewSections) {
   }
 }
 
-const canonicalUrl = `${SITE}/sua-biblioteca/${slug}/conhecer`
+const canonicalUrl = `${SITE}/biblioteca-yaya/${slug}/conhecer`
 const priceFormatted = formatPrice(guide.price_cents)
 
 const breadcrumbLd = {
@@ -62,7 +62,7 @@ const breadcrumbLd = {
   '@type': 'BreadcrumbList',
   itemListElement: [
     { '@type': 'ListItem', position: 1, name: 'Blog', item: SITE },
-    { '@type': 'ListItem', position: 2, name: 'Biblioteca Yaya', item: `${SITE}/sua-biblioteca` },
+    { '@type': 'ListItem', position: 2, name: 'Biblioteca Yaya', item: `${SITE}/biblioteca-yaya` },
     { '@type': 'ListItem', position: 3, name: guide.title, item: canonicalUrl },
   ],
 }
@@ -80,7 +80,7 @@ const productLd = {
     price: (guide.price_cents / 100).toFixed(2),
     priceCurrency: 'BRL',
     availability: 'https://schema.org/InStock',
-    url: `${SITE}/sua-biblioteca/${slug}`,
+    url: `${SITE}/biblioteca-yaya/${slug}`,
     seller: { '@type': 'Organization', name: 'Yaya Baby' },
   },
 }

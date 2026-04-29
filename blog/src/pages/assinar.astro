@@ -1,0 +1,388 @@
+---
+import BlogLayout from '../layouts/BlogLayout.astro'
+import SubscriptionPlans from '../components/SubscriptionPlans'
+
+const SITE = 'https://blog.yayababy.app'
+
+const features = [
+  { icon: '🍼', title: 'Registros ilimitados', desc: 'Amamentação, sono, fraldas, vacinas e crescimento — sem limite de entradas por dia.' },
+  { icon: '🧠', title: 'Insights com IA', desc: 'Padrões, projeções e tendências personalizadas baseadas nos dados reais do seu bebê.' },
+  { icon: '📋', title: 'Relatório para pediatra', desc: 'Link compartilhável com histórico completo, marcos e vacinas. O médico vê tudo em segundos.' },
+  { icon: '👨‍👩‍👧', title: 'Família conectada', desc: 'Convide parceiro, avós ou cuidadores. Todos acompanham em tempo real, do mesmo bebê.' },
+  { icon: '📚', title: 'Biblioteca de guias', desc: 'Acesso a todos os guias da Biblioteca Yaya (planos Anual e Vitalício).' },
+  { icon: '👶', title: 'Múltiplos bebês', desc: 'Gerencie mais de um filho com um único plano Yaya+.' },
+]
+
+const testimonials = [
+  {
+    name: 'Mariana S.',
+    role: 'Mãe da Sofia, 3 meses',
+    text: 'Antes anotava tudo no papel e perdia rastreio das mamadas. Com o Yaya+ tenho gráfico de sono, histórico completo e ainda gero o relatório pra pediatra em segundos.',
+  },
+  {
+    name: 'Pedro e Fernanda',
+    role: 'Pais do Miguel, 5 meses',
+    text: 'O melhor é que meu marido vê tudo em tempo real. A gente conseguiu dividir as madrugadas de forma organizada pela primeira vez. Essencial.',
+  },
+  {
+    name: 'Letícia T.',
+    role: 'Mãe do Bento, 2 meses',
+    text: 'Os insights de amamentação me ajudaram demais. Descobri que o Bento mamava em intervalos muito curtos e consegui trazer isso pra consulta com dados reais.',
+  },
+]
+
+const faqs = [
+  {
+    q: 'Funciona no iPhone e no Android?',
+    a: 'Sim. O Yaya está disponível na App Store e no Google Play. Ao assinar pelo site, basta fazer login no app com a mesma conta — o plano ativa automaticamente.',
+  },
+  {
+    q: 'Qual a diferença entre Mensal, Anual e Vitalício?',
+    a: 'Os três desbloqueiam as mesmas funcionalidades Yaya+. O Mensal custa R$34,90/mês. O Anual é R$249,90/ano (≈ R$20,83/mês) e inclui a Biblioteca de Guias. O Vitalício é R$449,90 único, nunca renova e também inclui a Biblioteca.',
+  },
+  {
+    q: 'O plano Mensal inclui a Biblioteca de Guias?',
+    a: 'Não. A Biblioteca de Guias é exclusiva dos planos Anual e Vitalício. Com o Mensal você tem todas as funcionalidades do app (registros ilimitados, insights, família, relatório), mas sem acesso aos guias.',
+  },
+  {
+    q: 'Posso cancelar quando quiser?',
+    a: 'Sim. Os planos Mensal e Anual podem ser cancelados a qualquer momento pelo painel do Stripe. O acesso segue ativo até o fim do período já pago. O Vitalício é permanente e não precisa de renovação.',
+  },
+  {
+    q: 'Já sou assinante pelo app (Apple / Google). Preciso assinar de novo?',
+    a: 'Não. Sua assinatura via App Store ou Google Play já garante acesso ao Yaya+. Esta página é para quem prefere assinar diretamente pela web, sem intermediação das lojas.',
+  },
+  {
+    q: 'Como funciona o pagamento?',
+    a: 'Pagamento processado pelo Stripe com segurança. Aceitamos cartão de crédito e débito. Após a confirmação você recebe um email e o app é desbloqueado automaticamente — não precisa fazer nada.',
+  },
+]
+---
+
+<BlogLayout
+  title="Assinar Yaya+ — O app completo para acompanhar seu bebê"
+  description="Registros ilimitados, insights com IA, relatório para pediatra e Biblioteca de Guias. Assine o Yaya+ e acompanhe cada fase com tudo que importa."
+  canonicalUrl={`${SITE}/assinar`}
+>
+
+  <!-- ═══ HERO ═══════════════════════════════════════════════════════════════ -->
+  <section class="yp-hero">
+    <div class="yp-hero-glow" />
+    <div class="relative z-10 max-w-3xl mx-auto px-5 pt-20 pb-24 md:pt-28 md:pb-32 text-center">
+
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-8 yp-badge">
+        <span class="text-[10px] font-display font-bold uppercase tracking-[0.18em]">✦ Yaya+</span>
+      </div>
+
+      <h1 class="font-display font-bold text-4xl md:text-5xl lg:text-[3.5rem] text-yaya-cloud leading-tight tracking-tight mb-6">
+        Acompanhe cada fase<br />
+        <span class="yp-gradient-text">com tudo que importa.</span>
+      </h1>
+
+      <p class="text-yaya-cloud/55 text-base md:text-lg font-sans leading-relaxed max-w-xl mx-auto mb-10">
+        Registros ilimitados, insights inteligentes, relatório para pediatra e acesso
+        à Biblioteca de Guias — tudo num app feito para os primeiros meses com o bebê.
+      </p>
+
+      <a href="#planos" class="yp-btn-primary">
+        Ver planos e preços →
+      </a>
+
+      <p class="mt-5 text-yaya-cloud/30 text-xs font-sans">
+        Grátis para começar · Cancele quando quiser
+      </p>
+    </div>
+  </section>
+
+  <!-- ═══ FREE VS PLUS ════════════════════════════════════════════════════════ -->
+  <section class="max-w-2xl mx-auto px-5 py-16">
+    <div class="yp-compare-table">
+      <div class="yp-compare-header">
+        <div class="col-feature" />
+        <div class="col-plan text-center">
+          <span class="text-yaya-cloud/50 text-xs font-display font-bold uppercase tracking-wider">Grátis</span>
+        </div>
+        <div class="col-plan text-center">
+          <span class="yp-plus-label">Yaya+</span>
+        </div>
+      </div>
+      {[
+        ['Registros por dia', '5', 'Ilimitados'],
+        ['Histórico', '3 dias', 'Completo'],
+        ['Múltiplos bebês', '—', '✓'],
+        ['Insights com IA', '—', '✓'],
+        ['Família conectada', '—', '✓'],
+        ['Relatório para pediatra', '—', '✓'],
+        ['Biblioteca de Guias', '—', 'Anual e Vitalício'],
+      ].map(([feat, free, plus]) => (
+        <div class="yp-compare-row">
+          <div class="col-feature">{feat}</div>
+          <div class="col-plan text-center text-yaya-cloud/40 text-sm font-sans">{free}</div>
+          <div class="col-plan text-center text-sm font-sans yp-plus-col">{plus}</div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- ═══ FEATURES ════════════════════════════════════════════════════════════ -->
+  <section class="max-w-5xl mx-auto px-5 pb-20">
+    <div class="text-center mb-12">
+      <p class="text-xs font-display font-bold uppercase tracking-[0.18em] mb-3" style="color: #b79fff;">O que está incluso</p>
+      <h2 class="font-display font-bold text-3xl md:text-4xl text-yaya-cloud">
+        Tudo que você precisa,<br class="hidden md:block" /> num só lugar.
+      </h2>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      {features.map((f) => (
+        <div class="yp-feature-card">
+          <span class="text-2xl mb-3 block">{f.icon}</span>
+          <h3 class="font-display font-bold text-yaya-cloud text-[15px] mb-1.5">{f.title}</h3>
+          <p class="text-yaya-cloud/50 text-sm font-sans leading-relaxed">{f.desc}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- ═══ PRICING ═════════════════════════════════════════════════════════════ -->
+  <section id="planos" class="yp-pricing-section py-20">
+    <div class="max-w-4xl mx-auto px-5">
+      <div class="text-center mb-12">
+        <p class="text-xs font-display font-bold uppercase tracking-[0.18em] mb-3" style="color: #b79fff;">Planos</p>
+        <h2 class="font-display font-bold text-3xl md:text-4xl text-yaya-cloud mb-3">
+          Escolha o plano ideal para você.
+        </h2>
+        <p class="text-yaya-cloud/50 text-base font-sans">
+          Comece grátis. Evolua quando quiser.
+        </p>
+      </div>
+
+      <SubscriptionPlans client:only="react" />
+    </div>
+  </section>
+
+  <!-- ═══ TESTIMONIALS ════════════════════════════════════════════════════════ -->
+  <section class="max-w-5xl mx-auto px-5 py-20">
+    <div class="text-center mb-12">
+      <h2 class="font-display font-bold text-3xl text-yaya-cloud">O que as famílias dizem.</h2>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+      {testimonials.map((t) => (
+        <div class="yp-testimonial-card">
+          <div class="flex gap-0.5 mb-3">
+            <span style="color: #f5c842; font-size: 13px;">★★★★★</span>
+          </div>
+          <p class="text-yaya-cloud/70 text-sm font-sans leading-relaxed mb-5">"{t.text}"</p>
+          <div class="mt-auto">
+            <p class="text-yaya-cloud text-sm font-display font-bold">{t.name}</p>
+            <p class="text-yaya-cloud/40 text-xs font-sans mt-0.5">{t.role}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- ═══ FAQ ═════════════════════════════════════════════════════════════════ -->
+  <section class="max-w-2xl mx-auto px-5 pb-20">
+    <div class="text-center mb-10">
+      <h2 class="font-display font-bold text-3xl text-yaya-cloud">Dúvidas frequentes.</h2>
+    </div>
+    <div class="space-y-2.5">
+      {faqs.map((faq) => (
+        <details class="yp-faq-item">
+          <summary class="yp-faq-summary">
+            <span>{faq.q}</span>
+            <span class="yp-faq-arrow" aria-hidden="true">▾</span>
+          </summary>
+          <p class="yp-faq-answer">{faq.a}</p>
+        </details>
+      ))}
+    </div>
+  </section>
+
+  <!-- ═══ CTA FINAL ════════════════════════════════════════════════════════════ -->
+  <section class="px-5 pb-24">
+    <div class="max-w-lg mx-auto rounded-2xl p-px yp-cta-box">
+      <div class="rounded-2xl p-10 text-center" style="background: rgba(13,10,39,0.97);">
+        <p class="font-display font-bold text-[10px] uppercase tracking-[0.2em] mb-4" style="color: #b79fff;">✦ Comece hoje</p>
+        <h2 class="font-display font-bold text-3xl text-yaya-cloud mb-3">
+          Seu bebê não para de crescer.
+        </h2>
+        <p class="text-yaya-cloud/50 text-sm font-sans leading-relaxed mb-8">
+          Cada registro conta. Capture os momentos certos,<br class="hidden sm:block" />
+          entenda os padrões e cuide com mais confiança.
+        </p>
+        <a href="#planos" class="yp-btn-primary">
+          Assinar Yaya+ →
+        </a>
+        <p class="mt-5 text-yaya-cloud/25 text-xs font-sans">
+          Disponível na App Store e Google Play
+        </p>
+      </div>
+    </div>
+  </section>
+
+</BlogLayout>
+
+<style>
+/* ── Hero ───────────────────────────────────────────────────────────────────── */
+.yp-hero {
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(125% 125% at 50% 0%, #0d0a27 40%, #1a1145);
+}
+.yp-hero-glow {
+  position: absolute;
+  top: -10%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 700px;
+  height: 500px;
+  background: radial-gradient(ellipse at center, rgba(149,128,230,0.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+.yp-gradient-text {
+  background: linear-gradient(135deg, #ec4899 0%, #a855f7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.yp-badge {
+  background: rgba(183,159,255,0.08);
+  border: 1px solid rgba(183,159,255,0.18);
+  color: #b79fff;
+}
+.yp-btn-primary {
+  display: inline-block;
+  padding: 15px 32px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #ec4899 0%, #a855f7 100%);
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: Manrope, system-ui, sans-serif;
+  text-decoration: none;
+  box-shadow: 0 0 28px rgba(236,72,153,0.22);
+  transition: opacity 0.2s, transform 0.15s;
+}
+.yp-btn-primary:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+/* ── Compare table ──────────────────────────────────────────────────────────── */
+.yp-compare-table {
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.yp-compare-header,
+.yp-compare-row {
+  display: grid;
+  grid-template-columns: 1fr 100px 130px;
+  align-items: center;
+}
+.yp-compare-header {
+  padding: 12px 20px;
+  background: rgba(19,16,58,0.8);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.yp-compare-row {
+  padding: 11px 20px;
+  font-family: Plus Jakarta Sans, system-ui, sans-serif;
+  font-size: 13px;
+  color: rgba(231,226,255,0.6);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  background: rgba(13,10,39,0.6);
+}
+.yp-compare-row:last-child {
+  border-bottom: none;
+}
+.col-feature {
+  font-family: Plus Jakarta Sans, system-ui, sans-serif;
+}
+.col-plan {
+  text-align: center;
+}
+.yp-plus-label {
+  font-family: Manrope, system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  color: #b79fff;
+  letter-spacing: 0.04em;
+}
+.yp-plus-col {
+  color: rgba(183,159,255,0.85);
+  font-weight: 600;
+}
+
+/* ── Features ───────────────────────────────────────────────────────────────── */
+.yp-feature-card {
+  padding: 22px;
+  border-radius: 16px;
+  background: rgba(19,16,58,0.55);
+  border: 1px solid rgba(183,159,255,0.07);
+  transition: border-color 0.2s, transform 0.2s;
+}
+.yp-feature-card:hover {
+  border-color: rgba(183,159,255,0.18);
+  transform: translateY(-2px);
+}
+
+/* ── Pricing section ────────────────────────────────────────────────────────── */
+.yp-pricing-section {
+  background: linear-gradient(180deg, #0d0a27 0%, #13103a 50%, #0d0a27 100%);
+}
+
+/* ── Testimonials ───────────────────────────────────────────────────────────── */
+.yp-testimonial-card {
+  display: flex;
+  flex-direction: column;
+  padding: 22px;
+  border-radius: 16px;
+  background: rgba(19,16,58,0.5);
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+/* ── FAQ ────────────────────────────────────────────────────────────────────── */
+.yp-faq-item {
+  border-radius: 12px;
+  background: rgba(19,16,58,0.5);
+  border: 1px solid rgba(255,255,255,0.06);
+  overflow: hidden;
+}
+.yp-faq-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 20px;
+  font-family: Manrope, system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: rgba(231,226,255,0.88);
+  cursor: pointer;
+  list-style: none;
+}
+.yp-faq-summary::-webkit-details-marker { display: none; }
+.yp-faq-arrow {
+  color: #b79fff;
+  font-size: 16px;
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+details[open] .yp-faq-arrow { transform: rotate(180deg); }
+.yp-faq-answer {
+  padding: 0 20px 16px;
+  font-family: Plus Jakarta Sans, system-ui, sans-serif;
+  font-size: 13px;
+  color: rgba(231,226,255,0.52);
+  line-height: 1.65;
+  margin: 0;
+}
+
+/* ── CTA box ────────────────────────────────────────────────────────────────── */
+.yp-cta-box {
+  background: linear-gradient(135deg, rgba(149,128,230,0.35) 0%, rgba(236,72,153,0.25) 100%);
+}
+</style>

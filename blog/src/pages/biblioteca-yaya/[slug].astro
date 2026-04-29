@@ -1,9 +1,9 @@
----
+﻿---
 import BlogLayout from '../../layouts/BlogLayout.astro'
 import { supabase } from '../../lib/supabase'
 import type { Guide, GuideSection } from '../../types'
 import { marked } from 'marked'
-import GuideCTA from '../../sua-biblioteca/components/GuideCTA'
+import GuideCTA from '../../biblioteca-yaya/components/GuideCTA'
 
 const SITE = 'https://blog.yayababy.app'
 
@@ -31,7 +31,7 @@ const [{ data: guideData, error }, { data: sectionsData }] = await Promise.all([
 ])
 
 if (error || !guideData) {
-  return Astro.redirect('/sua-biblioteca')
+  return Astro.redirect('/biblioteca-yaya')
 }
 
 const guide = guideData as Guide
@@ -61,7 +61,7 @@ for (const s of previewSections) {
   }
 }
 
-const canonicalUrl = `${SITE}/sua-biblioteca/${slug}`
+const canonicalUrl = `${SITE}/biblioteca-yaya/${slug}`
 const priceFormatted = formatPrice(guide.price_cents)
 
 const breadcrumbLd = {
@@ -69,7 +69,7 @@ const breadcrumbLd = {
   '@type': 'BreadcrumbList',
   itemListElement: [
     { '@type': 'ListItem', position: 1, name: 'Blog', item: SITE },
-    { '@type': 'ListItem', position: 2, name: 'Biblioteca Yaya', item: `${SITE}/sua-biblioteca` },
+    { '@type': 'ListItem', position: 2, name: 'Biblioteca Yaya', item: `${SITE}/biblioteca-yaya` },
     { '@type': 'ListItem', position: 3, name: guide.title, item: canonicalUrl },
   ],
 }
@@ -107,7 +107,7 @@ const productLd = {
     <ol class="flex items-center gap-1.5 text-xs font-sans text-yaya-cloud/40 flex-wrap">
       <li><a href="/" class="hover:text-yaya-cloud transition-colors">Blog</a></li>
       <li aria-hidden="true" class="text-yaya-cloud/25">›</li>
-      <li><a href="/sua-biblioteca" class="hover:text-yaya-cloud transition-colors">Biblioteca Yaya</a></li>
+      <li><a href="/biblioteca-yaya" class="hover:text-yaya-cloud transition-colors">Biblioteca Yaya</a></li>
       <li aria-hidden="true" class="text-yaya-cloud/25">›</li>
       <li class="text-yaya-cloud/70 font-medium truncate max-w-[180px]">{guide.title}</li>
     </ol>

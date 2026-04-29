@@ -3,9 +3,12 @@
   "outputDirectory": "dist",
   "installCommand": "npm install",
   "framework": "astro",
+  "redirects": [
+    { "source": "/sua-biblioteca", "destination": "/biblioteca-yaya", "permanent": true },
+    { "source": "/sua-biblioteca/:path*", "destination": "/biblioteca-yaya/:path*", "permanent": true }
+  ],
   "rewrites": [
     { "source": "/admin/:path*", "destination": "/admin" },
-    { "source": "/sua-biblioteca/:slug/ler/:rest*", "destination": "/sua-biblioteca/:slug/ler" }
+    { "source": "/biblioteca-yaya/:slug/ler/:rest*", "destination": "/biblioteca-yaya/:slug/ler" }
   ]
 }
-
