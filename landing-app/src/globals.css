@@ -1,0 +1,124 @@
+@import "tailwindcss";
+
+@theme {
+  --color-night: #0d0a27;
+  --color-purple: #b79fff;
+  --color-glow: #ab8ffe;
+  --color-blush: #ff96b9;
+  --color-cloud: #e7e2ff;
+  --color-muted: rgba(231,226,255,0.5);
+  --color-surface: #181538;
+  --color-surface-low: #1a1835;
+  --color-surface-mid: #212040;
+  --color-surface-high: #292644;
+  --color-card: rgba(255,255,255,0.04);
+  --color-border: rgba(183,159,255,0.15);
+
+  --font-headline: 'Manrope', system-ui, sans-serif;
+  --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
+
+  --animate-fade-up: fade-up 0.7s ease-out both;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-glow-pulse: glow-pulse 4s ease-in-out infinite;
+  --animate-fade-in: fade-in 0.5s ease-out both;
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: var(--color-night);
+  color: var(--color-cloud);
+  font-family: var(--font-body);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Ambient glow */
+body::before {
+  content: '';
+  position: fixed;
+  top: -30%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120%;
+  height: 80%;
+  background: radial-gradient(ellipse, rgba(171,142,254,0.08) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Scroll reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger delays for children */
+.stagger > :nth-child(1) { transition-delay: 0ms; }
+.stagger > :nth-child(2) { transition-delay: 80ms; }
+.stagger > :nth-child(3) { transition-delay: 160ms; }
+.stagger > :nth-child(4) { transition-delay: 240ms; }
+.stagger > :nth-child(5) { transition-delay: 320ms; }
+.stagger > :nth-child(6) { transition-delay: 400ms; }
+
+/* Glass card */
+.glass {
+  background: rgba(255,255,255,0.04);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(183,159,255,0.12);
+}
+
+/* Phone mockup */
+.phone-frame {
+  width: 260px;
+  height: 520px;
+  border-radius: 36px;
+  border: 3px solid rgba(183,159,255,0.2);
+  background: #120f2c;
+  overflow: hidden;
+  position: relative;
+}
+
+.phone-notch {
+  width: 100px;
+  height: 24px;
+  background: #0d0a27;
+  border-radius: 0 0 14px 14px;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .phone-frame {
+    width: 300px;
+    height: 600px;
+  }
+}

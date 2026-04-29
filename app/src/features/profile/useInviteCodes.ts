@@ -69,7 +69,9 @@ export function useInviteCodes() {
       .eq('baby_id', baby.id)
       .eq('active', true)
 
-    const newCode = Math.random().toString(36).substring(2, 8).toUpperCase()
+    const arr = new Uint8Array(4)
+    crypto.getRandomValues(arr)
+    const newCode = Array.from(arr, b => b.toString(36)).join('').substring(0, 6).toUpperCase()
     const expiresAt = new Date(
       Date.now() + INVITE_EXPIRY_DAYS * 24 * 60 * 60 * 1000,
     ).toISOString()

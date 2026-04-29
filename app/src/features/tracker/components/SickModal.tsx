@@ -109,12 +109,12 @@ export default function SickModal({ babyName, initialLog, onConfirm, onDelete, o
               <div className="flex-1">
                 <p className="font-label text-xs text-on-surface-variant mb-1.5">Data</p>
                 <input type="date" value={dateVal} onChange={(e) => setDateVal(e.target.value)}
-                  className="w-full px-3 py-2 rounded-md bg-surface-container border border-outline-variant text-on-surface font-body text-sm focus:outline-none focus:border-primary" />
+                  className="w-full px-3 py-3 rounded-md bg-surface-container border border-outline-variant text-on-surface font-body text-sm focus:outline-none focus:border-primary min-h-[44px]" />
               </div>
               <div className="flex-1">
                 <p className="font-label text-xs text-on-surface-variant mb-1.5">Horário</p>
                 <input type="time" value={timeVal} onChange={(e) => setTimeVal(e.target.value)}
-                  className="w-full px-3 py-2 rounded-md bg-surface-container border border-outline-variant text-on-surface font-body text-sm focus:outline-none focus:border-primary" />
+                  className="w-full px-3 py-3 rounded-md bg-surface-container border border-outline-variant text-on-surface font-body text-sm focus:outline-none focus:border-primary min-h-[44px]" />
               </div>
             </div>
           )}

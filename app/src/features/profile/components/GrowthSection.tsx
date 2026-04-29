@@ -119,8 +119,8 @@ export default function GrowthSection({ babyId, readOnly = false, birthDate, gen
 
   const handleDelete = async (id: string) => {
     hapticLight();
-    await supabase.from('measurements').delete().eq('id', id);
-    await loadMeasurements();
+    const { error } = await supabase.from('measurements').delete().eq('id', id);
+    if (!error) await loadMeasurements();
   };
 
   const handleEdit = (m: Measurement) => {
