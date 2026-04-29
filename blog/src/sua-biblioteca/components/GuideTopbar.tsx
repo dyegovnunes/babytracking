@@ -59,7 +59,7 @@ export default function GuideTopbar({
         backdropFilter: 'blur(16px)',
         WebkitBackdropFilter: 'blur(16px)',
         borderBottom: '1px solid var(--r-border)',
-        zIndex: 30,
+        zIndex: 60,
         display: 'flex',
         alignItems: 'center',
         padding: '0 8px',

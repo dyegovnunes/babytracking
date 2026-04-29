@@ -49,6 +49,7 @@ import AllergenPanel from './components/AllergenPanel'
 import PottyPanel from './components/PottyPanel'
 import TwoYearSummaryModal from './components/TwoYearSummaryModal'
 import type { LogEntry, MealPayload, MoodPayload, SickPayload } from '../../types'
+import { useContentArticles, ContentArticleCard } from '../content'
 
 const PROJECTION_CATEGORIES: string[] = ['feed', 'diaper', 'sleep_nap', 'sleep_awake', 'bath']
 
@@ -212,6 +213,14 @@ export default function TrackerPage() {
     const last4h = timelineItems.filter((i) => i.ts >= fourHoursAgo)
     return last4h.length >= 5 ? last4h : timelineItems.slice(0, 5)
   }, [timelineItems])
+
+  // Artigo contextual do blog (1 artigo para a fase do bebê)
+  const babyAgeWeeks = ageDays > 0 ? Math.floor(ageDays / 7) : 0
+  const { articles: contentArticles, dismissArticle } = useContentArticles(babyAgeWeeks, {
+    limit: 1,
+    utmMedium: 'home_card',
+  })
+  const contentArticle = contentArticles[0] ?? null
 
   // Highlights strip (saltos + marcos + vacinas + medicamentos)
   const [highlightsTick, setHighlightsTick] = useState(0)
@@ -769,6 +778,14 @@ export default function TrackerPage() {
           babyGender={baby.gender}
           birthDate={baby.birthDate}
           onChange={() => setHighlightsTick((t) => t + 1)}
+        />
+      )}
+
+      {/* Artigo contextual do blog — entre highlights e registros recentes */}
+      {contentArticle && (
+        <ContentArticleCard
+          article={contentArticle}
+          onDismiss={() => dismissArticle(contentArticle.slug)}
         />
       )}
 
