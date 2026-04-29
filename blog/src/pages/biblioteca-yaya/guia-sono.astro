@@ -1,0 +1,569 @@
+---
+import BlogLayout from '../../layouts/BlogLayout.astro'
+import { supabase } from '../../lib/supabase'
+import type { Guide, GuideSection } from '../../types'
+import { marked } from 'marked'
+import GuideCTA from '../../sua-biblioteca/components/GuideCTA'
+
+const SITE = 'https://blog.yayababy.app'
+const GUIDE_SLUG = 'guia-sono'
+
+const [{ data: guideData, error }, { data: sectionsData }] = await Promise.all([
+  supabase
+    .from('guides')
+    .select('*')
+    .eq('slug', GUIDE_SLUG)
+    .eq('status', 'published')
+    .single(),
+  supabase
+    .from('guide_sections')
+    .select('id, guide_id, parent_id, order_index, slug, title, cover_image_url, estimated_minutes, content_md, type, is_preview')
+    .order('order_index', { ascending: true }),
+])
+
+if (error || !guideData) {
+  return Astro.redirect('/biblioteca-yaya')
+}
+
+const guide = guideData as Guide
+const allSections = (sectionsData ?? []) as GuideSection[]
+const guideSections = allSections.filter((s) => s.guide_id === guide.id)
+
+const parts = guideSections.filter((s) => s.type === 'part' && !s.parent_id)
+const sectionsByPart: Record<string, GuideSection[]> = {}
+for (const s of guideSections) {
+  if (s.type !== 'part' && s.parent_id) {
+    if (!sectionsByPart[s.parent_id]) sectionsByPart[s.parent_id] = []
+    sectionsByPart[s.parent_id].push(s)
+  }
+}
+const previewSections = guideSections.filter((s) => s.is_preview && s.type !== 'part')
+const totalMinutes = guideSections.reduce((acc, s) => acc + (s.estimated_minutes ?? 0), 0)
+
+function formatPrice(cents: number): string {
+  return `R$ ${Math.floor(cents / 100)}`
+}
+
+marked.setOptions({ gfm: true })
+const previewHtml: Record<string, string> = {}
+for (const s of previewSections) {
+  if (s.content_md) {
+    previewHtml[s.id] = await marked.parse(s.content_md)
+  }
+}
+
+const canonicalUrl = `${SITE}/biblioteca-yaya/${GUIDE_SLUG}`
+const priceFormatted = formatPrice(guide.price_cents)
+
+const breadcrumbLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Blog', item: SITE },
+    { '@type': 'ListItem', position: 2, name: 'Biblioteca Yaya', item: `${SITE}/biblioteca-yaya` },
+    { '@type': 'ListItem', position: 3, name: guide.title, item: canonicalUrl },
+  ],
+}
+
+const productLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: guide.title,
+  description: guide.description ?? guide.subtitle ?? '',
+  image: guide.cover_image_url ? [guide.cover_image_url] : undefined,
+  url: canonicalUrl,
+  brand: { '@type': 'Brand', name: 'Yaya Baby' },
+  offers: {
+    '@type': 'Offer',
+    price: (guide.price_cents / 100).toFixed(2),
+    priceCurrency: 'BRL',
+    availability: 'https://schema.org/InStock',
+    url: canonicalUrl,
+    seller: { '@type': 'Organization', name: 'Yaya Baby' },
+  },
+}
+---
+
+<BlogLayout
+  title={`${guide.title} — Sua Biblioteca Yaya`}
+  description={guide.description ?? guide.subtitle ?? `Guia completo do sono infantil do recém-nascido ao toddler. Métodos comparados, regressões explicadas, rotinas com evidências SBP.`}
+  canonicalUrl={canonicalUrl}
+  image={guide.cover_image_url ?? undefined}
+>
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(productLd)} />
+
+  <!-- Breadcrumb -->
+  <nav class="max-w-5xl mx-auto px-4 pt-6 pb-0">
+    <ol class="flex items-center gap-1.5 text-xs font-sans text-yaya-cloud/40 flex-wrap">
+      <li><a href="/" class="hover:text-yaya-cloud transition-colors">Blog</a></li>
+      <li aria-hidden="true" class="text-yaya-cloud/25">›</li>
+      <li><a href="/biblioteca-yaya" class="hover:text-yaya-cloud transition-colors">Biblioteca Yaya</a></li>
+      <li aria-hidden="true" class="text-yaya-cloud/25">›</li>
+      <li class="text-yaya-cloud/70 font-medium truncate max-w-[180px]">{guide.title}</li>
+    </ol>
+  </nav>
+
+  <!-- ── Hero split ── -->
+  <section class="lp-hero relative overflow-hidden">
+    <div class="lp-glow-blob" aria-hidden="true" />
+
+    <div class="relative z-10 max-w-5xl mx-auto px-4 py-14 md:py-20">
+      <div class="flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
+
+        <!-- Imagem do guia (esquerda) -->
+        {guide.cover_image_url && (
+          <div class="w-full lg:w-[44%] shrink-0">
+            <div class="relative rounded-2xl overflow-hidden shadow-2xl" style="aspect-ratio: 3/4;">
+              <img
+                src={guide.cover_image_url}
+                alt={guide.title}
+                class="w-full h-full object-cover"
+                loading="eager"
+                decoding="async"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-[#0d0a27]/60 via-transparent to-transparent" />
+            </div>
+          </div>
+        )}
+
+        <!-- Copy + CTA (direita) -->
+        <div class={`flex-1 ${guide.cover_image_url ? 'text-center lg:text-left' : 'text-center max-w-2xl mx-auto'}`}>
+          <p class="text-[11px] font-display font-bold uppercase tracking-[0.22em] mb-4" style="color: rgba(183,159,255,0.7);">
+            ✦ Guia completo · Do RN ao toddler
+          </p>
+          <h1
+            class="font-display font-bold text-3xl md:text-4xl lg:text-[2.6rem] mb-4 leading-[1.15]"
+            style="color: #e7e2ff;"
+          >
+            Seu filho não está dormindo.<br />
+            <span style="color: #b79fff;">Você também não.</span>
+          </h1>
+
+          {guide.description && (
+            <p class="text-yaya-cloud/55 font-sans text-base leading-relaxed mb-7 max-w-md">
+              {guide.description}
+            </p>
+          )}
+
+          <!-- Meta stats -->
+          <div class="flex flex-wrap items-center gap-4 text-xs font-sans text-yaya-cloud/45 mb-8 justify-center lg:justify-start">
+            {totalMinutes > 0 && (
+              <span class="flex items-center gap-1.5">⏱ ~{totalMinutes} min de leitura</span>
+            )}
+            {parts.length > 0 && (
+              <span class="flex items-center gap-1.5">📖 {parts.length} {parts.length === 1 ? 'módulo' : 'módulos'}</span>
+            )}
+            {previewSections.length > 0 && (
+              <span class="flex items-center gap-1.5" style="color: rgba(183,159,255,0.6);">🔓 Amostra grátis</span>
+            )}
+          </div>
+
+          <!-- CTA hero -->
+          <div class="flex flex-col items-center lg:items-start gap-3 max-w-xs mx-auto lg:mx-0">
+            <a href="#cta-final" class="lp-btn-primary w-full text-center">
+              Quero o guia por {priceFormatted} →
+            </a>
+            <p class="text-yaya-cloud/30 text-xs font-sans">7 dias de garantia · Acesso imediato · Stripe</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Layout principal: conteúdo + sidebar ── -->
+  <section class="max-w-5xl mx-auto px-4 pb-36">
+    <div class="flex flex-col lg:flex-row gap-10 lg:items-start">
+
+      <!-- ── Coluna esquerda ── -->
+      <div class="flex-1 min-w-0">
+
+        {guide.description && (
+          <p class="text-yaya-cloud/65 font-sans text-base leading-relaxed mb-8">{guide.description}</p>
+        )}
+
+        <!-- O que você vai encontrar (TOC colapsível) -->
+        {parts.length > 0 && (
+          <div class="mb-10">
+            <h2 class="lp-section-title">O que você vai encontrar</h2>
+            <div class="space-y-3">
+              {parts.map((part, i) => {
+                const children = sectionsByPart[part.id] ?? []
+                return (
+                  <details class="group rounded-xl border border-yaya-cloud/8 bg-yaya-cloud/[0.025] hover:border-yaya-cloud/[0.12] transition-colors">
+                    <summary class="flex items-center gap-3 px-4 py-3.5 cursor-pointer list-none">
+                      <span class="flex-none w-6 h-6 rounded-full text-xs font-display font-bold flex items-center justify-center"
+                            style="background: rgba(183,159,255,0.15); color: #b79fff;">
+                        {i + 1}
+                      </span>
+                      <span class="flex-1 text-yaya-cloud font-sans font-semibold text-sm leading-snug">{part.title}</span>
+                      {part.estimated_minutes && (
+                        <span class="text-yaya-cloud/35 text-xs font-sans shrink-0">{part.estimated_minutes} min</span>
+                      )}
+                      <span class="text-yaya-cloud/30 text-xs shrink-0 group-open:rotate-180 transition-transform">▾</span>
+                    </summary>
+                    {children.length > 0 && (
+                      <ul class="px-4 pb-4 pt-1 space-y-1.5">
+                        {children.map((child) => (
+                          <li class="flex items-center gap-2.5 text-xs font-sans text-yaya-cloud/55">
+                            <span class="text-yaya-cloud/25 shrink-0">○</span>
+                            <span class="leading-snug">{child.title}</span>
+                            {child.is_preview && (
+                              <span class="ml-auto shrink-0 font-bold uppercase tracking-wide text-[10px]" style="color: rgba(183,159,255,0.7);">grátis</span>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </details>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
+        <!-- Amostra grátis -->
+        {previewSections.length > 0 && (
+          <div class="mb-10">
+            <div class="flex items-center gap-2 mb-5">
+              <span class="flex-none w-px h-5 rounded-full" style="background: rgba(183,159,255,0.5);"></span>
+              <h2 class="lp-section-title" style="margin-bottom: 0;">Amostra grátis</h2>
+            </div>
+            <div class="space-y-8">
+              {previewSections.map((section) => (
+                <div class="rounded-xl border border-yaya-cloud/8 bg-yaya-cloud/[0.02] p-5 md:p-6 overflow-hidden relative">
+                  <h3 class="font-display font-bold text-[11px] uppercase tracking-widest mb-3" style="color: rgba(183,159,255,0.8);">
+                    {section.title}
+                  </h3>
+                  <div
+                    class="prose-yaya text-yaya-cloud/70 font-sans text-sm leading-relaxed"
+                    set:html={previewHtml[section.id] ?? ''}
+                  />
+                  <div class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-yaya-night/95 to-transparent pointer-events-none" />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <!-- ── Checklist de benefícios ── -->
+        <div class="lp-benefit-block mb-10">
+          <ul class="space-y-3">
+            {[
+              '4 módulos cronológicos (0-3, 3-6, 6-12 e 12-24 meses) com fisiologia e estratégias práticas',
+              'Comparação honesta de métodos: Ferber, no-cry, fading e chair method — sem escolher um lado',
+              'Regressões explicadas por fase: 4 meses, 8-9 meses, 12 meses e 18 meses',
+              'Quiz: descubra qual abordagem combina com a dinâmica da sua família',
+              'Checklist de ambiente de sono seguro com base nas diretrizes da SBP (2023)',
+              'Tabela de janelas de sono por fase para consulta rápida no dia a dia',
+            ].map((item) => (
+              <li class="flex items-start gap-3 text-sm font-sans text-yaya-cloud/80">
+                <span class="flex-none mt-0.5 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
+                      style="background: rgba(183,159,255,0.15); color: #b79fff;">✓</span>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <!-- ── Para quem é ── -->
+        <div class="mb-10">
+          <h2 class="lp-section-title">Para quem é este guia</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="rounded-xl p-5" style="background: rgba(183,159,255,0.05); border: 1px solid rgba(183,159,255,0.18);">
+              <p class="font-display font-bold text-[11px] uppercase tracking-widest mb-3" style="color: rgba(183,159,255,0.9);">Para você se</p>
+              <ul class="space-y-2.5">
+                {[
+                  'Bebê acorda várias vezes por noite e você não sabe o que é normal',
+                  'Quer estruturar uma rotina mas não sabe qual método faz sentido',
+                  'O sono era bom e piorou de repente (regressão)',
+                  'Ouviu falar de Ferber e no-cry mas não sabe qual escolher',
+                  'Quer entender a fisiologia antes de tentar qualquer coisa',
+                ].map((item) => (
+                  <li class="flex items-start gap-2 text-xs font-sans text-yaya-cloud/75">
+                    <span class="mt-0.5 shrink-0" style="color: #b79fff;">✓</span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div class="rounded-xl p-5" style="background: rgba(231,226,255,0.02); border: 1px solid rgba(231,226,255,0.07);">
+              <p class="font-display font-bold text-[11px] uppercase tracking-widest mb-3 text-yaya-cloud/35">Não é para você se</p>
+              <ul class="space-y-2.5">
+                {[
+                  'Bebê já tem mais de 2 anos (o foco do guia é 0-24 meses)',
+                  'Procura uma promessa de que o bebê vai dormir a noite toda em X dias',
+                  'Procura suporte terapêutico individualizado com profissional de saúde',
+                ].map((item) => (
+                  <li class="flex items-start gap-2 text-xs font-sans text-yaya-cloud/45">
+                    <span class="mt-0.5 shrink-0 text-yaya-cloud/25">✗</span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Garantia ── -->
+        <div class="mb-10 rounded-xl p-6 flex gap-4 items-start"
+             style="background: rgba(183,159,255,0.06); border: 1px solid rgba(183,159,255,0.15);">
+          <span class="text-3xl shrink-0 leading-none mt-0.5">🛡️</span>
+          <div>
+            <p class="font-display font-bold text-sm text-yaya-cloud mb-1.5">7 dias de garantia, sem perguntas</p>
+            <p class="text-yaya-cloud/55 text-sm font-sans leading-relaxed">
+              Se você comprar o guia, ler e achar que não valeu o que pagou, devolvemos {priceFormatted} integrais
+              em até 7 dias. Sem formulário complicado, sem justificativa.
+              Isso existe porque acreditamos no conteúdo.
+            </p>
+          </div>
+        </div>
+
+        <!-- ── FAQ ── -->
+        <div class="mb-10">
+          <h2 class="lp-section-title">Perguntas frequentes</h2>
+          <div class="space-y-2">
+            {[
+              {
+                q: 'Quando recebo o acesso?',
+                a: 'Imediatamente após a confirmação do pagamento. Você recebe um email com o link de acesso e pode ler no celular, computador ou tablet.',
+              },
+              {
+                q: 'O guia é atualizado? Vou precisar comprar de novo?',
+                a: 'Não. Atualizações futuras chegam para quem já comprou sem custo adicional.',
+              },
+              {
+                q: 'O guia indica qual método usar?',
+                a: 'Não. A abordagem é comparativa: apresentamos as evidências e os trade-offs de Ferber, no-cry, fading e chair method para você decidir o que faz sentido para a sua família. O quiz ajuda a identificar o perfil mais provável.',
+              },
+              {
+                q: 'Funciona para bebê de qualquer idade até 2 anos?',
+                a: 'Sim. O guia cobre o RN (0-3 meses), 3-6 meses, 6-12 meses e 12-24 meses. Você pode ir direto para o módulo da fase atual do seu bebê.',
+              },
+              {
+                q: 'Preciso ter o app Yaya para usar o guia?',
+                a: 'Não. O guia funciona de forma independente. Mas o Yaya potencializa a experiência: ao longo do guia há sugestões de como usar os dados do app para tomar decisões mais informadas sobre o sono.',
+              },
+              {
+                q: 'E se eu tiver dúvidas depois de comprar?',
+                a: 'Você pode usar a yaIA, a assistente de IA do Yaya, para tirar dúvidas baseadas no conteúdo do guia a qualquer hora.',
+              },
+            ].map(({ q, a }) => (
+              <details class="lp-faq-item group rounded-xl border border-yaya-cloud/8 bg-yaya-cloud/[0.02]">
+                <summary class="flex items-center justify-between gap-3 px-5 py-4 cursor-pointer list-none">
+                  <span class="text-sm font-sans font-semibold text-yaya-cloud leading-snug">{q}</span>
+                  <span class="text-yaya-cloud/30 text-sm shrink-0 group-open:rotate-180 transition-transform">▾</span>
+                </summary>
+                <p class="px-5 pb-4 text-sm font-sans text-yaya-cloud/55 leading-relaxed">{a}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+
+        <!-- ── Prova social ── -->
+        <div class="mb-10">
+          <h2 class="lp-section-title">O que quem leu diz</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {[
+              {
+                text: 'A regressão dos 4 meses foi o pior momento. Entrei em pânico. Depois de ler o guia percebi que era esperado e o que fazer. Isso mudou tudo.',
+                name: 'Ana L.',
+                ctx: 'Filho de 5 meses',
+              },
+              {
+                text: 'Finalmente entendi a diferença entre Ferber e no-cry sem ninguém me dizendo qual é o certo. Escolhemos o fading e em 3 semanas melhorou muito.',
+                name: 'Bruno R.',
+                ctx: 'Filha de 7 meses',
+              },
+              {
+                text: 'A tabela de janelas de sono ficou colada na porta do quarto. Salvou muitas noites durante a transição das sestas.',
+                name: 'Mariana V.',
+                ctx: 'Filho de 11 meses',
+              },
+            ].map(({ text, name, ctx }) => (
+              <div class="rounded-xl p-5" style="background: rgba(183,159,255,0.04); border: 1px solid rgba(183,159,255,0.12);">
+                <p class="text-yaya-cloud/65 font-sans text-xs leading-relaxed mb-4 italic">"{text}"</p>
+                <div>
+                  <p class="text-yaya-cloud text-xs font-sans font-semibold">{name}</p>
+                  <p class="text-yaya-cloud/40 text-xs font-sans">{ctx}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <!-- ── CTA final ── -->
+        <div
+          id="cta-final"
+          class="rounded-2xl p-8 text-center"
+          style="background: radial-gradient(ellipse at 50% 0%, #1a1145 0%, #0d0a27 70%); border: 1px solid rgba(183,159,255,0.2);"
+        >
+          <p class="font-display font-bold text-[11px] uppercase tracking-widest mb-3" style="color: rgba(183,159,255,0.7);">✦ Acesso completo</p>
+          <h2 class="font-display font-bold text-2xl md:text-3xl text-yaya-cloud mb-2 leading-tight">
+            Chega de pesquisar às 3 da manhã<br class="hidden sm:block" />
+            sem saber o que procurar.
+          </h2>
+          <p class="text-yaya-cloud/45 font-sans text-sm mb-6">Um guia. Quatro fases. Do recém-nascido ao toddler.</p>
+          <div class="flex items-baseline justify-center gap-2 mb-6">
+            <span class="font-display font-bold text-4xl" style="color: #b79fff;">{priceFormatted}</span>
+            <span class="text-yaya-cloud/40 text-sm font-sans">pagamento único</span>
+          </div>
+          <div class="max-w-xs mx-auto">
+            <GuideCTA client:only="react" guideSlug={GUIDE_SLUG} priceFormatted={priceFormatted} />
+          </div>
+          <p class="mt-5 text-yaya-cloud/25 text-xs font-sans">7 dias de garantia · Pagamento seguro via Stripe</p>
+        </div>
+
+      </div>
+
+      <!-- ── Sidebar (sticky, desktop) ── -->
+      <aside class="lg:w-72 shrink-0">
+        <div class="lp-sidebar sticky top-24 rounded-2xl p-6">
+          <p class="text-yaya-cloud/35 text-xs font-sans uppercase tracking-wider text-center mb-1.5">Acesso completo</p>
+          <div class="flex items-baseline justify-center gap-2 mb-5">
+            <span class="font-display font-bold text-4xl tracking-tight" style="color: #b79fff;">
+              {priceFormatted}
+            </span>
+            <span class="text-yaya-cloud/35 text-sm font-sans">único</span>
+          </div>
+
+          <ul class="space-y-2 mb-6 text-xs font-sans text-yaya-cloud/60">
+            {[
+              'Acesso completo + atualizações',
+              '30 dias de Yaya+ grátis',
+              'Celular, tablet ou computador',
+              '7 dias de garantia',
+            ].map((item) => (
+              <li class="flex items-center gap-2">
+                <span style="color: #b79fff; flex-shrink: 0;">✓</span>
+                {item}
+              </li>
+            ))}
+          </ul>
+
+          <GuideCTA client:only="react" guideSlug={GUIDE_SLUG} priceFormatted={priceFormatted} />
+
+          <p class="mt-4 text-center text-yaya-cloud/20 text-xs font-sans">Pagamento seguro via Stripe</p>
+        </div>
+      </aside>
+
+    </div>
+  </section>
+
+  <!-- ── Sticky CTA mobile ── -->
+  <div
+    id="lp-sticky-cta"
+    class="fixed bottom-0 left-0 right-0 z-50 lg:hidden px-4 pb-safe-or-4 pt-3 lp-sticky-inner transition-all duration-300 translate-y-full"
+    aria-hidden="true"
+  >
+    <div class="flex items-center gap-3 max-w-sm mx-auto">
+      <div class="flex-1 min-w-0">
+        <p class="text-yaya-cloud text-xs font-sans font-semibold truncate">{guide.title}</p>
+        <p class="text-xs font-sans" style="color: rgba(183,159,255,0.9);">{priceFormatted} · 7 dias de garantia</p>
+      </div>
+      <a href="#cta-final" class="lp-btn-primary shrink-0 px-5 py-2.5 text-sm">
+        Comprar →
+      </a>
+    </div>
+  </div>
+
+  <script is:inline>
+    ;(function () {
+      var sticky = document.getElementById('lp-sticky-cta')
+      var ctaFinal = document.getElementById('cta-final')
+      var hero = document.querySelector('.lp-hero')
+      if (!sticky || !ctaFinal) return
+
+      function updateSticky() {
+        var scrollY = window.scrollY
+        var heroH = hero ? hero.offsetHeight : 350
+        var ctaTop = ctaFinal.getBoundingClientRect().top
+        var ctaVisible = ctaTop < window.innerHeight - 80
+
+        if (scrollY > heroH && !ctaVisible) {
+          sticky.classList.remove('translate-y-full')
+          sticky.removeAttribute('aria-hidden')
+        } else {
+          sticky.classList.add('translate-y-full')
+          sticky.setAttribute('aria-hidden', 'true')
+        }
+      }
+
+      window.addEventListener('scroll', updateSticky, { passive: true })
+      updateSticky()
+    })()
+  </script>
+</BlogLayout>
+
+<style is:global>
+  .lp-hero { background: #0d0a27; }
+
+  .lp-glow-blob {
+    position: absolute; top: -10%; right: -5%;
+    width: 55%; height: 80%; border-radius: 50%;
+    background: radial-gradient(ellipse at center,
+      rgba(168, 85, 247, 0.18) 0%, rgba(236, 72, 153, 0.08) 40%, transparent 70%);
+    pointer-events: none; z-index: 0;
+  }
+
+  .lp-btn-primary {
+    display: inline-block; padding: 14px 28px; border-radius: 12px; border: none;
+    background: linear-gradient(135deg, #ec4899 0%, #a855f7 100%);
+    color: #ffffff; font-size: 15px; font-weight: 700;
+    font-family: 'Manrope', system-ui, sans-serif;
+    letter-spacing: 0.01em; cursor: pointer; text-decoration: none;
+    transition: opacity 0.2s; box-shadow: 0 0 32px rgba(236, 72, 153, 0.25);
+  }
+  .lp-btn-primary:hover { opacity: 0.88; }
+
+  .lp-section-title {
+    font-family: 'Manrope', system-ui, sans-serif;
+    font-weight: 700; color: rgba(231, 226, 255, 0.88);
+    font-size: 1.2rem; margin-bottom: 1rem;
+  }
+
+  .lp-benefit-block {
+    padding: 1.5rem; border-radius: 0.75rem;
+    border: 1px solid rgba(183, 159, 255, 0.15);
+    background: rgba(183, 159, 255, 0.04);
+  }
+
+  .lp-faq-item[open] {
+    border-color: rgba(183, 159, 255, 0.18);
+    background: rgba(183, 159, 255, 0.04);
+  }
+
+  .lp-sidebar {
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(183, 159, 255, 0.2);
+    box-shadow: 0 0 40px rgba(183, 159, 255, 0.07);
+  }
+
+  .lp-sticky-inner {
+    background: rgba(13, 10, 39, 0.92);
+    border-top: 1px solid rgba(183, 159, 255, 0.14);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  }
+  @supports (padding-bottom: env(safe-area-inset-bottom)) {
+    .lp-sticky-inner { padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
+  }
+
+  .prose-yaya h2, .prose-yaya h3, .prose-yaya h4 {
+    font-family: 'Manrope', system-ui, sans-serif; font-weight: 700;
+    color: rgba(231, 226, 255, 0.9); margin: 1.25em 0 0.5em; line-height: 1.3;
+  }
+  .prose-yaya h2 { font-size: 1.15rem; }
+  .prose-yaya h3 { font-size: 1rem; }
+  .prose-yaya p { margin: 0 0 0.9em; line-height: 1.75; }
+  .prose-yaya p:last-child { margin-bottom: 0; }
+  .prose-yaya ul, .prose-yaya ol { padding-left: 1.25em; margin: 0 0 0.9em; }
+  .prose-yaya li { margin-bottom: 0.3em; line-height: 1.65; }
+  .prose-yaya strong { color: rgba(231, 226, 255, 0.9); font-weight: 700; }
+  .prose-yaya em { font-style: italic; }
+  .prose-yaya blockquote {
+    border-left: 3px solid rgba(183, 159, 255, 0.4); margin-left: 0;
+    padding-left: 1em; color: rgba(231, 226, 255, 0.55); font-style: italic;
+  }
+  .prose-yaya a { color: #b79fff; text-underline-offset: 3px; }
+</style>
