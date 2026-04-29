@@ -34,6 +34,7 @@ function formatPrice(cents: number): string {
 
 function audienceLabel(g: Guide): string {
   if (g.audience === 'gestante') return '🤰 Gestação'
+  if (g.audience === 'bebe') return '👶 0–12 meses'
   const w = g.target_week_start ?? 0
   if (w <= 0) return '👶 Bebê'
   if (w <= 12) return '👶 0–3 meses'
@@ -103,7 +104,7 @@ function audienceLabel(g: Guide): string {
           >
             <a
               href={`/biblioteca-yaya/${guide.slug}`}
-              class="group guide-card-inner block rounded-2xl overflow-hidden bg-yaya-night transition-all duration-300"
+              class="group guide-card-inner flex flex-col rounded-2xl overflow-hidden bg-yaya-night transition-all duration-300 h-full"
             >
               <!-- Cover image -->
               <div class="relative aspect-[3/2] overflow-hidden" style="background: rgba(183,159,255,0.08);">
@@ -141,20 +142,18 @@ function audienceLabel(g: Guide): string {
               </div>
 
               <!-- Conteúdo do card -->
-              <div class="p-5">
+              <div class="p-5 flex flex-col flex-1">
                 <h2
                   class="font-display text-yaya-cloud font-bold text-lg leading-snug mb-1.5 line-clamp-2 transition-colors duration-200 group-hover:text-yaya-purple"
                 >
                   {guide.title}
                 </h2>
-                {guide.subtitle && (
-                  <p class="text-yaya-cloud/50 text-sm font-sans leading-snug mb-4 line-clamp-2">
-                    {guide.subtitle}
-                  </p>
-                )}
+                <p class="text-yaya-cloud/50 text-sm font-sans leading-snug mb-4 line-clamp-2 flex-1">
+                  {guide.subtitle ?? ''}
+                </p>
 
                 <!-- Rodapé: preço + CTA -->
-                <div class="flex items-center justify-between pt-3" style="border-top: 1px solid rgba(245,200,66,0.1);">
+                <div class="flex items-center justify-between pt-3 mt-auto" style="border-top: 1px solid rgba(245,200,66,0.1);">
                   <div>
                     <span class="font-display font-bold text-base" style="color: #f5c842;">{price}</span>
                     <span class="text-yaya-cloud/30 text-xs font-sans ml-1.5">ou Yaya+ Anual</span>
