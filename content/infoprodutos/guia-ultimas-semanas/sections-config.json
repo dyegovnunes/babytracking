@@ -1,0 +1,25 @@
+{
+  "_version": "1.1",
+  "_updated": "2026-04-29",
+  "_guide": "ultimas-semanas",
+  "_notes": [
+    "Overrides estruturais por slug de seção.",
+    "Slugs são gerados automaticamente pelo seed script (slugifySectionTitle).",
+    "Campos suportados por seção: type, is_preview.",
+    "  type: 'linear' | 'checklist' | 'quiz' | 'flashcards' | 'part'",
+    "  is_preview: true | false  (aparece como amostra gratuita na landing)",
+    "Para encontrar o slug de uma seção: olhar o título do ### no .md e aplicar:",
+    "  'N.M Título longo' → 'NM-titulo' (apenas as primeiras palavras do título antes de ':' ou '(')",
+    "  Outros títulos → kebab-case sem acentos"
+  ],
+  "sections": {
+    "checklist-mestre-o-que-voce-precisa-garantir": {
+      "type": "checklist",
+      "note": "Checklist interativo — estado salvo em guide_checklist_state no banco. NÃO mudar para 'linear' sem revisar o UX."
+    },
+    "11-enxoval": {
+      "is_preview": true,
+      "note": "Amostra gratuita: primeira seção de conteúdo pago (Parte 1). Visível na landing sem login."
+    }
+  }
+}

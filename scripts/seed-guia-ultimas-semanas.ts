@@ -29,10 +29,42 @@ const REPO_ROOT = path.resolve(__dirname, '..')
 const CONTENT_DIR = path.join(REPO_ROOT, 'content', 'infoprodutos', 'guia-ultimas-semanas')
 const MD_FILE = path.join(CONTENT_DIR, 'guia-ultimas-semanas.md')
 const FLASHCARDS_FILE = path.join(CONTENT_DIR, 'flashcards.md')
+const SECTIONS_CONFIG_FILE = path.join(CONTENT_DIR, 'sections-config.json')
 const IMG_DIR = path.join(CONTENT_DIR, 'imagens')
 const GUIDE_SLUG = 'ultimas-semanas'
 const STORAGE_BUCKET = 'guide-images'
 const STORAGE_PREFIX = `${GUIDE_SLUG}/img`
+
+// ── Tipos do sections-config.json ──────────────────────────────────────────
+interface SectionConfigEntry {
+  type?: 'linear' | 'checklist' | 'quiz' | 'flashcards' | 'part'
+  is_preview?: boolean
+  note?: string
+}
+interface SectionsConfig {
+  _version?: string
+  sections: Record<string, SectionConfigEntry>
+}
+
+async function loadSectionsConfig(): Promise<SectionsConfig> {
+  try {
+    const raw = await fs.readFile(SECTIONS_CONFIG_FILE, 'utf-8')
+    const config = JSON.parse(raw) as SectionsConfig
+    const count = Object.keys(config.sections ?? {}).length
+    console.log(`⚙️  sections-config.json v${config._version ?? '?'} carregado (${count} overrides)`)
+    for (const [slug, entry] of Object.entries(config.sections ?? {})) {
+      const parts = Object.entries(entry)
+        .filter(([k]) => !k.startsWith('_') && k !== 'note')
+        .map(([k, v]) => `${k}=${v}`)
+        .join(', ')
+      console.log(`   • ${slug}: ${parts}`)
+    }
+    return config
+  } catch {
+    console.warn(`⚠️  sections-config.json não encontrado ou inválido — nenhum override aplicado`)
+    return { sections: {} }
+  }
+}
 
 // Carrega .env do blog
 function loadBlogEnv() {
@@ -466,6 +498,7 @@ function parseQuizToJSON(quizMd: string) {
 async function persistSections(
   parsed: ParsedSection[],
   flashcardsByPart: Map<number, Array<{ front: string; back: string }>>,
+  sectionsConfig: SectionsConfig,
 ) {
   // Pega o guide
   const { data: guide, error: guideErr } = await supabase
@@ -569,6 +602,17 @@ async function persistSections(
       sectionType = 'linear'
     }
 
+    // Aplica overrides do sections-config.json (type e is_preview)
+    const cfgOverride = sectionsConfig.sections[item.slug]
+    if (cfgOverride?.type) {
+      const prev = sectionType
+      sectionType = cfgOverride.type
+      if (prev !== sectionType) {
+        console.log(`  ⚙️  Override type "${item.slug}": ${prev} → ${sectionType}`)
+      }
+    }
+    const isPreview = cfgOverride?.is_preview ?? false
+
     const { error } = await supabase.from('guide_sections').insert({
       guide_id: guideId,
       parent_id: currentPartId,
@@ -579,7 +623,7 @@ async function persistSections(
       type: sectionType,
       data: sectionData,
       estimated_minutes: estimateMinutes(item.body),
-      is_preview: false,
+      is_preview: isPreview,
     })
     if (error) {
       console.error(`  ✗ ${item.title}: ${error.message}`)
@@ -594,21 +638,8 @@ async function persistSections(
     }
   }
 
-  // Marca primeira section da Parte 1 como preview também
-  const part1 = partIdsBySlug.get(slugifyPartTitle('Parte 1: Preparação (semanas 28 a 40)'))
-  if (part1) {
-    const { data: firstSec } = await supabase
-      .from('guide_sections')
-      .select('id')
-      .eq('parent_id', part1)
-      .order('order_index', { ascending: true })
-      .limit(1)
-      .single()
-    if (firstSec) {
-      await supabase.from('guide_sections').update({ is_preview: true }).eq('id', firstSec.id)
-      console.log(`  ✓ marcada primeira seção da Parte 1 como preview`)
-    }
-  }
+  // is_preview agora é controlado pelo sections-config.json (já aplicado acima).
+  // Não há mais hardcode de "primeira seção da Parte 1 = preview".
 
   console.log(`✅ Total: ${partsOnly.length} parts + ${totalSecs} seções inseridas`)
 }
@@ -640,7 +671,8 @@ async function main() {
   const flashcardSections = parsed.filter(s => s.type === 'flashcards')
   console.log(`📊 Parsed: ${parsed.filter(s => s.level === 'part').length} parts + ${parsed.filter(s => s.level === 'section').length} sections (${flashcardSections.length} flashcard)\n`)
 
-  await persistSections(parsed, flashcardsByPart)
+  const sectionsConfig = await loadSectionsConfig()
+  await persistSections(parsed, flashcardsByPart, sectionsConfig)
 
   console.log(`\n🎉 Pronto! Acessa /admin/biblioteca/ultimas-semanas pra revisar.`)
 }
