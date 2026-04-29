@@ -137,8 +137,8 @@ const productLd = {
             class="font-display font-bold text-3xl md:text-4xl lg:text-[2.6rem] mb-4 leading-[1.15]"
             style="color: #e7e2ff;"
           >
-            Cada mes traz um bebe diferente.<br />
-            <span style="color: #b79fff;">E ninguem te conta<br class="hidden sm:block" /> o que esperar.</span>
+            Cada mês traz um bebê diferente.<br />
+            <span style="color: #b79fff;">E ninguém te conta<br class="hidden sm:block" /> o que esperar.</span>
           </h1>
 
           {guide.description && (
@@ -153,10 +153,10 @@ const productLd = {
               <span class="flex items-center gap-1.5">⏱ ~{totalMinutes} min de leitura</span>
             )}
             {parts.length > 0 && (
-              <span class="flex items-center gap-1.5">📖 {parts.length} {parts.length === 1 ? 'modulo' : 'modulos'}</span>
+              <span class="flex items-center gap-1.5">📖 {parts.length} {parts.length === 1 ? 'módulo' : 'módulos'}</span>
             )}
             {previewSections.length > 0 && (
-              <span class="flex items-center gap-1.5" style="color: rgba(183,159,255,0.6);">🔓 Amostra gratis</span>
+              <span class="flex items-center gap-1.5" style="color: rgba(183,159,255,0.6);">🔓 Amostra grátis</span>
             )}
           </div>
 
@@ -190,7 +190,7 @@ const productLd = {
         <!-- O que você vai encontrar (TOC colapsível) -->
         {parts.length > 0 && (
           <div class="mb-10">
-            <h2 class="lp-section-title">O que voce vai encontrar</h2>
+            <h2 class="lp-section-title">O que você vai encontrar</h2>
             <div class="space-y-3">
               {parts.map((part, i) => {
                 const children = sectionsByPart[part.id] ?? []
@@ -214,7 +214,7 @@ const productLd = {
                             <span class="text-yaya-cloud/25 shrink-0">○</span>
                             <span class="leading-snug">{child.title}</span>
                             {child.is_preview && (
-                              <span class="ml-auto shrink-0 font-bold uppercase tracking-wide text-[10px]" style="color: rgba(183,159,255,0.7);">gratis</span>
+                              <span class="ml-auto shrink-0 font-bold uppercase tracking-wide text-[10px]" style="color: rgba(183,159,255,0.7);">grátis</span>
                             )}
                           </li>
                         ))}
@@ -232,7 +232,7 @@ const productLd = {
           <div class="mb-10">
             <div class="flex items-center gap-2 mb-5">
               <span class="flex-none w-px h-5 rounded-full" style="background: rgba(183,159,255,0.5);"></span>
-              <h2 class="lp-section-title" style="margin-bottom: 0;">Amostra gratis</h2>
+              <h2 class="lp-section-title" style="margin-bottom: 0;">Amostra grátis</h2>
             </div>
             <div class="space-y-8">
               {previewSections.map((section) => (
@@ -255,12 +255,12 @@ const productLd = {
         <div class="lp-benefit-block mb-10">
           <ul class="space-y-3">
             {[
-              'Mais de 50.000 palavras em 4 modulos cronologicos (0-3, 3-6, 6-9 e 9-12 meses)',
-              'Fontes citadas inline: OMS, SBP, AAP, Ministerio da Saude',
-              'Flashcards de revisao ao final de cada modulo',
-              'Checklists interativos persistidos: seguranca da casa, marcos e vacinas',
-              'Quiz: descubra em que fase esta o seu bebe e o que esperar a seguir',
-              'Atualizacoes futuras incluidas sem custo adicional',
+              'Mais de 50.000 palavras em 4 módulos cronológicos (0-3, 3-6, 6-9 e 9-12 meses)',
+              'Fontes citadas inline: OMS, SBP, AAP, Ministério da Saúde',
+              'Flashcards de revisão ao final de cada módulo',
+              'Checklists interativos persistidos: segurança da casa, marcos e vacinas',
+              'Quiz: descubra em que fase está o seu bebê e o que esperar a seguir',
+              'Atualizações futuras incluídas sem custo adicional',
             ].map((item) => (
               <li class="flex items-start gap-3 text-sm font-sans text-yaya-cloud/80">
                 <span class="flex-none mt-0.5 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
@@ -273,17 +273,17 @@ const productLd = {
 
         <!-- ── Para quem é ── -->
         <div class="mb-10">
-          <h2 class="lp-section-title">Para quem e este guia</h2>
+          <h2 class="lp-section-title">Para quem é este guia</h2>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div class="rounded-xl p-5" style="background: rgba(183,159,255,0.05); border: 1px solid rgba(183,159,255,0.18);">
-              <p class="font-display font-bold text-[11px] uppercase tracking-widest mb-3" style="color: rgba(183,159,255,0.9);">Para voce se</p>
+              <p class="font-display font-bold text-[11px] uppercase tracking-widest mb-3" style="color: rgba(183,159,255,0.9);">Para você se</p>
               <ul class="space-y-2.5">
                 {[
-                  'Tem um bebe de 0 a 12 meses e quer entender o que esta acontecendo',
-                  'E o primeiro filho e parece que tudo acontece ao mesmo tempo',
-                  'Quer saber o que e normal antes de ligar para o pediatra',
-                  'Voce e seu parceiro/a querem estar na mesma pagina em cada fase',
-                  'Quer entender o desenvolvimento alem do "meu bebe cresceu X cm"',
+                  'Tem um bebê de 0 a 12 meses e quer entender o que está acontecendo',
+                  'É o primeiro filho e parece que tudo acontece ao mesmo tempo',
+                  'Quer saber o que é normal antes de ligar para o pediatra',
+                  'Você e seu parceiro/a querem estar na mesma página em cada fase',
+                  'Quer entender o desenvolvimento além do "meu bebê cresceu X cm"',
                 ].map((item) => (
                   <li class="flex items-start gap-2 text-xs font-sans text-yaya-cloud/75">
                     <span class="mt-0.5 shrink-0" style="color: #b79fff;">✓</span>
@@ -293,12 +293,12 @@ const productLd = {
               </ul>
             </div>
             <div class="rounded-xl p-5" style="background: rgba(231,226,255,0.02); border: 1px solid rgba(231,226,255,0.07);">
-              <p class="font-display font-bold text-[11px] uppercase tracking-widest mb-3 text-yaya-cloud/35">Nao e para voce se</p>
+              <p class="font-display font-bold text-[11px] uppercase tracking-widest mb-3 text-yaya-cloud/35">Não é para você se</p>
               <ul class="space-y-2.5">
                 {[
-                  'Seu bebe ja passou de 1 ano (temos conteudo gratuito no blog)',
-                  'Ainda esta gravida (veja o Guia das Ultimas Semanas)',
-                  'Procura suporte terapeutico individualizado com profissional de saude',
+                  'Seu bebê já passou de 1 ano (temos conteúdo gratuito no blog)',
+                  'Ainda está grávida (veja o Guia das Últimas Semanas)',
+                  'Procura suporte terapêutico individualizado com profissional de saúde',
                 ].map((item) => (
                   <li class="flex items-start gap-2 text-xs font-sans text-yaya-cloud/45">
                     <span class="mt-0.5 shrink-0 text-yaya-cloud/25">✗</span>
@@ -317,9 +317,9 @@ const productLd = {
           <div>
             <p class="font-display font-bold text-sm text-yaya-cloud mb-1.5">7 dias de garantia, sem perguntas</p>
             <p class="text-yaya-cloud/55 text-sm font-sans leading-relaxed">
-              Se voce comprar o guia, ler e achar que nao valeu o que pagou, devolvemos {priceFormatted} integrais
-              em ate 7 dias. Sem formulario complicado, sem justificativa.
-              Isso existe porque acreditamos no conteudo.
+              Se você comprar o guia, ler e achar que não valeu o que pagou, devolvemos {priceFormatted} integrais
+              em até 7 dias. Sem formulário complicado, sem justificativa.
+              Isso existe porque acreditamos no conteúdo.
             </p>
           </div>
         </div>
@@ -331,27 +331,27 @@ const productLd = {
             {[
               {
                 q: 'Quando recebo o acesso?',
-                a: 'Imediatamente apos a confirmacao do pagamento. Voce recebe um email com o link de acesso e pode ler no celular, computador ou tablet.',
+                a: 'Imediatamente após a confirmação do pagamento. Você recebe um email com o link de acesso e pode ler no celular, computador ou tablet.',
               },
               {
-                q: 'O guia e atualizado? Vou precisar comprar de novo?',
-                a: 'Nao. Atualizacoes futuras chegam para quem ja comprou sem custo adicional.',
+                q: 'O guia é atualizado? Vou precisar comprar de novo?',
+                a: 'Não. Atualizações futuras chegam para quem já comprou sem custo adicional.',
               },
               {
                 q: 'Preciso ter o app Yaya para usar o guia?',
-                a: 'Nao. O guia funciona de forma independente. Mas o Yaya potencializa a experiencia: cada modulo traz orientacoes diretas de como usar o app naquela fase.',
+                a: 'Não. O guia funciona de forma independente. Mas o Yaya potencializa a experiência: cada módulo traz orientações diretas de como usar o app naquela fase.',
               },
               {
                 q: 'Posso compartilhar com meu parceiro/a?',
-                a: 'O acesso e individual (por login). Se quiserem acessos independentes, cada um precisa de uma compra.',
+                a: 'O acesso é individual (por login). Se quiserem acessos independentes, cada um precisa de uma compra.',
               },
               {
-                q: 'Funciona para bebe prematuro ou gemeos?',
-                a: 'O conteudo e baseado em referencias pediastricas gerais. Prematuros e gemeos tem particularidades importantes — use o guia como base e sempre valide com o pediatra.',
+                q: 'Funciona para bebê prematuro ou gêmeos?',
+                a: 'O conteúdo é baseado em referências pediátricas gerais. Prematuros e gêmeos têm particularidades importantes. Use o guia como base e sempre valide com o pediatra.',
               },
               {
-                q: 'E se eu tiver duvidas depois de comprar?',
-                a: 'Voce pode usar a yaIA, a assistente de IA do Yaya, para tirar duvidas baseadas no conteudo do guia a qualquer hora.',
+                q: 'E se eu tiver dúvidas depois de comprar?',
+                a: 'Você pode usar a yaIA, a assistente de IA do Yaya, para tirar dúvidas baseadas no conteúdo do guia a qualquer hora.',
               },
             ].map(({ q, a }) => (
               <details class="lp-faq-item group rounded-xl border border-yaya-cloud/8 bg-yaya-cloud/[0.02]">
@@ -371,17 +371,17 @@ const productLd = {
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
               {
-                text: 'Quando meu filho fez a regressao do sono dos 4 meses, eu ja sabia exatamente o que estava acontecendo. O guia me preparou semanas antes.',
+                text: 'Quando meu filho fez a regressão do sono dos 4 meses, eu já sabia exatamente o que estava acontecendo. O guia me preparou semanas antes.',
                 name: 'Rodrigo A.',
                 ctx: 'Filho de 5 meses',
               },
               {
-                text: 'A secao de introducao alimentar e o melhor material que encontrei em portugues. Explicou BLW, papinha e alergia tudo junto, com fontes. Fui para a consulta dos 6 meses muito mais preparada.',
+                text: 'A seção de introdução alimentar é o melhor material que encontrei em português. Explicou BLW, papinha e alergia tudo junto, com fontes. Fui para a consulta dos 6 meses muito mais preparada.',
                 name: 'Camila M.',
                 ctx: 'Filha de 7 meses',
               },
               {
-                text: 'Usei os flashcards do modulo 3 antes da consulta de 9 meses. O pediatra ficou surpreso com as perguntas que eu fiz. Foi a melhor consulta que ja tivemos.',
+                text: 'Usei os flashcards do módulo 3 antes da consulta de 9 meses. O pediatra ficou surpreso com as perguntas que eu fiz. Foi a melhor consulta que já tivemos.',
                 name: 'Fernanda P.',
                 ctx: 'Filho de 10 meses',
               },
@@ -410,10 +410,10 @@ const productLd = {
             Chega de procurar resposta<br class="hidden sm:block" />
             em cinco lugares diferentes.
           </h2>
-          <p class="text-yaya-cloud/45 font-sans text-sm mb-6">Um guia. Quatro fases. Do nascimento ao primeiro aniversario.</p>
+          <p class="text-yaya-cloud/45 font-sans text-sm mb-6">Um guia. Quatro fases. Do nascimento ao primeiro aniversário.</p>
           <div class="flex items-baseline justify-center gap-2 mb-6">
             <span class="font-display font-bold text-4xl" style="color: #b79fff;">{priceFormatted}</span>
-            <span class="text-yaya-cloud/40 text-sm font-sans">pagamento unico</span>
+            <span class="text-yaya-cloud/40 text-sm font-sans">pagamento único</span>
           </div>
           <div class="max-w-xs mx-auto">
             <GuideCTA client:only="react" guideSlug={GUIDE_SLUG} priceFormatted={priceFormatted} />
@@ -431,13 +431,13 @@ const productLd = {
             <span class="font-display font-bold text-4xl tracking-tight" style="color: #b79fff;">
               {priceFormatted}
             </span>
-            <span class="text-yaya-cloud/35 text-sm font-sans">unico</span>
+            <span class="text-yaya-cloud/35 text-sm font-sans">único</span>
           </div>
 
           <ul class="space-y-2 mb-6 text-xs font-sans text-yaya-cloud/60">
             {[
-              'Acesso completo + atualizacoes',
-              '30 dias de Yaya+ gratis',
+              'Acesso completo + atualizações',
+              '30 dias de Yaya+ grátis',
               'Celular, tablet ou computador',
               '7 dias de garantia',
             ].map((item) => (
