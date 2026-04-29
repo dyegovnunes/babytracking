@@ -71,7 +71,10 @@
 
 /* ── Ajustes específicos em light mode ─────────────────────────── */
 
-html.theme-light header.bg-yaya-night\/90,
+html.theme-light header.bg-yaya-night\/90 {
+  background-color: rgb(var(--yaya-night) / 0.85) !important;
+  box-shadow: 0 1px 0 0 rgb(var(--yaya-cloud) / 0.08);
+}
 @media (prefers-color-scheme: light) {
   html:not(.theme-dark) header.bg-yaya-night\/90 {
     background-color: rgb(var(--yaya-night) / 0.85) !important;
