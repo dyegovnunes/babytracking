@@ -218,7 +218,7 @@ A [pega correta](/pega-correta-posicoes-amamentacao) é fundamental: quanto mais
 
 **"Meu leite é fraco."** Não existe leite materno fraco. A aparência do leite varia (pode ser mais translúcido, especialmente o leite anterior), mas a composição é adequada para o bebê. O leite materno se adapta às necessidades da criança.
 
-**"Leite materno não sustenta depois dos 6 meses."** A OMS recomenda amamentação complementada até os 2 anos ou mais. O leite materno continua nutritivo e fornece anticorpos.
+**"Leite materno não sustenta depois dos 6 meses."** A SBP recomenda amamentação complementada até os 2 anos ou mais (alinhada com a OMS). O leite materno continua nutritivo e fornece anticorpos.
 
 **"Se eu comer algo errado, o leite azeda."** A alimentação da mãe influencia o sabor do leite (o que é positivo para a formação do paladar do bebê), mas não o estraga.
 
@@ -271,6 +271,4 @@ O leite doado passa por pasteurização e controle de qualidade antes de ser dis
 - Rede Brasileira de Bancos de Leite Humano (rBLH) — Fiocruz
 - ANVISA — Regulamento Técnico para Bancos de Leite Humano
 
-*Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*
-
-*O Yaya registra cada sessão de amamentação e ajuda a identificar o padrão de produção — [experimente grátis](https://yayababy.app).*
+*Este conteúdo é informativo e não substitu

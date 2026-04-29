@@ -146,7 +146,7 @@ A AAP e a SBP recomendam estratégias simples e baseadas em evidências:
 
 **Faça pausas.** Após falar algo, espere. Dê tempo para o bebê processar e responder. As conversas com bebês funcionam melhor em turnos, como uma conversa real.
 
-**Evite telas antes dos 2 anos.** A AAP recomenda zero tela antes dos 18 meses (exceto videochamadas). Nenhum aplicativo substitui a interação humana para o desenvolvimento da linguagem.
+**Evite telas antes dos 2 anos.** A SBP recomenda evitar telas antes dos 2 anos (exceto videochamadas). Nenhum aplicativo substitui a interação humana para o desenvolvimento da linguagem.
 
 **Use nomes reais.** Em vez de "olha isso", diga "olha o cachorro!" ou "esse é o seu pé!". Quanto mais específico, mais vocabulário o bebê absorve.
 
@@ -229,8 +229,4 @@ O primeiro passo costuma ser o pediatra, que pode encaminhar para o fonoaudiólo
 2. SBP. Cartilha de Desenvolvimento: dos 2 meses aos 5 anos. Departamento Científico de Pediatria do Desenvolvimento e Comportamento. Disponível em: [sbp.com.br](https://www.sbp.com.br/fileadmin/user_upload/_24327e-Cartilha_de_Desenvolvimento-2m-5anos_compressed.pdf)
 3. ASHA. How Does Your Child Hear and Talk? Birth to One Year. Disponível em: [asha.org](https://www.asha.org/public/developmental-milestones/communication-milestones-birth-to-1-year/)
 
-*Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*
-
----
-
-*O Yaya registra marcos de linguagem — desde o primeiro arrulho até as primeiras palavras. [Experimente grátis](https://yayababy.app)*
+*Este conteúdo é informativo e não substitui orientação mé

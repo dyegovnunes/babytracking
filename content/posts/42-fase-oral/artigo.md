@@ -182,7 +182,7 @@ O que alivia:
 - Panos úmidos gelados para morder
 
 O que **não** funciona e/ou é arriscado:
-- Gel anestésico com lidocaína (contraindicado pela AAP para bebês)
+- Gel anestésico com lidocaína (contraindicado pela SBP e AAP para bebês)
 - Colares de âmbar (sem evidência científica, com risco real)
 - Biscoitos duros (risco de engasgo se quebrarem em pedaços)
 
@@ -244,6 +244,4 @@ Para a grande maioria dos bebês, a fase oral é uma etapa saudável e passageir
 
 ---
 
-> **Aviso:** este conteúdo é informativo e não substitui a avaliação do pediatra. Se você tem dúvidas sobre o desenvolvimento do seu bebê, converse com o profissional que acompanha a criança.
-
-*O Yaya acompanha marcos de desenvolvimento — incluindo quando o bebê começa a levar objetos à boca. [Conheça o app.](https://yayababy.app)*
+> **Aviso:** este conteúdo é informativo e não substitui a avaliação do pediatra. Se você tem dúvidas sobre o desenvolvimento d

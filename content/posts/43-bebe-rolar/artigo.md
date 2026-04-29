@@ -96,7 +96,7 @@ Exige mais coordenação e força abdominal. O bebê precisa girar o quadril, us
 **Rolar em sequência (6-7 meses)**
 Alguns bebês descobrem que podem "rolar e rolar" para se deslocar pelo chão. É o primeiro transporte independente — e o momento de revisar a segurança do ambiente.
 
-**Variação normal:** o estudo multicêntrico da OMS sobre marcos motores mostrou que a janela para rolar é ampla. Alguns bebês rolam com 3 meses; outros, com 6. Os dois estão dentro do esperado. A sequência também varia — alguns pulam o "barriga para costas" e vão direto para "costas para barriga".
+**Variação normal:** o estudo multicêntrico da OMS sobre marcos motores — adotado como referência pela SBP — mostrou que a janela para rolar é ampla. Alguns bebês rolam com 3 meses; outros, com 6. Os dois estão dentro do esperado. A sequência também varia — alguns pulam o "barriga para costas" e vão direto para "costas para barriga".
 
 ---
 
@@ -141,7 +141,7 @@ Bebê-conforto, cadeirinha vibratória, balanço e carrinho são úteis, mas o d
 
 Essa é a dúvida que tira o sono dos pais (literalmente). O bebê aprendeu a rolar e, durante a noite, vira de bruços no berço. O que fazer?
 
-A orientação da AAP (American Academy of Pediatrics) é clara:
+A orientação da SBP (alinhada com a AAP — American Academy of Pediatrics) é clara:
 
 > **Coloque sempre o bebê para dormir de barriga para cima. Se ele rolar sozinho para a posição de bruços durante o sono, não é necessário reposicioná-lo** — desde que o berço esteja seguro (sem cobertores, almofadas, protetores de berço ou pelúcias).
 
@@ -211,4 +211,4 @@ Cada conquista é construída sobre a anterior. O tummy time que pareceu tão di
 
 > **Aviso:** este conteúdo é informativo e não substitui a avaliação do pediatra. Se você tem dúvidas sobre o desenvolvimento motor do seu bebê, converse com o profissional que acompanha a criança.
 
-*O Yaya tem uma caderneta de marcos — registre o primeiro rolar e acompanhe cada conquista motora. [Conheça o app.](https://yayababy.app)*
+*O Yaya tem u

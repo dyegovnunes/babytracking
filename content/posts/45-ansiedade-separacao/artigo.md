@@ -115,7 +115,7 @@ Pode parecer contraditório, mas o choro na sua saída é prova de desenvolvimen
 - **O cérebro emocional amadureceu.** O bebê sente falta, o que exige processamento emocional sofisticado.
 - **A cognição avançou.** Ele distingue rostos familiares de estranhos com muito mais precisão.
 
-A AAP destaca que bebês que não demonstram nenhuma preferência por cuidadores familiares por volta dos 9-12 meses merecem avaliação, pois a ausência dessa reação pode indicar questões no desenvolvimento socioemocional.
+A SBP destaca que bebês que não demonstram nenhuma preferência por cuidadores familiares por volta dos 9-12 meses merecem avaliação, pois a ausência dessa reação pode indicar questões no desenvolvimento socioemocional.
 
 ## Qual a relação com a permanência do objeto?
 
@@ -179,7 +179,7 @@ Na grande maioria dos casos, a ansiedade de separação é absolutamente normal 
 - A fase se prolonga com a mesma intensidade **além dos 3 anos**, sem sinais de melhora.
 - O bebê apresenta **regressões significativas** em outras áreas (sono, alimentação, desenvolvimento motor) junto com a ansiedade.
 
-A AAP reforça que ansiedade de separação intensa e persistente na idade pré-escolar pode indicar Transtorno de Ansiedade de Separação, que é diferente da fase normal e requer acompanhamento profissional.
+A SBP reforça que ansiedade de separação intensa e persistente na idade pré-escolar pode indicar Transtorno de Ansiedade de Separação, que é diferente da fase normal e requer acompanhamento profissional.
 
 ## Resumindo
 
@@ -199,8 +199,4 @@ A AAP reforça que ansiedade de separação intensa e persistente na idade pré-
 3. [Bowlby, J. Attachment and loss: retrospect and prospect. American Journal of Orthopsychiatry. 1982.](https://pubmed.ncbi.nlm.nih.gov/7148988/)
 4. AAP. Separation Anxiety. HealthyChildren.org. Disponível em: [healthychildren.org](https://www.healthychildren.org/English/ages-stages/toddler/Pages/Soothing-Your-Childs-Separation-Anxiety.aspx)
 
-*Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*
-
----
-
-*O Yaya acompanha os marcos emocionais e cognitivos do bebê — a ansiedade de separação é um deles. [Experimente grátis](https://yayababy.app)*
+*Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pedi

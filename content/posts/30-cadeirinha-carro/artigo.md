@@ -108,7 +108,7 @@ A Resolução 277/2008 do CONTRAN e o Art. 64 do Código de Trânsito Brasileiro
 
 **Multa por descumprimento:** infração gravíssima (7 pontos na CNH) + multa. Mas a motivação não deveria ser a multa — deveria ser a vida do seu filho.
 
-A AAP (Academia Americana de Pediatria) recomenda manter a criança virada para trás **o máximo de tempo possível**, idealmente até os limites de peso e altura da cadeirinha — o que frequentemente vai além dos 2 anos. A legislação brasileira é mais permissiva, mas seguir a recomendação internacional é mais seguro.
+A SBP (alinhada com a AAP — Academia Americana de Pediatria) recomenda manter a criança virada para trás **o máximo de tempo possível**, idealmente até os limites de peso e altura da cadeirinha — o que frequentemente vai além dos 2 anos. A legislação brasileira é mais permissiva, mas seguir a recomendação internacional é mais seguro.
 
 ## Grupos de cadeirinha por peso e idade
 
@@ -128,7 +128,7 @@ Para o recém-nascido, você precisará de um **bebê conforto (grupo 0 ou 0+)**
 
 Em uma colisão frontal (o tipo mais comum e mais grave), a cadeirinha virada para trás distribui a força do impacto por toda a extensão das costas, pescoço e cabeça do bebê. Virada para frente, a força se concentra no pescoço — uma estrutura que, em bebês, ainda é extremamente frágil.
 
-Dados da AAP mostram que crianças viradas para trás têm **até 75% menos risco de lesão grave ou morte** em colisões frontais.
+Dados da SBP e AAP mostram que crianças viradas para trás têm **até 75% menos risco de lesão grave ou morte** em colisões frontais.
 
 A recomendação atual é:
 
@@ -220,6 +220,4 @@ O [acompanhamento do quarto do bebê](/quarto-do-bebe-o-que-e-essencial) e do cr
 - INMETRO — Dispositivos de Retenção para Crianças
 - AAP — Car Seats: Information for Families
 
-*Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*
-
-*O Yaya acompanha o crescimento do bebê — e te lembra quando é hora de trocar de cadeirinha. [Experimente grátis](https://yayababy.app).*
+*Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediat

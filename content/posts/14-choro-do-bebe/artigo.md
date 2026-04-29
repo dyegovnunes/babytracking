@@ -226,7 +226,7 @@ Em caso de dúvida, ligue para o pediatra. Profissionais de saúde preferem rece
 
 **Nunca sacuda o bebê.** A síndrome do bebê sacudido (trauma craniano abusivo) é uma das causas mais graves de lesão neurológica em lactentes. O pescoço do recém-nascido não sustenta a cabeça, e o balanço violento pode causar hemorragia cerebral, cegueira e até morte.
 
-A AAP alerta que a frustração com o choro é o gatilho mais comum para essa violência. Se você sentir que está perdendo o controle:
+A SBP alerta que a frustração com o choro é o gatilho mais comum para essa violência. Se você sentir que está perdendo o controle:
 
 1. Coloque o bebê de costas no berço, em segurança
 2. Saia do quarto
@@ -283,4 +283,4 @@ Estratégias que ajudam:
 
 ---
 
-**Quer identificar padrões no choro do seu bebê?** No Yaya, você registra cada episódio de choro, amamentação e sono, e o app mostra os horários de pico e as tendências ao longo dos dias. Entender os padrões fica mais fácil quando você tem os dados na mão.
+**Quer identificar pa

@@ -118,7 +118,7 @@ Esses marcos são médias. Bebês que não seguem esse timeline não estão "atr
 
 ## Sono seguro: o essencial
 
-Baseado nas recomendações da AAP (2022):
+Baseado nas recomendações da SBP (2023):
 
 - **Sempre de barriga para cima.** Todas as sonecas, todas as noites. Desde a campanha "Back to Sleep", a taxa de morte súbita caiu mais de 50%.
 - **Superfície firme e plana.** Colchão firme, apenas lençol ajustado. Sem travesseiro, almofada, rolinho, protetor de berço ou cobertor solto.
@@ -155,4 +155,4 @@ Baseado nas recomendações da AAP (2022):
 
 ---
 
-*Baixe o [Yaya](https://yayababy.app) gratuitamente — registre cada soneca com um toque e veja os ciclos de sono do bebê aparecerem no app, com insights automáticos.*
+*Baixe o [Yaya](https://yayababy.app) g

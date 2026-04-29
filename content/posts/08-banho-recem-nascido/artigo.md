@@ -82,13 +82,13 @@ O primeiro banho costuma dar nervoso. Bebê escorregadio, molinho, chorando. É 
 
 ## Quando começar
 
-A OMS recomenda esperar pelo menos 24 horas após o nascimento para o primeiro banho. Isso preserva o vérnix (camada protetora da pele) e ajuda na regulação de temperatura.
+A SBP recomenda esperar pelo menos 24 horas após o nascimento para o primeiro banho (alinhada com a OMS). Isso preserva o vérnix (camada protetora da pele) e ajuda na regulação de temperatura.
 
 Em casa, enquanto o coto umbilical não cair, prefira banho de esponja: pano úmido e morno nas dobrinhas, pescoço, rosto e área da fralda. O coto pode molhar (não precisa mantê-lo seco a todo custo), mas banho de imersão fica mais prático depois que ele cai, geralmente entre 7 e 21 dias.
 
 ## Frequência
 
-Recém-nascido não precisa de banho diário. 2-3 vezes por semana é suficiente nos primeiros meses, segundo a AAP. Nos dias sem banho, limpe rosto, pescoço, mãos e área da fralda.
+Recém-nascido não precisa de banho diário. 2-3 vezes por semana é suficiente nos primeiros meses, segundo a SBP. Nos dias sem banho, limpe rosto, pescoço, mãos e área da fralda.
 
 No Brasil, o banho diário é cultural e não há problema se a pele do bebê tolerar bem. Use sabonete apenas em dias alternados para não ressecar.
 
@@ -132,4 +132,4 @@ O banho inteiro não precisa durar mais que 5-10 minutos.
 
 ---
 
-*O [Yaya](https://yayababy.app) registra os banhos do bebê e ajuda a manter a rotina organizada nos primeiros meses.*
+*O [Yaya](https://yayababy.app)

@@ -98,7 +98,7 @@ A resposta curta: sim, é possível ter rotina com recém-nascido. Mas não o ti
 
 Sim, mas com uma redefinição importante do que significa "rotina". Nas primeiras semanas, rotina não é um cronograma. É uma sequência previsível de eventos: mamar → ficar acordado um pouco → dormir → repetir. Os horários vão variar todos os dias. A sequência é o que importa.
 
-A AAP reforça que recém-nascidos não têm ritmo circadiano maduro até por volta de 3-4 meses. O relógio biológico deles ainda está em construção. Então impor horários fixos nessa fase não funciona — e gera frustração desnecessária.
+A SBP reforça que recém-nascidos não têm ritmo circadiano maduro até por volta de 3-4 meses. O relógio biológico deles ainda está em construção. Então impor horários fixos nessa fase não funciona — e gera frustração desnecessária.
 
 ## Qual a diferença entre rotina e horário fixo?
 
@@ -222,8 +222,4 @@ Para entender como o [sono do recém-nascido](/sono-do-recem-nascido) funciona e
 1. [AAP. Stages of Newborn Sleep. HealthyChildren.org.](https://www.healthychildren.org/English/ages-stages/baby/sleep/Pages/phases-of-sleep.aspx)
 2. [SBP. Síndrome da Morte Súbita do Lactente e Sono Seguro. Departamento Científico de Medicina do Sono. 2018.](https://www.sbp.com.br/fileadmin/user_upload/20226d-DocCient_-_Sindrome_Morte_Subita_do_Lactente.pdf)
 
-*Este conteúdo é informativo e não substitui orientação do pediatra. Cada bebê tem seu ritmo — os padrões descritos aqui são referências, não regras.*
-
----
-
-*O [Yaya](https://yayababy.app) registra amamentações, sonecas e fraldas e mostra os padrões do dia do seu bebê automaticamente. Experimente grátis.*
+*Este conteúdo é informativo e não substitui orientação do pediatra. Cada bebê tem seu ritmo — os padrões descritos 

@@ -107,7 +107,7 @@ O que importa é a **tendência ao longo do tempo**, não o número isolado. Um 
 
 Existem dois conjuntos de curvas de crescimento amplamente usados no mundo:
 
-**Curvas da OMS (2006):** Baseadas no estudo WHO Multicentre Growth Reference Study, que acompanhou bebês de 6 países (incluindo Brasil) amamentados exclusivamente nos primeiros meses. Representam como a criança **deveria** crescer em condições ideais.
+**Curvas da OMS (2006) — adotadas pela SBP e pelo Ministério da Saúde:** Baseadas no estudo WHO Multicentre Growth Reference Study, que acompanhou bebês de 6 países (incluindo Brasil) amamentados exclusivamente nos primeiros meses. Representam como a criança **deveria** crescer em condições ideais.
 
 **Curvas do CDC (2000):** Baseadas em dados de crianças americanas nos anos 1970-90, incluindo alimentadas com fórmula. Representam como as crianças americanas **realmente** cresciam naquele período.
 
@@ -236,7 +236,3 @@ A investigação pode incluir exames de sangue, avaliação nutricional, avalia�
 3. Ministério da Saúde. Caderneta da Criança. 2024. Disponível em: [gov.br](https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/s/saude-da-crianca/caderneta)
 
 *Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*
-
----
-
-*O Yaya registra peso e comprimento — leve os dados para a consulta e acompanhe a curva do seu bebê. [Experimente grátis](https://yayababy.app)*

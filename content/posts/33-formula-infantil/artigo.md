@@ -94,7 +94,7 @@ Nem toda família amamenta exclusivamente — e tudo bem. A fórmula infantil ex
 
 ## Quando a fórmula infantil é indicada?
 
-A OMS recomenda amamentação exclusiva até os 6 meses, e complementada até os 2 anos ou mais. Mas existem situações legítimas em que a fórmula entra no cenário:
+A SBP recomenda amamentação exclusiva até os 6 meses, e complementada até os 2 anos ou mais (alinhada com a OMS). Mas existem situações legítimas em que a fórmula entra no cenário:
 
 **Indicações médicas:**
 - Galactosemia ou outros erros inatos do metabolismo
@@ -224,6 +224,4 @@ Não. A água deve ser fervida. Água mineral não é estéril, e água de filtr
 3. [CODEX Alimentarius. Standard for Infant Formula. CXS 72-1981.](https://www.fao.org/fao-who-codexalimentarius/codex-texts/list-standards/en/)
 4. [AAP. Choosing an Infant Formula. HealthyChildren.org.](https://www.healthychildren.org/English/ages-stages/baby/formula-feeding/Pages/Choosing-an-Infant-Formula.aspx)
 
-*Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*
-
-*O Yaya registra mamadeiras com volume e horário — você acompanha a evolução da alimentação.*
+*Este conteúdo é i

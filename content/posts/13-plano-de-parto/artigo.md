@@ -74,7 +74,7 @@ mid_image_url: 'https://blog.yayababy.app/posts/plano-de-parto/mid.webp'
 
 O plano de parto é um documento simples que registra suas preferências para o trabalho de parto, o nascimento e o pós-parto imediato. Mais do que uma lista de desejos, ele é uma ferramenta de comunicação entre você e a equipe que vai acompanhar esse momento.
 
-A Organização Mundial da Saúde (OMS) recomenda o plano de parto como parte dos cuidados respeitosos à gestante. No Brasil, algumas legislações estaduais já garantem esse direito formalmente.
+A SBP e a Organização Mundial da Saúde (OMS) recomendam o plano de parto como parte dos cuidados respeitosos à gestante. No Brasil, algumas legislações estaduais já garantem esse direito formalmente.
 
 Neste guia, você vai encontrar cada etapa para montar o seu, um modelo pronto e orientações para conversar com seu obstetra sobre ele.
 
@@ -98,7 +98,7 @@ O plano não é um contrato. Situações de emergência sempre terão prioridade
 
 - **Reduz ansiedade**: colocar no papel o que você sabe e o que espera ajuda a organizar os pensamentos.
 - **Melhora a comunicação**: a equipe médica entende suas preferências sem depender de conversas no meio das contrações.
-- **É um direito**: a OMS inclui o plano de parto nas recomendações para uma experiência positiva de nascimento.
+- **É um direito**: a SBP e a OMS incluem o plano de parto nas recomendações para uma experiência positiva de nascimento.
 - **Envolve o acompanhante**: quem estiver com você na sala pode consultar o documento se precisar falar por você.
 
 Se você ainda está decidindo sobre [tipos de parto](/tipos-de-parto), o plano de parto é justamente o momento de colocar essas reflexões no papel.
@@ -133,7 +133,7 @@ Registre o que é importante para você durante a fase de dilatação:
 O momento do parto em si:
 
 - **Posição**: verticalizada, cócoras, lateral, quatro apoios — o que preferir tentar
-- **Episiotomia**: a OMS não recomenda uso rotineiro; registre que prefere evitar, se possível
+- **Episiotomia**: a SBP e a OMS não recomendam uso rotineiro; registre que prefere evitar, se possível
 - **Quem corta o cordão**: se o acompanhante pode cortar
 - **Clampeamento tardio**: esperar pelo menos 1 a 3 minutos (recomendação OMS e SBP)
 
@@ -268,4 +268,4 @@ Quando estiver com o plano pronto, é hora de montar a [mala da maternidade](/ma
 
 ---
 
-**Preparando tudo para a chegada do bebê?** O Yaya ajuda você a registrar amamentação, sono, fraldas e marcos do desenvolvimento desde o primeiro dia. Quando o plano de parto virar realidade, o app já estará pronto para acompanhar a rotina do recém-nascido com você.
+**Preparando tudo para a chegada do bebê?** O Yaya aj

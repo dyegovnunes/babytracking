@@ -101,9 +101,9 @@ O que a ciência diz é mais simples do que parece. E começa com uma pergunta: 
 
 As três principais referências em saúde infantil convergem no ponto central:
 
-- **OMS**: recomenda **aleitamento materno exclusivo até os 6 meses**, com introdução de alimentos complementares a partir dessa idade, mantendo o aleitamento até os 2 anos ou mais.
+- **SBP**: recomenda **aleitamento materno exclusivo até os 6 meses** (alinhada com a OMS), com introdução de alimentos complementares a partir dessa idade, mantendo o aleitamento até os 2 anos ou mais.
 - **SBP**: segue a mesma recomendação da OMS. O Manual de Alimentação (2018) reforça que 6 meses é o momento ideal para a maioria dos bebês.
-- **AAP**: recomenda início da alimentação complementar **por volta dos 6 meses** (around 6 months), reconhecendo que alguns bebês podem mostrar prontidão entre 4 e 6 meses.
+- **SBP**: recomenda início da alimentação complementar **aos 6 meses completos** (alinhada com a AAP), reconhecendo que alguns bebês podem mostrar prontidão entre 4 e 6 meses.
 - **ESPGHAN** (Sociedade Europeia de Gastroenterologia Pediátrica): posiciona-se que a introdução alimentar não deve ocorrer antes das **17 semanas** (4 meses) nem depois das **26 semanas** (6 meses).
 
 A recomendação prática: **planeje para os 6 meses, mas observe os sinais de prontidão**. A idade é um critério necessário, mas não suficiente — o bebê precisa estar **desenvolvimentalmente preparado**.
@@ -263,4 +263,4 @@ A evidência atual (AAP, ESPGHAN, SBP):
 
 > **Aviso:** este conteúdo é informativo e não substitui a orientação do pediatra ou nutrólogo infantil. A introdução alimentar deve ser individualizada conforme as necessidades do bebê e da família.
 
-*O Yaya acompanha a alimentação do bebê desde o primeiro dia — quando a introdução alimentar começar, os registros continuam. [Conheça o app.](https://yayababy.app)*
+*

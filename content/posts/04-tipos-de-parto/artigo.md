@@ -91,7 +91,7 @@ O bebê nasce pelo canal de parto após contrações que dilatam o colo do úter
 
 **Recuperação:** mais rápida. A mãe costuma caminhar horas após o parto. Alta em 24-48h. Retorno às atividades em 2 a 6 semanas.
 
-A OMS recomenda o parto vaginal como primeira opção quando não há indicação médica para cesárea. A taxa ideal de cesáreas em uma população seria entre 10% e 15%. No Brasil, ultrapassa 55%.
+A SBP e a OMS recomendam o parto vaginal como primeira opção quando não há indicação médica para cesárea. A taxa ideal de cesáreas em uma população seria entre 10% e 15%. No Brasil, ultrapassa 55%.
 
 ## Cesárea
 
@@ -166,4 +166,4 @@ Converse sobre ele com seu obstetra no terceiro trimestre, não na hora do parto
 
 ---
 
-*Independente do tipo de parto, os primeiros dias com o bebê pedem organização. O [Yaya](https://yayababy.app) ajuda a acompanhar a rotina desde a primeira hora.*
+*Independente do tipo de parto, os pri

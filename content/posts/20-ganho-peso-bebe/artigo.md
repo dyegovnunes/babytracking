@@ -135,7 +135,7 @@ Esses números são médias. A variação individual é grande. O que importa é
 
 ## O que são curvas de crescimento e percentis?
 
-As curvas de crescimento da OMS são ferramentas que comparam o peso (e comprimento) do seu bebê com uma população de referência de crianças saudáveis. O pediatra usa essas curvas na Caderneta da Criança.
+As curvas de crescimento da OMS — adotadas pela SBP e pelo Ministério da Saúde — são ferramentas que comparam o peso (e comprimento) do seu bebê com uma população de referência de crianças saudáveis. O pediatra usa essas curvas na Caderneta da Criança.
 
 **Como funciona:**
 - O eixo horizontal mostra a idade
@@ -155,7 +155,7 @@ Não necessariamente. E percentil alto também não significa que está tudo bem
 **Cuidados com a interpretação:**
 - Não compare com outros bebês ("o filho da vizinha ganha 1 kg por mês")
 - Genética influencia: pais menores tendem a ter bebês menores
-- A curva da OMS é baseada em bebês amamentados — é a referência padrão
+- A curva da OMS é baseada em bebês amamentados — é a referência adotada pela SBP e pelo Ministério da Saúde
 - Uma pesagem isolada não diz muito. O pediatra olha pelo menos 3-4 pontos para avaliar tendência
 
 ## Bebê amamentado e bebê em fórmula ganham peso igual?
@@ -166,7 +166,7 @@ Não exatamente. Os padrões são ligeiramente diferentes:
 - Ganham peso mais rapidamente nos primeiros 2-3 meses
 - Desaceleram o ganho entre 3-6 meses (isso é normal, não é "pouco leite")
 - Tendem a ser mais magros entre 6-12 meses comparados aos bebês em fórmula
-- A curva da OMS é baseada neles — é o padrão de referência
+- A curva da OMS é baseada neles — é o padrão adotado pela SBP e pelo Ministério da Saúde
 
 **Bebês em fórmula:**
 - Ganham peso de forma mais linear
@@ -248,8 +248,4 @@ O pediatra vai pesar o bebê, avaliar a curva de crescimento, investigar possív
 2. [SBP. Manual de Avaliação Nutricional da Criança e do Adolescente. 2ª ed. atualizada. Departamento Científico de Nutrologia. 2021.](https://www.sbp.com.br/fileadmin/user_upload/_22962e-ManAval_Nutricional_-_2Ed_Atualizada_SITE.pdf)
 3. [AAP. Amount and Schedule of Baby Formula Feedings. HealthyChildren.org.](https://www.healthychildren.org/English/ages-stages/baby/formula-feeding/Pages/Amount-and-Schedule-of-Formula-Feedings.aspx)
 
-*Este conteúdo é informativo e não substitui acompanhamento pediátrico. O ganho de peso deve ser avaliado pelo pediatra no contexto individual do bebê, considerando idade gestacional, tipo de alimentação e histórico familiar.*
-
----
-
-*O [Yaya](https://yayababy.app) registra amamentações, fraldas e peso, e mostra a evolução do seu bebê ao longo do tempo. Leve os dados para a consulta com o pediatra.*
+*Este conteúdo é informativo e não substitui acompanhamento pediátrico. O ganho de peso deve ser avaliado pelo pediatra no contexto individual do bebê, considerando idade gestacional, tipo de alime

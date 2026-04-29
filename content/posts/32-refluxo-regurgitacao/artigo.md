@@ -189,7 +189,7 @@ Manter o bebê em posição vertical por 20 a 30 minutos após a alimentação �
 - Posição sentada "em cadeirinha" — comprime o abdome e piora o refluxo
 - Elevar o berço (estudos mostram que não há benefício significativo e pode comprometer a segurança do sono)
 
-A AAP reforça: o bebê deve **sempre dormir de barriga para cima**, em superfície plana e firme, mesmo que tenha refluxo. Elevar a cabeceira do berço não é recomendado pelas diretrizes atuais de sono seguro.
+A SBP reforça: o bebê deve **sempre dormir de barriga para cima**, em superfície plana e firme, mesmo que tenha refluxo. Elevar a cabeceira do berço não é recomendado pelas diretrizes atuais de sono seguro.
 
 ## Refluxo no bebê precisa de remédio?
 
@@ -218,7 +218,7 @@ A boa notícia: o refluxo fisiológico melhora espontaneamente na maioria dos be
 **Linha do tempo típica:**
 - **4-6 meses:** redução significativa, quando o bebê começa a se sentar com apoio
 - **7-8 meses:** melhora marcante com a introdução alimentar e a posição mais vertical
-- **12 meses:** resolve em 95% dos casos, segundo dados da AAP
+- **12 meses:** resolve em 95% dos casos, segundo a SBP e AAP
 
 O amadurecimento do esfíncter esofágico, a mudança postural e a dieta mais espessa contribuem juntos para a resolução.
 
@@ -246,6 +246,4 @@ O amadurecimento do esfíncter esofágico, a mudança postural e a dieta mais es
 2. [AAP. Gastroesophageal Reflux in Infants. HealthyChildren.org.](https://www.healthychildren.org/English/health-issues/conditions/abdominal/Pages/GERD-Reflux.aspx)
 3. [NASPGHAN/ESPGHAN. Pediatric Gastroesophageal Reflux Clinical Practice Guidelines. JPGN, 2018.](https://journals.lww.com/jpgn/fulltext/2018/03000/Pediatric_Gastroesophageal_Reflux_Clinical.33.aspx)
 
-*Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*
-
-*O Yaya registra observações sobre cada amamentação — padrões de regurgitação ficam visíveis ao longo dos dias.*
+*Este conteúdo é info

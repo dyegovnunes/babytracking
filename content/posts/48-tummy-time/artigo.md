@@ -104,7 +104,7 @@ A OMS, a AAP e a SBP recomendam o tummy time como parte essencial da atividade f
 
 ## Quando começar?
 
-**Desde o primeiro dia em casa.** Sim, literalmente. A AAP recomenda que o tummy time comece assim que o bebê chegar do hospital. Para recém-nascidos, isso significa 2-3 sessões curtas por dia, de 1 a 2 minutos cada.
+**Desde o primeiro dia em casa.** Sim, literalmente. A SBP recomenda que o tummy time comece assim que o bebê chegar do hospital. Para recém-nascidos, isso significa 2-3 sessões curtas por dia, de 1 a 2 minutos cada.
 
 Bebês nascidos de parto cesáreo podem começar assim que estiverem confortáveis — geralmente em 1-2 dias. Se o bebê teve alguma intercorrência ao nascer, consulte o pediatra sobre o momento ideal.
 
@@ -112,7 +112,7 @@ A exceção é durante o sono: **sempre de barriga para cima para dormir**. Tumm
 
 ## Quanto tempo por dia, por idade
 
-A progressão é gradual. Não existe uma meta rígida, mas as diretrizes da OMS (2019) e da AAP sugerem:
+A progressão é gradual. Não existe uma meta rígida, mas as diretrizes da SBP, OMS (2019) e AAP sugerem:
 
 **Recém-nascido (0-2 semanas):**
 - 2-3 sessões de 1-2 minutos
@@ -220,8 +220,4 @@ O tummy time é o alicerce de uma cadeia de marcos motores. Veja como tudo se co
 2. SBP. Cartilha de Desenvolvimento: dos 2 meses aos 5 anos. Departamento Científico de Pediatria do Desenvolvimento e Comportamento. Disponível em: [sbp.com.br](https://www.sbp.com.br/fileadmin/user_upload/_24327e-Cartilha_de_Desenvolvimento-2m-5anos_compressed.pdf)
 3. WHO. Guidelines on Physical Activity, Sedentary Behaviour and Sleep for Children Under 5 Years of Age. 2019. Disponível em: [who.int](https://www.who.int/publications/i/item/9789241550536)
 
-*Este conteúdo é informativo e não substitui orientação médica. Consulte sempre o pediatra do seu bebê.*
-
----
-
-*O Yaya acompanha os marcos motores — registre o progresso do tummy time e veja a evolução. [Experimente grátis](https://yayababy.app)*
+*Este conteúdo é informativo e não substitui orientação médica. Consulte sempre 

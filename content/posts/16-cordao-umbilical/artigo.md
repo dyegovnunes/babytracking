@@ -169,7 +169,7 @@ Se você ainda está se adaptando ao [banho do recém-nascido](/banho-do-recem-n
 ## Mitos sobre o coto umbilical
 
 **"Precisa passar álcool 70% a cada troca de fralda"**
-A OMS recomenda cuidado seco desde 2013. O álcool 70% não é prejudicial, mas estudos mostram que ele pode retardar a queda do coto sem oferecer benefício adicional em ambientes limpos.
+A SBP e a OMS recomendam cuidado seco do cordão umbilical. O álcool 70% não é prejudicial, mas estudos mostram que ele pode retardar a queda do coto sem oferecer benefício adicional em ambientes limpos.
 
 **"Tem que colocar faixa/cinta para o umbigo não ficar para fora"**
 A faixa umbilical não tem função médica. O formato do umbigo é determinado pela anatomia, não por compressão externa. A faixa pode, inclusive, manter umidade e atrapalhar a secagem.
@@ -208,4 +208,4 @@ Nos [primeiros dias em casa](/primeiros-dias-em-casa-com-recem-nascido), o coto 
 
 ---
 
-**Registrando os primeiros dias do seu bebê?** No Yaya, você acompanha fraldas, amamentação, sono e cada detalhe da rotina do recém-nascido. Nos dias em que tudo parece novo e confuso, ter os registros organizados faz diferença.
+**Registrando os primeiros dias do seu bebê?** No Yaya, vo

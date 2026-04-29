@@ -207,7 +207,7 @@ A partir dos 4 meses, o bebê começa a entender que suas ações geram resultad
 
 ## O que evitar
 
-- **Telas**: a OMS recomenda zero tempo de tela para bebês menores de 1 ano. Nem "vídeos educativos" — o cérebro não processa tela como processa interação real.
+- **Telas**: a SBP recomenda zero tempo de tela para bebês menores de 2 anos. Nem "vídeos educativos" — o cérebro não processa tela como processa interação real.
 - **Superestimulação**: muitos brinquedos ao mesmo tempo, luzes piscando, sons altos. Se o bebê vira o rosto, fecha os olhos ou chora, está pedindo pausa.
 - **Brinquedos com peças pequenas**: regra do tubo de papel higiênico — se passa pelo tubo, é risco de engasgo.
 - **Comparação**: cada bebê tem seu ritmo. Brincadeira é sobre conexão, não sobre performance.
@@ -241,6 +241,4 @@ A partir dos 4 meses, o bebê começa a entender que suas ações geram resultad
 
 ---
 
-> **Aviso:** este conteúdo é informativo e não substitui a orientação do pediatra. As atividades sugeridas são para bebês com desenvolvimento típico — se você tem dúvidas sobre o desenvolvimento do seu bebê, converse com o profissional que acompanha a criança.
-
-*O Yaya acompanha os marcos do desenvolvimento — registre cada conquista e veja a evolução. [Conheça o app.](https://yayababy.app)*
+> **Aviso:** este conteúdo é informativo e não substitui a orientação do pediatra. As atividades sugeridas são para bebês com desenvolvimento típico — se você tem dúvidas sobre o desenvolvimento do seu beb

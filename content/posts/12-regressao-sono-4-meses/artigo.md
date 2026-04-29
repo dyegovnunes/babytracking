@@ -115,7 +115,7 @@ A fase mais intensa dura de 2 a 6 semanas. Alguns bebês se ajustam mais rápido
 ## O que NÃO ajuda
 
 - Treino de sono rígido (cry it out) nessa idade. A maioria dos especialistas recomenda esperar pelo menos 6 meses.
-- Introduzir sólidos para "dormir melhor". Não há evidência de que isso funcione, e a OMS recomenda aleitamento exclusivo até os 6 meses.
+- Introduzir sólidos para "dormir melhor". Não há evidência de que isso funcione, e a SBP recomenda aleitamento exclusivo até os 6 meses.
 - Eliminar sonecas diurnas achando que o bebê vai "compensar" à noite. Sono chama sono: bebê descansado dorme melhor.
 
 ## Quando procurar ajuda
@@ -134,4 +134,4 @@ Se a privação de sono estiver afetando a saúde mental dos cuidadores, busque 
 
 ---
 
-*Registrar o sono durante a regressão ajuda a ver que os padrões estão voltando. O [Yaya](https://yayababy.app) mostra a evolução noite a noite.*
+*Registrar o sono durante a regressão ajuda a ver que os pad

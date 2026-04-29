@@ -121,14 +121,14 @@ As recomendações de sono seguro da AAP (atualizadas em 2022) e endossadas pela
 - Nada de travesseiro antes de 1 ano
 - Nada de cobertor solto antes de 1 ano
 - Nada de pelúcias ou almofadas no berço
-- Nada de posicionadores de sono ou ninhos — a CPSC e a AAP desaconselham explicitamente
+- Nada de posicionadores de sono ou ninhos — a SBP, a CPSC e a AAP desaconselham explicitamente
 - Nada de cama compartilhada (bed sharing) — o quarto é compartilhado, a superfície de sono não
 
 Se você está montando o [enxoval](/enxoval-do-bebe-o-que-realmente-precisa), use essa lista como filtro antes de comprar qualquer item relacionado a sono.
 
 ## Quarto compartilhado vs quarto separado
 
-A AAP recomenda que o bebê durma no quarto dos pais (em seu próprio berço ou moisés) por pelo menos os primeiros 6 meses. A proximidade facilita amamentações noturnas, monitoramento e está associada a menor risco de morte súbita.
+A SBP recomenda que o bebê durma no quarto dos pais (em seu próprio berço ou moisés) por pelo menos os primeiros 6 meses. A proximidade facilita amamentações noturnas, monitoramento e está associada a menor risco de morte súbita.
 
 Na prática, isso significa que o "quarto do bebê" montado durante a gestação pode não ser usado para sono nos primeiros meses. E está tudo bem. Ele serve como espaço para trocas, para guardar roupas, para amamentar com tranquilidade.
 
@@ -223,4 +223,4 @@ Se está planejando o enxoval completo, confira nossa lista de [itens realmente 
 
 ---
 
-*Monitorar o sono do bebê ajuda a entender se o ambiente está funcionando. O [Yaya](https://yayababy.app) registra cada soneca e noite de sono, mostrando padrões que podem indicar se algo precisa de ajuste.*
+*Monitorar o sono do b
