@@ -244,7 +244,13 @@ export default function TrackerPage() {
   const [dismissedBreastCards, setDismissedBreastCards] = useState<Set<string>>(() => new Set())
   useEffect(() => {
     if (!baby) return
-    setTwoYearCardDismissed(localStorage.getItem(`yaya_2yr_${baby.id}`) === '1')
+    const stored2yr = localStorage.getItem(`yaya_2yr_${baby.id}`)
+    if (stored2yr) {
+      const ts = parseInt(stored2yr)
+      // Valor numérico = snooze com timestamp; '1' = dismiss permanente legado
+      const snoozed = !isNaN(ts) ? Date.now() - ts < 7 * 24 * 60 * 60 * 1000 : true
+      setTwoYearCardDismissed(snoozed)
+    }
     const dismissed = new Set<string>()
     if (localStorage.getItem(`yaya_bss_${baby.id}`) === '1') dismissed.add('simplify')
     if (localStorage.getItem(`yaya_bsd_${baby.id}`) === '1') dismissed.add('disable')
@@ -590,7 +596,7 @@ export default function TrackerPage() {
               <button
                 onClick={() => {
                   hapticLight()
-                  localStorage.setItem(`yaya_2yr_${baby.id}`, '1')
+                  localStorage.setItem(`yaya_2yr_${baby.id}`, String(Date.now()))
                   setTwoYearCardDismissed(true)
                 }}
                 className="px-4 py-2 rounded-md border border-white/20 text-white/60 font-label text-xs"

@@ -1,6 +1,6 @@
 /**
  * TwoYearSummaryModal — resumo visual celebratório dos 2 anos de uso do Yaya.
- * Dois modos: "Resumo" (stats UI) e "Imagem" (canvas 1080×1080 para share).
+ * Dois modos: "Resumo" (stats UI) e "Imagem" (canvas 1080×1920 9:16 para share).
  * Padrão idêntico ao MilestoneShareImage (Capacitor Share + Web Share API).
  */
 
@@ -35,7 +35,17 @@ function roundedRect(
   ctx.closePath()
 }
 
-// ─── canvas builder ────────────────────────────────────────────────────────
+async function loadImage(src: string): Promise<HTMLImageElement | null> {
+  return new Promise((resolve) => {
+    const img = new window.Image()
+    img.crossOrigin = 'anonymous'
+    img.onload = () => resolve(img)
+    img.onerror = () => resolve(null)
+    img.src = src
+  })
+}
+
+// ─── canvas builder (9:16 — 1080×1920) ────────────────────────────────────
 
 async function buildCanvas(
   babyName: string,
@@ -43,36 +53,39 @@ async function buildCanvas(
   feedSessions: number,
   milestoneCount: number,
   longestStreak: number,
+  photoUrl?: string | null,
 ): Promise<HTMLCanvasElement> {
   const W = 1080
-  const H = 1080
+  const H = 1920
   const canvas = document.createElement('canvas')
   canvas.width = W
   canvas.height = H
   const ctx = canvas.getContext('2d')!
 
-  // Background gradient — dark purple (mesmo do MilestoneShareImage)
+  // Background gradient — dark purple
   const bg = ctx.createLinearGradient(0, 0, W, H)
   bg.addColorStop(0, '#1a1145')
   bg.addColorStop(1, '#0d0a27')
   ctx.fillStyle = bg
   ctx.fillRect(0, 0, W, H)
 
-  // Radial glow levemente dourado
-  const glow = ctx.createRadialGradient(W / 2, H / 2, 80, W / 2, H / 2, W / 1.3)
-  glow.addColorStop(0, 'rgba(255,215,100,0.12)')
-  glow.addColorStop(0.5, 'rgba(183,159,255,0.10)')
+  // Radial glow dourado
+  const glow = ctx.createRadialGradient(W / 2, H / 2, 100, W / 2, H / 2, W)
+  glow.addColorStop(0, 'rgba(255,215,100,0.10)')
+  glow.addColorStop(0.5, 'rgba(183,159,255,0.08)')
   glow.addColorStop(1, 'rgba(183,159,255,0)')
   ctx.fillStyle = glow
   ctx.fillRect(0, 0, W, H)
 
-  // Pontos decorativos fixos (sem Math.random para resultado determinístico)
+  // Pontos decorativos fixos (distribuídos ao longo do 9:16)
   const dotColors = ['#b79fff', '#ffd77a', '#7affb7', '#ff9f7a', '#ff7ab7']
   const dotPositions: [number, number, number][] = [
     [120, 160, 7], [960, 200, 5], [80, 600, 8], [1010, 580, 6],
     [200, 900, 5], [880, 920, 7], [340, 80, 4], [720, 70, 6],
     [160, 420, 5], [940, 400, 8], [500, 1020, 6], [60, 780, 5],
-    [1020, 760, 7], [280, 970, 4], [800, 990, 6], [440, 30, 5],
+    [1020, 760, 7], [280, 1200, 4], [800, 1250, 6], [440, 1400, 5],
+    [100, 1500, 7], [980, 1450, 5], [540, 1700, 6], [200, 1750, 4],
+    [860, 1650, 8], [1020, 1800, 5], [60, 1850, 6], [440, 1870, 4],
   ]
   dotPositions.forEach(([x, y, r], i) => {
     ctx.beginPath()
@@ -81,42 +94,72 @@ async function buildCanvas(
     ctx.fill()
   })
 
-  // Top label (dourado)
+  // Top label
   ctx.textAlign = 'center'
   ctx.textBaseline = 'alphabetic'
   ctx.fillStyle = '#ffd77a'
-  ctx.font = 'bold 28px Manrope, system-ui, sans-serif'
-  ctx.fillText('🎂  2 ANOS · YAYA BABY', W / 2, 88)
+  ctx.font = 'bold 30px Manrope, system-ui, sans-serif'
+  ctx.fillText('🎂  2 ANOS · YAYA BABY', W / 2, 100)
 
-  // Círculo central com "2"
+  // Círculo central — foto do bebê ou fallback com "2"
   const cx = W / 2
-  const cy = 310
-  const radius = 155
+  const cy = 420
+  const radius = 200
 
+  // Fundo sutil do círculo
   ctx.beginPath()
   ctx.arc(cx, cy, radius, 0, Math.PI * 2)
   ctx.fillStyle = 'rgba(255,215,100,0.07)'
   ctx.fill()
-  ctx.strokeStyle = '#ffd77a'
-  ctx.lineWidth = 7
-  ctx.stroke()
 
-  ctx.fillStyle = '#ffffff'
-  ctx.font = 'bold 220px Manrope, system-ui, sans-serif'
-  ctx.textAlign = 'center'
-  ctx.textBaseline = 'middle'
-  ctx.fillText('2', cx, cy + 14)
+  if (photoUrl) {
+    const img = await loadImage(photoUrl)
+    if (img) {
+      ctx.save()
+      ctx.beginPath()
+      ctx.arc(cx, cy, radius - 4, 0, Math.PI * 2)
+      ctx.clip()
+      // Cobre o círculo mantendo aspect ratio (object-cover)
+      const size = (radius - 4) * 2
+      const sx = img.width > img.height ? (img.width - img.height) / 2 : 0
+      const sy = img.height > img.width ? (img.height - img.width) / 2 : 0
+      const sSize = Math.min(img.width, img.height)
+      ctx.drawImage(img, sx, sy, sSize, sSize, cx - (radius - 4), cy - (radius - 4), size, size)
+      ctx.restore()
+    } else {
+      // Fallback: "2"
+      ctx.fillStyle = '#ffffff'
+      ctx.font = 'bold 280px Manrope, system-ui, sans-serif'
+      ctx.textAlign = 'center'
+      ctx.textBaseline = 'middle'
+      ctx.fillText('2', cx, cy + 16)
+    }
+  } else {
+    ctx.fillStyle = '#ffffff'
+    ctx.font = 'bold 280px Manrope, system-ui, sans-serif'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText('2', cx, cy + 16)
+  }
+
+  // Borda dourada do círculo
+  ctx.strokeStyle = '#ffd77a'
+  ctx.lineWidth = 8
+  ctx.beginPath()
+  ctx.arc(cx, cy, radius, 0, Math.PI * 2)
+  ctx.stroke()
 
   // Nome do bebê
   ctx.fillStyle = '#ffffff'
-  ctx.font = 'bold 66px Manrope, system-ui, sans-serif'
+  ctx.font = 'bold 72px Manrope, system-ui, sans-serif'
+  ctx.textAlign = 'center'
   ctx.textBaseline = 'alphabetic'
-  ctx.fillText(babyName, W / 2, 540)
+  ctx.fillText(babyName, W / 2, 700)
 
   // Subtítulo
   ctx.fillStyle = 'rgba(255,215,100,0.85)'
-  ctx.font = '34px Manrope, system-ui, sans-serif'
-  ctx.fillText('anos de registros no Yaya', W / 2, 592)
+  ctx.font = '36px Manrope, system-ui, sans-serif'
+  ctx.fillText('anos de registros no Yaya', W / 2, 760)
 
   // Grid de stats — 2×2
   const statCards = [
@@ -126,12 +169,12 @@ async function buildCanvas(
     { value: `${longestStreak}d`,               label: 'maior sequência' },
   ]
 
-  const cardW = 462
-  const cardH = 96
-  const gapX  = 16
-  const gapY  = 14
+  const cardW = 480
+  const cardH = 130
+  const gapX  = 20
+  const gapY  = 16
   const gridLeft = (W - (cardW * 2 + gapX)) / 2
-  const gridTop  = 645
+  const gridTop  = 830
 
   statCards.forEach((card, i) => {
     const col = i % 2
@@ -139,7 +182,7 @@ async function buildCanvas(
     const x = gridLeft + col * (cardW + gapX)
     const y = gridTop  + row * (cardH + gapY)
 
-    roundedRect(ctx, x, y, cardW, cardH, 18)
+    roundedRect(ctx, x, y, cardW, cardH, 20)
     ctx.fillStyle = 'rgba(183,159,255,0.13)'
     ctx.fill()
     ctx.strokeStyle = 'rgba(183,159,255,0.32)'
@@ -150,16 +193,39 @@ async function buildCanvas(
     ctx.textBaseline = 'middle'
 
     ctx.fillStyle = '#ffffff'
-    ctx.font = 'bold 42px Manrope, system-ui, sans-serif'
-    ctx.fillText(card.value, x + cardW / 2, y + cardH / 2 - 13)
+    ctx.font = 'bold 48px Manrope, system-ui, sans-serif'
+    ctx.fillText(card.value, x + cardW / 2, y + cardH / 2 - 15)
 
     ctx.fillStyle = 'rgba(231,226,255,0.6)'
-    ctx.font = '23px Manrope, system-ui, sans-serif'
-    ctx.fillText(card.label, x + cardW / 2, y + cardH / 2 + 25)
+    ctx.font = '26px Manrope, system-ui, sans-serif'
+    ctx.fillText(card.label, x + cardW / 2, y + cardH / 2 + 28)
   })
 
-  // Footer brand bar (mesmo do MilestoneShareImage)
-  roundedRect(ctx, 340, H - 130, 400, 70, 35)
+  // Mensagem de agradecimento
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+  ctx.fillStyle = 'rgba(255,255,255,0.55)'
+  ctx.font = '30px Manrope, system-ui, sans-serif'
+  const thankMsg = 'Obrigado por registrar cada momento com o Yaya 💜'
+  // Quebra de linha manual se necessário
+  const maxW = W - 120
+  const words = thankMsg.split(' ')
+  let line = ''
+  let ty = 1180
+  for (const word of words) {
+    const test = line + word + ' '
+    if (ctx.measureText(test).width > maxW && line !== '') {
+      ctx.fillText(line.trim(), W / 2, ty)
+      line = word + ' '
+      ty += 44
+    } else {
+      line = test
+    }
+  }
+  if (line.trim()) ctx.fillText(line.trim(), W / 2, ty)
+
+  // Footer brand bar
+  roundedRect(ctx, 340, H - 160, 400, 72, 36)
   ctx.fillStyle = 'rgba(183,159,255,0.12)'
   ctx.fill()
   ctx.strokeStyle = 'rgba(183,159,255,0.35)'
@@ -167,10 +233,10 @@ async function buildCanvas(
   ctx.stroke()
 
   ctx.fillStyle = '#b79fff'
-  ctx.font = 'bold 30px Manrope, system-ui, sans-serif'
+  ctx.font = 'bold 32px Manrope, system-ui, sans-serif'
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
-  ctx.fillText('yayababy.app', W / 2, H - 95)
+  ctx.fillText('yayababy.app', W / 2, H - 124)
 
   return canvas
 }
@@ -206,11 +272,11 @@ export default function TwoYearSummaryModal({ baby, logs, milestoneCount, longes
     let cancelled = false
     setDataUrl(null)
     setCanvasError(null)
-    buildCanvas(baby.name, stats.totalLogs, stats.feedSessions, milestoneCount, longestStreak)
+    buildCanvas(baby.name, stats.totalLogs, stats.feedSessions, milestoneCount, longestStreak, baby.photoUrl)
       .then((c) => { if (!cancelled) setDataUrl(c.toDataURL('image/png')) })
       .catch(() => { if (!cancelled) setCanvasError('Não foi possível gerar a imagem.') })
     return () => { cancelled = true }
-  }, [view, baby.name, stats.totalLogs, stats.feedSessions, milestoneCount, longestStreak])
+  }, [view, baby.name, baby.photoUrl, stats.totalLogs, stats.feedSessions, milestoneCount, longestStreak])
 
   // ── share ──
   const handleShare = async () => {
@@ -318,6 +384,13 @@ export default function TwoYearSummaryModal({ baby, logs, milestoneCount, longes
                   <div className="font-label text-[11px] text-white/55 mt-1 leading-snug">{card.label}</div>
                 </div>
               ))}
+            </div>
+
+            {/* Mensagem de agradecimento */}
+            <div className="text-center px-2 py-3 border-t border-white/10">
+              <p className="font-body text-sm text-white/60 leading-relaxed">
+                Obrigado por registrar cada momento com o Yaya. Que os próximos anos sejam ainda mais especiais! 💜
+              </p>
             </div>
 
             {/* CTA pra gerar imagem */}

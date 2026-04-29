@@ -18,7 +18,8 @@ import { useInviteCodes } from './useInviteCodes'
 import { useCaregiverSchedule } from './useCaregiverSchedule'
 import { useVaccines } from '../vaccines'
 import { useMedications } from '../medications'
-import { getActiveLeap, getUpcomingLeap, DEVELOPMENT_LEAPS } from '../milestones'
+import { getActiveLeap, getUpcomingLeap, DEVELOPMENT_LEAPS, useMilestones } from '../milestones'
+import TwoYearSummaryModal from '../tracker/components/TwoYearSummaryModal'
 import { useMyRole } from '../../hooks/useMyRole'
 import { useBabyPremium } from '../../hooks/useBabyPremium'
 import { useMyCaregiverPermissions } from '../../hooks/useMyCaregiverPermissions'
@@ -31,7 +32,7 @@ interface Caregiver {
 }
 
 export default function ProfilePage() {
-  const { baby, members, logs, loading, babiesWithRole } = useAppState()
+  const { baby, members, logs, loading, babiesWithRole, streak } = useAppState()
   const { user } = useAuth()
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
@@ -72,6 +73,14 @@ export default function ProfilePage() {
   const [deleteConfirmText, setDeleteConfirmText] = useState('')
   const [deletingBaby, setDeletingBaby] = useState(false)
   const [editingCaregiver, setEditingCaregiver] = useState<string | null>(null)
+  const [twoYearOpen, setTwoYearOpen] = useState(false)
+
+  // Dados para o resumo de 2 anos
+  const { achieved: milestoneRecords } = useMilestones(baby?.id, baby?.birthDate)
+  const ageDays = baby?.birthDate
+    ? Math.floor((Date.now() - new Date(baby.birthDate).getTime()) / 86400000)
+    : 0
+  const longestStreak = (streak as { longestStreak?: number } | null)?.longestStreak ?? 0
   const [fullInstructionsOpen, setFullInstructionsOpen] = useState(false)
   useSheetBackClose(!!confirmRemove, () => setConfirmRemove(null))
   useSheetBackClose(!!confirmPromoteParent, () => setConfirmPromoteParent(null))
@@ -287,6 +296,23 @@ export default function ProfilePage() {
 
         {/* ===== PERFIL DO BEBÊ ===== */}
         <BabyCard baby={baby} onSave={handleSaveBaby} canEdit={can.editBaby(myRole)} />
+
+        {/* ===== RESUMO 2 ANOS ===== */}
+        {ageDays >= 730 && (
+          <button
+            onClick={() => { hapticLight(); setTwoYearOpen(true) }}
+            className="w-full bg-surface-container rounded-md p-4 flex items-center gap-3 active:bg-surface-container-high transition-colors"
+          >
+            <span className="text-xl">🎂</span>
+            <div className="flex-1 text-left">
+              <h3 className="text-on-surface font-headline text-sm font-bold">Resumo de 2 Anos</h3>
+              <p className="text-on-surface-variant font-label text-xs mt-0.5">
+                Veja a jornada completa de {baby.name}
+              </p>
+            </div>
+            <span className="material-symbols-outlined text-on-surface-variant text-base">chevron_right</span>
+          </button>
+        )}
 
         {/* ===== CRESCIMENTO ===== */}
         {canShowGrowth && (
@@ -792,6 +818,16 @@ export default function ProfilePage() {
             </p>
           </div>
         </div>
+      )}
+
+      {twoYearOpen && baby && (
+        <TwoYearSummaryModal
+          baby={baby}
+          logs={logs}
+          milestoneCount={milestoneRecords.length}
+          longestStreak={longestStreak}
+          onClose={() => setTwoYearOpen(false)}
+        />
       )}
 
       {toast && <Toast message={toast} onDismiss={() => setToast(null)} />}
