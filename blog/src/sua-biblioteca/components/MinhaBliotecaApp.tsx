@@ -29,7 +29,7 @@ async function loadUserData(session: Session): Promise<AppState> {
   const email = session.user.email ?? ''
 
   const [profileRes, guidesRes, purchasesRes] = await Promise.all([
-    supabase.from('profiles').select('is_premium').eq('id', userId).single(),
+    supabase.from('profiles').select('is_premium, subscription_plan').eq('id', userId).single(),
     supabase
       .from('guides')
       .select('id, slug, title, subtitle, cover_image_url, audience, target_week_start')
@@ -42,7 +42,8 @@ async function loadUserData(session: Session): Promise<AppState> {
       .eq('status', 'completed'),
   ])
 
-  const isPremium = Boolean(profileRes.data?.is_premium)
+  const isPremium = Boolean(profileRes.data?.is_premium) &&
+    ['annual', 'lifetime'].includes(profileRes.data?.subscription_plan ?? '')
   const purchasedIds = new Set(
     ((purchasesRes.data ?? []) as Array<{ guide_id: string }>).map((p) => p.guide_id)
   )
@@ -262,7 +263,7 @@ const s: Record<string, React.CSSProperties> = {
     margin: '0 auto 20px',
   },
   h1: {
-    fontFamily: 'Fraunces, Georgia, serif',
+    fontFamily: 'Manrope, system-ui, sans-serif',
     fontSize: 28,
     fontWeight: 700,
     color: 'rgba(231,226,255,0.95)',
@@ -312,7 +313,7 @@ const s: Record<string, React.CSSProperties> = {
     justifyContent: 'center',
   },
   cardTitle: {
-    fontFamily: 'Fraunces, Georgia, serif',
+    fontFamily: 'Manrope, system-ui, sans-serif',
     fontWeight: 700,
     fontSize: 15,
     color: 'rgba(231,226,255,0.9)',
