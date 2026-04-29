@@ -159,7 +159,7 @@ async function buildCanvas(
   // Subtítulo
   ctx.fillStyle = 'rgba(255,215,100,0.85)'
   ctx.font = '36px Manrope, system-ui, sans-serif'
-  ctx.fillText('anos de registros no Yaya', W / 2, 760)
+  ctx.fillText('2 anos de registros no Yaya', W / 2, 760)
 
   // Grid de stats — 2×2
   const statCards = [
