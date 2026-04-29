@@ -4,6 +4,13 @@ Guia de trabalho para o Claude Code neste repositório. Leia antes de mexer.
 Mantenha este arquivo curto: se crescer além de ~200 linhas, é sinal de que
 vai documentação demais pra cá e de menos para `docs/` ou READMEs por feature.
 
+## Memória do projeto
+
+Leia `docs/memory/MEMORY.md` no início de cada sessão — contém estado atual,
+features implementadas, convenções e próximos passos. Arquivos detalhados
+referenciados nele estão em `docs/memory/`. Ao criar nova memória, salve
+**sempre** em `docs/memory/` (não em `.claude/projects/`) para ficar no git.
+
 ---
 
 ## Projeto
