@@ -28,6 +28,7 @@ import * as path from 'node:path'
 const REPO_ROOT = path.resolve(__dirname, '..')
 const CONTENT_DIR = path.join(REPO_ROOT, 'content', 'infoprodutos', 'guia-ultimas-semanas')
 const MD_FILE = path.join(CONTENT_DIR, 'guia-ultimas-semanas.md')
+const FLASHCARDS_FILE = path.join(CONTENT_DIR, 'flashcards.md')
 const IMG_DIR = path.join(CONTENT_DIR, 'imagens')
 const GUIDE_SLUG = 'ultimas-semanas'
 const STORAGE_BUCKET = 'guide-images'
@@ -208,16 +209,83 @@ function stripAnchors(line: string): string {
   return line.replace(/\s*\{#[a-z0-9-]+\}\s*$/i, '').trim()
 }
 
-// ── Step 3: Parser hierárquico ─────────────────────────────────────────────
+// ── Step 3: Parser de flashcards ───────────────────────────────────────────
+
+/** Lê flashcards.md e retorna um mapa partIndex(1-4) → cards[{front,back}] */
+async function parseFlashcardsByPart(): Promise<Map<number, Array<{ front: string; back: string }>>> {
+  const result = new Map<number, Array<{ front: string; back: string }>>()
+  const raw = await fs.readFile(FLASHCARDS_FILE, 'utf-8')
+  // Strip \r para lidar com arquivos CRLF (Windows)
+  const lines = raw.replace(/\r/g, '').split('\n')
+
+  let currentPart = 0
+  let inCard = false
+  let front = ''
+  let back = ''
+
+  function flushCard() {
+    if (currentPart > 0 && front) {
+      const cards = result.get(currentPart) ?? []
+      cards.push({ front: front.trim(), back: back.trim() })
+      result.set(currentPart, cards)
+    }
+    front = ''
+    back = ''
+    inCard = false
+  }
+
+  for (const line of lines) {
+    // Detecta cabeçalho de parte: "## Parte 1 —" ou "## Parte 2 —"
+    const partMatch = line.match(/^## Parte (\d+)/i)
+    if (partMatch) {
+      flushCard()
+      currentPart = parseInt(partMatch[1], 10)
+      continue
+    }
+
+    // Detecta início de card
+    if (/^\*\*Card \d+\*\*/.test(line)) {
+      flushCard()
+      inCard = true
+      continue
+    }
+
+    if (!inCard) continue
+
+    // Linha de frente
+    const frMatch = line.match(/^Frente:\s*(.+)$/)
+    if (frMatch) { front = frMatch[1]; continue }
+
+    // Linha de verso (pode ter continuação nas linhas seguintes)
+    const veMatch = line.match(/^Verso:\s*(.+)$/)
+    if (veMatch) { back = veMatch[1]; continue }
+
+    // Continuação de verso (linha não vazia sem outro marcador)
+    if (back && line.trim() && !line.startsWith('**')) {
+      back += ' ' + line.trim()
+    }
+  }
+  flushCard() // flush do último card
+
+  console.log(`📇 Flashcards parseados:`)
+  for (const [part, cards] of result.entries()) {
+    console.log(`   Parte ${part}: ${cards.length} cards`)
+  }
+
+  return result
+}
+
+// ── Step 4: Parser hierárquico ─────────────────────────────────────────────
 
 interface ParsedSection {
   level: 'part' | 'section'
   title: string
   slug: string
   body: string
-  type?: 'linear' | 'quiz' | 'part'
+  type?: 'linear' | 'quiz' | 'part' | 'flashcards'
   is_preview?: boolean
   checklistItems?: Array<{ id: string; text: string; required?: boolean }>
+  flashcardPartIndex?: number  // 1-4, apenas para seções "Já gravou?"
 }
 
 function parseMarkdown(md: string, imageMap: Map<string, string>): ParsedSection[] {
@@ -226,6 +294,7 @@ function parseMarkdown(md: string, imageMap: Map<string, string>): ParsedSection
 
   let current: ParsedSection | null = null
   let buffer: string[] = []
+  let currentPartIndex = 0  // rastreia qual parte estamos (1-4)
 
   function flush() {
     if (current) {
@@ -260,6 +329,10 @@ function parseMarkdown(md: string, imageMap: Map<string, string>): ParsedSection
         continue
       }
 
+      // Incrementa o índice de parte se for "Parte N:"
+      const parteMatch = title.match(/^Parte\s+(\d+)/i)
+      if (parteMatch) currentPartIndex = parseInt(parteMatch[1], 10)
+
       current = {
         level: 'part',
         title,
@@ -276,12 +349,17 @@ function parseMarkdown(md: string, imageMap: Map<string, string>): ParsedSection
       // Cria a section, mas o `body` da part é fechado primeiro
       flush()
       const title = stripAnchors(rawLine.replace(/^###\s+/, ''))
+
+      // Detecta "Já gravou?" → seção de flashcards da parte atual
+      const isFlashcards = /já gravou/i.test(title)
+
       current = {
         level: 'section',
         title,
         slug: slugifySectionTitle(title),
         body: '',
-        type: 'linear',
+        type: isFlashcards ? 'flashcards' : 'linear',
+        ...(isFlashcards ? { flashcardPartIndex: currentPartIndex } : {}),
       }
       continue
     }
@@ -385,7 +463,10 @@ function parseQuizToJSON(quizMd: string) {
 }
 
 // ── Step 5: Persiste no DB ─────────────────────────────────────────────────
-async function persistSections(parsed: ParsedSection[]) {
+async function persistSections(
+  parsed: ParsedSection[],
+  flashcardsByPart: Map<number, Array<{ front: string; back: string }>>,
+) {
   // Pega o guide
   const { data: guide, error: guideErr } = await supabase
     .from('guides')
@@ -398,8 +479,19 @@ async function persistSections(parsed: ParsedSection[]) {
   const guideId = guide.id as string
 
   // Limpa seções existentes pra ser idempotente
+  // Deve deletar dependências FK antes das seções para evitar violation silenciosa
   console.log(`🗑️  Apagando seções existentes do guide…`)
-  await supabase.from('guide_sections').delete().eq('guide_id', guideId)
+  const { data: existingSections } = await supabase
+    .from('guide_sections').select('id').eq('guide_id', guideId)
+  const existingIds = (existingSections ?? []).map((s: { id: string }) => s.id)
+  if (existingIds.length > 0) {
+    for (const table of ['guide_ratings', 'guide_highlights', 'guide_notes', 'guide_progress', 'guide_checklist_state', 'guide_milestones']) {
+      await supabase.from(table).delete().in('section_id', existingIds)
+    }
+    // Filhos antes dos pais (self-reference parent_id)
+    await supabase.from('guide_sections').delete().eq('guide_id', guideId).not('parent_id', 'is', null)
+    await supabase.from('guide_sections').delete().eq('guide_id', guideId)
+  }
 
   // Identifica boundaries: qual section pertence a qual part
   const partsOnly = parsed.filter(s => s.level === 'part')
@@ -460,10 +552,22 @@ async function persistSections(parsed: ParsedSection[]) {
     }
     if (!currentPartId) continue
 
-    // Se a section tem checklist extraído, popula data.checklist_items
-    const sectionData = item.checklistItems && item.checklistItems.length > 0
-      ? { checklist_items: item.checklistItems }
-      : null
+    // Determina tipo e data da seção
+    let sectionType: string = item.type ?? 'linear'
+    let sectionData: Record<string, unknown> | null = null
+
+    if (item.type === 'flashcards' && item.flashcardPartIndex !== undefined) {
+      // Seção "Já gravou?" → popula data.cards com flashcards da parte correspondente
+      const cards = flashcardsByPart.get(item.flashcardPartIndex) ?? []
+      sectionData = { cards }
+      if (cards.length === 0) {
+        console.warn(`  ⚠️  Nenhum flashcard encontrado pra Parte ${item.flashcardPartIndex}!`)
+      }
+    } else if (item.checklistItems && item.checklistItems.length > 0) {
+      // Seção com checklist extraído
+      sectionData = { checklist_items: item.checklistItems }
+      sectionType = 'linear'
+    }
 
     const { error } = await supabase.from('guide_sections').insert({
       guide_id: guideId,
@@ -472,7 +576,7 @@ async function persistSections(parsed: ParsedSection[]) {
       slug: item.slug,
       title: item.title,
       content_md: item.body,
-      type: 'linear',
+      type: sectionType,
       data: sectionData,
       estimated_minutes: estimateMinutes(item.body),
       is_preview: false,
@@ -481,8 +585,11 @@ async function persistSections(parsed: ParsedSection[]) {
       console.error(`  ✗ ${item.title}: ${error.message}`)
     } else {
       totalSecs++
-      if (sectionData) {
-        console.log(`  📋 "${item.title}" tem ${item.checklistItems!.length} items de checklist`)
+      if (item.type === 'flashcards') {
+        const cards = (sectionData as { cards: unknown[] } | null)?.cards ?? []
+        console.log(`  🃏 "${item.title}" (flashcards Parte ${item.flashcardPartIndex}): ${cards.length} cards`)
+      } else if (sectionData && item.checklistItems) {
+        console.log(`  📋 "${item.title}" tem ${item.checklistItems.length} items de checklist`)
       }
     }
   }
@@ -527,10 +634,13 @@ async function main() {
   const md = await fs.readFile(MD_FILE, 'utf-8')
   console.log(`\n📄 Markdown: ${(md.length / 1024).toFixed(1)}KB`)
 
-  const parsed = parseMarkdown(md, imageMap)
-  console.log(`📊 Parsed: ${parsed.filter(s => s.level === 'part').length} parts + ${parsed.filter(s => s.level === 'section').length} sections\n`)
+  const flashcardsByPart = await parseFlashcardsByPart()
 
-  await persistSections(parsed)
+  const parsed = parseMarkdown(md, imageMap)
+  const flashcardSections = parsed.filter(s => s.type === 'flashcards')
+  console.log(`📊 Parsed: ${parsed.filter(s => s.level === 'part').length} parts + ${parsed.filter(s => s.level === 'section').length} sections (${flashcardSections.length} flashcard)\n`)
+
+  await persistSections(parsed, flashcardsByPart)
 
   console.log(`\n🎉 Pronto! Acessa /admin/biblioteca/ultimas-semanas pra revisar.`)
 }
