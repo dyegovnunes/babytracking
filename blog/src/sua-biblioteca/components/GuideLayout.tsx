@@ -65,6 +65,7 @@ export default function GuideLayout({ guide, sections, userId }: Props) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [readingMode, setReadingMode] = useState(false)
   const [progressMap, setProgressMap] = useState<Record<string, GuideProgress>>({})
+  const [progressLoaded, setProgressLoaded] = useState(false)
   const [theme, setTheme] = useState<'light' | 'dark'>(() => detectInitialTheme())
   const mainRef = useRef<HTMLElement>(null)
 
@@ -160,6 +161,7 @@ export default function GuideLayout({ guide, sections, userId }: Props) {
       const map: Record<string, GuideProgress> = {}
       for (const p of data) map[p.section_id] = p
       setProgressMap(map)
+      setProgressLoaded(true)
     }
     load()
     return () => { cancelled = true }
@@ -254,6 +256,7 @@ export default function GuideLayout({ guide, sections, userId }: Props) {
             currentIdx={currentIdx}
             userId={userId}
             isCompleted={progressMap[currentSection.id]?.completed === true}
+            progressLoaded={progressLoaded}
             onNavigate={goToSection}
             onProgressUpdate={onProgressUpdate}
             mainRef={mainRef}

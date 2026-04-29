@@ -546,6 +546,12 @@ html.theme-dark .reader-root {
   }
 }
 
+/* ── Pulse skeleton (loading state) ───────────────────────────────────── */
+@keyframes pulse {
+  0%, 100% { opacity: 0.5; }
+  50%       { opacity: 0.25; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

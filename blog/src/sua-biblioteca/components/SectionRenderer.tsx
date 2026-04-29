@@ -27,6 +27,9 @@ interface Props {
   currentIdx: number
   userId: string
   isCompleted?: boolean
+  /** true quando o progressMap já foi carregado do DB — evita flash do botão
+   *  "Marcar" em seções já concluídas enquanto a query assíncrona carrega. */
+  progressLoaded?: boolean
   onNavigate: (id: string) => void
   onProgressUpdate: (sectionId: string, partial: Partial<GuideProgress>) => void
   mainRef: React.RefObject<HTMLElement | null>
@@ -38,8 +41,8 @@ interface Props {
 const COUNTDOWN_SECONDS = 3
 
 export default function SectionRenderer({
-  guide, section, allSections, currentIdx, userId, isCompleted, onNavigate, onProgressUpdate, mainRef,
-  recordMilestone,
+  guide, section, allSections, currentIdx, userId, isCompleted, progressLoaded = true,
+  onNavigate, onProgressUpdate, mainRef, recordMilestone,
 }: Props) {
   const contentRef = useRef<HTMLDivElement>(null)
   const [completedAnimating, setCompletedAnimating] = useState(false)
@@ -47,7 +50,7 @@ export default function SectionRenderer({
   const [countdown, setCountdown] = useState<number | null>(null)
   const countdownTimerRef = useRef<number | null>(null)
 
-  const { markCompleted } = useReadingProgress({
+  const { markCompleted, markUncompleted } = useReadingProgress({
     userId,
     guideId: guide.id,
     sectionId: section.id,
@@ -119,6 +122,12 @@ export default function SectionRenderer({
       // Inicia countdown automático pra próxima seção (só se houver next)
       if (next) startCountdown()
     }, 1200)
+  }
+
+  async function handleUnmarkCompleted() {
+    await markUncompleted()
+    onProgressUpdate(section.id, { completed: false, completed_at: undefined })
+    stopCountdown()
   }
 
   // ── Render por tipo ──────────────────────────────────────────────────────
@@ -295,8 +304,19 @@ export default function SectionRenderer({
           display: 'flex', flexDirection: 'column', alignItems: 'center',
           gap: 14, marginBottom: 28,
         }}>
-          {(section.type === 'checklist' || (section.data as Record<string, unknown> | null)?.hide_completion_btn) ? null : (isCompleted || completedAnimating) ? (
-            <div
+          {(section.type === 'checklist' || (section.data as Record<string, unknown> | null)?.hide_completion_btn) ? null : !progressLoaded ? (
+            /* Skeleton enquanto o progressMap carrega do DB — evita flash do botão errado */
+            <div style={{
+              width: 200, height: 44, borderRadius: 999,
+              background: 'var(--r-surface-strong)',
+              opacity: 0.5,
+              animation: 'pulse 1.5s ease-in-out infinite',
+            }} />
+          ) : (isCompleted || completedAnimating) ? (
+            /* Seção concluída — botão clicável pra desmarcar */
+            <button
+              onClick={handleUnmarkCompleted}
+              title="Clique para desmarcar como concluída"
               style={{
                 padding: '13px 26px',
                 borderRadius: 999,
@@ -306,17 +326,33 @@ export default function SectionRenderer({
                 fontFamily: 'inherit',
                 fontSize: 14,
                 fontWeight: 700,
+                cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 8,
                 minHeight: 44,
                 maxWidth: '100%',
                 boxShadow: '0 4px 16px color-mix(in srgb, var(--r-accent) 35%, transparent)',
+                transition: 'opacity 0.2s, transform 0.15s',
+                position: 'relative',
+              }}
+              onMouseEnter={e => {
+                // No hover, mostra hint de "Desmarcar" com leve fade
+                e.currentTarget.style.opacity = '0.82'
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.opacity = '1'
               }}
             >
               <span className="material-symbols-outlined" style={{ fontSize: 18, fontVariationSettings: '"FILL" 1' }}>
                 check_circle
               </span>
-              Concluída! 💜
-            </div>
+              Concluída 💜
+              <span style={{
+                fontSize: 11, fontWeight: 500, opacity: 0.7,
+                marginLeft: 2,
+              }}>
+                · Desmarcar
+              </span>
+            </button>
           ) : (
             <button
               onClick={handleMarkCompleted}
@@ -340,7 +376,7 @@ export default function SectionRenderer({
               Marcar como concluída
             </button>
           )}
-          {section.type !== 'checklist' && !(section.data as Record<string, unknown> | null)?.hide_completion_btn && !isCompleted && (
+          {section.type !== 'checklist' && !(section.data as Record<string, unknown> | null)?.hide_completion_btn && !isCompleted && progressLoaded && (
             <p style={{ fontSize: 12, color: 'var(--r-text-subtle)', margin: 0 }}>
               Ou rola até o final pra avançar pra próxima seção
             </p>

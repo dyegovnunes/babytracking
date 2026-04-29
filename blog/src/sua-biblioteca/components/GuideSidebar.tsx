@@ -236,13 +236,27 @@ export default function GuideSidebar({
         <nav style={{ padding: '12px 10px 24px' }}>
           {parts.map((part) => {
             const partChildren = childrenOf(part.id)
+            // Parte está "concluída" se todas as suas seções legíveis (exceto
+            // flashcards que não têm progresso rastreável) estiverem concluídas.
+            const readableChildren = partChildren.filter(s => s.type !== 'flashcards')
+            const isPartCompleted = readableChildren.length > 0 &&
+              readableChildren.every(child => progressMap[child.id]?.completed === true)
+            // Parte "iniciada" se ao menos um filho tiver progresso
+            const isPartStarted = partChildren.some(child => !!progressMap[child.id])
+            // Monta um progress sintético pra o SectionItem da part
+            const partProgress = isPartCompleted
+              ? { completed: true, section_id: part.id, user_id: '', guide_id: '' } as typeof progressMap[string]
+              : isPartStarted
+                ? { completed: false, section_id: part.id, user_id: '', guide_id: '' } as typeof progressMap[string]
+                : undefined
+
             return (
               <div key={part.id} style={{ marginBottom: 18 }}>
                 <SectionItem
                   section={part}
                   isPart
                   isCurrent={part.id === currentSectionId}
-                  progress={progressMap[part.id]}
+                  progress={partProgress}
                   onSelect={() => onSelectSection(part.id)}
                 />
                 {partChildren.length > 0 && (

@@ -101,5 +101,18 @@ export function useReadingProgress({ userId, guideId, sectionId, containerRef }:
     }, { onConflict: 'user_id,section_id' })
   }, [userId, guideId, sectionId])
 
-  return { markCompleted }
+  // Desmarca como concluída
+  const markUncompleted = useCallback(async () => {
+    if (!userId || !guideId || !sectionId) return
+    await supabase.from('guide_progress').upsert({
+      user_id: userId,
+      guide_id: guideId,
+      section_id: sectionId,
+      completed: false,
+      completed_at: null,
+      last_seen_at: new Date().toISOString(),
+    }, { onConflict: 'user_id,section_id' })
+  }, [userId, guideId, sectionId])
+
+  return { markCompleted, markUncompleted }
 }
