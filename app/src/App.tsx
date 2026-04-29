@@ -33,6 +33,7 @@ const PrivacyPage = lazy(() => import('./pages/PrivacyPage'))
 const SharedReportPage = lazy(() => import('./pages/SharedReportPage'))
 const DeletedAccountPage = lazy(() => import('./pages/DeletedAccountPage'))
 const WaitlistPage = lazy(() => import('./pages/WaitlistPage'))
+const LandingPage = lazy(() => import('./pages/LandingPage'))
 
 function RouteFallback() {
   // Skeleton genérico — aparece enquanto o chunk JS da rota baixa.
@@ -234,10 +235,10 @@ function PublicOrAuth() {
     return <AuthenticatedRoutes />
   }
 
-  // Not logged in on web → show waitlist/landing page
+  // Not logged in on web → show landing page
   return (
     <Suspense fallback={<RouteFallback />}>
-      <WaitlistPage />
+      <LandingPage />
     </Suspense>
   )
 }
