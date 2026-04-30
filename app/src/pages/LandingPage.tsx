@@ -7,7 +7,7 @@
  * Sem dependência de Tailwind ou CSS variables do tema.
  */
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 
 // ─── CSS injetado ─────────────────────────────────────────────────────────────
@@ -175,6 +175,66 @@ const LANDING_CSS = `
     font-size: 0.8125rem; color: hsl(250 30% 70%); white-space: nowrap;
   }
 
+  /* Phone frame */
+  .lp-phone-frame {
+    position: relative;
+    width: 240px;
+    aspect-ratio: 9 / 19.5;
+    border-radius: 44px;
+    background: #06040f;
+    overflow: hidden;
+    box-shadow:
+      0 0 0 1.5px rgba(255,255,255,0.18),
+      0 0 0 3.5px rgba(255,255,255,0.04),
+      0 48px 120px rgba(0,0,0,0.8),
+      0 24px 56px rgba(0,0,0,0.5),
+      0 0 60px rgba(139,92,246,0.2);
+    margin: 0 auto;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .lp-phone-island {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 88px;
+    height: 28px;
+    background: #06040f;
+    border-radius: 14px;
+    z-index: 20;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.06);
+  }
+
+  /* Problem sticky layout */
+  .lp-problem-layout {
+    display: flex;
+    flex-direction: column;
+  }
+  .lp-problem-items { width: 100%; }
+  .lp-problem-phone-wrap { display: none; }
+
+  @media (min-width: 768px) {
+    .lp-problem-layout {
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 5rem;
+    }
+    .lp-problem-items { flex: 1; }
+    .lp-problem-phone-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      width: 280px;
+      align-self: flex-start;
+      flex-shrink: 0;
+    }
+  }
+
   /* Pricing plan card */
   .lp-plan-button {
     width: 100%; padding: 0.8125rem 1.25rem; border-radius: 0.75rem;
@@ -315,36 +375,150 @@ function TrustBar() {
 }
 
 // ─── Problem ─────────────────────────────────────────────────────────────────
-const PAIN_POINTS = [
-  { icon: '🌙', pain: 'Eu sei que amamentei tem um tempo, mas que horas foi? Qual lado do peito?', solve: 'Esquece o papel! O Yaya registra com 1 toque. Até no escuro.' },
-  { icon: '👨‍👩‍👧', pain: 'A babá foi embora, a avó esqueceu de perguntar como foi. Como vou saber como foi o dia?', solve: 'Toda a família sincronizada em tempo real, sem precisar perguntar um pro outro.' },
-  { icon: '📊', pain: 'Como será que está o sono dele essa semana? Será que está dormindo bem?', solve: 'A yaIA usa inteligência artificial para ler as informações do seu bebê em tempo real.' },
-  { icon: '🩺', pain: 'A pediatra perguntou se tinha cocô todo dia. Como vou saber? Mal lembro o que jantei ontem...', solve: 'Relatório fácil, seguro e completo para compartilhar antes da consulta com seu pediatra.' },
+type PainAssetType = 'image' | 'video'
+const PAIN_POINTS: Array<{ icon: string; pain: string; solve: string; asset: string; type: PainAssetType }> = [
+  { icon: '🌙', pain: 'Eu sei que amamentei tem um tempo, mas que horas foi? Qual lado do peito?',            solve: 'Esquece o papel! O Yaya registra com 1 toque. Até no escuro.',                                         asset: '/lp/amamentacao.png', type: 'image' },
+  { icon: '👨‍👩‍👧', pain: 'A babá foi embora, a avó esqueceu de perguntar como foi. Como vou saber como foi o dia?', solve: 'Toda a família sincronizada em tempo real, sem precisar perguntar um pro outro.',              asset: '/lp/familia.png',     type: 'image' },
+  { icon: '📊', pain: 'Como será que está o sono dele essa semana? Será que está dormindo bem?',              solve: 'A yaIA usa inteligência artificial para ler as informações do seu bebê em tempo real.',              asset: '/lp/yaia.mp4',        type: 'video' },
+  { icon: '🩺', pain: 'A pediatra perguntou se tinha cocô todo dia. Como vou saber? Mal lembro o que jantei ontem...', solve: 'Relatório fácil, seguro e completo para compartilhar antes da consulta com seu pediatra.', asset: '/lp/relatorio.mp4',   type: 'video' },
 ]
 
 function Problem() {
+  const [activeIndex, setActiveIndex] = useState(0)
+  const [videoPaused, setVideoPaused] = useState(false)
+  const itemRefs = useRef<(HTMLDivElement | null)[]>([])
+  const videoRefs = useRef<(HTMLVideoElement | null)[]>([])
+
+  // Detecta item central na viewport via IntersectionObserver
+  useEffect(() => {
+    const observers = itemRefs.current.map((el, i) => {
+      if (!el) return null
+      const obs = new IntersectionObserver(
+        ([entry]) => { if (entry.isIntersecting) setActiveIndex(i) },
+        { rootMargin: '-40% 0px -40% 0px', threshold: 0 }
+      )
+      obs.observe(el)
+      return obs
+    })
+    return () => observers.forEach(obs => obs?.disconnect())
+  }, [])
+
+  // Controla playback dos vídeos ao mudar item ativo
+  useEffect(() => {
+    PAIN_POINTS.forEach((item, i) => {
+      if (item.type !== 'video') return
+      const video = videoRefs.current[i]
+      if (!video) return
+      if (i === activeIndex) {
+        video.currentTime = 0
+        video.play().catch(() => {})
+        setVideoPaused(false)
+      } else {
+        video.pause()
+      }
+    })
+  }, [activeIndex])
+
+  function handlePhoneClick() {
+    if (PAIN_POINTS[activeIndex].type !== 'video') return
+    const video = videoRefs.current[activeIndex]
+    if (!video) return
+    if (video.paused) { video.play(); setVideoPaused(false) }
+    else               { video.pause(); setVideoPaused(true) }
+  }
+
+  const activeItem = PAIN_POINTS[activeIndex]
+
   return (
     <section style={{ padding: '4rem 0' }}>
-      <div style={{ textAlign: 'center', maxWidth: '38rem', margin: '0 auto 3rem' }}>
+      <div style={{ textAlign: 'center', maxWidth: '38rem', margin: '0 auto 4rem' }}>
         <h2 style={{ fontSize: 'clamp(1.375rem, 3vw, 1.875rem)', fontWeight: 700, lineHeight: 1.3, marginBottom: 0 }}>
           Lembrar cada alimentação, cada fralda, cada soneca...{' '}
           <span className="lp-gradient-text">é impossível fazer isso de cabeça.</span>
         </h2>
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', maxWidth: '52rem', margin: '0 auto' }}>
-        {PAIN_POINTS.map((p, i) => (
-          <div key={p.icon} style={{ display: 'flex', gap: '1.25rem', alignItems: 'flex-start', padding: '1.5rem 0', borderBottom: i < PAIN_POINTS.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none' }}>
-            {/* Ícone */}
-            <div style={{ fontSize: '1.625rem', lineHeight: 1, marginTop: 2, flexShrink: 0, width: 36, textAlign: 'center' }}>{p.icon}</div>
-            {/* Texto */}
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
-              <p style={{ fontSize: '0.9375rem', color: 'hsl(250 20% 62%)', lineHeight: 1.6, margin: 0 }}>{p.pain}</p>
-              <p style={{ fontSize: '0.875rem', color: 'hsl(254 100% 81%)', fontWeight: 700, lineHeight: 1.5, margin: 0 }}>
-                ✦ {p.solve}
-              </p>
+
+      <div className="lp-problem-layout">
+        {/* Esquerda — textos que rolam */}
+        <div className="lp-problem-items">
+          {PAIN_POINTS.map((p, i) => (
+            <div
+              key={p.icon}
+              ref={el => { itemRefs.current[i] = el }}
+              style={{
+                minHeight: '55vh',
+                display: 'flex', flexDirection: 'column', justifyContent: 'center',
+                padding: '2rem 0 2rem 1.5rem',
+                borderLeftWidth: 3, borderLeftStyle: 'solid',
+                borderLeftColor: activeIndex === i ? 'hsl(254 100% 81%)' : 'rgba(183,159,255,0)',
+                opacity: activeIndex === i ? 1 : 0.3,
+                transition: 'opacity 0.4s ease, border-left-color 0.4s ease',
+              }}
+            >
+              <span style={{ fontSize: '2rem', marginBottom: '1rem', display: 'block' }}>{p.icon}</span>
+              <p style={{ fontSize: '1rem', color: 'hsl(250 20% 62%)', lineHeight: 1.65, margin: '0 0 0.625rem' }}>{p.pain}</p>
+              <p style={{ fontSize: '0.9375rem', color: 'hsl(254 100% 81%)', fontWeight: 700, lineHeight: 1.5, margin: 0 }}>✦ {p.solve}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Direita — celular fixo */}
+        <div className="lp-problem-phone-wrap">
+          <div style={{ position: 'relative' }}>
+            {/* Glow roxo atrás do celular */}
+            <div aria-hidden style={{ position: 'absolute', inset: '-30%', background: 'radial-gradient(circle, rgba(139,92,246,0.45) 0%, transparent 65%)', filter: 'blur(48px)', zIndex: 0, pointerEvents: 'none' }} />
+
+            {/* Frame do celular */}
+            <div
+              className="lp-phone-frame"
+              onClick={handlePhoneClick}
+              style={{ position: 'relative', zIndex: 1, cursor: activeItem.type === 'video' ? 'pointer' : 'default' }}
+            >
+              <div className="lp-phone-island" />
+
+              {/* Assets — crossfade */}
+              {PAIN_POINTS.map((p, i) => (
+                p.type === 'image' ? (
+                  <img
+                    key={i}
+                    src={p.asset}
+                    alt=""
+                    aria-hidden
+                    style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: activeIndex === i ? 1 : 0, transition: 'opacity 0.55s ease' }}
+                  />
+                ) : (
+                  <video
+                    key={i}
+                    ref={el => { videoRefs.current[i] = el }}
+                    src={p.asset}
+                    muted
+                    loop
+                    playsInline
+                    style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: activeIndex === i ? 1 : 0, transition: 'opacity 0.55s ease' }}
+                  />
+                )
+              ))}
+
+              {/* Overlay de pause */}
+              {activeItem.type === 'video' && (
+                <div style={{ position: 'absolute', inset: 0, zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', background: videoPaused ? 'rgba(0,0,0,0.35)' : 'transparent', transition: 'background 0.3s ease', pointerEvents: 'none' }}>
+                  {videoPaused && (
+                    <div style={{ width: 52, height: 52, borderRadius: '50%', background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.15)' }}>
+                      <svg width="18" height="20" viewBox="0 0 18 20" fill="white" aria-hidden><path d="M16.5 10L2 1v18l14.5-9z"/></svg>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Hint "toque para pausar" */}
+              {activeItem.type === 'video' && !videoPaused && (
+                <div style={{ position: 'absolute', bottom: 28, left: 0, right: 0, zIndex: 10, textAlign: 'center', fontSize: 10, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.04em', pointerEvents: 'none' }}>
+                  toque para pausar
+                </div>
+              )}
             </div>
           </div>
-        ))}
+        </div>
       </div>
     </section>
   )
