@@ -206,50 +206,59 @@ const LANDING_CSS = `
     box-shadow: 0 0 0 1px rgba(255,255,255,0.06);
   }
 
-  /* Problem sticky layout */
-  .lp-problem-layout { display: block; }
-  .lp-problem-phone-wrap { display: none; }
-
-  /* Pain point items — mobile: compact cards, always fully visible */
-  .lp-problem-item {
-    padding: 1.5rem 1.25rem 1.5rem 1.5rem;
-    margin-bottom: 0.5rem;
+  /* Problem auto-rotate layout */
+  .lp-problem-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    padding: 2rem 0 3rem;
   }
-  @media (max-width: 899px) {
-    .lp-problem-item {
-      opacity: 1 !important;
-    }
+  .lp-problem-text-side {
+    width: 100%;
+    min-height: 13rem;
+    position: relative;
+  }
+  .lp-problem-text-item {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+  }
+  .lp-problem-dots {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1.75rem;
+  }
+  .lp-problem-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    background: rgba(183,159,255,0.25);
+    transition: background 0.3s ease, transform 0.3s ease;
+  }
+  .lp-problem-dot.active {
+    background: hsl(254 100% 81%);
+    transform: scale(1.4);
   }
 
-  @media (min-width: 900px) {
-    .lp-problem-layout {
-      display: flex;
+  @media (min-width: 760px) {
+    .lp-problem-wrap {
       flex-direction: row;
+      align-items: center;
       gap: 4rem;
     }
-    .lp-problem-items {
-      flex: 1;
-      min-width: 0;
-    }
-    .lp-problem-phone-wrap {
-      display: block;
-      width: 280px;
+    .lp-problem-phone-col {
       flex-shrink: 0;
-      align-self: flex-start;
-      position: sticky;
-      top: max(4rem, calc(50vh - 270px));
     }
-    .lp-phone-sticky-inner {
-      display: flex;
-      justify-content: center;
-    }
-    /* Desktop: scroll-driven spacing */
-    .lp-problem-item {
-      padding: 26vh 2rem 26vh 1.75rem;
-      margin-bottom: 0;
-    }
-    .lp-problem-item:first-child {
-      padding-top: 4vh;
+    .lp-problem-text-side {
+      flex: 1;
+      min-height: 14rem;
     }
   }
 
@@ -404,21 +413,27 @@ const PAIN_POINTS: Array<{ icon: string; pain: string; solve: string; asset: str
 function Problem() {
   const [activeIndex, setActiveIndex] = useState(0)
   const [videoPaused, setVideoPaused] = useState(false)
-  const itemRefs = useRef<(HTMLDivElement | null)[]>([])
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([])
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
-  // Detecta item central na viewport via IntersectionObserver
+  function goTo(i: number) {
+    setActiveIndex(i)
+    setVideoPaused(false)
+    // Reinicia o timer ao clicar num dot
+    if (intervalRef.current) clearInterval(intervalRef.current)
+    intervalRef.current = setInterval(() => {
+      setActiveIndex(prev => (prev + 1) % PAIN_POINTS.length)
+      setVideoPaused(false)
+    }, 4500)
+  }
+
+  // Auto-advance a cada 4.5s
   useEffect(() => {
-    const observers = itemRefs.current.map((el, i) => {
-      if (!el) return null
-      const obs = new IntersectionObserver(
-        ([entry]) => { if (entry.isIntersecting) setActiveIndex(i) },
-        { rootMargin: '-40% 0px -40% 0px', threshold: 0 }
-      )
-      obs.observe(el)
-      return obs
-    })
-    return () => observers.forEach(obs => obs?.disconnect())
+    intervalRef.current = setInterval(() => {
+      setActiveIndex(prev => (prev + 1) % PAIN_POINTS.length)
+      setVideoPaused(false)
+    }, 4500)
+    return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
   }, [])
 
   // Controla playback dos vídeos ao mudar item ativo
@@ -430,7 +445,6 @@ function Problem() {
       if (i === activeIndex) {
         video.currentTime = 0
         video.play().catch(() => {})
-        setVideoPaused(false)
       } else {
         video.pause()
       }
@@ -438,52 +452,35 @@ function Problem() {
   }, [activeIndex])
 
   function handlePhoneClick() {
-    if (PAIN_POINTS[activeIndex].type !== 'video') return
+    const item = PAIN_POINTS[activeIndex]
+    if (item.type !== 'video') return
     const video = videoRefs.current[activeIndex]
     if (!video) return
     if (video.paused) { video.play(); setVideoPaused(false) }
-    else               { video.pause(); setVideoPaused(true) }
+    else              { video.pause(); setVideoPaused(true) }
   }
 
   const activeItem = PAIN_POINTS[activeIndex]
 
   return (
-    <section style={{ padding: '4rem 0 0' }}>
-      <div style={{ textAlign: 'center', maxWidth: '38rem', margin: '0 auto 2rem' }}>
+    <section style={{ padding: '4rem 0' }}>
+      {/* Heading */}
+      <div style={{ textAlign: 'center', maxWidth: '38rem', margin: '0 auto 3rem' }}>
         <h2 style={{ fontSize: 'clamp(1.375rem, 3vw, 1.875rem)', fontWeight: 700, lineHeight: 1.3, marginBottom: 0 }}>
           Lembrar cada alimentação, cada fralda, cada soneca...{' '}
           <span className="lp-gradient-text">é impossível fazer isso de cabeça.</span>
         </h2>
       </div>
 
-      <div className="lp-problem-layout">
-        {/* Esquerda — textos que rolam */}
-        <div className="lp-problem-items">
-          {PAIN_POINTS.map((p, i) => (
-            <div
-              key={p.icon}
-              ref={el => { itemRefs.current[i] = el }}
-              className="lp-problem-item"
-              style={{
-                opacity: activeIndex === i ? 1 : 0.22,
-                transition: 'opacity 0.5s ease',
-              }}
-            >
-              <span style={{ fontSize: '1.75rem', marginBottom: '1rem', display: 'block' }}>{p.icon}</span>
-              <p style={{ fontSize: '1.25rem', fontWeight: 700, color: 'hsl(250 30% 90%)', lineHeight: 1.45, margin: '0 0 0.875rem', maxWidth: '30ch' }}>{p.pain}</p>
-              <p style={{ fontSize: '0.9375rem', color: 'hsl(254 100% 81%)', fontWeight: 600, lineHeight: 1.5, margin: 0, maxWidth: '34ch' }}>✦ {p.solve}</p>
-            </div>
-          ))}
-        </div>
+      {/* Layout: celular + texto */}
+      <div className="lp-problem-wrap">
 
-        {/* Direita — celular sticky CSS */}
-        <div className="lp-problem-phone-wrap">
-          <div className="lp-phone-sticky-inner">
+        {/* Celular */}
+        <div className="lp-problem-phone-col">
           <div style={{ position: 'relative' }}>
-            {/* Glow roxo atrás do celular */}
+            {/* Glow */}
             <div aria-hidden style={{ position: 'absolute', inset: '-30%', background: 'radial-gradient(circle, rgba(139,92,246,0.45) 0%, transparent 65%)', filter: 'blur(48px)', zIndex: 0, pointerEvents: 'none' }} />
 
-            {/* Frame do celular */}
             <div
               className="lp-phone-frame"
               onClick={handlePhoneClick}
@@ -491,50 +488,59 @@ function Problem() {
             >
               <div className="lp-phone-island" />
 
-              {/* Assets — crossfade */}
+              {/* Assets crossfade */}
               {PAIN_POINTS.map((p, i) => (
                 p.type === 'image' ? (
-                  <img
-                    key={i}
-                    src={p.asset}
-                    alt=""
-                    aria-hidden
-                    style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: activeIndex === i ? 1 : 0, transition: 'opacity 0.55s ease' }}
-                  />
+                  <img key={i} src={p.asset} alt="" aria-hidden
+                    style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: activeIndex === i ? 1 : 0, transition: 'opacity 0.55s ease' }} />
                 ) : (
-                  <video
-                    key={i}
-                    ref={el => { videoRefs.current[i] = el }}
-                    src={p.asset}
-                    muted
-                    loop
-                    playsInline
-                    style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: activeIndex === i ? 1 : 0, transition: 'opacity 0.55s ease' }}
-                  />
+                  <video key={i} ref={el => { videoRefs.current[i] = el }} src={p.asset} muted loop playsInline
+                    style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: activeIndex === i ? 1 : 0, transition: 'opacity 0.55s ease' }} />
                 )
               ))}
 
-              {/* Overlay de pause */}
-              {activeItem.type === 'video' && (
-                <div style={{ position: 'absolute', inset: 0, zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', background: videoPaused ? 'rgba(0,0,0,0.35)' : 'transparent', transition: 'background 0.3s ease', pointerEvents: 'none' }}>
-                  {videoPaused && (
-                    <div style={{ width: 52, height: 52, borderRadius: '50%', background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.15)' }}>
-                      <svg width="18" height="20" viewBox="0 0 18 20" fill="white" aria-hidden><path d="M16.5 10L2 1v18l14.5-9z"/></svg>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Hint "toque para pausar" */}
-              {activeItem.type === 'video' && !videoPaused && (
-                <div style={{ position: 'absolute', bottom: 28, left: 0, right: 0, zIndex: 10, textAlign: 'center', fontSize: 10, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.04em', pointerEvents: 'none' }}>
-                  toque para pausar
+              {/* Overlay pause */}
+              {activeItem.type === 'video' && videoPaused && (
+                <div style={{ position: 'absolute', inset: 0, zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.35)' }}>
+                  <div style={{ width: 52, height: 52, borderRadius: '50%', background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.15)' }}>
+                    <svg width="18" height="20" viewBox="0 0 18 20" fill="white" aria-hidden><path d="M16.5 10L2 1v18l14.5-9z"/></svg>
+                  </div>
                 </div>
               )}
             </div>
           </div>
+        </div>
+
+        {/* Texto + dots */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          {/* Textos com fade absoluto */}
+          <div className="lp-problem-text-side">
+            {PAIN_POINTS.map((p, i) => (
+              <div key={p.icon} className="lp-problem-text-item" style={{ opacity: activeIndex === i ? 1 : 0 }}>
+                <span style={{ fontSize: '1.875rem', marginBottom: '1rem', display: 'block' }}>{p.icon}</span>
+                <p style={{ fontSize: 'clamp(1.125rem, 2.5vw, 1.375rem)', fontWeight: 700, color: 'hsl(250 30% 92%)', lineHeight: 1.4, margin: '0 0 1rem', maxWidth: '28ch' }}>
+                  {p.pain}
+                </p>
+                <p style={{ fontSize: '0.9375rem', color: 'hsl(254 100% 81%)', fontWeight: 600, lineHeight: 1.55, margin: 0, maxWidth: '34ch' }}>
+                  ✦ {p.solve}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {/* Dots de navegação */}
+          <div className="lp-problem-dots">
+            {PAIN_POINTS.map((_, i) => (
+              <button
+                key={i}
+                className={`lp-problem-dot${activeIndex === i ? ' active' : ''}`}
+                onClick={() => goTo(i)}
+                aria-label={`Item ${i + 1}`}
+              />
+            ))}
           </div>
         </div>
+
       </div>
     </section>
   )
