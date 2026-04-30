@@ -270,31 +270,41 @@ const LANDING_CSS = `
     }
   }
 
-  /* Features grid → carousel no mobile */
+  /* Features grid → marquee infinito no mobile */
+  .lp-features-marquee { /* passthrough no desktop */ }
   .lp-features-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 0.875rem;
   }
+  .lp-features-dup { display: none; } /* duplicatas escondidas no desktop */
+
   @media (max-width: 767px) {
+    .lp-features-marquee {
+      overflow: hidden;
+      margin: 0 -1.25rem;
+      padding: 0.25rem 0 1rem;
+      mask-image: linear-gradient(to right, transparent 0, black 24px, black calc(100% - 24px), transparent 100%);
+      -webkit-mask-image: linear-gradient(to right, transparent 0, black 24px, black calc(100% - 24px), transparent 100%);
+    }
     .lp-features-grid {
       display: flex;
-      flex-direction: row;
+      flex-wrap: nowrap;
       gap: 0.75rem;
-      overflow-x: auto;
-      overflow-y: hidden;
-      scroll-snap-type: x mandatory;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
-      margin: 0 -1.25rem;
-      padding: 0.25rem 1.25rem 1rem;
+      width: max-content;
+      animation: lp-features-scroll 36s linear infinite;
     }
-    .lp-features-grid::-webkit-scrollbar { display: none; }
+    .lp-features-grid:hover { animation-play-state: paused; }
+    .lp-features-dup { display: flex; flex-direction: column; }
     .lp-features-item {
-      flex: 0 0 78%;
-      max-width: 78%;
-      scroll-snap-align: start;
+      flex-shrink: 0;
+      width: 70vw;
+      box-sizing: border-box;
     }
+  }
+  @keyframes lp-features-scroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
   }
 
   /* yaIA layout */
@@ -536,14 +546,24 @@ function Features() {
           <span className="lp-gradient-text">realmente precisam.</span>
         </h2>
       </div>
-      <div className="lp-features-grid">
-        {FEATURES.map((f) => (
-          <div key={f.title} className="lp-feature-card lp-features-item">
-            <div style={{ fontSize: '1.5rem', marginBottom: '0.75rem' }}>{f.emoji}</div>
-            <h3 style={{ fontSize: '0.9375rem', fontWeight: 700, color: 'hsl(250 100% 96%)', marginBottom: '0.375rem' }}>{f.title}</h3>
-            <p style={{ fontSize: '0.875rem', color: 'hsl(250 30% 70%)', lineHeight: 1.65, margin: 0 }}>{f.desc}</p>
-          </div>
-        ))}
+      <div className="lp-features-marquee">
+        <div className="lp-features-grid">
+          {FEATURES.map((f) => (
+            <div key={f.title} className="lp-feature-card lp-features-item">
+              <div style={{ fontSize: '1.5rem', marginBottom: '0.75rem' }}>{f.emoji}</div>
+              <h3 style={{ fontSize: '0.9375rem', fontWeight: 700, color: 'hsl(250 100% 96%)', marginBottom: '0.375rem' }}>{f.title}</h3>
+              <p style={{ fontSize: '0.875rem', color: 'hsl(250 30% 70%)', lineHeight: 1.65, margin: 0 }}>{f.desc}</p>
+            </div>
+          ))}
+          {/* Duplicado pra loop infinito no mobile */}
+          {FEATURES.map((f) => (
+            <div key={`dup-${f.title}`} className="lp-feature-card lp-features-item lp-features-dup" aria-hidden>
+              <div style={{ fontSize: '1.5rem', marginBottom: '0.75rem' }}>{f.emoji}</div>
+              <h3 style={{ fontSize: '0.9375rem', fontWeight: 700, color: 'hsl(250 100% 96%)', marginBottom: '0.375rem' }}>{f.title}</h3>
+              <p style={{ fontSize: '0.875rem', color: 'hsl(250 30% 70%)', lineHeight: 1.65, margin: 0 }}>{f.desc}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   )
