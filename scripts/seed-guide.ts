@@ -52,8 +52,35 @@ const SUPABASE_URL = process.env.PUBLIC_SUPABASE_URL!
 const supabase = createSupabaseAdmin()
 
 const GUIDE_SLUG = getSlugFromArgs()
-const CONTENT_DIR = path.join(REPO_ROOT, 'content', 'infoprodutos', GUIDE_SLUG)
-const MD_FILE = path.join(CONTENT_DIR, `${GUIDE_SLUG}.md`)
+
+/**
+ * Resolve a pasta do guia. Convenção preferida: `<slug>/<slug>.md`.
+ * Fallback (compat com guias antigos): `guia-<slug>/guia-<slug>.md`.
+ */
+function resolveContentPaths(slug: string) {
+  const candidates = [
+    {
+      dir: path.join(REPO_ROOT, 'content', 'infoprodutos', slug),
+      md: path.join(REPO_ROOT, 'content', 'infoprodutos', slug, `${slug}.md`),
+    },
+    {
+      dir: path.join(REPO_ROOT, 'content', 'infoprodutos', `guia-${slug}`),
+      md: path.join(REPO_ROOT, 'content', 'infoprodutos', `guia-${slug}`, `guia-${slug}.md`),
+    },
+  ]
+  for (const c of candidates) {
+    try {
+      require('fs').accessSync(c.md)
+      return c
+    } catch { /* tenta próximo */ }
+  }
+  // Default ao primeiro (mensagem de erro fica clara)
+  return candidates[0]
+}
+
+const _paths = resolveContentPaths(GUIDE_SLUG)
+const CONTENT_DIR = _paths.dir
+const MD_FILE = _paths.md
 const IMG_DIR = path.join(CONTENT_DIR, 'imagens')
 const STORAGE_PREFIX = `${GUIDE_SLUG}/img`
 const PUBLIC_URL_BASE = `${SUPABASE_URL}/storage/v1/object/public/${STORAGE_BUCKET}`
