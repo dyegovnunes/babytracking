@@ -270,6 +270,25 @@ const LANDING_CSS = `
     }
   }
 
+  /* yaIA layout */
+  .lp-yaia-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+  }
+  .lp-yaia-text { width: 100%; }
+  .lp-yaia-phone { display: flex; justify-content: center; }
+  @media (min-width: 900px) {
+    .lp-yaia-wrap {
+      flex-direction: row;
+      align-items: center;
+      gap: 3rem;
+    }
+    .lp-yaia-text { flex: 1; min-width: 0; }
+    .lp-yaia-phone { flex-shrink: 0; }
+  }
+
   /* Pricing plan card */
   .lp-plan-button {
     width: 100%; padding: 0.8125rem 1.25rem; border-radius: 0.75rem;
@@ -432,7 +451,7 @@ function Problem() {
         {PAIN_POINTS.map((p) => (
           <div key={p.icon} className="lp-feature-card">
             <span style={{ fontSize: '1.75rem', display: 'block', marginBottom: '0.875rem' }}>{p.icon}</span>
-            <p style={{ fontSize: '1rem', fontWeight: 700, color: '#ffffff', lineHeight: 1.5, margin: '0 0 0.875rem' }}>{p.pain}</p>
+            <p style={{ fontSize: '0.875rem', fontWeight: 500, color: '#ffffff', lineHeight: 1.55, margin: '0 0 0.875rem', fontStyle: 'italic', opacity: 0.85 }}>"{p.pain}"</p>
             <p style={{ fontSize: '1.0625rem', color: 'hsl(254 100% 81%)', fontWeight: 700, lineHeight: 1.5, margin: 0 }}>✦ {p.solve}</p>
           </div>
         ))}
@@ -481,40 +500,42 @@ function Features() {
 function YaIA() {
   return (
     <section style={{ padding: '1.5rem 0 4rem' }}>
-      {/* Caixa roxa só com o texto */}
-      <div style={{ borderRadius: '1.5rem', position: 'relative', padding: '2.5rem 2rem', background: 'linear-gradient(135deg, rgba(139,92,246,0.18) 0%, rgba(183,159,255,0.08) 100%)', border: '1px solid rgba(183,159,255,0.2)', overflow: 'hidden' }}>
-        <div aria-hidden style={{ position: 'absolute', top: '-3rem', right: '-3rem', width: 220, height: 220, borderRadius: '50%', background: 'radial-gradient(circle, rgba(139,92,246,0.35) 0%, transparent 70%)', filter: 'blur(40px)', pointerEvents: 'none' }} />
-        <div style={{ position: 'relative', zIndex: 1, maxWidth: '40rem', margin: '0 auto', textAlign: 'center' }}>
-          <p className="lp-eyebrow" style={{ color: 'hsl(254 100% 81% / 0.6)' }}>Inteligência artificial</p>
-          <h2 style={{ fontSize: 'clamp(1.375rem, 3vw, 1.875rem)', fontWeight: 700, lineHeight: 1.2, marginBottom: '1rem' }}>
-            yaIA —{' '}
-            <span className="lp-gradient-text">a única IA que conhece o seu bebê.</span>
-          </h2>
-          <p style={{ fontSize: '0.9375rem', color: 'hsl(250 30% 70%)', lineHeight: 1.7, marginBottom: '1.5rem' }}>
-            Ela sabe quando o bebê dormiu, o que comeu e qual salto está chegando.
-            Pergunte e receba uma resposta baseada no histórico real — não no Google.
-          </p>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', justifyContent: 'center' }}>
-            {['"Ele dormiu bem essa semana?"', '"Esse choro é fome ou sono?"', '"Quando começa o próximo salto?"'].map((q) => (
-              <span key={q} style={{ fontSize: '0.75rem', padding: '0.375rem 0.75rem', borderRadius: '2rem', background: 'rgba(183,159,255,0.1)', border: '1px solid rgba(183,159,255,0.18)', color: 'hsl(254 100% 81%)' }}>
-                {q}
-              </span>
-            ))}
+      <div className="lp-yaia-wrap">
+        {/* Caixa roxa só com o texto */}
+        <div className="lp-yaia-text" style={{ borderRadius: '1.5rem', position: 'relative', padding: '2.5rem 2rem', background: 'linear-gradient(135deg, rgba(139,92,246,0.18) 0%, rgba(183,159,255,0.08) 100%)', border: '1px solid rgba(183,159,255,0.2)', overflow: 'hidden' }}>
+          <div aria-hidden style={{ position: 'absolute', top: '-3rem', right: '-3rem', width: 220, height: 220, borderRadius: '50%', background: 'radial-gradient(circle, rgba(139,92,246,0.35) 0%, transparent 70%)', filter: 'blur(40px)', pointerEvents: 'none' }} />
+          <div style={{ position: 'relative', zIndex: 1 }}>
+            <p className="lp-eyebrow" style={{ color: 'hsl(254 100% 81% / 0.6)' }}>Inteligência artificial</p>
+            <h2 style={{ fontSize: 'clamp(1.375rem, 3vw, 1.875rem)', fontWeight: 700, lineHeight: 1.2, marginBottom: '1rem' }}>
+              yaIA —{' '}
+              <span className="lp-gradient-text">a única IA que conhece o seu bebê.</span>
+            </h2>
+            <p style={{ fontSize: '0.9375rem', color: 'hsl(250 30% 70%)', lineHeight: 1.7, marginBottom: '1.5rem' }}>
+              Ela sabe quando o bebê dormiu, o que comeu e qual salto está chegando.
+              Pergunte e receba uma resposta baseada no histórico real — não no Google.
+            </p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+              {['"Ele dormiu bem essa semana?"', '"Esse choro é fome ou sono?"', '"Quando começa o próximo salto?"'].map((q) => (
+                <span key={q} style={{ fontSize: '0.75rem', padding: '0.375rem 0.75rem', borderRadius: '2rem', background: 'rgba(183,159,255,0.1)', border: '1px solid rgba(183,159,255,0.18)', color: 'hsl(254 100% 81%)' }}>
+                  {q}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Celular fora da caixa, centralizado */}
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '3rem' }}>
-        <div style={{ position: 'relative' }}>
-          <div aria-hidden style={{ position: 'absolute', inset: '-25%', background: 'radial-gradient(circle, rgba(139,92,246,0.4) 0%, transparent 65%)', filter: 'blur(48px)', zIndex: 0, pointerEvents: 'none' }} />
-          <div className="lp-phone-frame" style={{ position: 'relative', zIndex: 1, width: 260 }}>
-            <div className="lp-phone-island" />
-            <video
-              src="/lp/yaia.mp4"
-              autoPlay muted loop playsInline
-              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
-            />
+        {/* Celular ao lado da caixa */}
+        <div className="lp-yaia-phone">
+          <div style={{ position: 'relative' }}>
+            <div aria-hidden style={{ position: 'absolute', inset: '-25%', background: 'radial-gradient(circle, rgba(139,92,246,0.4) 0%, transparent 65%)', filter: 'blur(48px)', zIndex: 0, pointerEvents: 'none' }} />
+            <div className="lp-phone-frame" style={{ position: 'relative', zIndex: 1, width: 240 }}>
+              <div className="lp-phone-island" />
+              <video
+                src="/lp/yaia.mp4"
+                autoPlay muted loop playsInline
+                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            </div>
           </div>
         </div>
       </div>
