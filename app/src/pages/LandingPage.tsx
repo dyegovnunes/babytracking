@@ -283,9 +283,14 @@ function StickyNav({ isMobile }: { isMobile: boolean }) {
             Baixar grátis
           </a>
         ) : (
-          <a href="#planos" className="lp-btn-outline" style={{ padding: '0.5rem 1.125rem', fontSize: '0.8125rem' }}>
-            Ver planos
-          </a>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+            <a href="https://blog.yayababy.app" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.8125rem', color: 'rgba(231,226,255,0.45)', textDecoration: 'none', fontWeight: 500 }}>
+              Blog
+            </a>
+            <a href="#planos" className="lp-btn-primary" style={{ padding: '0.5rem 1.25rem', fontSize: '0.8125rem' }}>
+              Assinar Yaya+
+            </a>
+          </div>
         )}
       </div>
     </nav>
@@ -345,11 +350,6 @@ function Hero({ isMobile }: { isMobile: boolean }) {
         <div className="lp-fade lp-d3" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', alignItems: 'center' }}>
           <StoreButton platform="apple" isMobile={isMobile} />
           <StoreButton platform="google" isMobile={isMobile} />
-          {!isMobile && (
-            <a href="#planos" className="lp-btn-outline" style={{ padding: '0.6875rem 1.125rem', fontSize: '0.875rem' }}>
-              Ver planos Yaya+
-            </a>
-          )}
         </div>
       </div>
     </section>
@@ -574,7 +574,7 @@ function Problem() {
 
 // ─── Features ────────────────────────────────────────────────────────────────
 const FEATURES = [
-  { emoji: '🤱', title: 'Amamentação', desc: 'Cronometre cada sessão, esquerda e direita. Sempre saiba o último lado usado.' },
+  { emoji: '🤱', title: 'Amamentação', desc: 'Registre cada mamada com esquerda, direita ou ambos. Sempre saiba o último lado.' },
   { emoji: '💧', title: 'Fraldas', desc: 'Xixi, cocô ou os dois. Registre em menos de um segundo.' },
   { emoji: '🌙', title: 'Sono', desc: 'Timer automático. Veja quantas horas o bebê dormiu de verdade.' },
   { emoji: '🛁', title: 'Banho e cuidados', desc: 'Horários agendados com lembrete 15 minutos antes.' },
@@ -595,7 +595,7 @@ function Features() {
           <span className="lp-gradient-text">realmente precisam.</span>
         </h2>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))', gap: '0.875rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.875rem' }}>
         {FEATURES.map((f) => (
           <div key={f.title} className="lp-feature-card">
             <div style={{ fontSize: '1.5rem', marginBottom: '0.75rem' }}>{f.emoji}</div>
@@ -618,14 +618,14 @@ function YaIA() {
           <p className="lp-eyebrow" style={{ color: 'hsl(254 100% 81% / 0.6)' }}>Inteligência artificial</p>
           <h2 style={{ fontSize: 'clamp(1.375rem, 3vw, 1.875rem)', fontWeight: 700, lineHeight: 1.2, marginBottom: '1rem' }}>
             yaIA —{' '}
-            <span className="lp-gradient-text">sua assistente de cuidados</span>
+            <span className="lp-gradient-text">a única IA que conhece o seu bebê.</span>
           </h2>
           <p style={{ fontSize: '0.9375rem', color: 'hsl(250 30% 70%)', lineHeight: 1.7, marginBottom: '1.5rem', maxWidth: '30rem' }}>
-            Pergunte qualquer coisa sobre o seu bebê. A yaIA responde com base no histórico
-            dele, nas referências da SBP e OMS — disponível 24h, no momento em que você mais precisa.
+            Ela sabe quando o bebê dormiu, o que comeu e qual salto está chegando.
+            Pergunte e receba uma resposta baseada no histórico real — não no Google.
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-            {['"Quantas vezes ele mamou hoje?"', '"Esse choro é fome ou sono?"', '"Quando começa o próximo salto?"'].map((q) => (
+            {['"Ele dormiu bem essa semana?"', '"Esse choro é fome ou sono?"', '"Quando começa o próximo salto?"'].map((q) => (
               <span key={q} style={{ fontSize: '0.75rem', padding: '0.375rem 0.75rem', borderRadius: '2rem', background: 'rgba(183,159,255,0.1)', border: '1px solid rgba(183,159,255,0.18)', color: 'hsl(254 100% 81%)' }}>
                 {q}
               </span>
@@ -759,11 +759,12 @@ function Pricing() {
     <section id="planos" style={{ padding: '4rem 0' }}>
       {/* Header */}
       <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-        <p className="lp-eyebrow">Planos Yaya+</p>
+        <p className="lp-eyebrow">Assine Yaya+</p>
         <h2 style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', fontWeight: 700, marginBottom: '0.75rem' }}>
-          Comece grátis.{' '}
-          <span className="lp-gradient-text">Evolua quando quiser.</span>
+          O melhor investimento para{' '}
+          <span className="lp-gradient-text">a rotina do seu bebê.</span>
         </h2>
+        <p style={{ fontSize: '0.9375rem', color: 'hsl(250 30% 60%)', margin: 0 }}>Escolha o plano do seu.</p>
       </div>
 
       {/* 3 cards */}
@@ -783,6 +784,7 @@ function Pricing() {
               '1 bebê',
               '1 cuidador',
               'Registros limitados',
+              'Com anúncios',
               'Marcos de desenvolvimento',
               'Saltos do desenvolvimento',
               'Caderneta de vacinas',
@@ -813,7 +815,7 @@ function Pricing() {
             <p style={{ margin: '0 0 1rem', fontSize: 11, fontWeight: 700, color: '#b79fff', textTransform: 'uppercase', letterSpacing: '0.12em' }}>✦ Yaya+</p>
 
             {/* Toggle Mensal / Anual */}
-            <div style={{ display: 'inline-flex', background: 'rgba(255,255,255,0.06)', borderRadius: 10, padding: 3, marginBottom: '1.5rem', gap: 2 }}>
+            <div style={{ display: 'inline-flex', alignSelf: 'flex-start', background: 'rgba(255,255,255,0.06)', borderRadius: 10, padding: 3, marginBottom: '1.5rem', gap: 2 }}>
               {(['monthly', 'annual'] as const).map(id => {
                 const active = toggle === id
                 return (
@@ -948,22 +950,6 @@ function Pricing() {
         ))}
       </div>
 
-      {/* Divider + Free */}
-      <div style={{ maxWidth: '44rem', margin: '2.5rem auto 0' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
-          <div style={{ flex: 1, height: 1, background: 'rgba(183,159,255,0.08)' }} />
-          <span style={{ fontSize: '0.75rem', color: 'hsl(250 30% 40%)' }}>ou comece pelo app</span>
-          <div style={{ flex: 1, height: 1, background: 'rgba(183,159,255,0.08)' }} />
-        </div>
-        <div style={{ textAlign: 'center', padding: '1.25rem 1.5rem', border: '1px solid rgba(183,159,255,0.08)', borderRadius: '1.25rem' }}>
-          <p style={{ fontSize: '0.875rem', fontWeight: 700, margin: '0 0 0.25rem', color: 'rgba(231,226,255,0.5)' }}>Yaya Free</p>
-          <p style={{ fontSize: '0.8125rem', color: 'hsl(250 30% 45%)', margin: '0 0 1.25rem' }}>Baixe grátis e comece agora. Upgrade para Yaya+ quando quiser.</p>
-          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center' }}>
-            <a href="https://apps.apple.com/app/yaya-baby" target="_blank" rel="noopener noreferrer" className="lp-btn-outline" style={{ padding: '0.5rem 1.125rem', fontSize: '0.8125rem', opacity: 0.5 }}>App Store</a>
-            <a href="https://play.google.com/store/apps/details?id=app.yayababy" target="_blank" rel="noopener noreferrer" className="lp-btn-outline" style={{ padding: '0.5rem 1.125rem', fontSize: '0.8125rem', opacity: 0.5 }}>Google Play</a>
-          </div>
-        </div>
-      </div>
     </section>
   )
 }
