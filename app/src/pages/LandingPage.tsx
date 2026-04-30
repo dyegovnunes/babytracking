@@ -316,10 +316,10 @@ function TrustBar() {
 
 // ─── Problem ─────────────────────────────────────────────────────────────────
 const PAIN_POINTS = [
-  { icon: '🌙', pain: 'São 4 da manhã. Você sabe que alimentou, mas faz quanto tempo? O cansaço embaralhou tudo.', solve: 'O Yaya registra com 1 toque. Até no escuro.' },
-  { icon: '👨‍👩‍👧', pain: 'A babá anotou num papel, a avó esqueceu. Você chega em casa sem saber o que aconteceu.', solve: 'Toda a família sincronizada em tempo real, sem precisar perguntar.' },
-  { icon: '📊', pain: 'Ele parece estar dormindo menos essa semana — isso é normal para 4 meses?', solve: 'Os insights do Yaya comparam com referências da SBP e OMS pela idade.' },
-  { icon: '🩺', pain: 'A pediatra perguntou quantas fraldas por dia. Você travou.', solve: 'Relatório pronto para compartilhar antes da consulta — com senha, sem instalar nada.' },
+  { icon: '🌙', pain: 'Eu sei que amamentei tem um tempo, mas que horas foi? Qual lado do peito?', solve: 'Esquece o papel! O Yaya registra com 1 toque. Até no escuro.' },
+  { icon: '👨‍👩‍👧', pain: 'A babá foi embora, a avó esqueceu de perguntar como foi. Como vou saber como foi o dia?', solve: 'Toda a família sincronizada em tempo real, sem precisar perguntar um pro outro.' },
+  { icon: '📊', pain: 'Como será que está o sono dele essa semana? Será que está dormindo bem?', solve: 'A yaIA usa inteligência artificial para ler as informações do seu bebê em tempo real.' },
+  { icon: '🩺', pain: 'A pediatra perguntou se tinha cocô todo dia. Como vou saber? Mal lembro o que jantei ontem...', solve: 'Relatório fácil, seguro e completo para compartilhar antes da consulta com seu pediatra.' },
 ]
 
 function Problem() {
