@@ -207,29 +207,25 @@ const LANDING_CSS = `
   }
 
   /* Problem sticky layout */
-  .lp-problem-layout {
-    display: block;
-  }
+  .lp-problem-layout { display: block; }
   .lp-problem-phone-wrap { display: none; }
 
   @media (min-width: 900px) {
     .lp-problem-layout {
       display: grid;
-      grid-template-columns: 1fr 300px;
-      grid-template-areas: "items phone";
-      gap: 5rem;
-      align-items: start;
+      grid-template-columns: 1fr 280px;
+      gap: 4rem;
+      /* align-items: stretch (padrão) — coluna direita estica até a
+         altura da coluna esquerda, dando espaço para o sticky rodar */
     }
-    .lp-problem-items  { grid-area: items; }
     .lp-problem-phone-wrap {
-      grid-area: phone;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      display: block;
+    }
+    .lp-phone-sticky-inner {
       position: sticky;
-      top: 0;
-      height: 100vh;
+      top: calc(50vh - 253px); /* centraliza o celular (506px / 2) */
+      display: flex;
+      justify-content: center;
     }
   }
 
@@ -462,6 +458,7 @@ function Problem() {
 
         {/* Direita — celular fixo */}
         <div className="lp-problem-phone-wrap">
+          <div className="lp-phone-sticky-inner">
           <div style={{ position: 'relative' }}>
             {/* Glow roxo atrás do celular */}
             <div aria-hidden style={{ position: 'absolute', inset: '-30%', background: 'radial-gradient(circle, rgba(139,92,246,0.45) 0%, transparent 65%)', filter: 'blur(48px)', zIndex: 0, pointerEvents: 'none' }} />
@@ -515,6 +512,7 @@ function Problem() {
                 </div>
               )}
             </div>
+          </div>
           </div>
         </div>
       </div>
