@@ -210,6 +210,18 @@ const LANDING_CSS = `
   .lp-problem-layout { display: block; }
   .lp-problem-phone-wrap { display: none; }
 
+  /* Pain point items — mobile: compact cards, always fully visible */
+  .lp-problem-item {
+    padding: 1.5rem 1.25rem 1.5rem 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  @media (max-width: 899px) {
+    .lp-problem-item {
+      opacity: 1 !important;
+      border-left-color: rgba(183,159,255,0.25) !important;
+    }
+  }
+
   @media (min-width: 900px) {
     .lp-problem-layout {
       display: flex;
@@ -226,11 +238,19 @@ const LANDING_CSS = `
       flex-shrink: 0;
       align-self: flex-start;
       position: sticky;
-      top: calc(50vh - 254px);
+      top: max(4rem, calc(50vh - 270px));
     }
     .lp-phone-sticky-inner {
       display: flex;
       justify-content: center;
+    }
+    /* Desktop: scroll-driven spacing */
+    .lp-problem-item {
+      padding: 26vh 2rem 26vh 1.75rem;
+      margin-bottom: 0;
+    }
+    .lp-problem-item:first-child {
+      padding-top: 4vh;
     }
   }
 
@@ -429,8 +449,8 @@ function Problem() {
   const activeItem = PAIN_POINTS[activeIndex]
 
   return (
-    <section style={{ padding: '4rem 0' }}>
-      <div style={{ textAlign: 'center', maxWidth: '38rem', margin: '0 auto 4rem' }}>
+    <section style={{ padding: '4rem 0 0' }}>
+      <div style={{ textAlign: 'center', maxWidth: '38rem', margin: '0 auto 2rem' }}>
         <h2 style={{ fontSize: 'clamp(1.375rem, 3vw, 1.875rem)', fontWeight: 700, lineHeight: 1.3, marginBottom: 0 }}>
           Lembrar cada alimentação, cada fralda, cada soneca...{' '}
           <span className="lp-gradient-text">é impossível fazer isso de cabeça.</span>
@@ -444,19 +464,17 @@ function Problem() {
             <div
               key={p.icon}
               ref={el => { itemRefs.current[i] = el }}
+              className="lp-problem-item"
               style={{
-                minHeight: '55vh',
-                display: 'flex', flexDirection: 'column', justifyContent: 'center',
-                padding: '2rem 0 2rem 1.5rem',
                 borderLeftWidth: 3, borderLeftStyle: 'solid',
                 borderLeftColor: activeIndex === i ? 'hsl(254 100% 81%)' : 'rgba(183,159,255,0)',
-                opacity: activeIndex === i ? 1 : 0.3,
-                transition: 'opacity 0.4s ease, border-left-color 0.4s ease',
+                opacity: activeIndex === i ? 1 : 0.28,
+                transition: 'opacity 0.5s ease, border-left-color 0.5s ease',
               }}
             >
-              <span style={{ fontSize: '2rem', marginBottom: '1rem', display: 'block' }}>{p.icon}</span>
-              <p style={{ fontSize: '1rem', color: 'hsl(250 20% 62%)', lineHeight: 1.65, margin: '0 0 0.625rem' }}>{p.pain}</p>
-              <p style={{ fontSize: '0.9375rem', color: 'hsl(254 100% 81%)', fontWeight: 700, lineHeight: 1.5, margin: 0 }}>✦ {p.solve}</p>
+              <span style={{ fontSize: '1.75rem', marginBottom: '0.875rem', display: 'block' }}>{p.icon}</span>
+              <p style={{ fontSize: '1.0625rem', color: 'hsl(250 20% 65%)', lineHeight: 1.7, margin: '0 0 0.75rem', maxWidth: '34ch' }}>{p.pain}</p>
+              <p style={{ fontSize: '0.9375rem', color: 'hsl(254 100% 81%)', fontWeight: 700, lineHeight: 1.5, margin: 0, maxWidth: '34ch' }}>✦ {p.solve}</p>
             </div>
           ))}
         </div>
