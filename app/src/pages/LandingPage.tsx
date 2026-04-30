@@ -270,6 +270,33 @@ const LANDING_CSS = `
     }
   }
 
+  /* Features grid → carousel no mobile */
+  .lp-features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.875rem;
+  }
+  @media (max-width: 767px) {
+    .lp-features-grid {
+      display: flex;
+      flex-direction: row;
+      gap: 0.75rem;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      margin: 0 -1.25rem;
+      padding: 0.25rem 1.25rem 1rem;
+    }
+    .lp-features-grid::-webkit-scrollbar { display: none; }
+    .lp-features-item {
+      flex: 0 0 78%;
+      max-width: 78%;
+      scroll-snap-align: start;
+    }
+  }
+
   /* yaIA layout */
   .lp-yaia-wrap {
     display: flex;
@@ -509,9 +536,9 @@ function Features() {
           <span className="lp-gradient-text">realmente precisam.</span>
         </h2>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.875rem' }}>
+      <div className="lp-features-grid">
         {FEATURES.map((f) => (
-          <div key={f.title} className="lp-feature-card">
+          <div key={f.title} className="lp-feature-card lp-features-item">
             <div style={{ fontSize: '1.5rem', marginBottom: '0.75rem' }}>{f.emoji}</div>
             <h3 style={{ fontSize: '0.9375rem', fontWeight: 700, color: 'hsl(250 100% 96%)', marginBottom: '0.375rem' }}>{f.title}</h3>
             <p style={{ fontSize: '0.875rem', color: 'hsl(250 30% 70%)', lineHeight: 1.65, margin: 0 }}>{f.desc}</p>
@@ -572,25 +599,25 @@ function YaIA() {
 // ─── Depoimentos ──────────────────────────────────────────────────────────────
 const TESTIMONIALS = [
   {
-    avatar: '👩',
+    avatar: 'mariana',
     name: 'Mariana S.',
-    context: 'filha de 2 meses',
-    quote: 'Antes eu tinha que anotar tudo num papel. Horário que amamentei, qual lado do peito, que horas dormiu... Agora dá pra ver tudo pelo celular. E meu marido não fica perguntando toda hora se já pode dar tete pra ele hahahah',
+    context: 'mãe da Helena, 2 meses',
+    quote: 'Antes eu tinha que anotar tudo num papel. Horário que amamentei a Helena, qual lado do peito, que horas dormiu... Agora dá pra ver tudo pelo celular. E meu marido não fica perguntando toda hora se já pode dar tete pra ela hahahah',
   },
   {
-    avatar: '👨',
+    avatar: 'lucas',
     name: 'Lucas F.',
     context: 'pai da Sofia, 5 meses',
     quote: 'Ter visão sobre saltos, marcos de desenvolvimento e as mudanças da rotina da Sofia mudou tudo. Quando ela fica agitada, eu já tenho ideia do motivo, e quando não sei pergunto pra yaIA, que é excelente!',
   },
   {
-    avatar: '👩',
+    avatar: 'camila',
     name: 'Camila V.',
-    context: 'filho de 4 meses',
-    quote: 'Cheguei na consulta dos 4 meses com mais informação do que eu esperava kkkk A pediatra ficou surpresa com o nível de detalhes.',
+    context: 'mãe do Theo, 4 meses',
+    quote: 'Cheguei na consulta de 4 meses do Theo com mais informação do que eu esperava kkkk A pediatra ficou surpresa com o nível de detalhes.',
   },
   {
-    avatar: '👩',
+    avatar: 'fernanda',
     name: 'Fernanda B.',
     context: 'mãe do Bernardo, 8 meses',
     quote: 'O sono do Bernardo não tava fácil, a yaIA ajudou a entender e deu sugestões do que fazer. Fizemos um esforço em cada e mudou muuuuitoo! Vale super a pena!',
@@ -614,9 +641,11 @@ function Testimonials() {
               "{t.quote}"
             </p>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', marginTop: 'auto' }}>
-              <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(183,159,255,0.12)', border: '1px solid rgba(183,159,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', flexShrink: 0 }}>
-                {t.avatar}
-              </div>
+              <img
+                src={`https://api.dicebear.com/7.x/lorelei/svg?seed=${t.avatar}&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf`}
+                alt={t.name}
+                style={{ width: 40, height: 40, borderRadius: '50%', border: '1px solid rgba(183,159,255,0.2)', flexShrink: 0, background: 'rgba(183,159,255,0.08)' }}
+              />
               <div>
                 <p style={{ margin: 0, fontSize: '0.8125rem', fontWeight: 700, color: 'hsl(250 100% 96%)' }}>{t.name}</p>
                 <p style={{ margin: 0, fontSize: '0.6875rem', color: 'hsl(250 30% 55%)' }}>{t.context}</p>
