@@ -204,6 +204,11 @@ function StickyNav({ isMobile }: { isMobile: boolean }) {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
+  const isAndroid = typeof navigator !== 'undefined' && /Android/i.test(navigator.userAgent)
+  const storeUrl = isAndroid
+    ? 'https://play.google.com/store/apps/details?id=app.yayababy'
+    : 'https://apps.apple.com/app/yaya-baby'
+
   return (
     <nav className={`lp-nav ${visible ? 'lp-nav-visible' : 'lp-nav-hidden'}`}>
       <div style={{ maxWidth: '72rem', margin: '0 auto', padding: '0 1.25rem', height: '3.75rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -214,7 +219,7 @@ function StickyNav({ isMobile }: { isMobile: boolean }) {
           </span>
         </div>
         {isMobile ? (
-          <a href="https://apps.apple.com/app/yaya-baby" className="lp-btn-primary" style={{ padding: '0.5rem 1.125rem', fontSize: '0.8125rem' }}>
+          <a href={storeUrl} className="lp-btn-primary" style={{ padding: '0.5rem 1.125rem', fontSize: '0.8125rem' }}>
             Baixar grátis
           </a>
         ) : (
@@ -265,36 +270,24 @@ function Hero({ isMobile }: { isMobile: boolean }) {
 
         {/* H1 */}
         <h1 className="lp-fade lp-d1" style={{ fontSize: 'clamp(1.875rem, 5vw, 3.25rem)', fontWeight: 700, lineHeight: 1.05, letterSpacing: '-0.02em', marginBottom: '1.25rem' }}>
-          <span style={{ display: 'block' }}>A rotina do seu bebê,</span>
-          <span className="lp-gradient-text" style={{ display: 'block' }}>com 1 toque,</span>
-          <span style={{ display: 'block' }}>na palma da sua mão.</span>
+          <span style={{ display: 'block' }}>O app que cresce</span>
+          <span className="lp-gradient-text" style={{ display: 'block' }}>junto com</span>
+          <span style={{ display: 'block' }}>o seu bebê.</span>
         </h1>
 
         {/* Subtítulo */}
         <p className="lp-fade lp-d2" style={{ fontSize: '1rem', lineHeight: 1.7, color: 'hsl(250 30% 70%)', maxWidth: 480, marginBottom: '2rem' }}>
-          Registre alimentações, fraldas, sono e mais em segundos.
-          Insights inteligentes e família sempre sincronizada.
+          Do recém-nascido ao primeiro aniversário — registre em segundos,
+          entenda os padrões e mantenha toda a família sincronizada em tempo real.
         </p>
 
         {/* CTAs de loja */}
         <div className="lp-fade lp-d3" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', alignItems: 'center' }}>
-          <a href="https://apps.apple.com/app/yaya-baby" className="lp-btn-store" {...(isMobile ? {} : { target: '_blank', rel: 'noopener noreferrer' })}>
-            <AppleIcon />
-            <div>
-              <div style={{ fontSize: '0.5625rem', color: 'rgba(255,255,255,0.45)', lineHeight: 1, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 2 }}>Disponível na</div>
-              <div style={{ fontSize: '0.875rem', fontWeight: 700, lineHeight: 1.2 }}>App Store</div>
-            </div>
-          </a>
-          <a href="https://play.google.com/store/apps/details?id=app.yayababy" className="lp-btn-store" {...(isMobile ? {} : { target: '_blank', rel: 'noopener noreferrer' })}>
-            <PlayIcon />
-            <div>
-              <div style={{ fontSize: '0.5625rem', color: 'rgba(255,255,255,0.45)', lineHeight: 1, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 2 }}>Disponível no</div>
-              <div style={{ fontSize: '0.875rem', fontWeight: 700, lineHeight: 1.2 }}>Google Play</div>
-            </div>
-          </a>
+          <StoreButton platform="apple" isMobile={isMobile} />
+          <StoreButton platform="google" isMobile={isMobile} />
           {!isMobile && (
-            <a href="#planos" style={{ fontSize: '0.875rem', color: 'hsl(254 100% 81% / 0.6)', textDecoration: 'underline', textUnderlineOffset: '4px', transition: 'color 0.2s' }}>
-              Ver planos Yaya+ →
+            <a href="#planos" className="lp-btn-outline" style={{ padding: '0.6875rem 1.125rem', fontSize: '0.875rem' }}>
+              Ver planos Yaya+
             </a>
           )}
         </div>
@@ -322,17 +315,32 @@ function TrustBar() {
 }
 
 // ─── Problem ─────────────────────────────────────────────────────────────────
+const PAIN_POINTS = [
+  { icon: '🌙', pain: 'São 4 da manhã. Você sabe que alimentou, mas faz quanto tempo? O cansaço embaralhou tudo.', solve: 'O Yaya registra com 1 toque. Até no escuro.' },
+  { icon: '👨‍👩‍👧', pain: 'A babá anotou num papel, a avó esqueceu. Você chega em casa sem saber o que aconteceu.', solve: 'Toda a família sincronizada em tempo real, sem precisar perguntar.' },
+  { icon: '📊', pain: 'Ele parece estar dormindo menos essa semana — isso é normal para 4 meses?', solve: 'Os insights do Yaya comparam com referências da SBP e OMS pela idade.' },
+  { icon: '🩺', pain: 'A pediatra perguntou quantas fraldas por dia. Você travou.', solve: 'Relatório pronto para compartilhar antes da consulta — com senha, sem instalar nada.' },
+]
+
 function Problem() {
   return (
-    <section style={{ padding: '4rem 0', maxWidth: '38rem', margin: '0 auto', textAlign: 'center' }}>
-      <h2 style={{ fontSize: 'clamp(1.375rem, 3vw, 1.875rem)', fontWeight: 700, lineHeight: 1.3, marginBottom: '2rem' }}>
-        Lembrar cada alimentação, cada fralda, cada soneca...{' '}
-        <span className="lp-gradient-text">é impossível fazer isso de cabeça.</span>
-      </h2>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.125rem', fontSize: '1rem', lineHeight: 1.75, color: 'hsl(250 30% 70%)' }}>
-        <p style={{ margin: 0 }}>São 4 da manhã. Seu bebê está chorando. Você sabe que alimentou, mas faz quanto tempo? O cansaço embaralhou tudo.</p>
-        <p style={{ margin: 0 }}>Você tentou papel, planilha, notas no celular. Nada funcionou por mais de dois dias.</p>
-        <p style={{ margin: 0, color: 'hsl(250 100% 96%)', fontWeight: 600, fontSize: '1.0625rem' }}>O Yaya foi criado exatamente para esse momento.</p>
+    <section style={{ padding: '4rem 0' }}>
+      <div style={{ textAlign: 'center', maxWidth: '38rem', margin: '0 auto 2.5rem' }}>
+        <h2 style={{ fontSize: 'clamp(1.375rem, 3vw, 1.875rem)', fontWeight: 700, lineHeight: 1.3, marginBottom: 0 }}>
+          Lembrar cada alimentação, cada fralda, cada soneca...{' '}
+          <span className="lp-gradient-text">é impossível fazer isso de cabeça.</span>
+        </h2>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '0.875rem' }}>
+        {PAIN_POINTS.map((p) => (
+          <div key={p.icon} className="lp-feature-card" style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
+            <span style={{ fontSize: '1.5rem' }}>{p.icon}</span>
+            <p style={{ fontSize: '0.875rem', color: 'hsl(250 30% 65%)', lineHeight: 1.6, margin: 0 }}>{p.pain}</p>
+            <p style={{ fontSize: '0.8125rem', color: 'hsl(254 100% 81%)', fontWeight: 600, lineHeight: 1.5, margin: 0 }}>
+              {p.solve}
+            </p>
+          </div>
+        ))}
       </div>
     </section>
   )
@@ -345,7 +353,10 @@ const FEATURES = [
   { emoji: '🌙', title: 'Sono', desc: 'Timer automático. Veja quantas horas o bebê dormiu de verdade.' },
   { emoji: '🛁', title: 'Banho e cuidados', desc: 'Horários agendados com lembrete 15 minutos antes.' },
   { emoji: '👨‍👩‍👧', title: 'Multi-cuidador', desc: 'Compartilhe com parceiro, avós ou babá. Todo mundo sincronizado em tempo real.' },
-  { emoji: '🩺', title: 'Relatório pediatra', desc: 'Relatório completo para levar na consulta. Seu pediatra vai agradecer.' },
+  { emoji: '🩺', title: 'Relatório pediatra', desc: 'Link protegido por senha. O pediatra vê alimentação, sono, peso e vacinas sem precisar instalar nada.' },
+  { emoji: '🏆', title: 'Marcos de desenvolvimento', desc: 'Cada sorriso, cada giro, cada palavra. Registre no momento certo sem depender da memória.' },
+  { emoji: '🌊', title: 'Saltos do desenvolvimento', desc: 'Entenda por que seu bebê está mais agitado. Os 10 saltos, com data estimada de início e fim.' },
+  { emoji: '💉', title: 'Caderneta de vacinas', desc: 'Caderneta digital. Saiba quais vacinas já foram dadas e quais estão chegando.' },
 ]
 
 function Features() {
@@ -354,7 +365,7 @@ function Features() {
       <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
         <p className="lp-eyebrow">Funcionalidades</p>
         <h2 style={{ fontSize: 'clamp(1.5rem, 3vw, 2rem)', fontWeight: 700, margin: 0 }}>
-          Tudo que pais de recém-nascido{' '}
+          Tudo que pais{' '}
           <span className="lp-gradient-text">realmente precisam.</span>
         </h2>
       </div>
@@ -364,6 +375,89 @@ function Features() {
             <div style={{ fontSize: '1.5rem', marginBottom: '0.75rem' }}>{f.emoji}</div>
             <h3 style={{ fontSize: '0.9375rem', fontWeight: 700, color: 'hsl(250 100% 96%)', marginBottom: '0.375rem' }}>{f.title}</h3>
             <p style={{ fontSize: '0.875rem', color: 'hsl(250 30% 70%)', lineHeight: 1.65, margin: 0 }}>{f.desc}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+// ─── yaIA ────────────────────────────────────────────────────────────────────
+function YaIA() {
+  return (
+    <section style={{ padding: '1.5rem 0 4rem' }}>
+      <div style={{ borderRadius: '1.5rem', overflow: 'hidden', position: 'relative', padding: '2.5rem 2rem', background: 'linear-gradient(135deg, rgba(139,92,246,0.18) 0%, rgba(183,159,255,0.08) 100%)', border: '1px solid rgba(183,159,255,0.2)' }}>
+        <div aria-hidden style={{ position: 'absolute', top: '-3rem', right: '-3rem', width: 220, height: 220, borderRadius: '50%', background: 'radial-gradient(circle, rgba(139,92,246,0.35) 0%, transparent 70%)', filter: 'blur(40px)', pointerEvents: 'none' }} />
+        <div style={{ position: 'relative', zIndex: 1, maxWidth: '36rem' }}>
+          <p className="lp-eyebrow" style={{ color: 'hsl(254 100% 81% / 0.6)' }}>Inteligência artificial</p>
+          <h2 style={{ fontSize: 'clamp(1.375rem, 3vw, 1.875rem)', fontWeight: 700, lineHeight: 1.2, marginBottom: '1rem' }}>
+            yaIA —{' '}
+            <span className="lp-gradient-text">sua assistente de cuidados</span>
+          </h2>
+          <p style={{ fontSize: '0.9375rem', color: 'hsl(250 30% 70%)', lineHeight: 1.7, marginBottom: '1.5rem', maxWidth: '30rem' }}>
+            Pergunte qualquer coisa sobre o seu bebê. A yaIA responde com base no histórico
+            dele, nas referências da SBP e OMS — disponível 24h, no momento em que você mais precisa.
+          </p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+            {['"Quantas vezes ele mamou hoje?"', '"Esse choro é fome ou sono?"', '"Quando começa o próximo salto?"'].map((q) => (
+              <span key={q} style={{ fontSize: '0.75rem', padding: '0.375rem 0.75rem', borderRadius: '2rem', background: 'rgba(183,159,255,0.1)', border: '1px solid rgba(183,159,255,0.18)', color: 'hsl(254 100% 81%)' }}>
+                {q}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ─── Depoimentos ──────────────────────────────────────────────────────────────
+const TESTIMONIALS = [
+  {
+    avatar: '👩',
+    name: 'Ana L.',
+    context: 'filho de 3 meses',
+    quote: 'Antes eu anotava tudo num caderno que a babá perdia. Agora minha mãe, eu e meu marido vemos tudo em tempo real.',
+  },
+  {
+    avatar: '👨',
+    name: 'Rodrigo M.',
+    context: 'filha de 5 meses',
+    quote: 'O alerta de salto mudou tudo. Quando ela ficou agitada nas semanas 19-20, eu já sabia o que era. Não entrei em pânico.',
+  },
+  {
+    avatar: '👩',
+    name: 'Camila V.',
+    context: 'filho de 4 meses',
+    quote: 'Cheguei na consulta dos 4 meses com todos os dados. A pediatra ficou surpresa com o nível de detalhe.',
+  },
+]
+
+function Testimonials() {
+  return (
+    <section style={{ padding: '0 0 4rem' }}>
+      <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+        <p className="lp-eyebrow">Quem já usa</p>
+        <h2 style={{ fontSize: 'clamp(1.375rem, 3vw, 1.75rem)', fontWeight: 700, margin: 0 }}>
+          O que os pais{' '}
+          <span className="lp-gradient-text">estão dizendo.</span>
+        </h2>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '0.875rem' }}>
+        {TESTIMONIALS.map((t) => (
+          <div key={t.name} className="lp-feature-card" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <p style={{ fontSize: '0.9375rem', color: 'hsl(250 100% 94%)', lineHeight: 1.65, margin: 0, fontStyle: 'italic' }}>
+              "{t.quote}"
+            </p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', marginTop: 'auto' }}>
+              <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(183,159,255,0.12)', border: '1px solid rgba(183,159,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', flexShrink: 0 }}>
+                {t.avatar}
+              </div>
+              <div>
+                <p style={{ margin: 0, fontSize: '0.8125rem', fontWeight: 700, color: 'hsl(250 100% 96%)' }}>{t.name}</p>
+                <p style={{ margin: 0, fontSize: '0.6875rem', color: 'hsl(250 30% 55%)' }}>{t.context}</p>
+              </div>
+            </div>
           </div>
         ))}
       </div>
@@ -451,7 +545,7 @@ function Pricing() {
                   className="lp-plan-button"
                   style={{ background: plan.highlight ? 'linear-gradient(135deg, #ec4899 0%, #a855f7 100%)' : 'rgba(183,159,255,0.1)', color: '#fff', opacity: isDisabled && !isLoading ? 0.45 : 1, boxShadow: plan.highlight ? '0 0 24px rgba(236,72,153,0.22)' : 'none' }}
                 >
-                  {isLoading ? 'Redirecionando...' : 'Assinar agora'}
+                  {isLoading ? 'Redirecionando...' : plan.id === 'lifetime' ? 'Adquirir agora' : 'Assinar agora'}
                 </button>
               </div>
             </div>
@@ -493,25 +587,18 @@ function FinalCTA({ isMobile }: { isMobile: boolean }) {
     <section style={{ padding: '4rem 0', textAlign: 'center', position: 'relative' }}>
       <div aria-hidden style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center, rgba(183,159,255,0.07) 0%, transparent 70%)', pointerEvents: 'none' }} />
       <h2 style={{ fontSize: 'clamp(1.375rem, 3vw, 1.875rem)', fontWeight: 700, lineHeight: 1.3, marginBottom: '1rem' }}>
-        Seu bebê merece o melhor{' '}
-        <span className="lp-gradient-text">acompanhamento.</span>
+        Você cuida. O Yaya registra.{' '}
+        <span className="lp-gradient-text">Todo mundo sabe o que está acontecendo.</span>
       </h2>
       <p style={{ color: 'hsl(250 30% 70%)', marginBottom: '2rem', maxWidth: '28rem', margin: '0 auto 2rem' }}>
         Comece grátis agora. Sem cartão, sem compromisso.
       </p>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', justifyContent: 'center' }}>
-        {isMobile ? (
-          <>
-            <a href="https://apps.apple.com/app/yaya-baby" className="lp-btn-primary">Baixar grátis</a>
-            <a href="#planos" className="lp-btn-outline">Ver planos Yaya+</a>
-          </>
-        ) : (
-          <>
-            <a href="https://apps.apple.com/app/yaya-baby" target="_blank" rel="noopener noreferrer" className="lp-btn-outline">App Store</a>
-            <a href="https://play.google.com/store/apps/details?id=app.yayababy" target="_blank" rel="noopener noreferrer" className="lp-btn-outline">Google Play</a>
-            <a href="#planos" className="lp-btn-primary">Ver planos Yaya+</a>
-          </>
-        )}
+        <StoreButton platform="apple" isMobile={isMobile} />
+        <StoreButton platform="google" isMobile={isMobile} />
+        <a href="#planos" className="lp-btn-outline" style={{ padding: '0.6875rem 1.125rem', fontSize: '0.875rem' }}>
+          Ver planos Yaya+
+        </a>
       </div>
     </section>
   )
@@ -533,6 +620,28 @@ function Footer() {
         <a href="/privacy" style={{ color: 'inherit', textDecoration: 'none' }}>Privacidade</a>
       </div>
     </footer>
+  )
+}
+
+// ─── StoreButton (padronizado, reutilizável) ─────────────────────────────────
+function StoreButton({ platform, isMobile }: { platform: 'apple' | 'google'; isMobile: boolean }) {
+  const isApple = platform === 'apple'
+  const href = isApple
+    ? 'https://apps.apple.com/app/yaya-baby'
+    : 'https://play.google.com/store/apps/details?id=app.yayababy'
+  const externalProps = isMobile ? {} : { target: '_blank', rel: 'noopener noreferrer' }
+  return (
+    <a href={href} className="lp-btn-store" {...externalProps}>
+      {isApple ? <AppleIcon /> : <PlayIcon />}
+      <div>
+        <div style={{ fontSize: '0.5625rem', color: 'rgba(255,255,255,0.45)', lineHeight: 1, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 2 }}>
+          {isApple ? 'Disponível na' : 'Disponível no'}
+        </div>
+        <div style={{ fontSize: '0.875rem', fontWeight: 700, lineHeight: 1.2 }}>
+          {isApple ? 'App Store' : 'Google Play'}
+        </div>
+      </div>
+    </a>
   )
 }
 
@@ -593,6 +702,8 @@ export default function LandingPage() {
         <TrustBar />
         <Problem />
         <Features />
+        <YaIA />
+        <Testimonials />
         <Pricing />
         <FinalCTA isMobile={isMobile} />
         <Footer />
