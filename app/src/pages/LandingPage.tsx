@@ -1058,11 +1058,11 @@ export default function LandingPage() {
   }, [])
 
   return (
-    <div className="lp-root" style={{ position: 'relative', overflow: 'hidden' }}>
+    <div className="lp-root" style={{ position: 'relative' }}>
       <AuroraBackground />
 
       {/* Glow secundário no centro-direita */}
-      <div aria-hidden style={{ position: 'absolute', top: '70vh', right: '-8rem', width: 450, height: 450, borderRadius: '50%', opacity: 0.18, filter: 'blur(80px)', background: 'hsl(251 70% 61% / 0.35)', pointerEvents: 'none' }} />
+      <div aria-hidden style={{ position: 'absolute', top: '70vh', right: 0, width: 350, height: 350, borderRadius: '50%', opacity: 0.15, filter: 'blur(80px)', background: 'hsl(251 70% 61% / 0.35)', pointerEvents: 'none' }} />
 
       {showBanner && <SuccessBanner onDismiss={() => setShowBanner(false)} />}
       <StickyNav isMobile={isMobile} />
