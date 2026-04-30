@@ -21,6 +21,7 @@ const ProfilePage = lazy(() => import('./features/profile/ProfilePage'))
 const OnboardingPage = lazy(() => import('./pages/OnboardingPage'))
 const WelcomePage = lazy(() => import('./pages/WelcomePage'))
 const SettingsPage = lazy(() => import('./pages/SettingsPage'))
+const BabyRoutinePage = lazy(() => import('./pages/BabyRoutinePage'))
 const InsightsPage = lazy(() => import('./features/insights/InsightsPage'))
 const MilestonesPage = lazy(() => import('./features/milestones/MilestonesPage'))
 const LeapsPage = lazy(() => import('./features/milestones/LeapsPage'))
@@ -112,6 +113,7 @@ function AuthenticatedRoutes() {
           <Route path="yaya-plus" element={<YayaPlusPage />} />
           <Route path="yaia" element={<YaIAPage />} />
           <Route path="profile" element={<ProfilePage />} />
+          <Route path="routine" element={<BabyRoutinePage />} />
           <Route path="settings" element={<SettingsPage />} />
           {/* Catch-all: any unknown route falls back to the tracker instead of rendering blank */}
           <Route path="*" element={<TrackerPage />} />

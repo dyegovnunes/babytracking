@@ -62,6 +62,9 @@ export interface Baby {
   gender?: 'boy' | 'girl'
   photoUrl?: string
   isPremium: boolean
+  quietHoursEnabled?: boolean
+  quietHoursStart?: number
+  quietHoursEnd?: number
 }
 
 /** Baby com o papel do usuário logado — usado no seletor de bebê */
@@ -74,6 +77,7 @@ export interface CaregiverPermissions {
   show_leaps?: boolean
   show_vaccines?: boolean
   show_growth?: boolean
+  edit_routine?: boolean
 }
 
 export interface Member {

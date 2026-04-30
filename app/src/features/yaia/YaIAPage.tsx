@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppState } from '../../contexts/AppContext'
+import { useMyRole } from '../../hooks/useMyRole'
 import { PaywallModal } from '../../components/ui/PaywallModal'
 import { useSheetBackClose } from '../../hooks/useSheetBackClose'
 import { hapticLight } from '../../lib/haptics'
@@ -33,6 +34,20 @@ const PARTICLES = [
 export default function YaIAPage() {
   const navigate = useNavigate()
   const { baby } = useAppState()
+  const myRole = useMyRole()
+
+  // Caregivers não têm acesso à yaIA
+  if (myRole === 'caregiver') {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center px-6 text-center min-h-screen bg-surface">
+        <span className="material-symbols-outlined text-on-surface-variant text-4xl mb-3">lock</span>
+        <p className="font-headline text-base font-bold text-on-surface mb-1">Acesso restrito</p>
+        <p className="font-label text-sm text-on-surface-variant">
+          A yaIA está disponível apenas para pais e responsáveis.
+        </p>
+      </div>
+    )
+  }
   const {
     messages,
     currentSession,

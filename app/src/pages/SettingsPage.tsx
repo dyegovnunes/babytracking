@@ -2,16 +2,10 @@ import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Toast from '../components/ui/Toast'
 import { getAvailablePackages, getLastOfferingsDiagnostic } from '../lib/purchases'
-import { useBathHours } from './settings/useBathHours'
 import { useNotificationPrefs } from './settings/useNotificationPrefs'
-import IntervalsSection from './settings/sections/IntervalsSection'
-import BathSection from './settings/sections/BathSection'
 import NotificationsSection from './settings/sections/NotificationsSection'
 import AccountSection from './settings/sections/AccountSection'
 import ClearHistorySection from './settings/sections/ClearHistorySection'
-import CustomIntervalModal from './settings/modals/CustomIntervalModal'
-import QuietHourPickerModal from './settings/modals/QuietHourPickerModal'
-import BathHourPickerModal from './settings/modals/BathHourPickerModal'
 import InfoModals, { type InfoModalKind } from './settings/modals/InfoModals'
 
 export default function SettingsPage() {
@@ -20,13 +14,8 @@ export default function SettingsPage() {
 
   // Persisted prefs
   const { prefs, savePrefs } = useNotificationPrefs()
-  const { addBathHour } = useBathHours()
 
-  // UI state: which interval row is expanded + which modal is open
-  const [expanded, setExpanded] = useState<string | null>(null)
-  const [customModal, setCustomModal] = useState<string | null>(null)
-  const [pickingQuietHour, setPickingQuietHour] = useState<'start' | 'end' | null>(null)
-  const [pickingBathHour, setPickingBathHour] = useState(false)
+  // UI state
   const [infoModal, setInfoModal] = useState<InfoModalKind>(null)
   // Easter egg: 7 taps no título "Configurações" revela modo debug.
   // Usado pra ligar "test ads" (Google test IDs em vez dos prod IDs) e
@@ -67,33 +56,12 @@ export default function SettingsPage() {
     )
   }
 
-  const handleToggleExpanded = useCallback((cat: string) => {
-    setExpanded((prev) => (prev === cat ? null : cat))
-  }, [])
-
   const handleSavePrefs = useCallback(
     async (updated: Parameters<typeof savePrefs>[0]) => {
       const ok = await savePrefs(updated)
       if (!ok) setToast('Erro ao salvar preferências')
     },
     [savePrefs],
-  )
-
-  const handlePickBathHour = useCallback(
-    async (hour: number) => {
-      const res = await addBathHour(hour)
-      if (res === 'ok') {
-        setToast('Horário adicionado!')
-        setPickingBathHour(false)
-      } else if (res === 'duplicate') {
-        setToast('Horário já existe')
-      } else if (res === 'max') {
-        setToast('Máximo de 4 horários')
-      } else {
-        setToast('Erro ao salvar')
-      }
-    },
-    [addBathHour],
   )
 
   return (
@@ -119,23 +87,6 @@ export default function SettingsPage() {
       </section>
 
       <div className="px-5 space-y-5">
-        <IntervalsSection
-          expanded={expanded}
-          onToggleExpanded={handleToggleExpanded}
-          onOpenCustom={(cat) => setCustomModal(cat)}
-          onSaved={() => setToast('Atualizado!')}
-          onError={(msg) => setToast(msg)}
-          prefs={prefs}
-          onSavePrefs={handleSavePrefs}
-          onOpenQuietPicker={(which) => setPickingQuietHour(which)}
-          onOpenInfo={() => setInfoModal('sleep')}
-        />
-
-        <BathSection
-          onOpenPicker={() => setPickingBathHour(true)}
-          onToast={setToast}
-        />
-
         <NotificationsSection
           prefs={prefs}
           onSavePrefs={handleSavePrefs}
@@ -194,22 +145,6 @@ export default function SettingsPage() {
       </div>
 
       {/* ===== MODAIS ===== */}
-      <CustomIntervalModal
-        cat={customModal}
-        onClose={() => setCustomModal(null)}
-        onSaved={() => setToast('Intervalo salvo!')}
-      />
-      <QuietHourPickerModal
-        which={pickingQuietHour}
-        prefs={prefs}
-        onSave={handleSavePrefs}
-        onClose={() => setPickingQuietHour(null)}
-      />
-      <BathHourPickerModal
-        isOpen={pickingBathHour}
-        onPick={handlePickBathHour}
-        onClose={() => setPickingBathHour(false)}
-      />
       <InfoModals kind={infoModal} onClose={() => setInfoModal(null)} />
 
       {toast && <Toast message={toast} onDismiss={() => setToast(null)} />}

@@ -27,6 +27,7 @@ const PERMISSION_ROWS: PermissionRow[] = [
   { key: 'show_leaps', label: 'Saltos do desenvolvimento', description: 'Visualizar fases e emoções recentes.' },
   { key: 'show_vaccines', label: 'Caderneta de vacinas', description: 'Ver aplicadas e pendentes.' },
   { key: 'show_growth', label: 'Dados de crescimento', description: 'Peso, altura e percentis.' },
+  { key: 'edit_routine', label: 'Editar rotina e intervalos', description: 'Alterar intervalos, banho e horário noturno.' },
 ]
 
 // 0=Dom, 1=Seg ... 6=Sáb (JS getDay)

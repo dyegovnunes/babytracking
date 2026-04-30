@@ -142,17 +142,36 @@ serve(async (req) => {
       recentPushSet.add(`${p.user_id}_${p.baby_id}_${p.type}`);
     }
 
-    // 6. Get babies info for names and birth_date (birth_date needed for sleep insight)
+    // 6. Get babies info for names, birth_date and quiet hours (per-baby source of truth)
     const { data: babies } = await supabase
       .from('babies')
-      .select('id, name, birth_date')
+      .select('id, name, birth_date, quiet_hours_enabled, quiet_hours_start, quiet_hours_end')
       .in('id', babyIds);
 
     const babyNames = new Map<string, string>();
     const babyBirthDates = new Map<string, string>();
+    const babyQuietHours = new Map<string, { enabled: boolean; start: number; end: number }>();
     for (const b of babies ?? []) {
       babyNames.set(b.id, b.name);
       if (b.birth_date) babyBirthDates.set(b.id, b.birth_date);
+      babyQuietHours.set(b.id, {
+        enabled: b.quiet_hours_enabled ?? false,
+        start: b.quiet_hours_start ?? 22,
+        end: b.quiet_hours_end ?? 7,
+      });
+    }
+
+    // Enrich prefsMap com quiet hours per-baby (sobrescreve campos per-user de notification_prefs)
+    for (const [key, p] of prefsMap.entries()) {
+      const bq = babyQuietHours.get(p.baby_id);
+      if (bq) {
+        prefsMap.set(key, {
+          ...p,
+          quiet_enabled: bq.enabled,
+          quiet_start: bq.start,
+          quiet_end: bq.end,
+        });
+      }
     }
 
     // 7. Process each baby and generate push messages

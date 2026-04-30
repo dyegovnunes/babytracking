@@ -44,10 +44,14 @@ export default function BottomNav() {
 
   // Nav adaptativa com 5 slots: Início | Insights | yaIA (centro, destaque)
   // | Histórico/Yaya+ | Perfil. Free vê "Yaya+" (upgrade) em vez de "Histórico".
+  // Caregiver não vê yaIA — fica com 4 tabs (Início | Insights | Histórico/Yaya+ | Perfil).
   const tabs = useMemo<readonly TabDef[]>(() => {
     const fourth = isPremium ? HISTORY_TAB : YAYA_PLUS_TAB
+    if (myRole === 'caregiver') {
+      return [baseTabs[0], baseTabs[1], fourth, baseTabs[2]]
+    }
     return [baseTabs[0], baseTabs[1], YAIA_TAB, fourth, baseTabs[2]]
-  }, [isPremium])
+  }, [isPremium, myRole])
 
   const babyPhoto = baby?.photoUrl
   const babyName = baby?.name

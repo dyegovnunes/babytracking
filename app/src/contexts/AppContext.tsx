@@ -154,6 +154,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
         gender: row.gender ?? undefined,
         photoUrl: row.photo_url,
         isPremium: row.is_premium ?? false,
+        quietHoursEnabled: row.quiet_hours_enabled ?? false,
+        quietHoursStart: row.quiet_hours_start ?? 22,
+        quietHoursEnd: row.quiet_hours_end ?? 7,
       }))
 
       // Build babiesWithRole using membership roles
@@ -220,21 +223,26 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const streakData = await getStreak(babyId)
       dispatch({ type: 'SET_STREAK', streak: streakData })
 
-      // Load notification preferences
+      // Load notification preferences (quiet hours vêm do baby — fonte per-baby)
       const { data: prefData } = await supabase
         .from('notification_prefs')
-        .select('pause_during_sleep, quiet_enabled, quiet_start, quiet_end')
+        .select('pause_during_sleep')
         .eq('user_id', user!.id)
         .eq('baby_id', babyId)
         .maybeSingle()
 
       if (prefData) {
-        // pause_during_sleep defaults to true if null/undefined
         dispatch({ type: 'SET_PAUSE_DURING_SLEEP', value: prefData.pause_during_sleep !== false })
-        if (prefData.quiet_enabled) {
-          dispatch({ type: 'SET_QUIET_HOURS', value: { enabled: true, start: prefData.quiet_start, end: prefData.quiet_end } })
-        }
       }
+      // Quiet hours: lidos direto das colunas do bebê (per-baby, compartilhado entre cuidadores)
+      dispatch({
+        type: 'SET_QUIET_HOURS',
+        value: {
+          enabled: baby.quietHoursEnabled ?? false,
+          start: baby.quietHoursStart ?? 22,
+          end: baby.quietHoursEnd ?? 7,
+        },
+      })
     }
 
     load().catch(() => {
@@ -585,6 +593,9 @@ export async function switchBaby(
     gender: babyRes.data.gender ?? undefined,
     photoUrl: babyRes.data.photo_url,
     isPremium: babyRes.data.is_premium ?? false,
+    quietHoursEnabled: babyRes.data.quiet_hours_enabled ?? false,
+    quietHoursStart: babyRes.data.quiet_hours_start ?? 22,
+    quietHoursEnd: babyRes.data.quiet_hours_end ?? 7,
   }
 
   const logs: LogEntry[] = (logsRes.data ?? []).map((row) => ({
@@ -628,17 +639,23 @@ export async function switchBaby(
 
   dispatch({ type: 'SWITCH_BABY', baby, logs, intervals, members, needsWelcome })
 
-  // Load notification preferences for new baby
+  // Load notification preferences for new baby (quiet hours vêm do baby — per-baby)
   const { data: prefData } = await supabase
     .from('notification_prefs')
-    .select('pause_during_sleep, quiet_enabled, quiet_start, quiet_end')
+    .select('pause_during_sleep')
     .eq('baby_id', babyId)
     .maybeSingle()
 
   if (prefData) {
     dispatch({ type: 'SET_PAUSE_DURING_SLEEP', value: prefData.pause_during_sleep !== false })
-    if (prefData.quiet_enabled) {
-      dispatch({ type: 'SET_QUIET_HOURS', value: { enabled: true, start: prefData.quiet_start, end: prefData.quiet_end } })
-    }
   }
+  // Quiet hours: lidos das colunas do bebê (fonte per-baby)
+  dispatch({
+    type: 'SET_QUIET_HOURS',
+    value: {
+      enabled: baby.quietHoursEnabled ?? false,
+      start: baby.quietHoursStart ?? 22,
+      end: baby.quietHoursEnd ?? 7,
+    },
+  })
 }

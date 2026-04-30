@@ -324,6 +324,21 @@ export default function ProfilePage() {
           />
         )}
 
+        {/* ===== ROTINA E INTERVALOS ===== */}
+        <button
+          onClick={() => navigate('/routine')}
+          className="w-full bg-surface-container rounded-md p-4 flex items-center gap-3 active:bg-surface-container-high transition-colors"
+        >
+          <span className="material-symbols-outlined text-primary text-xl">schedule</span>
+          <div className="flex-1 text-left">
+            <h3 className="text-on-surface font-headline text-sm font-bold">Rotina e Intervalos</h3>
+            <p className="text-on-surface-variant font-label text-xs">
+              Amamentação, sonecas, banho e horário noturno
+            </p>
+          </div>
+          <span className="material-symbols-outlined text-on-surface-variant text-lg">chevron_right</span>
+        </button>
+
         {/* ===== MARCOS DO DESENVOLVIMENTO ===== */}
         {canShowMilestones && (
           <button

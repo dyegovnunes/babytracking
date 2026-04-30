@@ -71,10 +71,11 @@ export function useNotificationPrefs() {
         )
 
       // Espelha o horário noturno na tabela babies — fonte única
-      // consumida pelo Super Relatório compartilhado (edge function report-view).
+      // consumida pelo Super Relatório, push-scheduler e AppContext.
       const babyPromise = supabase
         .from('babies')
         .update({
+          quiet_hours_enabled: updated.quietHours.enabled,
           quiet_hours_start: updated.quietHours.start,
           quiet_hours_end: updated.quietHours.end,
         })

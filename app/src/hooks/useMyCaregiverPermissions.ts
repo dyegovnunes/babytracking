@@ -20,6 +20,7 @@ export interface ResolvedCaregiverPermissions {
   show_leaps: boolean
   show_vaccines: boolean
   show_growth: boolean
+  edit_routine: boolean
 }
 
 const ALL_ALLOWED: ResolvedCaregiverPermissions = {
@@ -27,6 +28,7 @@ const ALL_ALLOWED: ResolvedCaregiverPermissions = {
   show_leaps: true,
   show_vaccines: true,
   show_growth: true,
+  edit_routine: true,
 }
 
 const ALL_BLOCKED: ResolvedCaregiverPermissions = {
@@ -34,6 +36,7 @@ const ALL_BLOCKED: ResolvedCaregiverPermissions = {
   show_leaps: false,
   show_vaccines: false,
   show_growth: false,
+  edit_routine: false,
 }
 
 function resolve(perms: CaregiverPermissions | undefined): ResolvedCaregiverPermissions {
@@ -43,6 +46,7 @@ function resolve(perms: CaregiverPermissions | undefined): ResolvedCaregiverPerm
     show_leaps: !!perms.show_leaps,
     show_vaccines: !!perms.show_vaccines,
     show_growth: !!perms.show_growth,
+    edit_routine: !!perms.edit_routine,
   }
 }
 
