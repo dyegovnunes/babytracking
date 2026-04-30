@@ -32,7 +32,17 @@ export default function GuideSidebar({
   guide, sections, currentSectionId, progressMap, onSelectSection, open, onClose, userId,
 }: Props) {
   // Agrupa seções por parent (parts no topo, filhas dentro)
-  const parts = useMemo(() => sections.filter(s => s.parent_id === null), [sections])
+  // Separa em dois grupos pela category:
+  //   - narrative:     Introdução → Partes → Conclusão (fluxo de leitura)
+  //   - complementary: Materiais (Checklist, Quiz, Flashcards) — bloco separado
+  const narrativeRoots = useMemo(
+    () => sections.filter(s => s.parent_id === null && (s.category ?? 'narrative') === 'narrative'),
+    [sections],
+  )
+  const complementarySections = useMemo(
+    () => sections.filter(s => s.parent_id === null && s.category === 'complementary'),
+    [sections],
+  )
   const childrenOf = (parentId: string) =>
     sections.filter(s => s.parent_id === parentId).sort((a, b) => a.order_index - b.order_index)
 
@@ -234,16 +244,13 @@ export default function GuideSidebar({
 
         {/* Lista de partes/seções */}
         <nav style={{ padding: '12px 10px 24px' }}>
-          {parts.map((part) => {
+          {/* Grupo 1: Conteúdo narrativo (Introdução → Partes → Conclusão) */}
+          {narrativeRoots.map((part) => {
             const partChildren = childrenOf(part.id)
-            // Parte está "concluída" se todas as suas seções legíveis (exceto
-            // flashcards que não têm progresso rastreável) estiverem concluídas.
             const readableChildren = partChildren.filter(s => s.type !== 'flashcards')
             const isPartCompleted = readableChildren.length > 0 &&
               readableChildren.every(child => progressMap[child.id]?.completed === true)
-            // Parte "iniciada" se ao menos um filho tiver progresso
             const isPartStarted = partChildren.some(child => !!progressMap[child.id])
-            // Monta um progress sintético pra o SectionItem da part
             const partProgress = isPartCompleted
               ? { completed: true, section_id: part.id, user_id: '', guide_id: '' } as typeof progressMap[string]
               : isPartStarted
@@ -276,7 +283,40 @@ export default function GuideSidebar({
             )
           })}
 
-          {parts.length === 0 && sections.map(s => (
+          {/* Grupo 2: Materiais complementares (Checklist, Quiz, Flashcards, etc) */}
+          {complementarySections.length > 0 && (
+            <>
+              <div style={{
+                margin: '8px 0 10px',
+                padding: '0 10px',
+                borderTop: '1px solid var(--r-border)',
+                paddingTop: 16,
+              }}>
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  fontSize: 11, fontWeight: 700,
+                  letterSpacing: '0.08em', textTransform: 'uppercase',
+                  color: 'var(--r-text-subtle)',
+                }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: 14, color: 'var(--r-accent)' }}>
+                    auto_awesome
+                  </span>
+                  Materiais complementares
+                </div>
+              </div>
+              {complementarySections.map(s => (
+                <SectionItem
+                  key={s.id}
+                  section={s}
+                  isCurrent={s.id === currentSectionId}
+                  progress={progressMap[s.id]}
+                  onSelect={() => onSelectSection(s.id)}
+                />
+              ))}
+            </>
+          )}
+
+          {narrativeRoots.length === 0 && complementarySections.length === 0 && sections.map(s => (
             <SectionItem
               key={s.id}
               section={s}

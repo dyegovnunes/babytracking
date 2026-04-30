@@ -57,6 +57,7 @@ export interface BlogPost {
 
 export type GuideStatus = 'draft' | 'published' | 'archived'
 export type GuideSectionType = 'linear' | 'quiz' | 'checklist' | 'part' | 'flashcards'
+export type GuideSectionCategory = 'narrative' | 'complementary'
 export type PurchaseStatus = 'pending' | 'completed' | 'refunded' | 'failed'
 export type PurchaseProvider = 'stripe' | 'hotmart' | 'manual'
 export type HighlightColor = 'yellow' | 'pink' | 'purple'
@@ -90,6 +91,7 @@ export interface GuideSection {
   estimated_minutes: number | null
   content_md: string | null
   type: GuideSectionType
+  category: GuideSectionCategory
   data: Record<string, unknown> | null
   is_preview: boolean
   created_at: string

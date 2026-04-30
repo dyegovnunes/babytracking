@@ -546,6 +546,37 @@ html.theme-dark .reader-root {
   }
 }
 
+/* ── Drop cap: capitular editorial no 1º parágrafo da seção ─────────────
+ * Aplicado automaticamente em .reader-content > p:first-of-type
+ * quando o viewport tem largura suficiente (>600px). Evita quebrar UX
+ * no mobile, onde a letra grande atrapalha o ritmo de leitura.
+ */
+@media (min-width: 600px) {
+  .reader-content > p:first-of-type::first-letter,
+  .reader-content .drop-cap::first-letter {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 700;
+    font-size: 3.6em;
+    line-height: 0.92;
+    float: left;
+    margin: 0.08em 0.12em 0 0;
+    padding: 0;
+    color: var(--r-accent);
+    background: linear-gradient(135deg, var(--r-accent) 0%, color-mix(in srgb, var(--r-accent) 60%, #ffffff) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-feature-settings: 'opsz' 144, 'kern' 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reader-content > p:first-of-type::first-letter,
+  .reader-content .drop-cap::first-letter {
+    transition: none !important;
+  }
+}
+
 /* ── Pulse skeleton (loading state) ───────────────────────────────────── */
 @keyframes pulse {
   0%, 100% { opacity: 0.5; }

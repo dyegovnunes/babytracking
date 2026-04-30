@@ -19,6 +19,8 @@ import HighlightLayer from './HighlightLayer'
 import NoteDrawer from './NoteDrawer'
 import NpsBlock from './NpsBlock'
 import FlashcardSection from './FlashcardSection'
+import AudioPlayer from './AudioPlayer'
+import DynamicYayaCTA from './DynamicYayaCTA'
 
 interface Props {
   guide: Guide
@@ -194,6 +196,11 @@ export default function SectionRenderer({
         </h1>
       </header>
 
+      {/* Player de áudio TTS (sticky) — só para seções narrativas */}
+      {section.type === 'linear' && section.content_md && (
+        <AudioPlayer sectionId={section.id} />
+      )}
+
       {/* Markdown content + StaticChecklistList inline */}
       {section.content_md && (() => {
         const data = section.data as { checklist_items?: ChecklistItem[]; items?: ChecklistItem[] } | null
@@ -236,13 +243,30 @@ export default function SectionRenderer({
         return <ToolLinkCards links={toolLinks} onNavigate={onNavigate} />
       })()}
 
-      {/* CTA de download do Yaya (seção de celebração da conclusão) */}
-      {(section.data as Record<string, unknown> | null)?.show_yaya_cta && <YayaCtaBlock />}
-
-      {/* NPS / avaliação do guia */}
-      {(section.data as Record<string, unknown> | null)?.show_nps && (
-        <NpsBlock guideId={guide.id} sectionId={section.id} userId={userId} />
-      )}
+      {/* Conclusão: auto-renderiza NpsBlock + DynamicYayaCTA (sem precisar de
+          flags no MD). Slug que começa com "conclusao" vira gatilho.
+          As flags show_nps/show_yaya_cta continuam funcionando como override
+          manual em outros pontos do guia se desejado. */}
+      {(() => {
+        const flags = (section.data as Record<string, unknown> | null) ?? {}
+        const isConclusion = section.slug?.startsWith('conclusao')
+        const showNps = flags.show_nps === true || isConclusion
+        const showCta = flags.show_yaya_cta === true || isConclusion
+        return (
+          <>
+            {showNps && (
+              <NpsBlock guideId={guide.id} sectionId={section.id} userId={userId} />
+            )}
+            {showCta && (
+              <DynamicYayaCTA
+                guideId={guide.id}
+                guideSlug={guide.slug}
+                userId={userId}
+              />
+            )}
+          </>
+        )
+      })()}
 
       {/* Quiz entry */}
       {section.type === 'quiz' && (
