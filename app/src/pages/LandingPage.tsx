@@ -215,7 +215,6 @@ const LANDING_CSS = `
       display: flex;
       flex-direction: row;
       gap: 4rem;
-      align-items: flex-start;
     }
     .lp-problem-items {
       flex: 1;
@@ -225,11 +224,11 @@ const LANDING_CSS = `
       display: block;
       width: 280px;
       flex-shrink: 0;
-      position: relative; /* só pra height ficar certa */
+      align-self: flex-start;
+      position: sticky;
+      top: calc(50vh - 254px);
     }
     .lp-phone-sticky-inner {
-      /* posicionamento via JS — não usa position:sticky */
-      will-change: transform;
       display: flex;
       justify-content: center;
     }
@@ -388,9 +387,6 @@ function Problem() {
   const [videoPaused, setVideoPaused] = useState(false)
   const itemRefs = useRef<(HTMLDivElement | null)[]>([])
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([])
-  const sectionRef = useRef<HTMLElement | null>(null)
-  const phoneWrapRef = useRef<HTMLDivElement | null>(null)
-  const phoneStickyRef = useRef<HTMLDivElement | null>(null)
 
   // Detecta item central na viewport via IntersectionObserver
   useEffect(() => {
@@ -404,49 +400,6 @@ function Problem() {
       return obs
     })
     return () => observers.forEach(obs => obs?.disconnect())
-  }, [])
-
-  // JS-driven sticky: calcula translateY do celular com base no scroll
-  useEffect(() => {
-    const sticky = phoneStickyRef.current
-    const section = sectionRef.current
-    if (!sticky || !section) return
-
-    let rafId = 0
-    function update() {
-      const secRect = section!.getBoundingClientRect()
-      const ph = sticky!.offsetHeight
-      const vh = window.innerHeight
-
-      // Distância que podemos mover: da posição 0 até o fundo da seção
-      const maxY = section!.offsetHeight - ph
-
-      // Posição ideal: centralizado na viewport
-      const ideal = (vh - ph) / 2
-
-      // Quanto o topo da seção já saiu pela borda superior da viewport
-      const scrolledInto = -secRect.top
-
-      // Clampamos entre 0 e maxY
-      const y = Math.max(0, Math.min(maxY, scrolledInto + (ideal)))
-
-      sticky!.style.transform = `translateY(${y}px)`
-    }
-
-    function onScroll() {
-      cancelAnimationFrame(rafId)
-      rafId = requestAnimationFrame(update)
-    }
-
-    window.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('resize', update, { passive: true })
-    update()
-
-    return () => {
-      window.removeEventListener('scroll', onScroll)
-      window.removeEventListener('resize', update)
-      cancelAnimationFrame(rafId)
-    }
   }, [])
 
   // Controla playback dos vídeos ao mudar item ativo
@@ -476,7 +429,7 @@ function Problem() {
   const activeItem = PAIN_POINTS[activeIndex]
 
   return (
-    <section ref={sectionRef} style={{ padding: '4rem 0' }}>
+    <section style={{ padding: '4rem 0' }}>
       <div style={{ textAlign: 'center', maxWidth: '38rem', margin: '0 auto 4rem' }}>
         <h2 style={{ fontSize: 'clamp(1.375rem, 3vw, 1.875rem)', fontWeight: 700, lineHeight: 1.3, marginBottom: 0 }}>
           Lembrar cada alimentação, cada fralda, cada soneca...{' '}
@@ -508,9 +461,9 @@ function Problem() {
           ))}
         </div>
 
-        {/* Direita — celular com posicionamento JS */}
-        <div className="lp-problem-phone-wrap" ref={phoneWrapRef}>
-          <div className="lp-phone-sticky-inner" ref={phoneStickyRef}>
+        {/* Direita — celular sticky CSS */}
+        <div className="lp-problem-phone-wrap">
+          <div className="lp-phone-sticky-inner">
           <div style={{ position: 'relative' }}>
             {/* Glow roxo atrás do celular */}
             <div aria-hidden style={{ position: 'absolute', inset: '-30%', background: 'radial-gradient(circle, rgba(139,92,246,0.45) 0%, transparent 65%)', filter: 'blur(48px)', zIndex: 0, pointerEvents: 'none' }} />
