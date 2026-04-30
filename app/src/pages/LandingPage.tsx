@@ -420,24 +420,12 @@ function Problem() {
         </h2>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '1rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))', gap: '1rem' }}>
         {PAIN_POINTS.map((p) => (
-          <div key={p.icon} className="lp-feature-card" style={{ padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-            {/* Media */}
-            <div style={{ aspectRatio: '16/10', overflow: 'hidden', position: 'relative', flexShrink: 0 }}>
-              {p.type === 'image' ? (
-                <img src={p.asset} alt="" aria-hidden style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-              ) : (
-                <video src={p.asset} autoPlay muted loop playsInline style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-              )}
-              <div aria-hidden style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 45%, rgba(13,10,39,0.75) 100%)' }} />
-            </div>
-            {/* Texto */}
-            <div style={{ padding: '1.25rem 1.5rem 1.5rem', flex: 1 }}>
-              <span style={{ fontSize: '1.375rem', display: 'block', marginBottom: '0.625rem' }}>{p.icon}</span>
-              <p style={{ fontSize: '0.9375rem', fontWeight: 700, color: 'hsl(250 30% 90%)', lineHeight: 1.5, margin: '0 0 0.625rem' }}>{p.pain}</p>
-              <p style={{ fontSize: '0.875rem', color: 'hsl(254 100% 81%)', fontWeight: 600, lineHeight: 1.55, margin: 0 }}>✦ {p.solve}</p>
-            </div>
+          <div key={p.icon} className="lp-feature-card">
+            <span style={{ fontSize: '1.75rem', display: 'block', marginBottom: '0.875rem' }}>{p.icon}</span>
+            <p style={{ fontSize: '0.9375rem', fontWeight: 700, color: 'hsl(250 30% 90%)', lineHeight: 1.5, margin: '0 0 0.625rem' }}>{p.pain}</p>
+            <p style={{ fontSize: '0.875rem', color: 'hsl(254 100% 81%)', fontWeight: 600, lineHeight: 1.55, margin: 0 }}>✦ {p.solve}</p>
           </div>
         ))}
       </div>
