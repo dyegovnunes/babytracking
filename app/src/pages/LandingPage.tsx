@@ -718,10 +718,17 @@ const COMPARE_ROWS: Array<{ label: string; free: string; paid: string }> = [
 ]
 
 function Pricing() {
+  const [toggle, setToggle] = useState<'monthly' | 'annual'>('annual')
   const [loadingPlan, setLoadingPlan] = useState<PlanId | null>(null)
   const [error, setError] = useState('')
 
-  // Fix: reseta loading ao voltar do Stripe (pageshow / visibilitychange)
+  const isAnnual = toggle === 'annual'
+  const isAndroid = typeof navigator !== 'undefined' && /Android/i.test(navigator.userAgent)
+  const freeUrl = isAndroid
+    ? 'https://play.google.com/store/apps/details?id=app.yayababy'
+    : 'https://apps.apple.com/app/yaya-baby'
+
+  // Fix: reseta loading ao voltar do Stripe
   useEffect(() => {
     function reset() { setLoadingPlan(null) }
     window.addEventListener('pageshow', reset)
@@ -759,64 +766,102 @@ function Pricing() {
         </h2>
       </div>
 
-      {/* 3 cards — grid alinhado ao topo; Anual escala levemente */}
+      {/* 3 cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap: '1rem', maxWidth: '56rem', margin: '0 auto', alignItems: 'start' }}>
 
-        {/* ── Mensal — card compacto, botão sobe cedo ────────────────────── */}
-        <div style={{ borderRadius: 20, border: '1px solid rgba(183,159,255,0.15)', background: 'rgba(255,255,255,0.02)', padding: '1.75rem 1.5rem', display: 'flex', flexDirection: 'column' }}>
-          <p style={{ margin: '0 0 1.25rem', fontSize: 11, fontWeight: 700, color: 'rgba(183,159,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.12em' }}>Mensal</p>
+        {/* ── Col 1: Free ───────────────────────────────────────────────── */}
+        <div style={{ borderRadius: 20, border: '1px solid rgba(183,159,255,0.1)', background: 'rgba(255,255,255,0.015)', padding: '1.75rem 1.5rem', display: 'flex', flexDirection: 'column' }}>
+          <p style={{ margin: '0 0 1.25rem', fontSize: 11, fontWeight: 700, color: 'rgba(183,159,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.12em' }}>Yaya Free</p>
 
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 4 }}>
-            <span style={{ fontSize: 36, fontWeight: 800, color: '#e7e2ff', lineHeight: 1 }}>R$ 34,90</span>
-            <span style={{ fontSize: 13, color: 'rgba(231,226,255,0.35)' }}>/mês</span>
+            <span style={{ fontSize: 36, fontWeight: 800, color: 'rgba(231,226,255,0.5)', lineHeight: 1 }}>Grátis</span>
           </div>
-          <p style={{ fontSize: 12, color: 'rgba(183,159,255,0.45)', margin: '0 0 1.75rem' }}>Cancele quando quiser</p>
+          <p style={{ fontSize: 12, color: 'rgba(183,159,255,0.35)', margin: '0 0 1.5rem' }}>Sem cartão, sem prazo</p>
 
-          {/* Apenas 3 bullets — botão sobe naturalmente */}
-          <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 0.75rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            {['Bebês ilimitados', 'Registros ilimitados', 'Sem anúncios', 'yaIA ilimitada'].map(f => (
-              <li key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 13, color: 'rgba(231,226,255,0.45)' }}>
-                <span style={{ color: 'rgba(183,159,255,0.5)', flexShrink: 0, marginTop: 1 }}>✓</span>{f}
+          <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1.75rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            {[
+              '1 bebê',
+              '1 cuidador',
+              'Registros limitados',
+              'Marcos de desenvolvimento',
+              'Saltos do desenvolvimento',
+              'Caderneta de vacinas',
+              'Controle de medicações',
+            ].map(f => (
+              <li key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 13, color: 'rgba(231,226,255,0.38)' }}>
+                <span style={{ color: 'rgba(183,159,255,0.35)', flexShrink: 0, marginTop: 1 }}>✓</span>{f}
               </li>
             ))}
           </ul>
-          <p style={{ fontSize: 11, color: 'rgba(231,226,255,0.2)', margin: '0 0 1.5rem', fontStyle: 'italic' }}>Não inclui a Biblioteca Yaya</p>
 
-          <button
-            onClick={() => handleCheckout('monthly')}
-            disabled={!!loadingPlan}
+          <a
+            href={freeUrl}
+            target="_blank"
+            rel="noopener noreferrer"
             className="lp-plan-button"
-            style={{ background: 'rgba(183,159,255,0.08)', border: '1px solid rgba(183,159,255,0.2)', color: 'rgba(183,159,255,0.6)', opacity: loadingPlan === 'monthly' ? 0.6 : 1 }}
+            style={{ background: 'transparent', border: '1px solid rgba(183,159,255,0.18)', color: 'rgba(183,159,255,0.45)', textDecoration: 'none', textAlign: 'center', display: 'block' }}
           >
-            {loadingPlan === 'monthly' ? 'Redirecionando...' : 'Assinar agora'}
-          </button>
+            Baixar grátis
+          </a>
         </div>
 
-        {/* ── Anual (destaque) — levemente maior via padding e font ─────── */}
+        {/* ── Col 2: Yaya+ com toggle Mensal / Anual ────────────────────── */}
         <div style={{ borderRadius: 20, padding: '1.5px', background: 'linear-gradient(135deg, #b79fff 0%, #ec4899 60%, #8b5cf6 100%)', boxShadow: '0 0 64px rgba(183,159,255,0.22)', transform: 'scale(1.04)', zIndex: 1 }}>
           <div style={{ borderRadius: 19, background: '#100d2e', padding: '2rem 1.625rem', height: '100%', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
 
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.375rem', marginBottom: '1.25rem' }}>
-              <p style={{ margin: 0, fontSize: 11, fontWeight: 700, color: '#b79fff', textTransform: 'uppercase', letterSpacing: '0.12em' }}>Anual</p>
-              <span style={{ background: 'linear-gradient(90deg, #b79fff, #8b5cf6)', color: '#0d0a27', fontSize: 10, fontWeight: 800, padding: '3px 10px', borderRadius: 99 }}>
-                ★ Mais escolhido
-              </span>
+            {/* Eyebrow */}
+            <p style={{ margin: '0 0 1rem', fontSize: 11, fontWeight: 700, color: '#b79fff', textTransform: 'uppercase', letterSpacing: '0.12em' }}>✦ Yaya+</p>
+
+            {/* Toggle Mensal / Anual */}
+            <div style={{ display: 'inline-flex', background: 'rgba(255,255,255,0.06)', borderRadius: 10, padding: 3, marginBottom: '1.5rem', gap: 2 }}>
+              {(['monthly', 'annual'] as const).map(id => {
+                const active = toggle === id
+                return (
+                  <button
+                    key={id}
+                    onClick={() => setToggle(id)}
+                    style={{
+                      padding: '0.4375rem 1rem', borderRadius: 8, border: 'none', cursor: 'pointer',
+                      fontFamily: 'Manrope, system-ui, sans-serif', fontSize: 12, fontWeight: 700,
+                      transition: 'all 0.2s ease',
+                      background: active ? 'linear-gradient(135deg, #b79fff, #8b5cf6)' : 'transparent',
+                      color: active ? '#0d0a27' : 'rgba(231,226,255,0.4)',
+                      boxShadow: active ? '0 2px 10px rgba(139,92,246,0.35)' : 'none',
+                      whiteSpace: 'nowrap' as const,
+                    }}
+                  >
+                    {id === 'monthly' ? 'Mensal' : 'Anual ★'}
+                  </button>
+                )
+              })}
             </div>
 
+            {/* Preço dinâmico */}
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 4 }}>
-              <span style={{ fontSize: 40, fontWeight: 800, color: '#e7e2ff', lineHeight: 1 }}>R$ 20,83</span>
+              <span style={{ fontSize: 40, fontWeight: 800, color: '#e7e2ff', lineHeight: 1 }}>
+                {isAnnual ? 'R$ 20,83' : 'R$ 34,90'}
+              </span>
               <span style={{ fontSize: 13, color: 'rgba(231,226,255,0.4)' }}>/mês</span>
             </div>
-            <p style={{ fontSize: 12, color: 'rgba(183,159,255,0.6)', margin: '0 0 0.625rem' }}>cobrado como R$ 249,90 por ano</p>
-            <div style={{ marginBottom: '1.25rem' }}>
-              <span style={{ display: 'inline-block', fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 99, background: 'rgba(245,200,66,0.15)', color: '#f5c842', border: '1px solid rgba(245,200,66,0.3)' }}>
-                Economize 40%
-              </span>
-            </div>
 
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, padding: '5px 12px', borderRadius: 8, background: 'rgba(245,200,66,0.1)', color: '#f5c842', border: '1px solid rgba(245,200,66,0.22)', marginBottom: '1.5rem', width: 'fit-content' }}>
-              📚 Biblioteca Yaya inclusa
-            </div>
+            {isAnnual ? (
+              <>
+                <p style={{ fontSize: 12, color: 'rgba(183,159,255,0.6)', margin: '0 0 0.5rem' }}>cobrado como R$ 249,90 por ano</p>
+                <div style={{ marginBottom: '1.25rem' }}>
+                  <span style={{ display: 'inline-block', fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 99, background: 'rgba(245,200,66,0.15)', color: '#f5c842', border: '1px solid rgba(245,200,66,0.3)' }}>
+                    Economize 40%
+                  </span>
+                </div>
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, padding: '5px 12px', borderRadius: 8, background: 'rgba(245,200,66,0.1)', color: '#f5c842', border: '1px solid rgba(245,200,66,0.22)', marginBottom: '1.5rem', width: 'fit-content' }}>
+                  📚 Biblioteca Yaya inclusa
+                </div>
+              </>
+            ) : (
+              <>
+                <p style={{ fontSize: 12, color: 'rgba(183,159,255,0.5)', margin: '0 0 1.25rem' }}>Cancele quando quiser</p>
+                <p style={{ fontSize: 11, color: 'rgba(231,226,255,0.22)', margin: '0 0 1.5rem', fontStyle: 'italic' }}>Não inclui a Biblioteca Yaya</p>
+              </>
+            )}
 
             <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1.75rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
               {PAID_FEATURES.map(f => (
@@ -827,17 +872,17 @@ function Pricing() {
             </ul>
 
             <button
-              onClick={() => handleCheckout('annual')}
+              onClick={() => handleCheckout(toggle)}
               disabled={!!loadingPlan}
               className="lp-plan-button"
-              style={{ background: 'linear-gradient(135deg, #ec4899 0%, #a855f7 100%)', color: '#fff', opacity: loadingPlan === 'annual' ? 0.6 : 1, boxShadow: '0 0 28px rgba(236,72,153,0.28)', fontSize: '0.9375rem' }}
+              style={{ background: 'linear-gradient(135deg, #ec4899 0%, #a855f7 100%)', color: '#fff', opacity: loadingPlan === toggle ? 0.6 : 1, boxShadow: '0 0 28px rgba(236,72,153,0.28)', fontSize: '0.9375rem' }}
             >
-              {loadingPlan === 'annual' ? 'Redirecionando...' : 'Assinar agora'}
+              {loadingPlan === toggle ? 'Redirecionando...' : 'Assinar agora'}
             </button>
           </div>
         </div>
 
-        {/* ── Vitalício — "tudo do Yaya+, pra sempre" sem lista longa ──── */}
+        {/* ── Col 3: Vitalício ───────────────────────────────────────────── */}
         <div style={{ borderRadius: 20, padding: '1.5px', background: 'linear-gradient(135deg, #f5c842 0%, #f0a020 100%)', boxShadow: '0 0 32px rgba(245,200,66,0.12)' }}>
           <div style={{ borderRadius: 19, background: '#110e28', padding: '1.75rem 1.5rem', height: '100%', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
 
@@ -854,7 +899,6 @@ function Pricing() {
             </div>
             <p style={{ fontSize: 12, color: 'rgba(245,200,66,0.6)', margin: '0 0 1.5rem' }}>cobrado uma vez: R$ 449,90</p>
 
-            {/* Tagline principal — substitui a lista longa */}
             <p style={{ fontSize: 16, fontWeight: 700, color: '#e7e2ff', lineHeight: 1.4, margin: '0 0 1rem' }}>
               Tudo do Yaya+,{' '}
               <span style={{ color: '#f5c842' }}>para sempre.</span>
@@ -869,7 +913,6 @@ function Pricing() {
               📚 Biblioteca Yaya inclusa
             </div>
 
-            {/* Espaço flexível para empurrar o botão para baixo (alinha com Anual) */}
             <div style={{ flex: 1 }} />
 
             <button
