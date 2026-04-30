@@ -7,7 +7,7 @@
  * Sem dependência de Tailwind ou CSS variables do tema.
  */
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 
 // ─── CSS injetado ─────────────────────────────────────────────────────────────
@@ -411,136 +411,35 @@ const PAIN_POINTS: Array<{ icon: string; pain: string; solve: string; asset: str
 ]
 
 function Problem() {
-  const [activeIndex, setActiveIndex] = useState(0)
-  const [videoPaused, setVideoPaused] = useState(false)
-  const videoRefs = useRef<(HTMLVideoElement | null)[]>([])
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
-
-  function goTo(i: number) {
-    setActiveIndex(i)
-    setVideoPaused(false)
-    // Reinicia o timer ao clicar num dot
-    if (intervalRef.current) clearInterval(intervalRef.current)
-    intervalRef.current = setInterval(() => {
-      setActiveIndex(prev => (prev + 1) % PAIN_POINTS.length)
-      setVideoPaused(false)
-    }, 4500)
-  }
-
-  // Auto-advance a cada 4.5s
-  useEffect(() => {
-    intervalRef.current = setInterval(() => {
-      setActiveIndex(prev => (prev + 1) % PAIN_POINTS.length)
-      setVideoPaused(false)
-    }, 4500)
-    return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
-  }, [])
-
-  // Controla playback dos vídeos ao mudar item ativo
-  useEffect(() => {
-    PAIN_POINTS.forEach((item, i) => {
-      if (item.type !== 'video') return
-      const video = videoRefs.current[i]
-      if (!video) return
-      if (i === activeIndex) {
-        video.currentTime = 0
-        video.play().catch(() => {})
-      } else {
-        video.pause()
-      }
-    })
-  }, [activeIndex])
-
-  function handlePhoneClick() {
-    const item = PAIN_POINTS[activeIndex]
-    if (item.type !== 'video') return
-    const video = videoRefs.current[activeIndex]
-    if (!video) return
-    if (video.paused) { video.play(); setVideoPaused(false) }
-    else              { video.pause(); setVideoPaused(true) }
-  }
-
-  const activeItem = PAIN_POINTS[activeIndex]
-
   return (
     <section style={{ padding: '4rem 0' }}>
-      {/* Heading */}
-      <div style={{ textAlign: 'center', maxWidth: '38rem', margin: '0 auto 3rem' }}>
+      <div style={{ textAlign: 'center', maxWidth: '38rem', margin: '0 auto 2.5rem' }}>
         <h2 style={{ fontSize: 'clamp(1.375rem, 3vw, 1.875rem)', fontWeight: 700, lineHeight: 1.3, marginBottom: 0 }}>
           Lembrar cada alimentação, cada fralda, cada soneca...{' '}
           <span className="lp-gradient-text">é impossível fazer isso de cabeça.</span>
         </h2>
       </div>
 
-      {/* Layout: celular + texto */}
-      <div className="lp-problem-wrap">
-
-        {/* Celular */}
-        <div className="lp-problem-phone-col">
-          <div style={{ position: 'relative' }}>
-            {/* Glow */}
-            <div aria-hidden style={{ position: 'absolute', inset: '-30%', background: 'radial-gradient(circle, rgba(139,92,246,0.45) 0%, transparent 65%)', filter: 'blur(48px)', zIndex: 0, pointerEvents: 'none' }} />
-
-            <div
-              className="lp-phone-frame"
-              onClick={handlePhoneClick}
-              style={{ position: 'relative', zIndex: 1, cursor: activeItem.type === 'video' ? 'pointer' : 'default' }}
-            >
-              <div className="lp-phone-island" />
-
-              {/* Assets crossfade */}
-              {PAIN_POINTS.map((p, i) => (
-                p.type === 'image' ? (
-                  <img key={i} src={p.asset} alt="" aria-hidden
-                    style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: activeIndex === i ? 1 : 0, transition: 'opacity 0.55s ease' }} />
-                ) : (
-                  <video key={i} ref={el => { videoRefs.current[i] = el }} src={p.asset} muted loop playsInline
-                    style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: activeIndex === i ? 1 : 0, transition: 'opacity 0.55s ease' }} />
-                )
-              ))}
-
-              {/* Overlay pause */}
-              {activeItem.type === 'video' && videoPaused && (
-                <div style={{ position: 'absolute', inset: 0, zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.35)' }}>
-                  <div style={{ width: 52, height: 52, borderRadius: '50%', background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.15)' }}>
-                    <svg width="18" height="20" viewBox="0 0 18 20" fill="white" aria-hidden><path d="M16.5 10L2 1v18l14.5-9z"/></svg>
-                  </div>
-                </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '1rem' }}>
+        {PAIN_POINTS.map((p) => (
+          <div key={p.icon} className="lp-feature-card" style={{ padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+            {/* Media */}
+            <div style={{ aspectRatio: '16/10', overflow: 'hidden', position: 'relative', flexShrink: 0 }}>
+              {p.type === 'image' ? (
+                <img src={p.asset} alt="" aria-hidden style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+              ) : (
+                <video src={p.asset} autoPlay muted loop playsInline style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
               )}
+              <div aria-hidden style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 45%, rgba(13,10,39,0.75) 100%)' }} />
+            </div>
+            {/* Texto */}
+            <div style={{ padding: '1.25rem 1.5rem 1.5rem', flex: 1 }}>
+              <span style={{ fontSize: '1.375rem', display: 'block', marginBottom: '0.625rem' }}>{p.icon}</span>
+              <p style={{ fontSize: '0.9375rem', fontWeight: 700, color: 'hsl(250 30% 90%)', lineHeight: 1.5, margin: '0 0 0.625rem' }}>{p.pain}</p>
+              <p style={{ fontSize: '0.875rem', color: 'hsl(254 100% 81%)', fontWeight: 600, lineHeight: 1.55, margin: 0 }}>✦ {p.solve}</p>
             </div>
           </div>
-        </div>
-
-        {/* Texto + dots */}
-        <div style={{ flex: 1, minWidth: 0 }}>
-          {/* Textos com fade absoluto */}
-          <div className="lp-problem-text-side">
-            {PAIN_POINTS.map((p, i) => (
-              <div key={p.icon} className="lp-problem-text-item" style={{ opacity: activeIndex === i ? 1 : 0 }}>
-                <span style={{ fontSize: '1.875rem', marginBottom: '1rem', display: 'block' }}>{p.icon}</span>
-                <p style={{ fontSize: 'clamp(1.125rem, 2.5vw, 1.375rem)', fontWeight: 700, color: 'hsl(250 30% 92%)', lineHeight: 1.4, margin: '0 0 1rem', maxWidth: '28ch' }}>
-                  {p.pain}
-                </p>
-                <p style={{ fontSize: '0.9375rem', color: 'hsl(254 100% 81%)', fontWeight: 600, lineHeight: 1.55, margin: 0, maxWidth: '34ch' }}>
-                  ✦ {p.solve}
-                </p>
-              </div>
-            ))}
-          </div>
-
-          {/* Dots de navegação */}
-          <div className="lp-problem-dots">
-            {PAIN_POINTS.map((_, i) => (
-              <button
-                key={i}
-                className={`lp-problem-dot${activeIndex === i ? ' active' : ''}`}
-                onClick={() => goTo(i)}
-                aria-label={`Item ${i + 1}`}
-              />
-            ))}
-          </div>
-        </div>
-
+        ))}
       </div>
     </section>
   )
@@ -586,25 +485,44 @@ function Features() {
 function YaIA() {
   return (
     <section style={{ padding: '1.5rem 0 4rem' }}>
-      <div style={{ borderRadius: '1.5rem', overflow: 'hidden', position: 'relative', padding: '2.5rem 2rem', background: 'linear-gradient(135deg, rgba(139,92,246,0.18) 0%, rgba(183,159,255,0.08) 100%)', border: '1px solid rgba(183,159,255,0.2)' }}>
-        <div aria-hidden style={{ position: 'absolute', top: '-3rem', right: '-3rem', width: 220, height: 220, borderRadius: '50%', background: 'radial-gradient(circle, rgba(139,92,246,0.35) 0%, transparent 70%)', filter: 'blur(40px)', pointerEvents: 'none' }} />
-        <div style={{ position: 'relative', zIndex: 1, maxWidth: '36rem' }}>
-          <p className="lp-eyebrow" style={{ color: 'hsl(254 100% 81% / 0.6)' }}>Inteligência artificial</p>
-          <h2 style={{ fontSize: 'clamp(1.375rem, 3vw, 1.875rem)', fontWeight: 700, lineHeight: 1.2, marginBottom: '1rem' }}>
-            yaIA —{' '}
-            <span className="lp-gradient-text">a única IA que conhece o seu bebê.</span>
-          </h2>
-          <p style={{ fontSize: '0.9375rem', color: 'hsl(250 30% 70%)', lineHeight: 1.7, marginBottom: '1.5rem', maxWidth: '30rem' }}>
-            Ela sabe quando o bebê dormiu, o que comeu e qual salto está chegando.
-            Pergunte e receba uma resposta baseada no histórico real — não no Google.
-          </p>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-            {['"Ele dormiu bem essa semana?"', '"Esse choro é fome ou sono?"', '"Quando começa o próximo salto?"'].map((q) => (
-              <span key={q} style={{ fontSize: '0.75rem', padding: '0.375rem 0.75rem', borderRadius: '2rem', background: 'rgba(183,159,255,0.1)', border: '1px solid rgba(183,159,255,0.18)', color: 'hsl(254 100% 81%)' }}>
-                {q}
-              </span>
-            ))}
+      <div style={{ borderRadius: '1.5rem', overflow: 'hidden', position: 'relative', background: 'linear-gradient(135deg, rgba(139,92,246,0.18) 0%, rgba(183,159,255,0.08) 100%)', border: '1px solid rgba(183,159,255,0.2)' }}>
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'stretch', flexWrap: 'wrap' }}>
+
+          {/* Texto */}
+          <div style={{ flex: '1 1 280px', padding: '2.5rem 2rem', position: 'relative', zIndex: 1 }}>
+            <div aria-hidden style={{ position: 'absolute', top: '-3rem', left: '-3rem', width: 220, height: 220, borderRadius: '50%', background: 'radial-gradient(circle, rgba(139,92,246,0.35) 0%, transparent 70%)', filter: 'blur(40px)', pointerEvents: 'none' }} />
+            <div style={{ position: 'relative', zIndex: 1 }}>
+              <p className="lp-eyebrow" style={{ color: 'hsl(254 100% 81% / 0.6)' }}>Inteligência artificial</p>
+              <h2 style={{ fontSize: 'clamp(1.375rem, 3vw, 1.875rem)', fontWeight: 700, lineHeight: 1.2, marginBottom: '1rem' }}>
+                yaIA —{' '}
+                <span className="lp-gradient-text">a única IA que conhece o seu bebê.</span>
+              </h2>
+              <p style={{ fontSize: '0.9375rem', color: 'hsl(250 30% 70%)', lineHeight: 1.7, marginBottom: '1.5rem' }}>
+                Ela sabe quando o bebê dormiu, o que comeu e qual salto está chegando.
+                Pergunte e receba uma resposta baseada no histórico real — não no Google.
+              </p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                {['"Ele dormiu bem essa semana?"', '"Esse choro é fome ou sono?"', '"Quando começa o próximo salto?"'].map((q) => (
+                  <span key={q} style={{ fontSize: '0.75rem', padding: '0.375rem 0.75rem', borderRadius: '2rem', background: 'rgba(183,159,255,0.1)', border: '1px solid rgba(183,159,255,0.18)', color: 'hsl(254 100% 81%)' }}>
+                    {q}
+                  </span>
+                ))}
+              </div>
+            </div>
           </div>
+
+          {/* Vídeo yaIA */}
+          <div style={{ flex: '0 0 auto', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', padding: '2rem 2rem 0', minWidth: 180 }}>
+            <div className="lp-phone-frame" style={{ width: 200, height: 400 }}>
+              <div className="lp-phone-island" />
+              <video
+                src="/lp/yaia.mp4"
+                autoPlay muted loop playsInline
+                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            </div>
+          </div>
+
         </div>
       </div>
     </section>
