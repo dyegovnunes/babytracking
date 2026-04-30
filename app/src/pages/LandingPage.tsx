@@ -642,36 +642,38 @@ function Testimonials() {
 }
 
 // ─── Pricing ─────────────────────────────────────────────────────────────────
-const PLANS = [
-  { id: 'monthly',  name: 'Mensal',   price: 'R$ 34,90',  period: '/mês',   note: 'Cancele quando quiser',              highlight: false, badge: null,           includesLibrary: false },
-  { id: 'annual',   name: 'Anual',    price: 'R$ 249,90', period: '/ano',   note: '≈ R$ 20,83/mês · economize 40%',    highlight: true,  badge: 'Mais popular',  includesLibrary: true  },
-  { id: 'lifetime', name: 'Vitalício', price: 'R$ 449,90', period: 'único', note: 'Pague uma vez, acesse para sempre',  highlight: false, badge: null,           includesLibrary: true  },
-]
+type PlanId = 'monthly' | 'annual' | 'lifetime'
+const PLAN_OPTIONS: Record<PlanId, { name: string; price: string; period: string; note: string; includesLibrary: boolean; btnText: string }> = {
+  monthly:  { name: 'Mensal',    price: 'R$ 34,90',  period: '/mês',  note: 'Cancele quando quiser',             includesLibrary: false, btnText: 'Assinar agora'   },
+  annual:   { name: 'Anual',     price: 'R$ 249,90', period: '/ano',  note: '≈ R$ 20,83/mês · economize 40%',   includesLibrary: true,  btnText: 'Assinar agora'   },
+  lifetime: { name: 'Vitalício', price: 'R$ 449,90', period: 'único', note: 'Pague uma vez, acesse para sempre', includesLibrary: true,  btnText: 'Adquirir agora'  },
+}
 const PLAN_FEATURES = ['Registros ilimitados', 'Histórico completo', 'Múltiplos bebês', 'Insights com IA', 'Família conectada', 'Relatório para pediatra']
 
 function Pricing() {
-  const [loading, setLoading] = useState<string | null>(null)
+  const [selected, setSelected] = useState<PlanId>('annual')
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const plan = PLAN_OPTIONS[selected]
 
-  async function handleCheckout(planId: string) {
-    setLoading(planId)
-    setError('')
+  async function handleCheckout() {
+    setLoading(true); setError('')
     try {
       const origin = window.location.origin
       const { data, error: fnErr } = await supabase.functions.invoke(
         'stripe-create-subscription-session',
-        { body: { plan: planId, success_url: `${origin}/?plano_ativado=1`, cancel_url: `${origin}/#planos` } }
+        { body: { plan: selected, success_url: `${origin}/?plano_ativado=1`, cancel_url: `${origin}/#planos` } }
       )
       if (fnErr || !data?.url) throw new Error(fnErr?.message || 'Não foi possível iniciar o pagamento.')
       window.location.href = data.url
     } catch (err) {
-      setError((err as Error).message)
-      setLoading(null)
+      setError((err as Error).message); setLoading(false)
     }
   }
 
   return (
     <section id="planos" style={{ padding: '4rem 0' }}>
+      {/* Header */}
       <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
         <p className="lp-eyebrow">Planos Yaya+</p>
         <h2 style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', fontWeight: 700, marginBottom: '0.75rem' }}>
@@ -679,79 +681,152 @@ function Pricing() {
           <span className="lp-gradient-text">Evolua quando quiser.</span>
         </h2>
         <p style={{ color: 'hsl(250 30% 70%)', fontSize: '0.9375rem', maxWidth: '36rem', margin: '0 auto' }}>
-          Todos os planos desbloqueiam o Yaya+ completo. Anual e Vitalício incluem a Biblioteca de Guias.
+          Anual e Vitalício incluem a Biblioteca de Guias — acesso a todos os guias sem custo adicional.
         </p>
       </div>
 
-      {/* Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '1.25rem', marginBottom: '1.5rem' }}>
-        {PLANS.map((plan) => {
-          const isLoading = loading === plan.id
-          const isDisabled = loading !== null
-          return (
-            <div key={plan.id} style={{ position: 'relative', borderRadius: 20, padding: plan.highlight ? 1 : 0, background: plan.highlight ? 'linear-gradient(135deg, #b79fff 0%, #8b5cf6 100%)' : 'transparent' }}>
-              <div style={{ borderRadius: plan.highlight ? 19 : 20, padding: '1.75rem 1.375rem', height: '100%', boxSizing: 'border-box', background: plan.highlight ? '#1e1652' : 'rgba(255,255,255,0.04)', border: plan.highlight ? 'none' : '1px solid rgba(183,159,255,0.12)', display: 'flex', flexDirection: 'column' }}>
-                {plan.badge && (
-                  <div style={{ position: 'absolute', top: -14, left: '50%', transform: 'translateX(-50%)', background: 'linear-gradient(90deg, #b79fff 0%, #8b5cf6 100%)', color: '#0d0a27', fontSize: 11, fontWeight: 700, padding: '4px 14px', borderRadius: 99, whiteSpace: 'nowrap', fontFamily: 'Manrope, system-ui, sans-serif' }}>
-                    ✦ {plan.badge}
-                  </div>
-                )}
-                <p style={{ color: 'rgba(231,226,255,0.55)', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 8px' }}>{plan.name}</p>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 4 }}>
-                  <span style={{ color: '#e7e2ff', fontSize: 30, fontWeight: 800, lineHeight: 1 }}>{plan.price}</span>
-                  <span style={{ color: 'rgba(231,226,255,0.4)', fontSize: 12 }}>{plan.period}</span>
-                </div>
-                <p style={{ fontSize: 12, color: plan.highlight ? '#b79fff' : 'rgba(231,226,255,0.4)', margin: `0 0 ${plan.includesLibrary ? 12 : 20}px` }}>{plan.note}</p>
-                {plan.includesLibrary && (
-                  <span style={{ display: 'inline-block', fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 6, background: 'rgba(245,200,66,0.1)', color: '#f5c842', border: '1px solid rgba(245,200,66,0.2)', marginBottom: 16, width: 'fit-content' }}>
-                    📚 + Biblioteca de Guias
-                  </span>
-                )}
-                <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1.5rem', display: 'flex', flexDirection: 'column', gap: 8, flex: 1 }}>
-                  {PLAN_FEATURES.map((f) => (
-                    <li key={f} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'rgba(231,226,255,0.65)' }}>
-                      <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#b79fff', flexShrink: 0 }} />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-                <button
-                  onClick={() => handleCheckout(plan.id)}
-                  disabled={isDisabled}
-                  className="lp-plan-button"
-                  style={{ background: plan.highlight ? 'linear-gradient(135deg, #ec4899 0%, #a855f7 100%)' : 'rgba(183,159,255,0.1)', color: '#fff', opacity: isDisabled && !isLoading ? 0.45 : 1, boxShadow: plan.highlight ? '0 0 24px rgba(236,72,153,0.22)' : 'none' }}
-                >
-                  {isLoading ? 'Redirecionando...' : plan.id === 'lifetime' ? 'Adquirir agora' : 'Assinar agora'}
-                </button>
-              </div>
+      {/* Yaya+ card com toggle */}
+      <div style={{ maxWidth: '44rem', margin: '0 auto' }}>
+        <div style={{ borderRadius: 24, padding: 1.5, background: 'linear-gradient(135deg, #b79fff 0%, #ec4899 60%, #8b5cf6 100%)' }}>
+          <div style={{ borderRadius: 23, padding: '2rem 2rem 2rem', background: '#0e0b2e' }}>
+
+            {/* Eyebrow + badge */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1.5rem' }}>
+              <p style={{ margin: 0, fontSize: 11, fontWeight: 700, color: '#b79fff', textTransform: 'uppercase', letterSpacing: '0.12em' }}>✦ Yaya+</p>
+              {selected === 'annual' && (
+                <span style={{ background: 'linear-gradient(90deg, #b79fff, #8b5cf6)', color: '#0d0a27', fontSize: 11, fontWeight: 700, padding: '3px 12px', borderRadius: 99 }}>
+                  ★ Mais popular
+                </span>
+              )}
+              {selected === 'lifetime' && (
+                <span style={{ background: 'linear-gradient(90deg, #f5c842, #f0a020)', color: '#0d0a27', fontSize: 11, fontWeight: 700, padding: '3px 12px', borderRadius: 99 }}>
+                  Melhor valor
+                </span>
+              )}
             </div>
-          )
-        })}
-      </div>
 
-      {error && <p style={{ color: '#ff7a90', textAlign: 'center', fontSize: '0.875rem', marginBottom: '1rem' }}>{error}</p>}
+            {/* Toggle de planos */}
+            <div style={{ display: 'inline-flex', background: 'rgba(255,255,255,0.05)', borderRadius: 12, padding: 4, marginBottom: '1.75rem', gap: 2 }}>
+              {(Object.keys(PLAN_OPTIONS) as PlanId[]).map((id) => (
+                <button
+                  key={id}
+                  onClick={() => setSelected(id)}
+                  style={{
+                    padding: '0.5rem 1.125rem', borderRadius: 9, border: 'none', cursor: 'pointer',
+                    fontFamily: 'Manrope, system-ui, sans-serif', fontSize: 13, fontWeight: 700,
+                    transition: 'all 0.2s ease',
+                    background: selected === id ? 'linear-gradient(135deg, #b79fff, #8b5cf6)' : 'transparent',
+                    color: selected === id ? '#0d0a27' : 'rgba(231,226,255,0.45)',
+                    boxShadow: selected === id ? '0 2px 12px rgba(139,92,246,0.35)' : 'none',
+                  }}
+                >
+                  {PLAN_OPTIONS[id].name}{id === 'annual' ? ' ★' : ''}
+                </button>
+              ))}
+            </div>
 
-      <p style={{ color: 'hsl(250 30% 50%)', fontSize: '0.75rem', textAlign: 'center', marginBottom: '2.5rem' }}>
-        Pagamento seguro via Stripe · Cancele quando quiser (mensal e anual) · Sem taxas escondidas
-      </p>
+            {/* Preço */}
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 6 }}>
+              <span style={{ fontSize: 44, fontWeight: 800, color: '#e7e2ff', lineHeight: 1 }}>{plan.price}</span>
+              <span style={{ fontSize: 14, color: 'rgba(231,226,255,0.4)' }}>{plan.period}</span>
+            </div>
+            <p style={{ fontSize: 13, color: '#b79fff', margin: '0 0 1.25rem' }}>{plan.note}</p>
 
-      {/* Divider */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
-        <div style={{ flex: 1, height: 1, background: 'rgba(183,159,255,0.1)' }} />
-        <span style={{ fontSize: '0.75rem', color: 'hsl(250 30% 45%)' }}>ou comece pelo app</span>
-        <div style={{ flex: 1, height: 1, background: 'rgba(183,159,255,0.1)' }} />
-      </div>
+            {/* Badge Biblioteca */}
+            {plan.includesLibrary ? (
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, padding: '5px 12px', borderRadius: 8, background: 'rgba(245,200,66,0.1)', color: '#f5c842', border: '1px solid rgba(245,200,66,0.22)', marginBottom: '1.75rem' }}>
+                📚 Biblioteca de Guias inclusa
+              </div>
+            ) : (
+              <p style={{ fontSize: 12, color: 'rgba(231,226,255,0.28)', margin: '0 0 1.75rem' }}>
+                Biblioteca de Guias não inclusa — disponível no Anual e Vitalício
+              </p>
+            )}
 
-      {/* Free tier */}
-      <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(183,159,255,0.12)', borderRadius: '1.25rem', padding: '1.5rem', textAlign: 'center', maxWidth: '28rem', margin: '0 auto' }}>
-        <h3 style={{ fontSize: '1rem', fontWeight: 700, margin: '0 0 0.5rem', color: 'hsl(250 100% 96%)' }}>Yaya Free</h3>
-        <p style={{ fontSize: '0.875rem', color: 'hsl(250 30% 70%)', margin: '0 0 1.25rem' }}>
-          Baixe grátis e comece a usar agora. Upgrade para Yaya+ quando quiser.
-        </p>
-        <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center' }}>
-          <a href="https://apps.apple.com/app/yaya-baby" target="_blank" rel="noopener noreferrer" className="lp-btn-outline" style={{ padding: '0.625rem 1.25rem', fontSize: '0.875rem' }}>App Store</a>
-          <a href="https://play.google.com/store/apps/details?id=app.yayababy" target="_blank" rel="noopener noreferrer" className="lp-btn-outline" style={{ padding: '0.625rem 1.25rem', fontSize: '0.875rem' }}>Google Play</a>
+            {/* Features em grid */}
+            <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 2rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.5rem 1.25rem' }}>
+              {PLAN_FEATURES.map((f) => (
+                <li key={f} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'rgba(231,226,255,0.65)' }}>
+                  <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#b79fff', flexShrink: 0 }} />
+                  {f}
+                </li>
+              ))}
+            </ul>
+
+            {/* CTA */}
+            <button
+              onClick={handleCheckout}
+              disabled={loading}
+              className="lp-plan-button"
+              style={{ background: 'linear-gradient(135deg, #ec4899 0%, #a855f7 100%)', color: '#fff', opacity: loading ? 0.6 : 1, boxShadow: '0 0 32px rgba(236,72,153,0.28)', fontSize: '0.9375rem' }}
+            >
+              {loading ? 'Redirecionando...' : plan.btnText}
+            </button>
+          </div>
         </div>
+
+        {error && <p style={{ color: '#ff7a90', textAlign: 'center', fontSize: '0.875rem', marginTop: '1rem' }}>{error}</p>}
+
+        <p style={{ color: 'hsl(250 30% 45%)', fontSize: '0.6875rem', textAlign: 'center', margin: '1rem 0 2.5rem' }}>
+          Pagamento seguro via Stripe · Cancele quando quiser (mensal e anual) · Sem taxas escondidas
+        </p>
+
+        {/* Divider + Free */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
+          <div style={{ flex: 1, height: 1, background: 'rgba(183,159,255,0.08)' }} />
+          <span style={{ fontSize: '0.75rem', color: 'hsl(250 30% 40%)' }}>ou comece pelo app</span>
+          <div style={{ flex: 1, height: 1, background: 'rgba(183,159,255,0.08)' }} />
+        </div>
+        <div style={{ textAlign: 'center', padding: '1.25rem 1.5rem', border: '1px solid rgba(183,159,255,0.08)', borderRadius: '1.25rem' }}>
+          <p style={{ fontSize: '0.875rem', fontWeight: 700, margin: '0 0 0.25rem', color: 'rgba(231,226,255,0.5)' }}>Yaya Free</p>
+          <p style={{ fontSize: '0.8125rem', color: 'hsl(250 30% 45%)', margin: '0 0 1.25rem' }}>Baixe grátis e comece agora. Upgrade para Yaya+ quando quiser.</p>
+          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center' }}>
+            <a href="https://apps.apple.com/app/yaya-baby" target="_blank" rel="noopener noreferrer" className="lp-btn-outline" style={{ padding: '0.5rem 1.125rem', fontSize: '0.8125rem', opacity: 0.5 }}>App Store</a>
+            <a href="https://play.google.com/store/apps/details?id=app.yayababy" target="_blank" rel="noopener noreferrer" className="lp-btn-outline" style={{ padding: '0.5rem 1.125rem', fontSize: '0.8125rem', opacity: 0.5 }}>Google Play</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ─── FAQ ─────────────────────────────────────────────────────────────────────
+const FAQ_ITEMS = [
+  { q: 'O Yaya é grátis de verdade?',                         a: 'Sim. O Yaya Free é gratuito sem limite de tempo. Para registros avançados, insights com IA, múltiplos bebês, família conectada e relatório para pediatra, você assina o Yaya+.' },
+  { q: 'Meu parceiro pode usar ao mesmo tempo?',               a: 'Sim. Com o Yaya+ você conecta parceiro, avós ou babá — todo mundo vê e registra em tempo real, em qualquer dispositivo, sem custo extra.' },
+  { q: 'O que acontece se eu cancelar o plano?',               a: 'Seus dados ficam salvos. Você volta para o Yaya Free e mantém todo o histórico. Nenhum dado é perdido.' },
+  { q: 'Qual a diferença entre Anual e Vitalício?',            a: 'As funcionalidades são as mesmas. No Anual você paga por ano (com renovação). No Vitalício, paga uma vez e tem acesso para sempre — inclusive a todos os guias da Biblioteca.' },
+  { q: 'Funciona sem internet?',                               a: 'O registro funciona offline e sincroniza automaticamente quando a conexão voltar. Insights e relatório precisam de conexão.' },
+  { q: 'Posso usar para mais de um filho?',                    a: 'Sim. O Yaya+ suporta múltiplos bebês em uma única conta, cada um com histórico e perfil separados.' },
+]
+
+function FAQ() {
+  const [open, setOpen] = useState<number | null>(null)
+  return (
+    <section style={{ padding: '2rem 0 4rem', maxWidth: '44rem', margin: '0 auto' }}>
+      <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+        <p className="lp-eyebrow">Dúvidas</p>
+        <h2 style={{ fontSize: 'clamp(1.375rem, 3vw, 1.75rem)', fontWeight: 700, margin: 0 }}>
+          Perguntas <span className="lp-gradient-text">frequentes.</span>
+        </h2>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+        {FAQ_ITEMS.map((item, i) => (
+          <div key={i} style={{ borderRadius: '0.875rem', border: `1px solid ${open === i ? 'rgba(183,159,255,0.2)' : 'rgba(183,159,255,0.08)'}`, overflow: 'hidden', transition: 'border-color 0.2s' }}>
+            <button
+              onClick={() => setOpen(open === i ? null : i)}
+              style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', padding: '1.125rem 1.25rem', background: open === i ? 'rgba(183,159,255,0.06)' : 'rgba(255,255,255,0.02)', border: 'none', cursor: 'pointer', textAlign: 'left', fontFamily: 'Manrope, system-ui, sans-serif', transition: 'background 0.2s' }}
+            >
+              <span style={{ fontSize: '0.9375rem', fontWeight: 600, color: 'rgba(231,226,255,0.88)', lineHeight: 1.4 }}>{item.q}</span>
+              <span style={{ color: 'rgba(183,159,255,0.6)', flexShrink: 0, fontSize: '1.25rem', lineHeight: 1, transform: open === i ? 'rotate(45deg)' : 'none', transition: 'transform 0.2s', display: 'block' }}>+</span>
+            </button>
+            {open === i && (
+              <div style={{ padding: '0 1.25rem 1.25rem', fontSize: '0.875rem', color: 'hsl(250 30% 62%)', lineHeight: 1.75 }}>
+                {item.a}
+              </div>
+            )}
+          </div>
+        ))}
       </div>
     </section>
   )
@@ -881,6 +956,7 @@ export default function LandingPage() {
         <YaIA />
         <Testimonials />
         <Pricing />
+        <FAQ />
         <FinalCTA isMobile={isMobile} />
         <Footer />
       </div>
