@@ -397,7 +397,7 @@ function Hero({ isMobile }: { isMobile: boolean }) {
 
         {/* Subtítulo */}
         <p className="lp-fade lp-d2" style={{ fontSize: '1rem', lineHeight: 1.7, color: 'hsl(250 30% 70%)', maxWidth: 480, marginBottom: '2rem' }}>
-          Do recém-nascido ao primeiro aniversário — registre em segundos,
+          Do recém-nascido ao primeiro aniversário. Registre em segundos,
           entenda os padrões e mantenha toda a família sincronizada em tempo real.
         </p>
 
@@ -508,12 +508,12 @@ function YaIA() {
           <div style={{ position: 'relative', zIndex: 1 }}>
             <p className="lp-eyebrow" style={{ color: 'hsl(254 100% 81% / 0.6)' }}>Inteligência artificial</p>
             <h2 style={{ fontSize: 'clamp(1.375rem, 3vw, 1.875rem)', fontWeight: 700, lineHeight: 1.2, marginBottom: '1rem' }}>
-              yaIA —{' '}
+              yaIA,{' '}
               <span className="lp-gradient-text">a única IA que conhece o seu bebê.</span>
             </h2>
             <p style={{ fontSize: '0.9375rem', color: 'hsl(250 30% 70%)', lineHeight: 1.7, marginBottom: '1.5rem' }}>
               Ela sabe quando o bebê dormiu, o que comeu e qual salto está chegando.
-              Pergunte e receba uma resposta baseada no histórico real — não no Google.
+              Pergunte e receba uma resposta baseada no histórico real, não no Google.
             </p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
               {['"Ele dormiu bem essa semana?"', '"Esse choro é fome ou sono?"', '"Quando começa o próximo salto?"'].map((q) => (
@@ -624,10 +624,10 @@ const COMPARE_ROWS: Array<{ label: string; free: string; paid: string }> = [
   { label: 'Histórico',                free: 'Hoje + ontem',     paid: 'Completo'    },
   { label: 'Anúncios',                 free: 'Sim',              paid: 'Não'         },
   { label: 'Marcos, Saltos, Vacinas',  free: '✓',               paid: '✓'           },
-  { label: 'yaIA',                     free: '—',               paid: 'Ilimitada'   },
-  { label: 'Insights inteligentes',    free: '—',               paid: '✓'           },
-  { label: 'Relatório pediatra',       free: '—',               paid: '✓'           },
-  { label: 'Biblioteca Yaya',          free: '—',               paid: 'Anual e Vitalício' },
+  { label: 'yaIA',                     free: '✗',               paid: 'Ilimitada'   },
+  { label: 'Insights inteligentes',    free: '✗',               paid: '✓'           },
+  { label: 'Relatório pediatra',       free: '✗',               paid: '✓'           },
+  { label: 'Biblioteca Yaya',          free: '✗',               paid: 'Anual e Vitalício' },
 ]
 
 function Pricing() {
@@ -870,8 +870,8 @@ function Pricing() {
 // ─── FAQ ─────────────────────────────────────────────────────────────────────
 const FAQ_ITEMS = [
   { q: 'O Yaya é grátis de verdade?',                         a: 'Sim. O Yaya é gratuito sem limite de tempo, mas com algumas limitações. Para registros ilimitados e avançados, insights com IA, múltiplos bebês, família conectada e relatório para pediatra, você precisa assinar o Yaya+.' },
-  { q: 'Meu parceiro pode usar ao mesmo tempo?',               a: 'Sim. Com o Yaya+ você conecta todo mundo da família ao seu bebê. Parceiro, avós ou babá — todo mundo vê e registra em tempo real, em qualquer dispositivo, sem custo extra.' },
-  { q: 'Eu e o pai/mãe precisamos assinar para ter Yaya+?',   a: 'Não. Basta um dos dois assinar. A assinatura é por bebê, não por usuário — então se você assina como mãe ou pai, todos do grupo (parceiro, avós, babá) também enxergam o bebê com o plano Yaya+, mesmo sem ter assinatura própria.' },
+  { q: 'Meu parceiro pode usar ao mesmo tempo?',               a: 'Sim. Com o Yaya+ você conecta todo mundo da família ao seu bebê. Parceiro, avós ou babá: todo mundo vê e registra em tempo real, em qualquer dispositivo, sem custo extra.' },
+  { q: 'Eu e o pai/mãe precisamos assinar para ter Yaya+?',   a: 'Não. Basta um dos dois assinar. A assinatura é por bebê, não por usuário. Então se você assina como mãe ou pai, todos do grupo (parceiro, avós, babá) também enxergam o bebê com o plano Yaya+, mesmo sem ter assinatura própria.' },
   { q: 'O que acontece se eu cancelar o plano?',               a: 'Seus dados ficam salvos. Você volta para o Yaya Free e mantém todo o histórico. Nenhum dado é perdido.' },
   { q: 'Qual a diferença entre Anual e Vitalício?',            a: 'As funcionalidades são as mesmas. No Anual você paga por ano (com renovação). No Vitalício, paga uma vez e tem acesso para sempre, inclusive a todos os guias da Biblioteca atuais e futuros.' },
   { q: 'Funciona sem internet?',                               a: 'O registro funciona offline e sincroniza automaticamente quando a conexão voltar. E caso haja registros simultâneos, deixamos alertado para ser revisado. Insights e relatório precisam de conexão.' },
@@ -1090,7 +1090,7 @@ function AndroidWaitlistModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
               </h2>
               <p style={{ fontSize: '0.9375rem', color: 'hsl(250 25% 75%)', lineHeight: 1.6, margin: 0 }}>
                 Estamos aguardando a aprovação do Google, que deve liberar o app nos próximos dias.
-                Deixa seu email que te avisamos quando lançar — e já te damos <strong style={{ color: 'hsl(254 100% 81%)' }}>10 dias de Yaya+</strong> para testar pelo navegador do celular!
+                Deixa seu email que te avisamos quando lançar, e já te damos <strong style={{ color: 'hsl(254 100% 81%)' }}>10 dias de Yaya+</strong> para testar pelo navegador do celular!
               </p>
             </div>
 
