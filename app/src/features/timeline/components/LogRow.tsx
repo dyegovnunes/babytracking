@@ -1,6 +1,6 @@
-import type { LogEntry, Member, MealPayload, MoodPayload, SickPayload } from '../../../types'
+import type { LogEntry, Member, MealPayload, MoodPayload, SickPayload, WakePayload } from '../../../types'
 import { EVENT_CATALOG } from '../../../lib/constants'
-import { formatTime } from '../../../lib/formatters'
+import { formatTime, formatSleepDuration } from '../../../lib/formatters'
 
 interface Props {
   log: LogEntry
@@ -75,6 +75,9 @@ export default function LogRow({ log, members, onEdit, pairedLog }: Props) {
     : new Date(log.timestamp)
 
   /* Payload info */
+  const wakePayload = log.eventId === 'wake' && log.payload
+    ? (log.payload as WakePayload)
+    : null
   const mealPayload = log.eventId === 'meal' && log.payload
     ? (log.payload as MealPayload)
     : null
@@ -156,6 +159,12 @@ export default function LogRow({ log, members, onEdit, pairedLog }: Props) {
         {log.ml && (
           <p className="font-label text-xs text-primary">{log.ml} ml</p>
         )}
+        {/* Duração do sono — exibe "dormiu Xmin/Xh" no log de acordou */}
+        {wakePayload?.sleepDurationMinutes && (
+          <p className="font-label text-xs text-on-surface-variant mt-0.5">
+            {formatSleepDuration(wakePayload.sleepDurationMinutes)}
+          </p>
+        )}
         {log.notes && (
           <p className="font-label text-xs text-on-surface-variant truncate">{log.notes}</p>
         )}
@@ -163,6 +172,16 @@ export default function LogRow({ log, members, onEdit, pairedLog }: Props) {
           <p className="font-label text-[10px] text-on-surface-variant/60">por {memberName}</p>
         )}
       </div>
+
+      {/* Indicador de entrada offline — revisão recomendada */}
+      {(log.payload as Record<string, unknown> | null | undefined)?.source === 'offline' && (
+        <span
+          className="material-symbols-outlined text-[14px] text-on-surface-variant/40 shrink-0 mr-1"
+          title="Registrado offline"
+        >
+          cloud_off
+        </span>
+      )}
 
       <span className="material-symbols-outlined text-on-surface-variant/50 text-base">edit</span>
     </button>

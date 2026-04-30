@@ -12,6 +12,16 @@ export interface EventType {
   hasDuration?: boolean
 }
 
+/** Campos base compartilhados entre payloads (ex: marker de origem offline) */
+export interface BasePayload {
+  source?: 'offline'
+}
+
+/** Payload do evento "acordou" */
+export interface WakePayload extends BasePayload {
+  sleepDurationMinutes?: number
+}
+
 /** Payload de registro de refeição (armazenado em logs.payload jsonb) */
 export interface MealPayload {
   food?: string

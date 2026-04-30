@@ -27,6 +27,7 @@ type Action =
   | { type: 'SET_NO_BABY' }
   | { type: 'SET_LOADING' }
   | { type: 'ADD_LOG'; log: LogEntry }
+  | { type: 'REMOVE_LOG'; id: string }
   | { type: 'UPDATE_LOG'; log: LogEntry }
   | { type: 'DELETE_LOG'; id: string }
   | { type: 'SET_INTERVALS'; intervals: Record<string, IntervalConfig> }
@@ -65,6 +66,8 @@ function reducer(state: AppState, action: Action): AppState {
       return { ...state, loading: true, needsOnboarding: false }
     case 'ADD_LOG':
       return { ...state, logs: [...state.logs, action.log] }
+    case 'REMOVE_LOG':
+      return { ...state, logs: state.logs.filter((l) => l.id !== action.id) }
     case 'UPDATE_LOG':
       return { ...state, logs: state.logs.map((l) => (l.id === action.log.id ? action.log : l)) }
     case 'DELETE_LOG':
@@ -96,8 +99,10 @@ function reducer(state: AppState, action: Action): AppState {
   }
 }
 
+export type AppDispatch = React.Dispatch<Action>
+
 const StateContext = createContext<AppState>(initialState)
-const DispatchContext = createContext<React.Dispatch<Action>>(() => {})
+const DispatchContext = createContext<AppDispatch>(() => {})
 
 export function useAppState() {
   return useContext(StateContext)

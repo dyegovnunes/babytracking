@@ -1,3 +1,14 @@
+/**
+ * Formata duração de sono em texto legível.
+ * Ex: 45 → "dormiu 45min", 90 → "dormiu 1h30min", 60 → "dormiu 1h"
+ */
+export function formatSleepDuration(minutes: number): string {
+  if (minutes < 60) return `dormiu ${minutes}min`
+  const h = Math.floor(minutes / 60)
+  const m = minutes % 60
+  return m === 0 ? `dormiu ${h}h` : `dormiu ${h}h${m}min`
+}
+
 export function formatTime(date: Date): string {
   return date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
 }
