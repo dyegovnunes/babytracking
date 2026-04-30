@@ -188,7 +188,7 @@ const LANDING_CSS = `
     position: relative;
     width: 240px;
     aspect-ratio: 9 / 19;
-    border-radius: 32px;
+    border-radius: 22px;
     background: #06040f;
     overflow: hidden;
     border: 4px solid #1a1530;
@@ -283,9 +283,10 @@ const LANDING_CSS = `
     .lp-yaia-wrap {
       flex-direction: row;
       align-items: center;
-      gap: 3rem;
+      justify-content: center;
+      gap: 1.5rem;
     }
-    .lp-yaia-text { flex: 1; min-width: 0; }
+    .lp-yaia-text { flex: 0 1 32rem; min-width: 0; }
     .lp-yaia-phone { flex-shrink: 0; }
   }
 
