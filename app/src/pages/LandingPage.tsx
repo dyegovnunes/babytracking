@@ -325,20 +325,24 @@ const PAIN_POINTS = [
 function Problem() {
   return (
     <section style={{ padding: '4rem 0' }}>
-      <div style={{ textAlign: 'center', maxWidth: '38rem', margin: '0 auto 2.5rem' }}>
+      <div style={{ textAlign: 'center', maxWidth: '38rem', margin: '0 auto 3rem' }}>
         <h2 style={{ fontSize: 'clamp(1.375rem, 3vw, 1.875rem)', fontWeight: 700, lineHeight: 1.3, marginBottom: 0 }}>
           Lembrar cada alimentação, cada fralda, cada soneca...{' '}
           <span className="lp-gradient-text">é impossível fazer isso de cabeça.</span>
         </h2>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '0.875rem' }}>
-        {PAIN_POINTS.map((p) => (
-          <div key={p.icon} className="lp-feature-card" style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
-            <span style={{ fontSize: '1.5rem' }}>{p.icon}</span>
-            <p style={{ fontSize: '0.875rem', color: 'hsl(250 30% 65%)', lineHeight: 1.6, margin: 0 }}>{p.pain}</p>
-            <p style={{ fontSize: '0.8125rem', color: 'hsl(254 100% 81%)', fontWeight: 600, lineHeight: 1.5, margin: 0 }}>
-              {p.solve}
-            </p>
+      <div style={{ display: 'flex', flexDirection: 'column', maxWidth: '52rem', margin: '0 auto' }}>
+        {PAIN_POINTS.map((p, i) => (
+          <div key={p.icon} style={{ display: 'flex', gap: '1.25rem', alignItems: 'flex-start', padding: '1.5rem 0', borderBottom: i < PAIN_POINTS.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none' }}>
+            {/* Ícone */}
+            <div style={{ fontSize: '1.625rem', lineHeight: 1, marginTop: 2, flexShrink: 0, width: 36, textAlign: 'center' }}>{p.icon}</div>
+            {/* Texto */}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
+              <p style={{ fontSize: '0.9375rem', color: 'hsl(250 20% 62%)', lineHeight: 1.6, margin: 0 }}>{p.pain}</p>
+              <p style={{ fontSize: '0.875rem', color: 'hsl(254 100% 81%)', fontWeight: 700, lineHeight: 1.5, margin: 0 }}>
+                ✦ {p.solve}
+              </p>
+            </div>
           </div>
         ))}
       </div>
