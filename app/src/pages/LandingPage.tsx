@@ -641,21 +641,27 @@ function YaIA() {
 const TESTIMONIALS = [
   {
     avatar: '👩',
-    name: 'Ana L.',
-    context: 'filho de 3 meses',
-    quote: 'Antes eu anotava tudo num caderno que a babá perdia. Agora minha mãe, eu e meu marido vemos tudo em tempo real.',
+    name: 'Mariana S.',
+    context: 'filha de 2 meses',
+    quote: 'Antes eu tinha que anotar tudo num papel. Horário que amamentei, qual lado do peito, que horas dormiu... Agora dá pra ver tudo pelo celular. E meu marido não fica perguntando toda hora se já pode dar tete pra ele hahahah',
   },
   {
     avatar: '👨',
-    name: 'Rodrigo M.',
-    context: 'filha de 5 meses',
-    quote: 'O alerta de salto mudou tudo. Quando ela ficou agitada nas semanas 19-20, eu já sabia o que era. Não entrei em pânico.',
+    name: 'Lucas F.',
+    context: 'pai da Sofia, 5 meses',
+    quote: 'Ter visão sobre saltos, marcos de desenvolvimento e as mudanças da rotina da Sofia mudou tudo. Quando ela fica agitada, eu já tenho ideia do motivo, e quando não sei pergunto pra yaIA, que é excelente!',
   },
   {
     avatar: '👩',
     name: 'Camila V.',
     context: 'filho de 4 meses',
-    quote: 'Cheguei na consulta dos 4 meses com todos os dados. A pediatra ficou surpresa com o nível de detalhe.',
+    quote: 'Cheguei na consulta dos 4 meses com mais informação do que eu esperava kkkk A pediatra ficou surpresa com o nível de detalhes.',
+  },
+  {
+    avatar: '👩',
+    name: 'Fernanda B.',
+    context: 'mãe do Bernardo, 8 meses',
+    quote: 'O sono do Bernardo não tava fácil, a yaIA ajudou a entender e deu sugestões do que fazer. Fizemos um esforço em cada e mudou muuuuitoo! Vale super a pena!',
   },
 ]
 
@@ -669,7 +675,7 @@ function Testimonials() {
           <span className="lp-gradient-text">estão dizendo.</span>
         </h2>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '0.875rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))', gap: '0.875rem' }}>
         {TESTIMONIALS.map((t) => (
           <div key={t.name} className="lp-feature-card" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <p style={{ fontSize: '0.9375rem', color: 'hsl(250 100% 94%)', lineHeight: 1.65, margin: 0, fontStyle: 'italic' }}>
@@ -956,12 +962,13 @@ function Pricing() {
 
 // ─── FAQ ─────────────────────────────────────────────────────────────────────
 const FAQ_ITEMS = [
-  { q: 'O Yaya é grátis de verdade?',                         a: 'Sim. O Yaya Free é gratuito sem limite de tempo. Para registros avançados, insights com IA, múltiplos bebês, família conectada e relatório para pediatra, você assina o Yaya+.' },
-  { q: 'Meu parceiro pode usar ao mesmo tempo?',               a: 'Sim. Com o Yaya+ você conecta parceiro, avós ou babá — todo mundo vê e registra em tempo real, em qualquer dispositivo, sem custo extra.' },
+  { q: 'O Yaya é grátis de verdade?',                         a: 'Sim. O Yaya é gratuito sem limite de tempo, mas com algumas limitações. Para registros ilimitados e avançados, insights com IA, múltiplos bebês, família conectada e relatório para pediatra, você precisa assinar o Yaya+.' },
+  { q: 'Meu parceiro pode usar ao mesmo tempo?',               a: 'Sim. Com o Yaya+ você conecta todo mundo da família ao seu bebê. Parceiro, avós ou babá — todo mundo vê e registra em tempo real, em qualquer dispositivo, sem custo extra.' },
+  { q: 'Eu e o pai/mãe precisamos assinar para ter Yaya+?',   a: 'Não. Basta um dos dois assinar. A assinatura é por bebê, não por usuário — então se você assina como mãe ou pai, todos do grupo (parceiro, avós, babá) também enxergam o bebê com o plano Yaya+, mesmo sem ter assinatura própria.' },
   { q: 'O que acontece se eu cancelar o plano?',               a: 'Seus dados ficam salvos. Você volta para o Yaya Free e mantém todo o histórico. Nenhum dado é perdido.' },
-  { q: 'Qual a diferença entre Anual e Vitalício?',            a: 'As funcionalidades são as mesmas. No Anual você paga por ano (com renovação). No Vitalício, paga uma vez e tem acesso para sempre — inclusive a todos os guias da Biblioteca.' },
-  { q: 'Funciona sem internet?',                               a: 'O registro funciona offline e sincroniza automaticamente quando a conexão voltar. Insights e relatório precisam de conexão.' },
-  { q: 'Posso usar para mais de um filho?',                    a: 'Sim. O Yaya+ suporta múltiplos bebês em uma única conta, cada um com histórico e perfil separados.' },
+  { q: 'Qual a diferença entre Anual e Vitalício?',            a: 'As funcionalidades são as mesmas. No Anual você paga por ano (com renovação). No Vitalício, paga uma vez e tem acesso para sempre, inclusive a todos os guias da Biblioteca atuais e futuros.' },
+  { q: 'Funciona sem internet?',                               a: 'O registro funciona offline e sincroniza automaticamente quando a conexão voltar. E caso haja registros simultâneos, deixamos alertado para ser revisado. Insights e relatório precisam de conexão.' },
+  { q: 'Posso usar para mais de um filho?',                    a: 'Sim. O Yaya+ suporta múltiplos bebês em uma única conta, cada um com histórico e perfil separados. No free você só pode ter um bebê registrado.' },
 ]
 
 function FAQ() {
@@ -979,13 +986,13 @@ function FAQ() {
           <div key={i} style={{ borderRadius: '0.875rem', border: `1px solid ${open === i ? 'rgba(183,159,255,0.2)' : 'rgba(183,159,255,0.08)'}`, overflow: 'hidden', transition: 'border-color 0.2s' }}>
             <button
               onClick={() => setOpen(open === i ? null : i)}
-              style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', padding: '1.125rem 1.25rem', background: open === i ? 'rgba(183,159,255,0.06)' : 'rgba(255,255,255,0.02)', border: 'none', cursor: 'pointer', textAlign: 'left', fontFamily: 'Manrope, system-ui, sans-serif', transition: 'background 0.2s' }}
+              style={{ width: '100%', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '1rem', padding: '1.125rem 1.375rem', background: open === i ? 'rgba(183,159,255,0.05)' : 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left', fontFamily: 'Manrope, system-ui, sans-serif', transition: 'background 0.2s' }}
             >
-              <span style={{ fontSize: '0.9375rem', fontWeight: 600, color: 'rgba(231,226,255,0.88)', lineHeight: 1.4 }}>{item.q}</span>
-              <span style={{ color: 'rgba(183,159,255,0.6)', flexShrink: 0, fontSize: '1.25rem', lineHeight: 1, transform: open === i ? 'rotate(45deg)' : 'none', transition: 'transform 0.2s', display: 'block' }}>+</span>
+              <span style={{ fontSize: '0.9375rem', fontWeight: 600, color: open === i ? 'hsl(254 100% 88%)' : 'rgba(231,226,255,0.82)', lineHeight: 1.5 }}>{item.q}</span>
+              <span style={{ color: open === i ? '#b79fff' : 'rgba(183,159,255,0.45)', flexShrink: 0, fontSize: '1.125rem', lineHeight: 1, marginTop: '0.125rem', transform: open === i ? 'rotate(45deg)' : 'none', transition: 'transform 0.2s, color 0.2s', display: 'block' }}>+</span>
             </button>
             {open === i && (
-              <div style={{ padding: '0 1.25rem 1.25rem', fontSize: '0.875rem', color: 'hsl(250 30% 62%)', lineHeight: 1.75 }}>
+              <div style={{ padding: '0 1.375rem 1.25rem', fontSize: '0.875rem', color: 'hsl(250 30% 68%)', lineHeight: 1.8, borderTop: '1px solid rgba(183,159,255,0.07)', paddingTop: '0.875rem' }}>
                 {item.a}
               </div>
             )}
@@ -1005,15 +1012,12 @@ function FinalCTA({ isMobile }: { isMobile: boolean }) {
         Você cuida. O Yaya registra.{' '}
         <span className="lp-gradient-text">Todo mundo sabe o que está acontecendo.</span>
       </h2>
-      <p style={{ color: 'hsl(250 30% 70%)', marginBottom: '2rem', maxWidth: '28rem', margin: '0 auto 2rem' }}>
-        Comece grátis agora. Sem cartão, sem compromisso.
+      <p style={{ color: 'hsl(250 30% 70%)', maxWidth: '28rem', margin: '0 auto 2rem' }}>
+        Baixe e teste grátis!
       </p>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', justifyContent: 'center' }}>
         <StoreButton platform="apple" isMobile={isMobile} />
         <StoreButton platform="google" isMobile={isMobile} />
-        <a href="#planos" className="lp-btn-outline" style={{ padding: '0.6875rem 1.125rem', fontSize: '0.875rem' }}>
-          Ver planos Yaya+
-        </a>
       </div>
     </section>
   )
@@ -1027,8 +1031,6 @@ function Footer() {
         <span>© {new Date().getFullYear()} Yaya</span>
         <span aria-hidden>·</span>
         <a href="#features" style={{ color: 'inherit', textDecoration: 'none' }}>Funcionalidades</a>
-        <span aria-hidden>·</span>
-        <a href="#planos" style={{ color: 'hsl(254 100% 81% / 0.7)', textDecoration: 'none' }}>Planos Yaya+</a>
         <span aria-hidden>·</span>
         <a href="https://blog.yayababy.app" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none' }}>Blog</a>
         <span aria-hidden>·</span>
