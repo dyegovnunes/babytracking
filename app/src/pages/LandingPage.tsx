@@ -218,7 +218,6 @@ const LANDING_CSS = `
   @media (max-width: 899px) {
     .lp-problem-item {
       opacity: 1 !important;
-      border-left-color: rgba(183,159,255,0.25) !important;
     }
   }
 
@@ -466,15 +465,13 @@ function Problem() {
               ref={el => { itemRefs.current[i] = el }}
               className="lp-problem-item"
               style={{
-                borderLeftWidth: 3, borderLeftStyle: 'solid',
-                borderLeftColor: activeIndex === i ? 'hsl(254 100% 81%)' : 'rgba(183,159,255,0)',
-                opacity: activeIndex === i ? 1 : 0.28,
-                transition: 'opacity 0.5s ease, border-left-color 0.5s ease',
+                opacity: activeIndex === i ? 1 : 0.22,
+                transition: 'opacity 0.5s ease',
               }}
             >
-              <span style={{ fontSize: '1.75rem', marginBottom: '0.875rem', display: 'block' }}>{p.icon}</span>
-              <p style={{ fontSize: '1.0625rem', color: 'hsl(250 20% 65%)', lineHeight: 1.7, margin: '0 0 0.75rem', maxWidth: '34ch' }}>{p.pain}</p>
-              <p style={{ fontSize: '0.9375rem', color: 'hsl(254 100% 81%)', fontWeight: 700, lineHeight: 1.5, margin: 0, maxWidth: '34ch' }}>✦ {p.solve}</p>
+              <span style={{ fontSize: '1.75rem', marginBottom: '1rem', display: 'block' }}>{p.icon}</span>
+              <p style={{ fontSize: '1.25rem', fontWeight: 700, color: 'hsl(250 30% 90%)', lineHeight: 1.45, margin: '0 0 0.875rem', maxWidth: '30ch' }}>{p.pain}</p>
+              <p style={{ fontSize: '0.9375rem', color: 'hsl(254 100% 81%)', fontWeight: 600, lineHeight: 1.5, margin: 0, maxWidth: '34ch' }}>✦ {p.solve}</p>
             </div>
           ))}
         </div>
