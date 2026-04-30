@@ -18,7 +18,7 @@ const LANDING_CSS = `
     background: hsl(245 56% 9%);
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
-    overflow-x: hidden;
+    overflow-x: clip;
   }
   .lp-glass {
     background: rgba(255,255,255,0.04);
@@ -179,7 +179,7 @@ const LANDING_CSS = `
   .lp-phone-frame {
     position: relative;
     width: 240px;
-    aspect-ratio: 9 / 19.5;
+    aspect-ratio: 9 / 19;
     border-radius: 44px;
     background: #06040f;
     overflow: hidden;
@@ -208,20 +208,21 @@ const LANDING_CSS = `
 
   /* Problem sticky layout */
   .lp-problem-layout {
-    display: flex;
-    flex-direction: column;
+    display: block;
   }
-  .lp-problem-items { width: 100%; }
   .lp-problem-phone-wrap { display: none; }
 
-  @media (min-width: 768px) {
+  @media (min-width: 900px) {
     .lp-problem-layout {
-      flex-direction: row;
-      align-items: flex-start;
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      grid-template-areas: "items phone";
       gap: 5rem;
+      align-items: start;
     }
-    .lp-problem-items { flex: 1; }
+    .lp-problem-items  { grid-area: items; }
     .lp-problem-phone-wrap {
+      grid-area: phone;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -229,9 +230,6 @@ const LANDING_CSS = `
       position: sticky;
       top: 0;
       height: 100vh;
-      width: 280px;
-      align-self: flex-start;
-      flex-shrink: 0;
     }
   }
 
