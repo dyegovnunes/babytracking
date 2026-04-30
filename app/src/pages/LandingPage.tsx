@@ -693,135 +693,219 @@ function Testimonials() {
 
 // ─── Pricing ─────────────────────────────────────────────────────────────────
 type PlanId = 'monthly' | 'annual' | 'lifetime'
-const PLAN_OPTIONS: Record<PlanId, { name: string; price: string; period: string; note: string; includesLibrary: boolean; btnText: string }> = {
-  monthly:  { name: 'Mensal',    price: 'R$ 34,90',  period: '/mês',  note: 'Cancele quando quiser',             includesLibrary: false, btnText: 'Assinar agora'   },
-  annual:   { name: 'Anual',     price: 'R$ 249,90', period: '/ano',  note: '≈ R$ 20,83/mês · economize 40%',   includesLibrary: true,  btnText: 'Assinar agora'   },
-  lifetime: { name: 'Vitalício', price: 'R$ 449,90', period: 'único', note: 'Pague uma vez, acesse para sempre', includesLibrary: true,  btnText: 'Adquirir agora'  },
-}
-const PLAN_FEATURES = ['Registros ilimitados', 'Histórico completo', 'Múltiplos bebês', 'Insights com IA', 'Família conectada', 'Relatório para pediatra']
+
+const PAID_FEATURES = [
+  'Bebês ilimitados',
+  'Pais, parentes e cuidadores ilimitados',
+  'Registros ilimitados',
+  'Sem anúncios',
+  'yaIA ilimitada',
+  'Insights inteligentes sobre o bebê',
+  'Relatório completo para o pediatra',
+]
+
+const COMPARE_ROWS: Array<{ label: string; free: string; paid: string }> = [
+  { label: 'Bebê',                     free: '1',                paid: 'Ilimitados'  },
+  { label: 'Cuidadores',               free: '1',                paid: 'Ilimitados'  },
+  { label: 'Registros',                free: 'Limitados',        paid: 'Ilimitados'  },
+  { label: 'Histórico',                free: 'Hoje + ontem',     paid: 'Completo'    },
+  { label: 'Anúncios',                 free: 'Sim',              paid: 'Não'         },
+  { label: 'Marcos, Saltos, Vacinas',  free: '✓',               paid: '✓'           },
+  { label: 'yaIA',                     free: '—',               paid: 'Ilimitada'   },
+  { label: 'Insights inteligentes',    free: '—',               paid: '✓'           },
+  { label: 'Relatório pediatra',       free: '—',               paid: '✓'           },
+  { label: 'Biblioteca Yaya',          free: '—',               paid: 'Anual e Vitalício' },
+]
 
 function Pricing() {
-  const [selected, setSelected] = useState<PlanId>('annual')
-  const [loading, setLoading] = useState(false)
+  const [loadingPlan, setLoadingPlan] = useState<PlanId | null>(null)
   const [error, setError] = useState('')
-  const plan = PLAN_OPTIONS[selected]
 
-  async function handleCheckout() {
-    setLoading(true); setError('')
+  // Fix: reseta loading ao voltar do Stripe (pageshow / visibilitychange)
+  useEffect(() => {
+    function reset() { setLoadingPlan(null) }
+    window.addEventListener('pageshow', reset)
+    const onVis = () => { if (document.visibilityState === 'visible') reset() }
+    document.addEventListener('visibilitychange', onVis)
+    return () => {
+      window.removeEventListener('pageshow', reset)
+      document.removeEventListener('visibilitychange', onVis)
+    }
+  }, [])
+
+  async function handleCheckout(plan: PlanId) {
+    setLoadingPlan(plan); setError('')
     try {
       const origin = window.location.origin
       const { data, error: fnErr } = await supabase.functions.invoke(
         'stripe-create-subscription-session',
-        { body: { plan: selected, success_url: `${origin}/?plano_ativado=1`, cancel_url: `${origin}/#planos` } }
+        { body: { plan, success_url: `${origin}/?plano_ativado=1`, cancel_url: `${origin}/#planos` } }
       )
       if (fnErr || !data?.url) throw new Error(fnErr?.message || 'Não foi possível iniciar o pagamento.')
       window.location.href = data.url
     } catch (err) {
-      setError((err as Error).message); setLoading(false)
+      setError((err as Error).message); setLoadingPlan(null)
     }
   }
 
   return (
     <section id="planos" style={{ padding: '4rem 0' }}>
       {/* Header */}
-      <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+      <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
         <p className="lp-eyebrow">Planos Yaya+</p>
         <h2 style={{ fontSize: 'clamp(1.5rem, 3vw, 2.25rem)', fontWeight: 700, marginBottom: '0.75rem' }}>
           Comece grátis.{' '}
           <span className="lp-gradient-text">Evolua quando quiser.</span>
         </h2>
-        <p style={{ color: 'hsl(250 30% 70%)', fontSize: '0.9375rem', maxWidth: '36rem', margin: '0 auto' }}>
-          Anual e Vitalício incluem a Biblioteca de Guias — acesso a todos os guias sem custo adicional.
-        </p>
       </div>
 
-      {/* Yaya+ card com toggle */}
-      <div style={{ maxWidth: '44rem', margin: '0 auto' }}>
-        <div style={{ borderRadius: 24, padding: 1.5, background: 'linear-gradient(135deg, #b79fff 0%, #ec4899 60%, #8b5cf6 100%)' }}>
-          <div style={{ borderRadius: 23, padding: '2rem 2rem 2rem', background: '#0e0b2e' }}>
+      {/* 3 cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap: '1rem', maxWidth: '56rem', margin: '0 auto' }}>
 
-            {/* Eyebrow + badge */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1.5rem' }}>
-              <p style={{ margin: 0, fontSize: 11, fontWeight: 700, color: '#b79fff', textTransform: 'uppercase', letterSpacing: '0.12em' }}>✦ Yaya+</p>
-              {selected === 'annual' && (
-                <span style={{ background: 'linear-gradient(90deg, #b79fff, #8b5cf6)', color: '#0d0a27', fontSize: 11, fontWeight: 700, padding: '3px 12px', borderRadius: 99 }}>
-                  ★ Mais popular
-                </span>
-              )}
-              {selected === 'lifetime' && (
-                <span style={{ background: 'linear-gradient(90deg, #f5c842, #f0a020)', color: '#0d0a27', fontSize: 11, fontWeight: 700, padding: '3px 12px', borderRadius: 99 }}>
-                  Melhor valor
-                </span>
-              )}
+        {/* ── Mensal ─────────────────────────────────────────────────────── */}
+        <div style={{ borderRadius: 20, border: '1px solid rgba(183,159,255,0.15)', background: 'rgba(255,255,255,0.02)', padding: '1.75rem 1.5rem', display: 'flex', flexDirection: 'column' }}>
+          <p style={{ margin: '0 0 1.25rem', fontSize: 11, fontWeight: 700, color: 'rgba(183,159,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.12em' }}>Mensal</p>
+
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 4 }}>
+            <span style={{ fontSize: 36, fontWeight: 800, color: '#e7e2ff', lineHeight: 1 }}>R$ 34,90</span>
+            <span style={{ fontSize: 13, color: 'rgba(231,226,255,0.35)' }}>/mês</span>
+          </div>
+          <p style={{ fontSize: 12, color: 'rgba(183,159,255,0.45)', margin: '0 0 1.5rem' }}>Cancele quando quiser</p>
+
+          <p style={{ fontSize: 12, color: 'rgba(231,226,255,0.25)', margin: '0 0 1.5rem', fontStyle: 'italic' }}>Não inclui a Biblioteca Yaya</p>
+
+          <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1.75rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
+            {PAID_FEATURES.map(f => (
+              <li key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 13, color: 'rgba(231,226,255,0.55)' }}>
+                <span style={{ color: '#b79fff', flexShrink: 0, marginTop: 1 }}>✓</span>{f}
+              </li>
+            ))}
+          </ul>
+
+          <button
+            onClick={() => handleCheckout('monthly')}
+            disabled={!!loadingPlan}
+            className="lp-plan-button"
+            style={{ background: 'rgba(183,159,255,0.1)', border: '1px solid rgba(183,159,255,0.25)', color: '#b79fff', opacity: loadingPlan === 'monthly' ? 0.6 : 1 }}
+          >
+            {loadingPlan === 'monthly' ? 'Redirecionando...' : 'Assinar agora'}
+          </button>
+        </div>
+
+        {/* ── Anual (destaque) ───────────────────────────────────────────── */}
+        <div style={{ borderRadius: 20, padding: '1.5px', background: 'linear-gradient(135deg, #b79fff 0%, #ec4899 60%, #8b5cf6 100%)', boxShadow: '0 0 48px rgba(183,159,255,0.18)' }}>
+          <div style={{ borderRadius: 19, background: '#100d2e', padding: '1.75rem 1.5rem', height: '100%', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.375rem', marginBottom: '1.25rem' }}>
+              <p style={{ margin: 0, fontSize: 11, fontWeight: 700, color: '#b79fff', textTransform: 'uppercase', letterSpacing: '0.12em' }}>Anual</p>
+              <span style={{ background: 'linear-gradient(90deg, #b79fff, #8b5cf6)', color: '#0d0a27', fontSize: 10, fontWeight: 800, padding: '3px 10px', borderRadius: 99 }}>
+                ★ Mais escolhido
+              </span>
             </div>
 
-            {/* Toggle de planos */}
-            <div style={{ display: 'inline-flex', background: 'rgba(255,255,255,0.05)', borderRadius: 12, padding: 4, marginBottom: '1.75rem', gap: 2 }}>
-              {(Object.keys(PLAN_OPTIONS) as PlanId[]).map((id) => (
-                <button
-                  key={id}
-                  onClick={() => setSelected(id)}
-                  style={{
-                    padding: '0.5rem 1.125rem', borderRadius: 9, border: 'none', cursor: 'pointer',
-                    fontFamily: 'Manrope, system-ui, sans-serif', fontSize: 13, fontWeight: 700,
-                    transition: 'all 0.2s ease',
-                    background: selected === id ? 'linear-gradient(135deg, #b79fff, #8b5cf6)' : 'transparent',
-                    color: selected === id ? '#0d0a27' : 'rgba(231,226,255,0.45)',
-                    boxShadow: selected === id ? '0 2px 12px rgba(139,92,246,0.35)' : 'none',
-                  }}
-                >
-                  {PLAN_OPTIONS[id].name}{id === 'annual' ? ' ★' : ''}
-                </button>
-              ))}
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 4 }}>
+              <span style={{ fontSize: 36, fontWeight: 800, color: '#e7e2ff', lineHeight: 1 }}>R$ 20,83</span>
+              <span style={{ fontSize: 13, color: 'rgba(231,226,255,0.4)' }}>/mês</span>
+            </div>
+            <p style={{ fontSize: 12, color: 'rgba(183,159,255,0.6)', margin: '0 0 0.625rem' }}>cobrado como R$ 249,90 por ano</p>
+            <div style={{ marginBottom: '1.25rem' }}>
+              <span style={{ display: 'inline-block', fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 99, background: 'rgba(245,200,66,0.15)', color: '#f5c842', border: '1px solid rgba(245,200,66,0.3)' }}>
+                Economize 40%
+              </span>
             </div>
 
-            {/* Preço */}
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 6 }}>
-              <span style={{ fontSize: 44, fontWeight: 800, color: '#e7e2ff', lineHeight: 1 }}>{plan.price}</span>
-              <span style={{ fontSize: 14, color: 'rgba(231,226,255,0.4)' }}>{plan.period}</span>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, padding: '5px 12px', borderRadius: 8, background: 'rgba(245,200,66,0.1)', color: '#f5c842', border: '1px solid rgba(245,200,66,0.22)', marginBottom: '1.5rem', width: 'fit-content' }}>
+              📚 Biblioteca Yaya inclusa
             </div>
-            <p style={{ fontSize: 13, color: '#b79fff', margin: '0 0 1.25rem' }}>{plan.note}</p>
 
-            {/* Badge Biblioteca */}
-            {plan.includesLibrary ? (
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, padding: '5px 12px', borderRadius: 8, background: 'rgba(245,200,66,0.1)', color: '#f5c842', border: '1px solid rgba(245,200,66,0.22)', marginBottom: '1.75rem' }}>
-                📚 Biblioteca de Guias inclusa
-              </div>
-            ) : (
-              <p style={{ fontSize: 12, color: 'rgba(231,226,255,0.28)', margin: '0 0 1.75rem' }}>
-                Biblioteca de Guias não inclusa — disponível no Anual e Vitalício
-              </p>
-            )}
-
-            {/* Features em grid */}
-            <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 2rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.5rem 1.25rem' }}>
-              {PLAN_FEATURES.map((f) => (
-                <li key={f} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'rgba(231,226,255,0.65)' }}>
-                  <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#b79fff', flexShrink: 0 }} />
-                  {f}
+            <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1.75rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
+              {PAID_FEATURES.map(f => (
+                <li key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 13, color: 'rgba(231,226,255,0.7)' }}>
+                  <span style={{ color: '#b79fff', flexShrink: 0, marginTop: 1 }}>✓</span>{f}
                 </li>
               ))}
             </ul>
 
-            {/* CTA */}
             <button
-              onClick={handleCheckout}
-              disabled={loading}
+              onClick={() => handleCheckout('annual')}
+              disabled={!!loadingPlan}
               className="lp-plan-button"
-              style={{ background: 'linear-gradient(135deg, #ec4899 0%, #a855f7 100%)', color: '#fff', opacity: loading ? 0.6 : 1, boxShadow: '0 0 32px rgba(236,72,153,0.28)', fontSize: '0.9375rem' }}
+              style={{ background: 'linear-gradient(135deg, #ec4899 0%, #a855f7 100%)', color: '#fff', opacity: loadingPlan === 'annual' ? 0.6 : 1, boxShadow: '0 0 28px rgba(236,72,153,0.28)', fontSize: '0.9375rem' }}
             >
-              {loading ? 'Redirecionando...' : plan.btnText}
+              {loadingPlan === 'annual' ? 'Redirecionando...' : 'Assinar agora'}
             </button>
           </div>
         </div>
 
-        {error && <p style={{ color: '#ff7a90', textAlign: 'center', fontSize: '0.875rem', marginTop: '1rem' }}>{error}</p>}
+        {/* ── Vitalício ─────────────────────────────────────────────────── */}
+        <div style={{ borderRadius: 20, padding: '1.5px', background: 'linear-gradient(135deg, #f5c842 0%, #f0a020 100%)', boxShadow: '0 0 32px rgba(245,200,66,0.12)' }}>
+          <div style={{ borderRadius: 19, background: '#110e28', padding: '1.75rem 1.5rem', height: '100%', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
 
-        <p style={{ color: 'hsl(250 30% 45%)', fontSize: '0.6875rem', textAlign: 'center', margin: '1rem 0 2.5rem' }}>
-          Pagamento seguro via Stripe · Cancele quando quiser (mensal e anual) · Sem taxas escondidas
-        </p>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.375rem', marginBottom: '1.25rem' }}>
+              <p style={{ margin: 0, fontSize: 11, fontWeight: 700, color: '#f5c842', textTransform: 'uppercase', letterSpacing: '0.12em' }}>Vitalício</p>
+              <span style={{ background: 'rgba(245,200,66,0.15)', color: '#f5c842', border: '1px solid rgba(245,200,66,0.3)', fontSize: 10, fontWeight: 800, padding: '3px 10px', borderRadius: 99 }}>
+                🔒 Vagas limitadas
+              </span>
+            </div>
 
-        {/* Divider + Free */}
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 4 }}>
+              <span style={{ fontSize: 36, fontWeight: 800, color: '#e7e2ff', lineHeight: 1 }}>R$ 37,49</span>
+              <span style={{ fontSize: 13, color: 'rgba(231,226,255,0.4)' }}>/mês equiv.</span>
+            </div>
+            <p style={{ fontSize: 12, color: 'rgba(245,200,66,0.6)', margin: '0 0 0.875rem' }}>cobrado uma vez: R$ 449,90</p>
+
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 7, fontSize: 12, fontWeight: 700, color: '#f5c842', marginBottom: '1.25rem', padding: '8px 12px', borderRadius: 8, background: 'rgba(245,200,66,0.07)', border: '1px solid rgba(245,200,66,0.18)' }}>
+              <span style={{ flexShrink: 0, marginTop: 1 }}>✦</span>
+              <span>Todas as atualizações do app e da Biblioteca para sempre</span>
+            </div>
+
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, padding: '5px 12px', borderRadius: 8, background: 'rgba(245,200,66,0.1)', color: '#f5c842', border: '1px solid rgba(245,200,66,0.22)', marginBottom: '1.5rem', width: 'fit-content' }}>
+              📚 Biblioteca Yaya inclusa
+            </div>
+
+            <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1.75rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
+              {PAID_FEATURES.map(f => (
+                <li key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 13, color: 'rgba(231,226,255,0.65)' }}>
+                  <span style={{ color: '#f5c842', flexShrink: 0, marginTop: 1 }}>✓</span>{f}
+                </li>
+              ))}
+            </ul>
+
+            <button
+              onClick={() => handleCheckout('lifetime')}
+              disabled={!!loadingPlan}
+              className="lp-plan-button"
+              style={{ background: 'linear-gradient(135deg, #f5c842 0%, #f0a020 100%)', color: '#0d0a27', opacity: loadingPlan === 'lifetime' ? 0.6 : 1, boxShadow: '0 0 24px rgba(245,200,66,0.22)', fontSize: '0.9375rem', fontWeight: 800 }}
+            >
+              {loadingPlan === 'lifetime' ? 'Redirecionando...' : 'Adquirir agora'}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {error && <p style={{ color: '#ff7a90', textAlign: 'center', fontSize: '0.875rem', marginTop: '1.25rem' }}>{error}</p>}
+
+      {/* Tabela de comparação Free vs Yaya+ */}
+      <div style={{ maxWidth: '44rem', margin: '3rem auto 0', borderRadius: 16, border: '1px solid rgba(183,159,255,0.08)', overflow: 'hidden' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px 80px', background: 'rgba(183,159,255,0.05)', padding: '0.75rem 1.25rem', borderBottom: '1px solid rgba(183,159,255,0.08)' }}>
+          <span style={{ fontSize: 11, fontWeight: 700, color: 'rgba(231,226,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em' }}></span>
+          <span style={{ fontSize: 11, fontWeight: 700, color: 'rgba(231,226,255,0.35)', textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Free</span>
+          <span style={{ fontSize: 11, fontWeight: 700, color: '#b79fff', textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Yaya+</span>
+        </div>
+        {COMPARE_ROWS.map((row, i) => (
+          <div
+            key={row.label}
+            style={{ display: 'grid', gridTemplateColumns: '1fr 80px 80px', padding: '0.625rem 1.25rem', alignItems: 'center', background: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.015)', borderBottom: i < COMPARE_ROWS.length - 1 ? '1px solid rgba(183,159,255,0.05)' : 'none' }}
+          >
+            <span style={{ fontSize: 13, color: 'rgba(231,226,255,0.55)' }}>{row.label}</span>
+            <span style={{ fontSize: 12, color: 'rgba(231,226,255,0.28)', textAlign: 'center', fontWeight: 600 }}>{row.free}</span>
+            <span style={{ fontSize: 12, color: '#b79fff', textAlign: 'center', fontWeight: 700 }}>{row.paid}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Divider + Free */}
+      <div style={{ maxWidth: '44rem', margin: '2.5rem auto 0' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
           <div style={{ flex: 1, height: 1, background: 'rgba(183,159,255,0.08)' }} />
           <span style={{ fontSize: '0.75rem', color: 'hsl(250 30% 40%)' }}>ou comece pelo app</span>
