@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom'
-import { lazy, Suspense, useEffect, useRef } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { AppProvider, useAppState, useAppDispatch } from './contexts/AppContext'
 import { PurchaseProvider } from './contexts/PurchaseContext'
@@ -208,10 +208,19 @@ function AppRoutes() {
     )
   }
 
-  // On web: show landing page at root, login at /login
-  // On native app: go straight to auth flow
-  if (!isNative && location.pathname === '/' ) {
-    return <PublicOrAuth />
+  // On web: root SEMPRE mostra landing page (mesmo se autenticado).
+  // /mobile → entrada do web app (mobile-only guard).
+  // Native app: vai direto pro auth flow.
+  if (!isNative && location.pathname === '/') {
+    return (
+      <Suspense fallback={<RouteFallback />}>
+        <LandingPage />
+      </Suspense>
+    )
+  }
+
+  if (!isNative && location.pathname === '/mobile') {
+    return <MobileOnlyGuard />
   }
 
   if (location.pathname === '/login') {
@@ -219,6 +228,67 @@ function AppRoutes() {
   }
 
   return <AuthenticatedRoutes />
+}
+
+function MobileOnlyGuard() {
+  const [isMobile, setIsMobile] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    const ua = navigator.userAgent
+    const isMobileUA = /iPad|iPhone|iPod|Android|Mobile/i.test(ua)
+    const isNarrow = window.innerWidth < 768
+    setIsMobile(isMobileUA || isNarrow)
+  }, [])
+
+  if (isMobile === null) {
+    return (
+      <div className="min-h-screen bg-surface flex items-center justify-center">
+        <img src="./landing/symbol-light.png" alt="Yaya" className="w-24 h-24 animate-pulse-soft" />
+      </div>
+    )
+  }
+
+  if (!isMobile) {
+    return <DesktopBlockedScreen />
+  }
+
+  return <PublicOrAuth />
+}
+
+function DesktopBlockedScreen() {
+  const [copied, setCopied] = useState(false)
+  const url = 'https://yayababy.app/mobile'
+
+  function handleCopy() {
+    navigator.clipboard.writeText(url).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }
+
+  return (
+    <div className="min-h-screen bg-surface flex flex-col items-center justify-center px-6 text-center">
+      <div className="text-6xl mb-6">📱</div>
+      <h1 className="text-2xl font-bold mb-3 text-on-surface">O Yaya funciona no celular</h1>
+      <p className="text-base text-on-surface-variant mb-8 max-w-md">
+        Abra esse link no seu smartphone para entrar no app:
+      </p>
+      <div className="flex flex-col items-center gap-3 w-full max-w-md">
+        <code className="px-4 py-3 bg-surface-container rounded-md text-sm font-mono text-on-surface w-full break-all">
+          {url}
+        </code>
+        <button
+          onClick={handleCopy}
+          className="px-5 py-2.5 bg-primary text-on-primary rounded-md font-semibold text-sm hover:opacity-90 transition-opacity"
+        >
+          {copied ? '✓ Copiado!' : 'Copiar link'}
+        </button>
+      </div>
+      <a href="/" className="mt-10 text-sm text-on-surface-variant hover:text-primary transition-colors">
+        ← Voltar para a página inicial
+      </a>
+    </div>
+  )
 }
 
 function PublicOrAuth() {
@@ -237,12 +307,8 @@ function PublicOrAuth() {
     return <AuthenticatedRoutes />
   }
 
-  // Not logged in on web → show landing page
-  return (
-    <Suspense fallback={<RouteFallback />}>
-      <LandingPage />
-    </Suspense>
-  )
+  // Not logged in on /mobile → show login flow
+  return <AuthenticatedRoutes />
 }
 
 function PushNavigationHandler() {

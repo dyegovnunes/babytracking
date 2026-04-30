@@ -12,6 +12,14 @@ import { supabase } from '../lib/supabase'
 
 // ─── CSS injetado ─────────────────────────────────────────────────────────────
 const LANDING_CSS = `
+  @keyframes lp-modal-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  @keyframes lp-modal-slide-in {
+    from { opacity: 0; transform: translateY(20px) scale(0.96); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
   .lp-root {
     font-family: 'Manrope', system-ui, -apple-system, sans-serif;
     color: hsl(250 100% 96%);
@@ -923,22 +931,224 @@ function Footer() {
 // ─── StoreButton (padronizado, reutilizável) ─────────────────────────────────
 function StoreButton({ platform, isMobile }: { platform: 'apple' | 'google'; isMobile: boolean }) {
   const isApple = platform === 'apple'
-  const href = isApple
-    ? 'https://apps.apple.com/app/yaya-baby'
-    : 'https://play.google.com/store/apps/details?id=app.yayababy'
-  const externalProps = isMobile ? {} : { target: '_blank', rel: 'noopener noreferrer' }
+  if (isApple) {
+    const href = 'https://apps.apple.com/br/app/yaya/id6761936528'
+    const externalProps = isMobile ? {} : { target: '_blank', rel: 'noopener noreferrer' }
+    return (
+      <a href={href} className="lp-btn-store" {...externalProps}>
+        <AppleIcon />
+        <div>
+          <div style={{ fontSize: '0.5625rem', color: 'rgba(255,255,255,0.45)', lineHeight: 1, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 2 }}>
+            Disponível na
+          </div>
+          <div style={{ fontSize: '0.875rem', fontWeight: 700, lineHeight: 1.2 }}>
+            App Store
+          </div>
+        </div>
+      </a>
+    )
+  }
+  // Android: abre modal de waitlist (em vez de ir pra Play Store)
   return (
-    <a href={href} className="lp-btn-store" {...externalProps}>
-      {isApple ? <AppleIcon /> : <PlayIcon />}
+    <button
+      type="button"
+      onClick={() => window.dispatchEvent(new CustomEvent('open-android-waitlist'))}
+      className="lp-btn-store"
+      style={{ font: 'inherit', cursor: 'pointer', border: 'none', textAlign: 'left' }}
+    >
+      <PlayIcon />
       <div>
         <div style={{ fontSize: '0.5625rem', color: 'rgba(255,255,255,0.45)', lineHeight: 1, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 2 }}>
-          {isApple ? 'Disponível na' : 'Disponível no'}
+          Em breve no
         </div>
         <div style={{ fontSize: '0.875rem', fontWeight: 700, lineHeight: 1.2 }}>
-          {isApple ? 'App Store' : 'Google Play'}
+          Google Play
         </div>
       </div>
-    </a>
+    </button>
+  )
+}
+
+// ─── AndroidWaitlistModal ────────────────────────────────────────────────────
+function AndroidWaitlistModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
+  const [state, setState] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+  const [errorMsg, setErrorMsg] = useState('')
+  const [alreadySubscribed, setAlreadySubscribed] = useState(false)
+
+  // Fechar com botão back
+  useEffect(() => {
+    if (!isOpen) return
+    function onKey(e: KeyboardEvent) { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [isOpen, onClose])
+
+  if (!isOpen) return null
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setState('loading')
+    setErrorMsg('')
+
+    try {
+      const SUPABASE_URL = (import.meta as { env: Record<string, string> }).env.VITE_SUPABASE_URL
+      const SUPABASE_ANON_KEY = (import.meta as { env: Record<string, string> }).env.VITE_SUPABASE_ANON_KEY
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/android-waitlist`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({ email: email.trim(), phone: phone.trim() || undefined }),
+      })
+
+      const data = await res.json()
+      if (!res.ok || data.error) {
+        setErrorMsg('Algo deu errado. Tenta de novo em alguns segundos.')
+        setState('error')
+        return
+      }
+
+      setAlreadySubscribed(Boolean(data.alreadySubscribed))
+      setState('success')
+    } catch (err) {
+      console.error(err)
+      setErrorMsg('Sem conexão com o servidor. Verifica sua internet.')
+      setState('error')
+    }
+  }
+
+  function handleClose() {
+    onClose()
+    // Reset depois do fade
+    setTimeout(() => {
+      setEmail(''); setPhone(''); setState('idle'); setErrorMsg(''); setAlreadySubscribed(false)
+    }, 300)
+  }
+
+  return (
+    <div
+      onClick={handleClose}
+      style={{
+        position: 'fixed', inset: 0, zIndex: 1000,
+        background: 'rgba(8, 6, 25, 0.78)', backdropFilter: 'blur(8px)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: '1rem', animation: 'lp-modal-fade-in 0.25s ease',
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          width: '100%', maxWidth: '28rem', position: 'relative',
+          background: 'linear-gradient(180deg, hsl(252 35% 12%) 0%, hsl(252 30% 8%) 100%)',
+          border: '1px solid rgba(183,159,255,0.25)',
+          borderRadius: '1.25rem', padding: '2rem 1.75rem',
+          boxShadow: '0 24px 80px rgba(0,0,0,0.55)',
+          animation: 'lp-modal-slide-in 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+        }}
+      >
+        <button
+          onClick={handleClose}
+          aria-label="Fechar"
+          style={{
+            position: 'absolute', top: '0.75rem', right: '0.75rem',
+            width: 32, height: 32, borderRadius: '50%', border: 'none',
+            background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.6)',
+            fontSize: '1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}
+        >
+          ✕
+        </button>
+
+        {state !== 'success' ? (
+          <>
+            <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+              <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>🎉</div>
+              <h2 style={{ fontSize: '1.375rem', fontWeight: 700, lineHeight: 1.25, margin: '0 0 0.75rem' }}>
+                Yaya para Android <span className="lp-gradient-text">em breve!</span>
+              </h2>
+              <p style={{ fontSize: '0.9375rem', color: 'hsl(250 25% 75%)', lineHeight: 1.6, margin: 0 }}>
+                Estamos aguardando a aprovação do Google, que deve liberar o app nos próximos dias.
+                Deixa seu email que te avisamos quando lançar — e já te damos <strong style={{ color: 'hsl(254 100% 81%)' }}>10 dias de Yaya+</strong> para testar pelo navegador do celular!
+              </p>
+            </div>
+
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <input
+                type="email"
+                required
+                placeholder="Seu email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={state === 'loading'}
+                style={{
+                  padding: '0.875rem 1rem', borderRadius: '0.625rem', fontSize: '0.9375rem',
+                  background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(183,159,255,0.18)',
+                  color: 'white', fontFamily: 'inherit', outline: 'none',
+                }}
+              />
+              <input
+                type="tel"
+                placeholder="WhatsApp (opcional)"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                disabled={state === 'loading'}
+                style={{
+                  padding: '0.875rem 1rem', borderRadius: '0.625rem', fontSize: '0.9375rem',
+                  background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(183,159,255,0.18)',
+                  color: 'white', fontFamily: 'inherit', outline: 'none',
+                }}
+              />
+              <button
+                type="submit"
+                disabled={state === 'loading' || !email.trim()}
+                className="lp-btn-primary"
+                style={{ marginTop: '0.5rem', padding: '0.875rem 1.25rem', fontSize: '0.9375rem', opacity: state === 'loading' ? 0.6 : 1 }}
+              >
+                {state === 'loading' ? 'Enviando...' : 'Quero testar! Me avisa quando lançar'}
+              </button>
+              {state === 'error' && (
+                <p style={{ fontSize: '0.8125rem', color: '#ff7a7a', textAlign: 'center', margin: '0.25rem 0 0' }}>
+                  {errorMsg}
+                </p>
+              )}
+            </form>
+          </>
+        ) : (
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>✅</div>
+            <h2 style={{ fontSize: '1.375rem', fontWeight: 700, margin: '0 0 0.75rem' }}>
+              {alreadySubscribed ? 'Você já está na lista!' : 'Pronto! Seus 10 dias começaram.'}
+            </h2>
+            <p style={{ fontSize: '0.9375rem', color: 'hsl(250 25% 75%)', lineHeight: 1.6, margin: '0 0 1.25rem' }}>
+              Enviamos um link pro seu email. Clique nele <strong>pelo celular</strong> para entrar no Yaya com Yaya+ ativo por 10 dias.
+            </p>
+            <div style={{ padding: '1rem', borderRadius: '0.625rem', background: 'rgba(183,159,255,0.08)', border: '1px solid rgba(183,159,255,0.18)', marginBottom: '1.25rem' }}>
+              <p style={{ fontSize: '0.8125rem', color: 'hsl(250 30% 70%)', margin: '0 0 0.5rem' }}>Ou acesse direto pelo celular:</p>
+              <code style={{ fontSize: '0.875rem', color: 'hsl(254 100% 81%)', fontFamily: 'inherit', fontWeight: 600 }}>
+                yayababy.app/mobile
+              </code>
+            </div>
+            <p style={{ fontSize: '0.8125rem', color: 'hsl(250 20% 55%)', margin: 0 }}>
+              Te avisamos quando o app Android lançar! 💜
+            </p>
+            <button
+              onClick={handleClose}
+              style={{
+                marginTop: '1.25rem', padding: '0.625rem 1.5rem', borderRadius: '0.5rem',
+                background: 'transparent', border: '1px solid rgba(183,159,255,0.3)',
+                color: 'hsl(254 100% 81%)', fontFamily: 'inherit', fontSize: '0.875rem',
+                fontWeight: 600, cursor: 'pointer',
+              }}
+            >
+              Fechar
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
   )
 }
 
@@ -965,6 +1175,7 @@ function PlayIcon() {
 export default function LandingPage() {
   const [isMobile, setIsMobile] = useState(false)
   const [showBanner, setShowBanner] = useState(false)
+  const [androidModalOpen, setAndroidModalOpen] = useState(false)
 
   useEffect(() => {
     setIsMobile(/iPad|iPhone|iPod|Android/i.test(navigator.userAgent))
@@ -976,12 +1187,19 @@ export default function LandingPage() {
     }
 
     const id = 'lp-styles'
-    if (document.getElementById(id)) return
-    const el = document.createElement('style')
-    el.id = id
-    el.textContent = LANDING_CSS
-    document.head.appendChild(el)
-    return () => { document.getElementById(id)?.remove() }
+    if (!document.getElementById(id)) {
+      const el = document.createElement('style')
+      el.id = id
+      el.textContent = LANDING_CSS
+      document.head.appendChild(el)
+    }
+
+    function openAndroidModal() { setAndroidModalOpen(true) }
+    window.addEventListener('open-android-waitlist', openAndroidModal)
+    return () => {
+      document.getElementById(id)?.remove()
+      window.removeEventListener('open-android-waitlist', openAndroidModal)
+    }
   }, [])
 
   return (
@@ -1006,6 +1224,8 @@ export default function LandingPage() {
         <FinalCTA isMobile={isMobile} />
         <Footer />
       </div>
+
+      <AndroidWaitlistModal isOpen={androidModalOpen} onClose={() => setAndroidModalOpen(false)} />
     </div>
   )
 }
