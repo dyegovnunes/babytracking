@@ -662,9 +662,10 @@ function Testimonials() {
             </p>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', marginTop: 'auto' }}>
               <img
-                src={`https://api.dicebear.com/7.x/lorelei/svg?seed=${t.avatar}&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf`}
+                src={`/lp/avatars/${t.avatar}.webp`}
                 alt={t.name}
-                style={{ width: 40, height: 40, borderRadius: '50%', border: '1px solid rgba(183,159,255,0.2)', flexShrink: 0, background: 'rgba(183,159,255,0.08)' }}
+                loading="lazy"
+                style={{ width: 44, height: 44, borderRadius: '50%', border: '1px solid rgba(183,159,255,0.2)', flexShrink: 0, objectFit: 'cover' }}
               />
               <div>
                 <p style={{ margin: 0, fontSize: '0.8125rem', fontWeight: 700, color: 'hsl(250 100% 96%)' }}>{t.name}</p>
