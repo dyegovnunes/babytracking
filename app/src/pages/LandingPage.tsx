@@ -103,26 +103,26 @@ const LANDING_CSS = `
   .lp-hero {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1.5rem;
     align-items: center;
-    padding-top: 2.5rem;
-    padding-bottom: 2.5rem;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
   }
   .lp-hero-text   { order: 2; width: 100%; }
   .lp-hero-mockup {
-    order: 1; width: 100%;
-    display: flex; justify-content: center; align-items: center;
-    position: relative;
-  }
-  .lp-hero-mockup img {
-    max-height: 360px; width: auto; object-fit: contain;
-    filter: drop-shadow(0 24px 48px rgba(0,0,0,0.5));
+    display: none;
   }
   @media (min-width: 768px) {
-    .lp-hero { flex-direction: row; align-items: center; padding-top: 5rem; padding-bottom: 3rem; }
+    .lp-hero { flex-direction: row; align-items: center; gap: 2rem; padding-top: 5rem; padding-bottom: 3rem; }
     .lp-hero-text   { order: 2; flex: 1; }
-    .lp-hero-mockup { order: 1; flex: 1; }
-    .lp-hero-mockup img { max-height: 580px; }
+    .lp-hero-mockup {
+      display: flex; order: 1; flex: 1;
+      justify-content: center; align-items: center; position: relative;
+    }
+    .lp-hero-mockup img {
+      max-height: 580px; width: auto; object-fit: contain;
+      filter: drop-shadow(0 24px 48px rgba(0,0,0,0.5));
+    }
   }
 
   /* Store buttons */
@@ -290,6 +290,23 @@ const LANDING_CSS = `
     .lp-yaia-phone { flex-shrink: 0; }
   }
 
+  /* ──────────────────────────────────────────────────────────────────────────
+     MOBILE RESPONSIVENESS — overrides para telas estreitas
+     ────────────────────────────────────────────────────────────────────────── */
+  @media (max-width: 767px) {
+    /* Reduz padding vertical de todas as sections */
+    .lp-root section { padding-top: 2.5rem !important; padding-bottom: 2.5rem !important; }
+
+    /* Cards mais compactos */
+    .lp-feature-card { padding: 1.125rem; }
+
+    /* Botões de loja ocupam linha inteira */
+    .lp-btn-store { width: 100%; box-sizing: border-box; justify-content: flex-start; }
+
+    /* Trust bar com gap menor */
+    .lp-trust-item { font-size: 0.75rem; }
+  }
+
   /* Pricing plan card */
   .lp-plan-button {
     width: 100%; padding: 0.8125rem 1.25rem; border-radius: 0.75rem;
@@ -320,9 +337,6 @@ function StickyNav({ isMobile }: { isMobile: boolean }) {
   }, [])
 
   const isAndroid = typeof navigator !== 'undefined' && /Android/i.test(navigator.userAgent)
-  const storeUrl = isAndroid
-    ? 'https://play.google.com/store/apps/details?id=app.yayababy'
-    : 'https://apps.apple.com/app/yaya-baby'
 
   return (
     <nav className={`lp-nav ${visible ? 'lp-nav-visible' : 'lp-nav-hidden'}`}>
@@ -334,9 +348,20 @@ function StickyNav({ isMobile }: { isMobile: boolean }) {
           </span>
         </div>
         {isMobile ? (
-          <a href={storeUrl} className="lp-btn-primary" style={{ padding: '0.5rem 1.125rem', fontSize: '0.8125rem' }}>
-            Baixar grátis
-          </a>
+          isAndroid ? (
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new CustomEvent('open-android-waitlist'))}
+              className="lp-btn-primary"
+              style={{ padding: '0.5rem 1.125rem', fontSize: '0.8125rem', border: 'none', cursor: 'pointer', font: 'inherit', fontWeight: 700 }}
+            >
+              Avise-me
+            </button>
+          ) : (
+            <a href="https://apps.apple.com/br/app/yaya/id6761936528" className="lp-btn-primary" style={{ padding: '0.5rem 1.125rem', fontSize: '0.8125rem' }}>
+              Baixar grátis
+            </a>
+          )
         ) : (
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
             <a href="https://blog.yayababy.app" target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.8125rem', color: 'rgba(231,226,255,0.45)', textDecoration: 'none', fontWeight: 500 }}>
