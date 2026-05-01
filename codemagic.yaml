@@ -8,6 +8,11 @@ workflows:
     # deve ter uma API key válida com permissões de signing.
     integrations:
       app_store_connect: codemagic
+    # Build manual only — trigger automático desativado para evitar
+    # uploads duplicados ao App Store Connect a cada push no main.
+    # Para buildar: Codemagic dashboard → Start new build.
+    triggering:
+      events: []
     environment:
       groups:
         - yaya_ios
