@@ -472,9 +472,18 @@ export default function GuideSidebar({
         @media (min-width: 1024px) {
           .reader-sidebar {
             transform: translateX(0) !important;
+            transition: transform 0.25s ease !important;
           }
           .reader-sidebar-backdrop {
             display: none !important;
+          }
+          /* Sidebar colapsada (toggle do hamburguer): some pra esquerda
+             e o .reader-main perde o margin-left de 320px. */
+          .reader-root.sidebar-collapsed .reader-sidebar {
+            transform: translateX(-110%) !important;
+          }
+          .reader-root.sidebar-collapsed .reader-main {
+            margin-left: 0 !important;
           }
         }
       `}</style>

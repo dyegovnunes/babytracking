@@ -15,6 +15,8 @@
 **is_preview:** `true`
 
 ```markdown
+![Mulher grávida lendo no terceiro trimestre, ambiente acolhedor](imagens/hero-lp.jpg)
+
 Você está no terceiro trimestre. Falta pouco. E por mais paradoxal que pareça, essas últimas semanas costumam ser as mais longas da gestação.
 
 O desconforto físico aumenta. A ansiedade também. E de repente parece que cada pessoa ao redor tem uma opinião diferente sobre como você deveria se preparar, o que sentir, o que comprar, como parir, como amamentar.
@@ -107,6 +109,8 @@ O Yaya não é um app de ansiedade. Ele não te manda alerta para cada coisa que
 **is_preview:** `true`
 
 ```markdown
+![Itens essenciais de enxoval do bebê em arranjo organizado](imagens/enxoval-itens-essenciais.jpg)
+
 A indústria de produtos para bebê fatura bilhões por ano com a ansiedade dos pais na gestação. A lista de enxoval padrão que você encontra nos sites de maternidade inclui, em média, 87 itens. A maioria deles vai parar no fundo de uma gaveta.
 
 A boa notícia: bebê recém-nascido precisa de muito menos do que vendem. O que ele precisa de verdade é quente, limpo, alimentado e em segurança.
@@ -246,6 +250,8 @@ Luz natural durante o dia ajuda a estabelecer o ritmo circadiano do bebê. À no
 **estimated_minutes:** `3`
 
 ```markdown
+![Mala da maternidade arrumada com itens organizados](imagens/mala-maternidade-arrumada.jpg)
+
 Regra de ouro: duas bolsas. A bolsa de mão vai para a recepção com você. A mala grande fica no carro até o quarto ser definido ou pode ser deixada em casa se a maternidade for perto.
 
 #### Para a mãe (bolsa de mão e mala)
@@ -516,6 +522,8 @@ Se a bolsa romper, o obstetra deve ser avisado imediatamente. Na maioria dos cas
 **estimated_minutes:** `3`
 
 ```markdown
+![Timeline visual dos tipos de parto: normal, cesárea e fórceps](imagens/tipos-de-parto-timeline.jpg)
+
 Nenhum tipo de parto é moralmente superior a outro. O que importa é que você e o bebê saiam bem, e que você chegue informada sobre o que pode acontecer em cada cenário.
 
 #### Parto vaginal (normal)
@@ -716,6 +724,8 @@ Algumas coisas que ajudam na chegada:
 **estimated_minutes:** `3`
 
 ```markdown
+![Bebê em pega correta na amamentação, demonstrando aréola visível](imagens/amamentacao-pega-correta.jpg)
+
 Os primeiros dias de amamentação são os mais desafiadores. Isso não significa que algo está errado: significa que você e o bebê estão aprendendo uma habilidade nova ao mesmo tempo, com pouco sono.
 
 #### O colostro: o primeiro leite
@@ -1239,6 +1249,8 @@ Com 30 dias de registros no Yaya, você já tem um histórico completo para leva
 **estimated_minutes:** `1`
 
 ```markdown
+![Marcos do primeiro mês do bebê em colagem visual](imagens/marcos-primeiro-mes.jpg)
+
 Informação não elimina a incerteza. Ela reduz o tamanho dela.
 
 Você chegou até aqui com mais conhecimento do que a maioria dos pais entra na maternidade. Sabe o que colocar na mala, o que colocar no plano de parto, como identificar os sinais de trabalho de parto, o que esperar nas primeiras 72 horas e como navegar semana a semana no primeiro mês.
@@ -1248,12 +1260,12 @@ Isso não significa que vai ser fácil. Mas significa que quando as situações 
 
 ---
 
-## SEÇÃO: Flashcards de revisão — Parte 1
+## SEÇÃO: Vamos relembrar? — Parte 1
 
 **type:** `flashcards`
 **slug:** `flashcards-parte-1`
-**parent:** `null`
-**category:** `complementary`
+**parent:** `parte-1-preparacao`
+**category:** `narrative`
 **estimated_minutes:** `3`
 
 ```json
@@ -1293,12 +1305,12 @@ Isso não significa que vai ser fácil. Mas significa que quando as situações 
 
 ---
 
-## SEÇÃO: Flashcards de revisão — Parte 2
+## SEÇÃO: Vamos relembrar? — Parte 2
 
 **type:** `flashcards`
 **slug:** `flashcards-parte-2`
-**parent:** `null`
-**category:** `complementary`
+**parent:** `parte-2-o-parto`
+**category:** `narrative`
 **estimated_minutes:** `2`
 
 ```json
@@ -1330,12 +1342,12 @@ Isso não significa que vai ser fácil. Mas significa que quando as situações 
 
 ---
 
-## SEÇÃO: Flashcards de revisão — Parte 3
+## SEÇÃO: Vamos relembrar? — Parte 3
 
 **type:** `flashcards`
 **slug:** `flashcards-parte-3`
-**parent:** `null`
-**category:** `complementary`
+**parent:** `parte-3-primeiras-72-horas-em-casa`
+**category:** `narrative`
 **estimated_minutes:** `3`
 
 ```json
@@ -1371,12 +1383,12 @@ Isso não significa que vai ser fácil. Mas significa que quando as situações 
 
 ---
 
-## SEÇÃO: Flashcards de revisão — Parte 4
+## SEÇÃO: Vamos relembrar? — Parte 4
 
 **type:** `flashcards`
 **slug:** `flashcards-parte-4`
-**parent:** `null`
-**category:** `complementary`
+**parent:** `parte-4-primeiras-quatro-semanas-semana-a-semana`
+**category:** `narrative`
 **estimated_minutes:** `2`
 
 ```json
@@ -1641,93 +1653,58 @@ Isso não significa que vai ser fácil. Mas significa que quando as situações 
 
 ---
 
-## SEÇÃO: Checklist mestre: o que você precisa garantir
+## SEÇÃO: Checklist mestre
 
 **type:** `checklist`
-**slug:** `checklist-mestre-o-que-voce-precisa-garantir`
+**slug:** `checklist-mestre`
 **parent:** `null`
 **category:** `complementary`
-**estimated_minutes:** `1`
+**estimated_minutes:** `2`
 
 ```markdown
-**Antes do parto:**
-<!-- checklist -->
-
-**Primeiros dias:**
-<!-- checklist -->
-
-**Semana 1 a 4:**
-<!-- checklist -->
-
----
+Use este checklist nos próximos 60 dias. Ele acompanha a sua jornada
+desde a preparação até o primeiro mês com o bebê em casa. Marque os
+itens conforme for fazendo — o estado fica salvo e você acompanha o
+progresso pela barrinha.
 
 :::yaya
-Configure o perfil do bebê com os dados do ultrassom: nome, data prevista do parto, peso e comprimento estimados. Quando o bebê chegar, você só abre o Yaya e começa a registrar. Em 30 dias, você vai ter um histórico completo do seu bebê, pronto para levar ao pediatra.
+Configure o perfil do bebê com os dados do ultrassom no app Yaya. Quando
+o bebê chegar, você abre e começa a registrar — em 30 dias terá um
+histórico completo pra levar ao pediatra.
 :::
-
-[Baixar o Yaya agora](https://yayababy.app)
-
----
 ```
 
 ```json
 {
-  "items": [
+  "groups": [
     {
-      "id": "item-1",
-      "text": "Mala da maternidade pronta (semana 35)"
+      "title": "Antes do parto (semana 35+)",
+      "items": [
+        {"id": "item-1", "text": "Mala da maternidade pronta", "required": true},
+        {"id": "item-2", "text": "Plano de parto escrito e entregue ao obstetra"},
+        {"id": "item-3", "text": "Pediatra escolhido e número salvo"},
+        {"id": "item-4", "text": "Rede de apoio organizada e tarefas definidas"},
+        {"id": "item-5", "text": "Cadeirinha de carro instalada", "required": true},
+        {"id": "item-6", "text": "Yaya configurado com o perfil do bebê"}
+      ]
     },
     {
-      "id": "item-2",
-      "text": "Plano de parto escrito e entregue ao obstetra"
+      "title": "Primeiros dias em casa",
+      "items": [
+        {"id": "item-7", "text": "Testes do recém-nascido agendados (pezinho entre 3 e 5 dias)", "required": true},
+        {"id": "item-8", "text": "Consulta pediátrica agendada (entre 3 e 7 dias)", "required": true},
+        {"id": "item-9", "text": "Amamentação: observar pega, frequência e fraldas molhadas"},
+        {"id": "item-10", "text": "Coto umbilical: limpar com álcool 70%, manter seco"}
+      ]
     },
     {
-      "id": "item-3",
-      "text": "Pediatra escolhido e número salvo"
-    },
-    {
-      "id": "item-4",
-      "text": "Rede de apoio organizada e tarefas definidas"
-    },
-    {
-      "id": "item-5",
-      "text": "Cadeirinha de carro instalada"
-    },
-    {
-      "id": "item-6",
-      "text": "Yaya configurado com o perfil do bebê"
-    },
-    {
-      "id": "item-7",
-      "text": "Testes do recém-nascido agendados (pezinho entre 3 e 5 dias)"
-    },
-    {
-      "id": "item-8",
-      "text": "Consulta pediátrica agendada (entre 3 e 7 dias)"
-    },
-    {
-      "id": "item-9",
-      "text": "Amamentação: observar pega, frequência e fraldas molhadas"
-    },
-    {
-      "id": "item-10",
-      "text": "Coto umbilical: limpar com álcool 70%, manter seco"
-    },
-    {
-      "id": "item-11",
-      "text": "Registrar ciclos de sono e amamentação (Yaya facilita isso)"
-    },
-    {
-      "id": "item-12",
-      "text": "Observar sinais de alerta listados na seção 4.5"
-    },
-    {
-      "id": "item-13",
-      "text": "Verificar saúde mental dos pais: baby blues vs. depressão pós-parto"
-    },
-    {
-      "id": "item-14",
-      "text": "Consulta pediátrica de 1 mês agendada"
+      "title": "Semana 1 a 4",
+      "items": [
+        {"id": "item-11", "text": "Registrar ciclos de sono e amamentação no Yaya"},
+        {"id": "item-12", "text": "Observar sinais de alerta da seção 4.5"},
+        {"id": "item-13", "text": "Verificar saúde mental dos pais: baby blues vs. depressão pós-parto"},
+        {"id": "item-14", "text": "Consulta pediátrica de 1 mês agendada", "required": true}
+      ]
     }
   ]
 }

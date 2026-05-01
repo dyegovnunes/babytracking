@@ -224,11 +224,16 @@ export function parseGuideMarkdown(md: string, opts: ParseOptions): ParseResult 
     }
 
     // Validações específicas por type
-    if (type === 'checklist' && (!data || !Array.isArray((data as { items?: unknown }).items))) {
-      errors.push(
-        `Seção "${title}" é type=checklist mas não tem bloco \`\`\`json com { "items": [...] }\``,
-      )
-      continue
+    if (type === 'checklist') {
+      const d = data as { items?: unknown; groups?: unknown } | undefined
+      const hasItems = !!d && Array.isArray(d.items)
+      const hasGroups = !!d && Array.isArray(d.groups)
+      if (!hasItems && !hasGroups) {
+        errors.push(
+          `Seção "${title}" é type=checklist mas não tem bloco \`\`\`json com { "items": [...] } ou { "groups": [...] }\``,
+        )
+        continue
+      }
     }
     if (type === 'quiz' && (!data || !Array.isArray((data as { questions?: unknown }).questions))) {
       errors.push(

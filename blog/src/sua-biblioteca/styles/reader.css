@@ -62,12 +62,20 @@ body { width: 100%; position: relative; }
   --r-callout-disclaimer-bg: rgba(112, 86, 224, 0.07);
   --r-callout-disclaimer-text: var(--r-text-muted);
 
-  --r-serif: 'Fraunces', 'Source Serif Pro', Georgia, serif;
-  --r-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+  /* Tipografia da marca Yaya:
+   *   --r-display-font (Manrope): UI, sidebar, topbar, headings dos guides
+   *   --r-content-font (Plus Jakarta): corpo dos guides (texto narrado)
+   * Aliases legados (--r-serif/--r-sans) mantidos por compat. interna,
+   * mas todos apontam pras fontes da marca — sem serif Fraunces.
+   */
+  --r-display-font: 'Manrope', system-ui, sans-serif;
+  --r-content-font: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --r-serif: var(--r-display-font);
+  --r-sans: var(--r-content-font);
 
   background: var(--r-bg);
   color: var(--r-text);
-  font-family: var(--r-serif);
+  font-family: var(--r-content-font);
   min-height: 100vh;
   color-scheme: dark;
 }
@@ -149,10 +157,9 @@ html.theme-dark .reader-root {
 
 /* ── Tipografia geral do conteúdo ──────────────────────────────────────── */
 .reader-content {
-  font-family: var(--r-serif);
-  font-variation-settings: 'opsz' 14, 'SOFT' 0;
+  font-family: var(--r-content-font);
   font-size: 18px;
-  line-height: 1.8;
+  line-height: 1.75;
   letter-spacing: -0.003em;
   color: var(--r-text);
   max-width: 64ch;
@@ -191,10 +198,9 @@ html.theme-dark .reader-root {
 
 /* ── Headings ──────────────────────────────────────────────────────────── */
 .reader-content h2 {
-  font-family: var(--r-serif);
-  font-variation-settings: 'opsz' 72, 'SOFT' 30;
+  font-family: var(--r-display-font);
   font-size: 1.65em;
-  font-weight: 600;
+  font-weight: 800;
   letter-spacing: -0.02em;
   line-height: 1.2;
   color: var(--r-text-strong);
@@ -205,10 +211,9 @@ html.theme-dark .reader-root {
 }
 
 .reader-content h3 {
-  font-family: var(--r-serif);
-  font-variation-settings: 'opsz' 32, 'SOFT' 20;
+  font-family: var(--r-display-font);
   font-size: 1.25em;
-  font-weight: 600;
+  font-weight: 800;
   letter-spacing: -0.01em;
   color: var(--r-text-strong);
   margin-top: 2.4em;
@@ -554,9 +559,9 @@ html.theme-dark .reader-root {
 @media (min-width: 600px) {
   .reader-content > p:first-of-type::first-letter,
   .reader-content .drop-cap::first-letter {
-    font-family: 'Fraunces', Georgia, serif;
-    font-weight: 700;
-    font-size: 3.6em;
+    font-family: var(--r-display-font);
+    font-weight: 800;
+    font-size: 3.4em;
     line-height: 0.92;
     float: left;
     margin: 0.08em 0.12em 0 0;

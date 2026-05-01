@@ -179,6 +179,9 @@ async function persistSections(parsed: ParsedSection[]): Promise<PersistResult> 
 
   console.log(`\n📝 Inserindo ${children.length} seções filhas…`)
   const orderByParent = new Map<string, number>()
+  // Seções "raiz" (parent=null) — ex: Conclusão, Quiz, Flashcards, Checklist
+  // — devem ficar DEPOIS das parts já inseridas. order_index continua de partOrder.
+  orderByParent.set('__root__', partOrder)
   let totalOk = 0
 
   for (const sec of children) {

@@ -188,6 +188,10 @@ export default function HighlightLayer({ sectionId, userId, contentRef, onHighli
 
     setSaving(false)
     if (!error && data) {
+      // Limpa a seleção ANTES de atualizar o estado — caso contrário a
+      // Range ativa segura referências do DOM e o useEffect de re-aplicar
+      // marks falha em encontrar o anchor_text no DOM.
+      window.getSelection()?.removeAllRanges()
       setHighlights(prev => [...prev, data])
       onHighlightSaved?.()
       setSavedFeedback(true)
@@ -195,7 +199,6 @@ export default function HighlightLayer({ sectionId, userId, contentRef, onHighli
         setSavedFeedback(false)
         setPending(null)
         setNote('')
-        window.getSelection()?.removeAllRanges()
       }, 1200)
     } else {
       setPending(null)

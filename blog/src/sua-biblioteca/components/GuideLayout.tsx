@@ -62,7 +62,13 @@ export default function GuideLayout({ guide, sections, userId }: Props) {
     return firstSectionId
   })
 
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+  // Sidebar abre por padrão em desktop (>=1024px), fecha em mobile (drawer).
+  // No desktop, "fechar" significa colapsar (translateX(-100%)) e remover
+  // margin-left do .reader-main pra liberar espaço pro conteúdo.
+  const [sidebarOpen, setSidebarOpen] = useState(() => {
+    if (typeof window === 'undefined') return false
+    return window.matchMedia('(min-width: 1024px)').matches
+  })
   const [readingMode, setReadingMode] = useState(false)
   const [progressMap, setProgressMap] = useState<Record<string, GuideProgress>>({})
   const [progressLoaded, setProgressLoaded] = useState(false)
@@ -211,7 +217,7 @@ export default function GuideLayout({ guide, sections, userId }: Props) {
   }
 
   return (
-    <div className={`reader-root ${readingMode ? 'reading-mode' : ''}`}>
+    <div className={`reader-root ${readingMode ? 'reading-mode' : ''} ${!sidebarOpen ? 'sidebar-collapsed' : ''}`}>
       <GuideTopbar
         guide={guide}
         currentSection={currentSection}

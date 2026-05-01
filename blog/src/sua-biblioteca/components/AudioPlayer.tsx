@@ -90,7 +90,9 @@ export default function AudioPlayer({ sectionId, textHash }: Props) {
     return { current: fmt(currentTime), total: fmt(duration) }
   }, [currentTime, duration])
 
-  if (unavailable) return null  // Não polui a UI quando ainda não foi gerado
+  // Enquanto carrega ou se não há áudio gerado, não renderiza nada.
+  // Isso evita o flash de "loading" em toda mudança de seção.
+  if (loading || unavailable || !audioUrl) return null
 
   return (
     <div

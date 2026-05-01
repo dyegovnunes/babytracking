@@ -280,8 +280,26 @@ export default function SectionRenderer({
 
       {/* Checklist interativo — só para type='checklist' (Checklist Mestre) */}
       {section.type === 'checklist' && (() => {
-        const data = section.data as { checklist_items?: ChecklistItem[]; items?: ChecklistItem[]; footer_md?: string } | null
-        const list = data?.checklist_items ?? data?.items ?? []
+        const data = section.data as {
+          checklist_items?: ChecklistItem[]
+          items?: ChecklistItem[]
+          groups?: Array<{ title: string; items: ChecklistItem[] }>
+          footer_md?: string
+        } | null
+
+        // Se vier com `groups`, achata para items com `group` preenchido.
+        // Senão, usa items/checklist_items diretos.
+        let list: ChecklistItem[] = []
+        if (data?.groups && data.groups.length > 0) {
+          for (const g of data.groups) {
+            for (const it of g.items ?? []) {
+              list.push({ ...it, group: g.title })
+            }
+          }
+        } else {
+          list = data?.checklist_items ?? data?.items ?? []
+        }
+
         if (list.length > 0) {
           return (
             <>
@@ -337,10 +355,10 @@ export default function SectionRenderer({
               animation: 'pulse 1.5s ease-in-out infinite',
             }} />
           ) : (isCompleted || completedAnimating) ? (
-            /* Seção concluída — botão clicável pra desmarcar */
+            /* Seção concluída — clicar de novo desmarca */
             <button
               onClick={handleUnmarkCompleted}
-              title="Clique para desmarcar como concluída"
+              aria-label="Marcar como não concluída"
               style={{
                 padding: '13px 26px',
                 borderRadius: 999,
@@ -370,12 +388,6 @@ export default function SectionRenderer({
                 check_circle
               </span>
               Concluída 💜
-              <span style={{
-                fontSize: 11, fontWeight: 500, opacity: 0.7,
-                marginLeft: 2,
-              }}>
-                · Desmarcar
-              </span>
             </button>
           ) : (
             <button
