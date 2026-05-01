@@ -24,6 +24,10 @@ O desconforto físico aumenta. A ansiedade também. E de repente parece que cada
 Este guia não vai aumentar o ruído. Ele vai reduzi-lo.
 
 O que você vai encontrar aqui é uma fonte consolidada de informações baseadas em evidências, sem contradições entre capítulos, sem conselhos que valem "para a maioria" sem explicar por quê, e sem romantismo que invalide o que você está sentindo agora, seja cansaço, medo, empolgação ou tudo ao mesmo tempo.
+
+:::disclaimer
+Este guia é educativo e não substitui acompanhamento profissional. Toda situação individual exige avaliação do seu obstetra, pediatra ou consultora de amamentação. Sempre que um sintoma ou dúvida não tiver resposta neste material, o caminho é o profissional de saúde que acompanha você. Fontes principais: SBP 2024, OMS 2023, AAP 2022.
+:::
 ```
 
 ---
@@ -143,7 +147,7 @@ Monitor de bebê, babá eletrônica, poltrona de amamentação, trocador de pare
 Aquecedor de fraldas, esterilizador de brinquedos, babá eletrônica com monitoramento de oxigênio para bebês saudáveis, protetor de berço, almofada de posicionamento, roupinhas de saída de maternidade elaboradas (o bebê não vai se lembrar).
 
 :::ciencia
-A SBP (alinhada com a AAP — Academia Americana de Pediatria) recomenda que o bebê durma em superfície firme e plana, sem objetos macios ao redor, para reduzir o risco de morte súbita infantil. Protetor de berço, almofadas e edredons dentro do berço aumentam esse risco mesmo que pareçam confortáveis (AAP, 2022).
+A SBP (alinhada com a AAP - Academia Americana de Pediatria) recomenda que o bebê durma em superfície firme e plana, sem objetos macios ao redor, para reduzir o risco de morte súbita infantil. Protetor de berço, almofadas e edredons dentro do berço aumentam esse risco mesmo que pareçam confortáveis (AAP, 2022).
 :::
 
 **Estimativa de custo real para o essencial (Brasil, 2026):**
@@ -172,7 +176,7 @@ O quarto decorado com tema especial, móbile artesanal e tapete felpudo é lindo
 
 #### Temperatura e ventilação
 
-A temperatura ideal para o quarto do bebê é entre 20°C e 24°C (SBP, 2023). Bebês não regulam temperatura como adultos: eles não transpiram eficientemente e podem superaquecer com facilidade, o que é um fator de risco para morte súbita infantil — e também sofrem com frio excessivo, especialmente recém-nascidos.
+A temperatura ideal para o quarto do bebê é entre 20°C e 24°C (SBP, 2023). Bebês não regulam temperatura como adultos: eles não transpiram eficientemente e podem superaquecer com facilidade, o que é um fator de risco para morte súbita infantil - e também sofrem com frio excessivo, especialmente recém-nascidos.
 
 Como avaliar: toque a nuca do bebê. Se estiver suada ou quente, ele está com calor. A regra prática é vestir o bebê com uma camada a mais do que você usaria para a mesma temperatura.
 
@@ -195,7 +199,7 @@ Luz natural durante o dia ajuda a estabelecer o ritmo circadiano do bebê. À no
 <!-- checklist -->
 
 **Resumo em 3 pontos:**
-1. Temperatura do quarto entre 20°C e 24°C (SBP, 2023): toque a nuca do bebê para verificar — se estiver suada, está quente; se estiver fria, está frio.
+1. Temperatura do quarto entre 20°C e 24°C (SBP, 2023): toque a nuca do bebê para verificar - se estiver suada, está quente; se estiver fria, está frio.
 2. Berço livre de objetos: lençol com elástico e nada mais.
 3. Trave e fixe os móveis antes do bebê nascer, não quando ele já estiver engatinhando.
 
@@ -1220,7 +1224,7 @@ Esta lista é objetiva. Se você identificar qualquer um dos sinais abaixo, ligu
 
 #### Sinais que exigem ida ao pronto-socorro imediatamente
 
-- Qualquer febre (temperatura axilar ≥37,5°C) em bebê com menos de 3 meses — febre nessa faixa é uma emergência pediátrica até prova em contrário (SBP, 2023; AAP, 2022)
+- Qualquer febre (temperatura axilar ≥37,5°C) em bebê com menos de 3 meses - febre nessa faixa é uma emergência pediátrica até prova em contrário (SBP, 2023; AAP, 2022)
 - Dificuldade para respirar: respiração rápida (mais de 60 movimentos por minuto), pausas na respiração, gemido ao respirar, batimento das asas do nariz
 - Coloração azulada dos lábios, das gengivas ou da pele (cianose)
 - Sangramento ativo pelo coto umbilical, pela boca ou pelas fezes
@@ -1280,7 +1284,7 @@ Você terminou a leitura, mas o guia continua útil nos próximos 60 dias. Use o
 
 ---
 
-## SEÇÃO: Vamos relembrar? — Parte 1
+## SEÇÃO: Vamos relembrar? - Parte 1
 
 **type:** `flashcards`
 **slug:** `flashcards-parte-1`
@@ -1301,10 +1305,10 @@ Você terminou a leitura, mas o guia continua útil nos próximos 60 dias. Use o
     },
     {
       "front": "Até quando a mala da maternidade deve estar pronta?",
-      "back": "Semana 35 — não semana 37. Trabalho de parto prematuro entre 35 e 37 semanas é mais comum do que se imagina."
+      "back": "Semana 35 - não semana 37. Trabalho de parto prematuro entre 35 e 37 semanas é mais comum do que se imagina."
     },
     {
-      "front": "O que o plano de parto faz — e o que ele não faz?",
+      "front": "O que o plano de parto faz - e o que ele não faz?",
       "back": "Comunica suas preferências e reduz decisões em tempo real. Não garante nada e não substitui a avaliação clínica. Um bom plano tem abertura para emergências."
     },
     {
@@ -1316,7 +1320,7 @@ Você terminou a leitura, mas o guia continua útil nos próximos 60 dias. Use o
       "back": "1. Sempre de costas, nunca de bruços. 2. Superfície firme e plana, sem objetos no berço. 3. Quarto entre 18°C e 20°C (AAP, 2022)."
     },
     {
-      "front": "O que é a \"quarta trimestre\" do bebê — e o que isso muda na preparação?",
+      "front": "O que é a \"quarta trimestre\" do bebê - e o que isso muda na preparação?",
       "back": "Os primeiros 3 meses fora do útero são uma extensão do período fetal: o bebê ainda precisa de colo, calor e contato constante para se sentir seguro. Preparar o ambiente é preparar o acolhimento, não só a logística. ---"
     }
   ]
@@ -1325,7 +1329,7 @@ Você terminou a leitura, mas o guia continua útil nos próximos 60 dias. Use o
 
 ---
 
-## SEÇÃO: Vamos relembrar? — Parte 2
+## SEÇÃO: Vamos relembrar? - Parte 2
 
 **type:** `flashcards`
 **slug:** `flashcards-parte-2`
@@ -1342,7 +1346,7 @@ Você terminou a leitura, mas o guia continua útil nos próximos 60 dias. Use o
     },
     {
       "front": "Qual a diferença entre contração de Braxton Hicks e contração de trabalho de parto?",
-      "back": "Braxton Hicks são irregulares, passam ao mudar de posição e não aumentam de intensidade. Trabalho de parto: ficam mais regulares, mais fortes e mais longas com o tempo — e não passam ao mudar de posição."
+      "back": "Braxton Hicks são irregulares, passam ao mudar de posição e não aumentam de intensidade. Trabalho de parto: ficam mais regulares, mais fortes e mais longas com o tempo - e não passam ao mudar de posição."
     },
     {
       "front": "Quais são os sinais para ir à maternidade imediatamente?",
@@ -1362,7 +1366,7 @@ Você terminou a leitura, mas o guia continua útil nos próximos 60 dias. Use o
 
 ---
 
-## SEÇÃO: Vamos relembrar? — Parte 3
+## SEÇÃO: Vamos relembrar? - Parte 3
 
 **type:** `flashcards`
 **slug:** `flashcards-parte-3`
@@ -1383,7 +1387,7 @@ Você terminou a leitura, mas o guia continua útil nos próximos 60 dias. Use o
     },
     {
       "front": "O colostro é suficiente para o bebê nos primeiros dias?",
-      "back": "Sim. O estômago do recém-nascido tem capacidade de 5 a 7 ml no primeiro dia — exatamente a quantidade produzida. Suplementação precoce sem indicação clínica pode dificultar o estabelecimento da amamentação."
+      "back": "Sim. O estômago do recém-nascido tem capacidade de 5 a 7 ml no primeiro dia - exatamente a quantidade produzida. Suplementação precoce sem indicação clínica pode dificultar o estabelecimento da amamentação."
     },
     {
       "front": "Quando a icterícia neonatal é preocupante?",
@@ -1403,7 +1407,7 @@ Você terminou a leitura, mas o guia continua útil nos próximos 60 dias. Use o
 
 ---
 
-## SEÇÃO: Vamos relembrar? — Parte 4
+## SEÇÃO: Vamos relembrar? - Parte 4
 
 **type:** `flashcards`
 **slug:** `flashcards-parte-4`
@@ -1415,23 +1419,23 @@ Você terminou a leitura, mas o guia continua útil nos próximos 60 dias. Use o
 {
   "cards": [
     {
-      "front": "Quanto peso o bebê pode perder na primeira semana — e quando deve recuperar?",
+      "front": "Quanto peso o bebê pode perder na primeira semana - e quando deve recuperar?",
       "back": "Perda de até 10% do peso de nascimento é esperada nos primeiros 2 a 5 dias. Deve começar a recuperar entre o 4º e o 7º dia e voltar ao peso de nascimento até o 14º dia."
     },
     {
       "front": "Qual a diferença entre baby blues e depressão pós-parto?",
-      "back": "Baby blues: tristeza nos primeiros 10 dias, resolve-se espontaneamente em 2 semanas. Depressão pós-parto: persiste além de 2 semanas, com maior intensidade. Afeta 1 em cada 7 mulheres e tem tratamento eficaz — fale com um profissional."
+      "back": "Baby blues: tristeza nos primeiros 10 dias, resolve-se espontaneamente em 2 semanas. Depressão pós-parto: persiste além de 2 semanas, com maior intensidade. Afeta 1 em cada 7 mulheres e tem tratamento eficaz - fale com um profissional."
     },
     {
       "front": "Qual a diferença entre regurgitação e refluxo patológico (DRGE)?",
-      "back": "Regurgitação: bebê cospe leite mas está bem, ganha peso, sem sinais de dor — é fisiológica. DRGE: bebê chora durante ou após a amamentação com sinais de dor, arqueja, recusa o seio, não ganha peso. Precisa de avaliação pediátrica."
+      "back": "Regurgitação: bebê cospe leite mas está bem, ganha peso, sem sinais de dor - é fisiológica. DRGE: bebê chora durante ou após a amamentação com sinais de dor, arqueja, recusa o seio, não ganha peso. Precisa de avaliação pediátrica."
     },
     {
       "front": "Quando ligar para o pediatra no mesmo dia (sem ir ao pronto-socorro)?",
       "back": "Icterícia se intensificando após o 5º dia, olho vermelho com secreção, choro inconsolável por mais de 2 a 3 horas, recusa completa da amamentação, vômito em jato, fralda sem urina por mais de 8 horas, coto umbilical com vermelhidão ou secreção."
     },
     {
-      "front": "O que é o sono ativo do bebê — e por que parece que ele está acordado?",
+      "front": "O que é o sono ativo do bebê - e por que parece que ele está acordado?",
       "back": "Recém-nascidos passam até 50% do sono em fase REM (sono ativo): mexem, fazem caretas, gemem e até sugam no ar. Isso é normal e necessário para o desenvolvimento neurológico. Não é sinal de que ele acordou ou está com fome. --- ## Spec do componente para o dev ### Comportamento - Cards embaralhados a cada sessão (ordem aleatória dentro da parte) - Cada card tem frente e verso - Ao clicar no card: animação de flip (frente → verso) - Dois botões após ver o verso: \"Já sei\" e \"Rever depois\" - Cards marcados como \"Rever depois\" aparecem novamente no final da sessão daquela parte - Contador de progresso no topo: \"4 de 7\" - Ao completar todos os cards da parte: mensagem de conclusão + botão \"Refazer\" e botão \"Continuar lendo\" - Cada instância é independente por parte (progresso da Parte 1 não interfere na Parte 2) ### Visual - Card: fundo branco, borda 1px #e8e1ff, border-radius 12px, sombra suave - Frente: label \"PERGUNTA\" em #7056e0, bold, 11px, uppercase. Texto da pergunta em #1a1a2e, 18px, Manrope medium, centralizado - Verso: label \"RESPOSTA\" em #7056e0, bold, 11px, uppercase. Texto da resposta em #1a1a2e, 15px, Plus Jakarta Sans regular, alinhado à esquerda - Flip: animação CSS 3D, duração 0.4s - Botão \"Já sei\": fundo #7056e0, texto branco, border-radius 8px - Botão \"Rever depois\": fundo transparente, borda 1px #7056e0, texto #7056e0, border-radius 8px - Contador: texto #7056e0, 13px, acima do card - Barra de progresso: linha fina abaixo do contador, cor #7056e0, preenchendo conforme avança ### Título da seção no guia > **Já gravou?** > _Vire os cards, confira as respostas e veja o que já está fixado._ Inserir ao final de cada parte, antes de iniciar a próxima."
     }
   ]
@@ -1440,7 +1444,7 @@ Você terminou a leitura, mas o guia continua útil nos próximos 60 dias. Use o
 
 ---
 
-## SEÇÃO: Bônus: quiz — qual é o seu estilo de cuidar?
+## SEÇÃO: Bônus: quiz - qual é o seu estilo de cuidar?
 
 **type:** `quiz`
 **slug:** `quiz-perfil`
@@ -1637,7 +1641,7 @@ Você terminou a leitura, mas o guia continua útil nos próximos 60 dias. Use o
   "results": {
     "a": {
       "title": "Analítica",
-      "description": "Você precisa entender antes de agir. Fontes, dados e referências são a sua linguagem. Priorize as caixas \"O que a ciência diz\" e os resumos de fontes — especialmente nas Partes 3 e 4.",
+      "description": "Você precisa entender antes de agir. Fontes, dados e referências são a sua linguagem. Priorize as caixas \"O que a ciência diz\" e os resumos de fontes - especialmente nas Partes 3 e 4.",
       "recommended_sections": [
         "parte-3-primeiras-72-horas-em-casa",
         "parte-4-primeiras-quatro-semanas-semana-a-semana"
@@ -1661,7 +1665,7 @@ Você terminou a leitura, mas o guia continua útil nos próximos 60 dias. Use o
     },
     "d": {
       "title": "Pragmática",
-      "description": "Você quer o checklist e a ação. Priorize a Introdução, a Parte 1 (preparação) e os resumos de 3 pontos no final de cada seção. O Yaya foi feito pra esse perfil — registro com 1 toque.",
+      "description": "Você quer o checklist e a ação. Priorize a Introdução, a Parte 1 (preparação) e os resumos de 3 pontos no final de cada seção. O Yaya foi feito pra esse perfil - registro com 1 toque.",
       "recommended_sections": [
         "introducao",
         "parte-1-preparacao"
@@ -1684,12 +1688,12 @@ Você terminou a leitura, mas o guia continua útil nos próximos 60 dias. Use o
 ```markdown
 Use este checklist nos próximos 60 dias. Ele acompanha a sua jornada
 desde a preparação até o primeiro mês com o bebê em casa. Marque os
-itens conforme for fazendo — o estado fica salvo e você acompanha o
+itens conforme for fazendo - o estado fica salvo e você acompanha o
 progresso pela barrinha.
 
 :::yaya
 Configure o perfil do bebê com os dados do ultrassom no app Yaya. Quando
-o bebê chegar, você abre e começa a registrar — em 30 dias terá um
+o bebê chegar, você abre e começa a registrar - em 30 dias terá um
 histórico completo pra levar ao pediatra.
 :::
 ```

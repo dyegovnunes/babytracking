@@ -11,7 +11,7 @@
     "optimize:images": "tsx scripts/optimize-images.ts",
     "optimize:images:dry": "tsx scripts/optimize-images.ts --dry",
     "validate": "tsx ../scripts/validate-guide.ts",
-    "seed:guide": "tsx ../scripts/seed-guide.ts"
+    "seed:guide": "cross-env NODE_PATH=./node_modules tsx ../scripts/seed-guide.ts"
   },
   "dependencies": {
     "@astrojs/react": "^5.0.4",
@@ -34,6 +34,7 @@
     "tiptap-markdown": "^0.9.0"
   },
   "devDependencies": {
+    "cross-env": "^10.1.0",
     "dotenv": "^16.4.5",
     "sharp": "^0.33.5",
     "tsx": "^4.19.0"
