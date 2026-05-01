@@ -130,15 +130,15 @@ const productLd = {
 
         <!-- Copy + CTA (direita) -->
         <div class={`flex-1 ${guide.cover_image_url ? 'text-center lg:text-left' : 'text-center max-w-2xl mx-auto'}`}>
-          <p class="text-[11px] font-display font-bold uppercase tracking-[0.22em] mb-4" style="color: rgba(183,159,255,0.7);">
+          <p class="text-[11px] font-display font-bold uppercase tracking-[0.22em] mb-4" style="color: rgb(var(--yaya-purple) / 0.8);">
             ✦ Guia completo · Do nascimento ao 1 ano
           </p>
           <h1
             class="font-display font-bold text-3xl md:text-4xl lg:text-[2.6rem] mb-4 leading-[1.15]"
-            style="color: #e7e2ff;"
+            style="color: rgb(var(--yaya-cloud));"
           >
             Cada mês traz um bebê diferente.<br />
-            <span style="color: #b79fff;">E ninguém te conta<br class="hidden sm:block" /> o que esperar.</span>
+            <span style="color: rgb(var(--yaya-purple));">E ninguém te conta<br class="hidden sm:block" /> o que esperar.</span>
           </h1>
 
           {guide.description && (
@@ -156,7 +156,7 @@ const productLd = {
               <span class="flex items-center gap-1.5">📖 {parts.length} {parts.length === 1 ? 'módulo' : 'módulos'}</span>
             )}
             {previewSections.length > 0 && (
-              <span class="flex items-center gap-1.5" style="color: rgba(183,159,255,0.6);">🔓 Amostra grátis</span>
+              <span class="flex items-center gap-1.5" style="color: rgb(var(--yaya-purple) / 0.7);">🔓 Amostra grátis</span>
             )}
           </div>
 
@@ -428,7 +428,7 @@ const productLd = {
         <div class="lp-sidebar sticky top-24 rounded-2xl p-6">
           <p class="text-yaya-cloud/35 text-xs font-sans uppercase tracking-wider text-center mb-1.5">Acesso completo</p>
           <div class="flex items-baseline justify-center gap-2 mb-5">
-            <span class="font-display font-bold text-4xl tracking-tight" style="color: #b79fff;">
+            <span class="font-display font-bold text-4xl tracking-tight" style="color: rgb(var(--yaya-purple));">
               {priceFormatted}
             </span>
             <span class="text-yaya-cloud/35 text-sm font-sans">único</span>
@@ -442,7 +442,7 @@ const productLd = {
               '7 dias de garantia',
             ].map((item) => (
               <li class="flex items-center gap-2">
-                <span style="color: #b79fff; flex-shrink: 0;">✓</span>
+                <span style="color: rgb(var(--yaya-purple)); flex-shrink: 0;">✓</span>
                 {item}
               </li>
             ))}
@@ -507,8 +507,24 @@ const productLd = {
 
 <style is:global>
   /* ── Hero ── */
+  /* Hero — escuro por padrão (dark mode) */
   .lp-hero {
     background: #0d0a27;
+    --yaya-cloud: var(--yaya-cloud-dark);
+    --yaya-purple: var(--yaya-purple-dark);
+  }
+  /* Hero — claro em light mode */
+  html.theme-light .lp-hero {
+    background: linear-gradient(160deg, #f5f3ff 0%, #ede8ff 55%, #faf5ff 100%);
+    --yaya-cloud: var(--yaya-cloud-light);
+    --yaya-purple: var(--yaya-purple-light);
+  }
+  @media (prefers-color-scheme: light) {
+    html:not(.theme-dark) .lp-hero {
+      background: linear-gradient(160deg, #f5f3ff 0%, #ede8ff 55%, #faf5ff 100%);
+      --yaya-cloud: var(--yaya-cloud-light);
+      --yaya-purple: var(--yaya-purple-light);
+    }
   }
 
   /* ── Glow blob suave ── */
@@ -525,6 +541,10 @@ const productLd = {
       transparent 70%);
     pointer-events: none;
     z-index: 0;
+  }
+  html.theme-light .lp-glow-blob { opacity: 0.25; }
+  @media (prefers-color-scheme: light) {
+    html:not(.theme-dark) .lp-glow-blob { opacity: 0.25; }
   }
 
   /* ── Botão primário rosa-magenta ── */
@@ -569,7 +589,7 @@ const productLd = {
     background: rgb(var(--yaya-purple) / 0.04);
   }
 
-  /* ── Sidebar ── */
+  /* ── Sidebar — escura por padrão (dark mode) ── */
   .lp-sidebar {
     background: rgba(13, 10, 39, 0.88);
     border: 1px solid rgba(183, 159, 255, 0.2);
@@ -577,9 +597,25 @@ const productLd = {
     --yaya-cloud: var(--yaya-cloud-dark);
     --yaya-purple: var(--yaya-purple-dark);
   }
+  /* Sidebar — branca e com destaque em light mode */
+  html.theme-light .lp-sidebar {
+    background: #ffffff;
+    border: 2px solid rgba(112, 86, 224, 0.35);
+    box-shadow: 0 8px 40px rgba(112, 86, 224, 0.14), 0 0 0 1px rgba(112, 86, 224, 0.08);
+    --yaya-cloud: var(--yaya-cloud-light);
+    --yaya-purple: var(--yaya-purple-light);
+  }
+  @media (prefers-color-scheme: light) {
+    html:not(.theme-dark) .lp-sidebar {
+      background: #ffffff;
+      border: 2px solid rgba(112, 86, 224, 0.35);
+      box-shadow: 0 8px 40px rgba(112, 86, 224, 0.14), 0 0 0 1px rgba(112, 86, 224, 0.08);
+      --yaya-cloud: var(--yaya-cloud-light);
+      --yaya-purple: var(--yaya-purple-light);
+    }
+  }
 
-  /* Seções com fundo sempre escuro — forçar cores dark-mode internamente */
-  .lp-hero,
+  /* CTA final e sticky — sempre escuros */
   #cta-final,
   .lp-sticky-inner {
     --yaya-cloud: var(--yaya-cloud-dark);
