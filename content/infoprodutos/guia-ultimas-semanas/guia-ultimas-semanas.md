@@ -37,6 +37,8 @@ O que você vai encontrar aqui é uma fonte consolidada de informações baseada
 **estimated_minutes:** `1`
 
 ```markdown
+![Mapa visual das 4 fases cobertas pelo guia: preparação, parto, primeiras 72 horas, primeiras 4 semanas](imagens/intro-mapa-guia.jpg)
+
 Este guia acompanha você da semana 28 até os primeiros 30 dias do bebê em casa. Está organizado cronologicamente: preparação, parto, primeiras 72 horas e as quatro primeiras semanas com o bebê. Você pode ler do início ao fim ou pular direto para a fase em que está.
 
 Cada seção traz o que a ciência diz sobre aquele tema, com a fonte citada. Não "estudos mostram" como argumento de autoridade sem referência: a fonte está ali, verificável, acessível.
@@ -301,6 +303,8 @@ Carregador de câmera ou câmera carregada. Número do pediatra escolhido. A aut
 **estimated_minutes:** `3`
 
 ```markdown
+![Gestante revisando o plano de parto com obstetra](imagens/plano-de-parto-gestante.jpg)
+
 O plano de parto é um documento escrito com suas preferências e expectativas para o trabalho de parto e o parto em si. Ele não é uma garantia, não é uma ordem médica e não substitui a avaliação clínica no momento. O que ele faz é comunicar antecipadamente o que é importante para você, reduzindo o número de decisões que você precisa tomar em tempo real, no meio de contrações.
 
 Pesquisas mostram que parturientes que apresentam plano de parto têm maior senso de controle durante o processo e relatam experiência mais positiva, independentemente de o parto ter seguido exatamente o planejado ou não (NICE, 2021).
@@ -353,6 +357,8 @@ Mantenha o documento em uma página, no máximo duas. Listas com marcadores, lin
 **estimated_minutes:** `3`
 
 ```markdown
+![Família e amigos se reunindo em apoio à puérpera](imagens/rede-de-apoio.jpg)
+
 Ter apoio no pós-parto não é luxo. É saúde. A OMS inclui suporte social adequado como fator de proteção para depressão pós-parto e como determinante da duração do aleitamento materno (OMS, 2022).
 
 O problema é que "ter apoio" é vago. O que as pesquisas mostram é que não é a quantidade de pessoas ao redor que importa, mas a qualidade do suporte oferecido. Uma rede de apoio eficaz é aquela que executa tarefas concretas, reduz a carga cognitiva dos pais e não aumenta o nível de ruído e julgamento.
@@ -464,6 +470,8 @@ Você organizou tudo para o bebê chegar. O Yaya é a última coisa da lista: ba
 **estimated_minutes:** `3`
 
 ```markdown
+![Mulher em trabalho de parto observando a regra 5-1-1](imagens/sinais-trabalho-parto.jpg)
+
 O trabalho de parto real não costuma chegar com alarme. Ele se instala gradualmente, e distingui-lo das contrações de treinamento que você provavelmente já sentiu é uma habilidade que faz muita diferença na hora H.
 
 #### Contrações de Braxton Hicks vs. contrações de trabalho de parto
@@ -473,6 +481,8 @@ Contrações de Braxton Hicks são contrações de treinamento uterino que ocorr
 Contrações de trabalho de parto têm ritmo diferente: ficam progressivamente mais regulares, mais fortes e mais longas. Não passam com mudança de posição. A dor começa nas costas ou na parte baixa do abdômen e irradia para as coxas. Com o tempo, a cada nova contração, a intensidade aumenta.
 
 **Regra do 5-1-1 (ACOG, 2023):** vá para a maternidade quando as contrações estiverem chegando a cada 5 minutos, durem pelo menos 1 minuto cada, e esse padrão se repita por pelo menos 1 hora. Para quem já teve filho antes ou mora longe da maternidade, o obstetra pode indicar ir antes.
+
+![Infográfico da regra 5-1-1: 5 minutos, 1 minuto, 1 hora](imagens/regra-511-infografico.jpg)
 
 #### Perda do tampão mucoso
 
@@ -577,6 +587,8 @@ A OMS recomenda que a taxa de cesáreas numa população seja de 10% a 15% para 
 **estimated_minutes:** `3`
 
 ```markdown
+![Mãe e bebê em pele a pele logo após o parto](imagens/primeiras-horas-pele-a-pele.jpg)
+
 As primeiras duas horas após o nascimento são chamadas pela OMS de "hora dourada". São um período com recomendações científicas claras, que fazem diferença mensurável para o bebê e para o início da amamentação.
 
 #### Contato pele a pele
@@ -792,6 +804,8 @@ Bebê que dorme mais de 4 horas consecutivas nas primeiras semanas deve ser acor
 **estimated_minutes:** `2`
 
 ```markdown
+![Bebê dormindo de costas em berço seguro, sem objetos soltos](imagens/sono-seguro-berco.jpg)
+
 Recém-nascido dorme muito (de 14 a 17 horas por dia, segundo a NSF) mas não de forma contínua. Ciclos de sono de RN duram cerca de 50 minutos, com grande proporção de sono ativo (equivalente ao REM dos adultos), o que significa que ele se move, faz sons e pode acordar com facilidade na metade do ciclo.
 
 Isso explica por que bebês costumam acordar assim que você os deita: eles passaram para a fase de sono ativo e qualquer estímulo externo (ruído, temperatura, mudança de posição) pode interrumpê-los.
@@ -983,6 +997,8 @@ Com o bebê em casa, cada registro conta. Amamentação, sono, fralda: o Yaya or
 **estimated_minutes:** `3`
 
 ```markdown
+![Bebê na primeira semana em colo de mãe, momento de vínculo](imagens/bebe-semana-1-vinculo.jpg)
+
 A primeira semana em casa é, para a maioria das famílias, a mais intensa. O bebê ainda não tem ciclo dia/noite estabelecido, a amamentação está sendo construída, a recuperação da mãe está em curso e todos estão funcionando com pouco sono.
 
 Não é necessário fazer nada além de cuidar do bebê e de você. A casa pode esperar. As visitas podem ser adiadas. O que você fizer nessa semana, mesmo que pareça pouco, é muito.
@@ -1142,6 +1158,8 @@ Bordas bem definidas, lesões satélites (pequenas manchinhas ao redor da área 
 **estimated_minutes:** `3`
 
 ```markdown
+![Bebê de 4 semanas em rotina mais previsível](imagens/bebe-semana-4-rotina.jpg)
+
 Quatro semanas passaram. Você sobreviveu à primeira semana, à segunda (com cólicas), à terceira (com padrões que apareciam e desapareciam). Na quarta semana, algo diferente acontece: você começa a conhecer esse bebê específico.
 
 #### Marcos do primeiro mês
@@ -1249,13 +1267,21 @@ Com 30 dias de registros no Yaya, você já tem um histórico completo para leva
 **estimated_minutes:** `1`
 
 ```markdown
-![Marcos do primeiro mês do bebê em colagem visual](imagens/marcos-primeiro-mes.jpg)
-
 Informação não elimina a incerteza. Ela reduz o tamanho dela.
 
 Você chegou até aqui com mais conhecimento do que a maioria dos pais entra na maternidade. Sabe o que colocar na mala, o que colocar no plano de parto, como identificar os sinais de trabalho de parto, o que esperar nas primeiras 72 horas e como navegar semana a semana no primeiro mês.
 
 Isso não significa que vai ser fácil. Mas significa que quando as situações chegarem, você vai ter um ponto de referência, não vai estar tomando todas as decisões no escuro.
+
+#### Próximos passos
+
+Você terminou a leitura, mas o guia continua útil nos próximos 60 dias. Antes de fechar:
+
+- **Faça o quiz "Qual seu estilo de cuidar?"** — em 3 minutos você descobre seu perfil e ganha uma trilha personalizada das seções que mais importam pra você.
+- **Use o Checklist Mestre** dividido em 3 fases (antes do parto, primeiros dias, semana 1-4). O estado fica salvo: marque conforme for fazendo.
+- **Revise os flashcards** ao fim de cada parte sempre que quiser refrescar os conceitos.
+
+Você encontra todos esses materiais na sidebar, na seção **Materiais complementares**.
 ```
 
 ---

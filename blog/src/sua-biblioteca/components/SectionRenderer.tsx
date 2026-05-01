@@ -246,25 +246,38 @@ export default function SectionRenderer({
       {/* Conclusão: auto-renderiza NpsBlock + DynamicYayaCTA (sem precisar de
           flags no MD). Slug que começa com "conclusao" vira gatilho.
           As flags show_nps/show_yaya_cta continuam funcionando como override
-          manual em outros pontos do guia se desejado. */}
+          manual em outros pontos do guia se desejado.
+          Em desktop (≥768px) os dois ficam lado a lado pra economizar
+          espaço vertical; em mobile, empilham. */}
       {(() => {
         const flags = (section.data as Record<string, unknown> | null) ?? {}
         const isConclusion = section.slug?.startsWith('conclusao')
         const showNps = flags.show_nps === true || isConclusion
         const showCta = flags.show_yaya_cta === true || isConclusion
+        if (!showNps && !showCta) return null
         return (
-          <>
+          <div className="reader-conclusion-blocks" style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+            gap: 16,
+            marginTop: '2.5em',
+            alignItems: 'stretch',
+          }}>
             {showNps && (
-              <NpsBlock guideId={guide.id} sectionId={section.id} userId={userId} />
+              <div style={{ display: 'flex' }}>
+                <NpsBlock guideId={guide.id} sectionId={section.id} userId={userId} />
+              </div>
             )}
             {showCta && (
-              <DynamicYayaCTA
-                guideId={guide.id}
-                guideSlug={guide.slug}
-                userId={userId}
-              />
+              <div style={{ display: 'flex' }}>
+                <DynamicYayaCTA
+                  guideId={guide.id}
+                  guideSlug={guide.slug}
+                  userId={userId}
+                />
+              </div>
             )}
-          </>
+          </div>
         )
       })()}
 

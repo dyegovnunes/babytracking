@@ -70,7 +70,7 @@ export default function NpsBlock({ guideId, sectionId, userId }: Props) {
 
   return (
     <div style={{
-      marginTop: '2.5em',
+      width: '100%',
       padding: '20px 16px',
       background: 'color-mix(in srgb, #f59e0b 8%, var(--r-surface))',
       border: '1px solid color-mix(in srgb, #f59e0b 30%, transparent)',

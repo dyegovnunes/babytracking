@@ -226,7 +226,7 @@ function OtherGuidesGrid({ guides, currentSlug }: { guides: OtherGuide[]; curren
 // ── Estilos ──────────────────────────────────────────────────────────────────
 const s: Record<string, React.CSSProperties> = {
   box: {
-    marginTop: '2.5em',
+    width: '100%',
     padding: '20px 22px',
     background: 'color-mix(in srgb, var(--r-accent) 7%, var(--r-surface))',
     border: '1px solid color-mix(in srgb, var(--r-accent) 25%, transparent)',

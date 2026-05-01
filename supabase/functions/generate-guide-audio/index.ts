@@ -26,7 +26,11 @@ const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY') ?? ''
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? ''
 const SERVICE_ROLE = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
 
-const DEFAULT_VOICE = 'nova'   // alternativas: alloy, echo, fable, onyx, shimmer
+// voice_id é versionado pra cache: ao mudar pré-processamento (ex:
+// pronúncia), bump pra 'nova-v3' etc — força cache miss e regera tudo.
+// O OPENAI_VOICE é o que vai pra OpenAI (sempre uma das vozes oficiais).
+const DEFAULT_VOICE = 'nova-v2'
+const OPENAI_VOICE = 'nova'   // alternativas: alloy, echo, fable, onyx, shimmer
 const TTS_MODEL = 'tts-1'      // tts-1-hd é mais nítido mas 2x mais caro
 const STORAGE_BUCKET = 'guide-audio'
 
@@ -39,11 +43,25 @@ const corsHeaders = {
 const supabase = createClient(SUPABASE_URL, SERVICE_ROLE)
 
 /**
+ * Substitui termos de marca/produto por sua grafia fonética em PT-BR
+ * pra que o TTS pronuncie corretamente. Como o texto é usado SÓ pra
+ * gerar áudio (não vai pro leitor), o leitor continua vendo a grafia
+ * canônica enquanto a narração soa certa.
+ */
+function applyPronunciationFixes(text: string): string {
+  return text
+    // "Yaya" / "Yaya+" → "Iaiá" (pronúncia "iaiÁH"). Preserva o "+" depois.
+    .replace(/\bYaya\b/g, 'Iaiá')
+    // "yaIA" / "Yaia" (assistente) → "iaiá"
+    .replace(/\byaIA\b/g, 'Iaiá')
+}
+
+/**
  * Limpa markdown pra texto puro pronto pra TTS.
  * Remove imagens, headings markdown, ênfase, blockquotes, callouts e links.
  */
 function markdownToSpeechText(md: string): string {
-  return md
+  const cleaned = md
     // Imagens
     .replace(/!\[[^\]]*\]\([^)]*\)/g, '')
     // Links → só texto
@@ -64,6 +82,7 @@ function markdownToSpeechText(md: string): string {
     // Quebras múltiplas
     .replace(/\n{3,}/g, '\n\n')
     .trim()
+  return applyPronunciationFixes(cleaned)
 }
 
 serve(async (req) => {
@@ -147,7 +166,9 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         model: TTS_MODEL,
-        voice,
+        // Sempre usa a voz oficial do OpenAI; o `voice` interno é só
+        // versionamento de cache.
+        voice: OPENAI_VOICE,
         input: speechText,
         response_format: 'mp3',
         speed: 1.0,

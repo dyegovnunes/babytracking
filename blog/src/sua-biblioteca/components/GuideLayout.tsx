@@ -196,10 +196,14 @@ export default function GuideLayout({ guide, sections, userId }: Props) {
     return () => window.removeEventListener('keydown', onKey)
   }, [flatSections, currentSectionId, sidebarOpen, readingMode])
 
-  // Ao mudar de seção, scroll pro topo e fecha sidebar mobile
+  // Ao mudar de seção, scroll pro topo. Em mobile fecha o drawer
+  // (UX comum); em desktop mantém a sidebar aberta — usuário fecha
+  // explicitamente clicando o hambúrguer se quiser.
   const goToSection = useCallback((id: string) => {
     setCurrentSectionId(id)
-    setSidebarOpen(false)
+    if (typeof window !== 'undefined' && !window.matchMedia('(min-width: 1024px)').matches) {
+      setSidebarOpen(false)
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [])
 
