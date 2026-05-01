@@ -333,7 +333,10 @@ function checkComplementary(sections: ParsedSection[]): Issue[] {
 
     if (sec.type === 'checklist') {
       const groups = (data?.groups ?? []) as Array<{ title?: string; items?: unknown[] }>
-      const items = (data?.items ?? []) as Array<{ id?: string; text?: string }>
+      // Aceita `items` (canônico) ou `checklist_items` (legado, mantido por compat)
+      const items = (
+        (data?.items ?? data?.checklist_items ?? []) as Array<{ id?: string; text?: string }>
+      )
       const allItems: Array<{ id?: string; text?: string }> = items.length > 0
         ? items
         : groups.flatMap(g => (g.items ?? []) as Array<{ id?: string; text?: string }>)

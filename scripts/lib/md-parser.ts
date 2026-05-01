@@ -225,10 +225,12 @@ export function parseGuideMarkdown(md: string, opts: ParseOptions): ParseResult 
 
     // Validações específicas por type
     if (type === 'checklist') {
-      const d = data as { items?: unknown; groups?: unknown } | undefined
+      const d = data as { items?: unknown; groups?: unknown; checklist_items?: unknown } | undefined
       const hasItems = !!d && Array.isArray(d.items)
       const hasGroups = !!d && Array.isArray(d.groups)
-      if (!hasItems && !hasGroups) {
+      // checklist_items é nome legado (do G02 e do seed antigo); aceitamos como alias.
+      const hasLegacyItems = !!d && Array.isArray(d.checklist_items)
+      if (!hasItems && !hasGroups && !hasLegacyItems) {
         errors.push(
           `Seção "${title}" é type=checklist mas não tem bloco \`\`\`json com { "items": [...] } ou { "groups": [...] }\``,
         )

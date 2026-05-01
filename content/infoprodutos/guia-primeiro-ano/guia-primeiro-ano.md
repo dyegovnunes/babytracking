@@ -1,6 +1,6 @@
 # Guia do Primeiro Ano
 **Slug:** `primeiro-ano`  
-**Formato:** Conteúdo pronto para seed script — cada seção marcada com type, slug e dados JSON onde aplicável
+**Formato:** Conteúdo pronto para seed script - cada seção marcada com type, slug e dados JSON onde aplicável
 
 ---
 
@@ -9,8 +9,9 @@
 **slug:** `introducao`  
 **cover_image_url:** `primeiro-ano/img/hero-introducao.webp`  
 **estimated_minutes:** 3
+**is_preview:** `true`
 
-**PROMPT GEMINI — hero-introducao.webp:**
+**PROMPT GEMINI - hero-introducao.webp:**
 > Foto realista de um casal jovem brasileiro sentado no sofá, olhando para um recém-nascido no colo. Luz natural suave entrando pela janela. Ambiente doméstico acolhedor, tons neutros e lilás. Expressão de cansaço e amor ao mesmo tempo. Paleta: brancos, bege claro, lilás suave. Sem filtros artificiais. Proporção 21:9.
 
 ---
@@ -71,13 +72,13 @@ Use como quiser. O guia está aqui para servir você, não para criar mais uma o
 
 ---
 
-## SEÇÃO: Módulo 1 — 0 a 3 meses
+## SEÇÃO: Módulo 1 - 0 a 3 meses
 **type:** `part`  
 **slug:** `modulo-1`  
 **cover_image_url:** `primeiro-ano/img/hero-modulo-1.webp`  
 **estimated_minutes:** 2
 
-**PROMPT GEMINI — hero-modulo-1.webp:**
+**PROMPT GEMINI - hero-modulo-1.webp:**
 > Foto realista de mãe brasileira deitada em cama com lençóis brancos, amamentando recém-nascido. Luz de madrugada, abajur aceso ao fundo. Tom íntimo e cansado, mas amoroso. Paleta: brancos, lilás muito suave, tons quentes de pele. Sem filtros. Proporção 21:9.
 
 ---
@@ -90,6 +91,8 @@ Use como quiser. O guia está aqui para servir você, não para criar mais uma o
 
 **content_md:**
 ```markdown
+![Ciclo de sono do recém-nascido em diagrama visual](imagens/sono-recem-nascido-ciclo.png)
+
 ## O caos tem uma lógica
 
 Seu bebê acabou de passar nove meses em um ambiente de escuridão total, temperatura constante, barulho contínuo (batimentos cardíacos, fluxo sanguíneo) e sem distinção entre dia e noite. O mundo lá fora é o oposto disso em tudo.
@@ -103,7 +106,7 @@ Nas primeiras semanas, a maioria dos recém-nascidos dorme entre 16 e 18 horas p
 O ritmo circadiano, que é o relógio biológico que separa vigília diurna de sono noturno, só começa a se organizar por volta de 3 a 4 meses, quando o bebê começa a produzir melatonina de forma consistente.
 
 :::ciencia
-O ritmo circadiano do recém-nascido é imaturo ao nascimento. A produção endógena de melatonina começa a se estabelecer entre 9 e 12 semanas de vida. (Kennaway, 2023 — Journal of Pineal Research)
+O ritmo circadiano do recém-nascido é imaturo ao nascimento. A produção endógena de melatonina começa a se estabelecer entre 9 e 12 semanas de vida. (Kennaway, 2023 - Journal of Pineal Research)
 :::
 
 ### Por que acorda tanto
@@ -113,7 +116,7 @@ O ciclo de sono do recém-nascido tem cerca de 50 a 60 minutos, contra 90 minuto
 Esse sono ativo é funcional: é durante ele que o cérebro processa e consolida as experiências do dia. Um bebê que dorme "demais no silêncio" não está dormindo melhor.
 
 **IMAGEM DE QUEBRA**
-**PROMPT GEMINI — sono-recem-nascido-ciclo.webp:**
+**PROMPT GEMINI - sono-recem-nascido-ciclo.webp:**
 > Ilustração simples e moderna mostrando o ciclo de sono do bebê versus adulto. Paleta Yaya: roxo #7056e0 e lilás #e8e1ff. Estilo clean, sem excesso de elementos. Texto em português. Proporção 16:9.
 
 ### Sono seguro: o que a SBP recomenda
@@ -164,6 +167,8 @@ O Yaya registra cada período de sono com timer de 1 toque e mostra os padrões 
 
 **content_md:**
 ```markdown
+![Mãe amamentando bebê em pega correta](imagens/secao-amamentacao.png)
+
 ## Como funciona na prática
 
 Amamentação sob demanda significa oferecer o leite toda vez que o bebê demonstrar sinais de fome, sem seguir horários fixos. Na teoria é simples. Na prática, especialmente nos primeiros dias, levanta uma questão constante: como saber se o bebê está com fome ou se tem outra coisa?
@@ -204,7 +209,7 @@ Essa é a dúvida que mais gera ansiedade no início. A resposta não está em q
 - Ganho de peso adequado nas consultas
 
 **IMAGEM DE QUEBRA**
-**PROMPT GEMINI — amamentacao-posicoes.webp:**
+**PROMPT GEMINI - amamentacao-posicoes.webp:**
 > Foto realista de mãe brasileira amamentando bebê recém-nascido em posição de cavaleiro. Luz natural suave. Expressão tranquila e focada. Ambiente doméstico. Paleta: tons neutros quentes e lilás suave. Proporção 3:2.
 
 :::mito
@@ -236,6 +241,8 @@ Registre cada oferta no Yaya com 1 toque. Ao final do dia, você vê exatamente 
 
 **content_md:**
 ```markdown
+![Diferentes posições para amamentar o bebê](imagens/posicoes-amamentacao.png)
+
 ## A pega que funciona
 
 A maioria das dificuldades com amamentação nas primeiras semanas tem origem na pega. Uma pega inadequada causa dor, fissuras, esvaziamento insuficiente da mama e, consequentemente, queda na produção de leite.
@@ -273,7 +280,7 @@ Não existe posição certa. Existe a posição que funciona para você e para o
 **Posição deitada:** você e o bebê deitados de lado, barriga com barriga. Boa para madrugadas e recuperação pós-parto.
 
 **IMAGEM DE QUEBRA**
-**PROMPT GEMINI — posicoes-amamentacao.webp:**
+**PROMPT GEMINI - posicoes-amamentacao.webp:**
 > Ilustração clean mostrando as 4 posições de amamentação em estilo minimalista moderno. Paleta Yaya: roxo e lilás. Legendas em português. Fundo branco. Proporção 16:9.
 
 :::ciencia
@@ -303,6 +310,8 @@ Registre em qual lado o bebê mamou em cada oferta. O Yaya alterna automaticamen
 
 **content_md:**
 ```markdown
+![Leite materno armazenado em frascos com etiquetas de data](imagens/armazenamento-leite.png)
+
 ## Tudo que você precisa saber sobre o leite
 
 O leite materno é um líquido vivo: a composição muda ao longo do dia, ao longo das semanas e em resposta às necessidades do bebê. O colostro dos primeiros dias é diferente do leite de transição da primeira semana, que é diferente do leite maduro do segundo mês.
@@ -330,7 +339,7 @@ Se você vai ordenhar para armazenar, as regras de tempo e temperatura são:
 Congele em porções de 60 a 120 ml para evitar desperdício. Use sempre o leite mais antigo primeiro (sistema FIFO). Descongele na geladeira ou em água morna corrente, nunca no micro-ondas.
 
 **IMAGEM DE QUEBRA**
-**PROMPT GEMINI — armazenamento-leite.webp:**
+**PROMPT GEMINI - armazenamento-leite.webp:**
 > Foto realista de potes de vidro com leite materno etiquetados em geladeira. Organizado, limpo, luz fria da geladeira. Tons neutros. Proporção 3:2.
 
 ### Quando a fórmula é indicada
@@ -369,6 +378,8 @@ Registre as ofertas de fórmula no Yaya da mesma forma que as de leite materno. 
 
 **content_md:**
 ```markdown
+![Bebê chorando no colo da mãe](imagens/secao-choro.png)
+
 ## Decodificando o choro
 
 O choro é a única forma de comunicação que o recém-nascido tem. Nos primeiros dias, parece tudo igual. Com o tempo, você começa a identificar diferenças.
@@ -396,7 +407,7 @@ O pico de choro às 6 semanas é um padrão documentado em bebês de diferentes 
 **Necessidade de contato:** choro que para imediatamente quando você pega o bebê no colo. Alguns bebês têm necessidade de contato maior do que outros. Pegar no colo não cria "maus hábitos" em recém-nascidos.
 
 **IMAGEM DE QUEBRA**
-**PROMPT GEMINI — bebe-chorando-colo.webp:**
+**PROMPT GEMINI - bebe-chorando-colo.webp:**
 > Foto realista de pai brasileiro segurando bebê recém-nascido no colo, bebê chorando. Expressão do pai: concentrada, calma, presente. Luz natural. Ambiente doméstico. Paleta neutra e lilás suave. Proporção 3:2.
 
 :::mito
@@ -436,6 +447,8 @@ Registre episódios de choro prolongado no campo de observações do Yaya. Com a
 
 **content_md:**
 ```markdown
+![Pai acalmando bebê em posição antirrefluxo durante cólica](imagens/pai-bebe-colica.png)
+
 ## O que são e o que realmente alivia
 
 Cólica é um dos temas com mais mitos, produtos sem evidência e conselhos contraditórios da maternidade precoce. A boa notícia é que a ciência tem respostas claras sobre o que é, quanto dura e o que funciona.
@@ -467,7 +480,7 @@ O bebê que tem cólica geralmente chora mais entre 17h e 23h. A hipótese mais 
 **Probiótico Lactobacillus reuteri:** é a intervenção com mais evidência em bebês amamentados.
 
 :::ciencia
-Uma revisão sistemática de 2018 analisou o uso de Lactobacillus reuteri em bebês com cólica. Em bebês amamentados, houve redução significativa no tempo de choro. Em bebês alimentados com fórmula, os resultados foram inconsistentes. (Sung et al., 2018 — BMJ)
+Uma revisão sistemática de 2018 analisou o uso de Lactobacillus reuteri em bebês com cólica. Em bebês amamentados, houve redução significativa no tempo de choro. Em bebês alimentados com fórmula, os resultados foram inconsistentes. (Sung et al., 2018 - BMJ)
 :::
 
 ### O que não tem evidência
@@ -475,7 +488,7 @@ Uma revisão sistemática de 2018 analisou o uso de Lactobacillus reuteri em beb
 Brumex, siméticona, chá de erva-doce, mudança de dieta materna (exceto em casos de alergia à proteína do leite de vaca confirmada): nenhum desses tem evidência robusta de eficácia para cólica. Podem ser usados, mas não há garantia de resultado.
 
 **IMAGEM DE QUEBRA**
-**PROMPT GEMINI — pai-bebe-colica.webp:**
+**PROMPT GEMINI - pai-bebe-colica.webp:**
 > Foto realista de pai brasileiro segurando bebê com a barriga do bebê apoiada no antebraço (posição de cólica). Expressão calma e presente do pai. Luz natural suave. Ambiente doméstico. Tons neutros e lilás. Proporção 3:2.
 
 :::mito
@@ -511,6 +524,8 @@ Registre os episódios de choro intenso no Yaya. Com alguns dias, você começa 
 
 **content_md:**
 ```markdown
+![Cenas da rotina do recém-nascido em casa](imagens/rotina-recem-nascido.png)
+
 ## Existe rotina nessa fase?
 
 A resposta direta: não no sentido de horários fixos. Sim no sentido de sequência previsível.
@@ -544,7 +559,7 @@ Uma estrutura simples que ajuda nos primeiros meses: quando o bebê acorda, ofer
 Isso evita o hábito de adormecer no peito ou na mamadeira, o que pode criar associação de sono problemática mais tarde. Mas nos primeiros 4 a 6 meses, adormecer mamando é normal e não é urgente resolver.
 
 **IMAGEM DE QUEBRA**
-**PROMPT GEMINI — rotina-recem-nascido.webp:**
+**PROMPT GEMINI - rotina-recem-nascido.webp:**
 > Foto realista de bebê recém-nascido deitado em superfície clara, olhos abertos, expressão serena. Luz natural suave. Paleta: branco, lilás suave. Foco no rosto do bebê. Proporção 3:2.
 
 :::yaya
@@ -567,6 +582,8 @@ Configure o Yaya para receber notificações de janela de sono. O app avisa quan
 
 **content_md:**
 ```markdown
+![Pediatra pesando bebê na balança em consulta de rotina](imagens/consulta-pediatra-peso.png)
+
 ## O que é normal e quando investigar
 
 O peso do bebê é o dado mais monitorado das primeiras semanas. E é um dos que mais gera ansiedade, especialmente quando a balança mostra perda nos primeiros dias.
@@ -596,7 +613,7 @@ Isso desacelera gradualmente ao longo do primeiro ano:
 | 6 a 12 meses | 70 a 100g por semana |
 
 **IMAGEM DE QUEBRA**
-**PROMPT GEMINI — consulta-pediatra-peso.webp:**
+**PROMPT GEMINI - consulta-pediatra-peso.webp:**
 > Foto realista de bebê sendo pesado em balança pediátrica. Pediatra ao fundo desfocado. Foco no bebê. Luz de consultório. Paleta neutra. Proporção 3:2.
 
 ### Percentis e curvas de crescimento
@@ -629,6 +646,8 @@ O Yaya registra o peso nas consultas e plota na curva da OMS (padrão SBP/Minist
 
 **content_md:**
 ```markdown
+![Bebê saudável em consulta pediátrica](imagens/bebe-saudavel-consulta.png)
+
 ## Os primeiros exames e o que observar em casa
 
 As primeiras semanas têm uma lista de coisas para fazer e monitorar. Esta seção organiza o essencial.
@@ -679,7 +698,7 @@ Quase todo bebê regurgita. O esfíncter esofagiano inferior (a "válvula" entre
 **Refluxo gastroesofágico patológico (DRGE):** vômitos em jato ou em grande volume, bebê com dor aparente (arqueamento do corpo, choro intenso após mamar), ganho de peso insuficiente. Exige avaliação pediátrica.
 
 **IMAGEM DE QUEBRA**
-**PROMPT GEMINI — bebe-saudavel-consulta.webp:**
+**PROMPT GEMINI - bebe-saudavel-consulta.webp:**
 > Foto realista de bebê recém-nascido sendo examinado em consultório pediátrico. Pediatra com expressão atenciosa. Luz de consultório. Paleta neutra. Proporção 3:2.
 
 :::mito
@@ -702,6 +721,8 @@ Registre episódios de regurgitação no campo de observações. Se estiverem au
 
 **content_md:**
 ```markdown
+![Banho seguro do recém-nascido em banheira de apoio](imagens/banho-recem-nascido.png)
+
 ## A rotina de cuidados do recém-nascido
 
 Além do sono e da alimentação, três coisas fazem parte da rotina diária do recém-nascido desde o início: tummy time, banho e troca de fraldas.
@@ -733,7 +754,7 @@ Frequência: 2 a 3 vezes por semana é suficiente. Banho diário pode ressecar a
 **Técnica:** suporte firme sob a nuca e os glúteos. Nunca deixe o bebê desacompanhado na banheira, nem por segundos.
 
 **IMAGEM DE QUEBRA**
-**PROMPT GEMINI — banho-recem-nascido.webp:**
+**PROMPT GEMINI - banho-recem-nascido.webp:**
 > Foto realista de bebê recém-nascido sendo banhado com mãos adultas dando suporte firme. Água limpa, expressão serena do bebê. Luz quente e suave. Toalha felpuda branca ao lado. Paleta neutra e quente. Proporção 3:2.
 
 ### Fraldas: o que os sinais indicam
@@ -765,7 +786,7 @@ Registre as fraldas pelo app. O Yaya soma automaticamente e avisa se o número d
 
 ---
 
-## SEÇÃO: Vamos revisar? — Módulo 1
+## SEÇÃO: Vamos revisar? - Módulo 1
 **type:** `flashcards`  
 **slug:** `flashcards-modulo-1`  
 **parent:** `modulo-1`  
@@ -813,13 +834,13 @@ Registre as fraldas pelo app. O Yaya soma automaticamente e avisa se o número d
 
 ---
 
-## SEÇÃO: Módulo 2 — 3 a 6 meses
+## SEÇÃO: Módulo 2 - 3 a 6 meses
 **type:** `part`  
 **slug:** `modulo-2`  
 **cover_image_url:** `primeiro-ano/img/hero-modulo-2.webp`  
 **estimated_minutes:** 2
 
-**PROMPT GEMINI — hero-modulo-2.webp:**
+**PROMPT GEMINI - hero-modulo-2.webp:**
 > Foto realista de bebê brasileiro de aproximadamente 4 meses deitado de barriga para cima, sorrindo para adulto fora do enquadramento. Luz natural de manhã. Ambiente doméstico acolhedor. Paleta: brancos, lilás suave, tons de pele quentes. Proporção 21:9.
 
 ---
@@ -832,6 +853,8 @@ Registre as fraldas pelo app. O Yaya soma automaticamente e avisa se o número d
 
 **content_md:**
 ```markdown
+![Casal acordado à noite com bebê em regressão de sono](imagens/casal-noite-bebe.png)
+
 ## A mudança que não volta atrás
 
 A regressão do sono dos 4 meses é o tema que mais gera desespero nessa fase, e é importante entender por que ela é diferente de todas as outras regressões que vêm depois.
@@ -861,7 +884,7 @@ A de 4 meses é permanente porque o padrão de sono mudou. O que muda com o temp
 **Rotina de sono previsível:** banho, luz baixa, amamentação ou mamadeira, música suave, berço. A sequência importa tanto quanto o que está nela.
 
 **IMAGEM DE QUEBRA**
-**PROMPT GEMINI — bebe-dormindo-berco.webp:**
+**PROMPT GEMINI - bebe-dormindo-berco.webp:**
 > Foto realista de bebê de 4 meses dormindo de costas em berço, lençol branco justo, sem objetos ao redor. Luz muito suave de abajur. Expressão serena. Paleta: branco, lilás muito suave. Proporção 3:2.
 
 :::mito
@@ -893,6 +916,8 @@ O Yaya mostra os padrões de despertar noturno ao longo das semanas. Quando voc�
 
 **content_md:**
 ```markdown
+![Bebê dormindo de costas no berço seguro](imagens/bebe-dormindo-berco.png)
+
 ## O que a ciência diz sobre treinar o sono
 
 Treinamento do sono é um termo guarda-chuva para estratégias que ensinam o bebê a adormecer de forma independente e a se autorregular nos despertares noturnos. Não é sinônimo de "deixar chorar sem limite".
@@ -914,7 +939,7 @@ Uma revisão sistemática de 2006 com mais de 50 estudos concluiu que métodos c
 **Fading (redução gradual de suporte):** reduz progressivamente o nível de suporte oferecido para adormecer. Se o bebê adormece mamando, começa a tirar do peito antes de adormecer completamente, depois antes de estar quase dormindo, e assim por diante.
 
 **IMAGEM DE QUEBRA**
-**PROMPT GEMINI — casal-noite-bebe.webp:**
+**PROMPT GEMINI - casal-noite-bebe.webp:**
 > Foto realista de casal brasileiro à noite, um deles olhando para o monitor de bebê com expressão cansada mas calma. Quarto com pouca luz. Paleta: tons escuros, lilás suave no monitor. Proporção 3:2.
 
 ### Qual escolher
@@ -952,6 +977,8 @@ Registre os horários de adormecer e os despertares noturnos durante o processo 
 
 **content_md:**
 ```markdown
+![Bebê de 4 meses sorrindo durante salto de desenvolvimento](imagens/bebe-sorrindo-4-meses.png)
+
 ## O que são e o que esperar
 
 Saltos de desenvolvimento são períodos de intensa atividade neural em que o cérebro do bebê está processando e integrando novas habilidades. Durante esses períodos, é comum que o bebê fique mais irritado, durma pior, queira mais colo e mame mais.
@@ -982,7 +1009,7 @@ Realidade: os períodos mais intensos de cada salto duram dias, não semanas. Se
 :::
 
 **IMAGEM DE QUEBRA**
-**PROMPT GEMINI — bebe-explorando-maos.webp:**
+**PROMPT GEMINI - bebe-explorando-maos.webp:**
 > Foto realista de bebê de 4 meses deitado olhando as próprias mãos com expressão de descoberta. Luz natural suave. Fundo neutro claro. Paleta: branco, pele quente, lilás suave. Proporção 3:2.
 
 :::yaya
@@ -1000,6 +1027,8 @@ O Yaya identifica automaticamente em qual semana de desenvolvimento o bebê est�
 
 **content_md:**
 ```markdown
+![Bebê explorando as próprias mãos como marco da fase oral](imagens/bebe-explorando-maos.png)
+
 ## O que o bebê está conquistando
 
 Entre 3 e 6 meses, o desenvolvimento é acelerado e visível. Em 90 dias, o bebê passa de pouco controle motor a uma criança que sorri, interage, vocaliza e começa a rolar.
@@ -1035,7 +1064,7 @@ Os marcos listados são baseados nas curvas da Caderneta de Saúde da Criança d
 :::
 
 **IMAGEM DE QUEBRA**
-**PROMPT GEMINI — bebe-sorrindo-4-meses.webp:**
+**PROMPT GEMINI - bebe-sorrindo-4-meses.webp:**
 > Foto realista de bebê de 4 a 5 meses sorrindo amplamente para adulto fora do quadro. Expressão de alegria genuína. Luz natural suave. Fundo desfocado em lilás suave. Proporção 3:2.
 
 ### Quando buscar avaliação
@@ -1065,6 +1094,8 @@ Registre cada marco conquistado no Yaya. O app mantém a caderneta de desenvolvi
 
 **content_md:**
 ```markdown
+![Bebê brincando no tapete em rotina diurna](imagens/bebe-brincando-tapete.png)
+
 ## Quando a rotina começa a fazer sentido
 
 Por volta de 3 a 4 meses, o ritmo circadiano do bebê está suficientemente maduro para que uma rotina consistente comece a funcionar de verdade. Ainda não é previsível ao minuto, mas o bebê começa a responder a sequências.
@@ -1093,7 +1124,7 @@ Rotinas de sono consistentes aos 3 meses estão associadas a melhor qualidade de
 :::
 
 **IMAGEM DE QUEBRA**
-**PROMPT GEMINI — bebe-brincando-tapete.webp:**
+**PROMPT GEMINI - bebe-brincando-tapete.webp:**
 > Foto realista de bebê de 3 a 4 meses deitado em tapete de atividades colorido, explorando brinquedos com as mãos. Luz natural. Ambiente doméstico organizado. Paleta: tons neutros e lilás suave. Proporção 3:2.
 
 ### Voltando ao trabalho nessa fase
@@ -1117,6 +1148,8 @@ Compartilhe o resumo de rotina gerado pelo Yaya com a babá ou a creche. O app e
 
 **content_md:**
 ```markdown
+![Padrões de sono do bebê de 3 a 6 meses](imagens/sono-recem-nascido-ciclo.png)
+
 ## Noites melhores: o que é possível nessa fase
 
 Entre 3 e 6 meses, muitos bebês começam a ter um período mais longo de sono noturno. Isso não significa dormir a noite toda, mas períodos de 4 a 6 horas seguidas são comuns nessa faixa.
@@ -1165,6 +1198,8 @@ O Yaya mostra a duração do maior período de sono noturno ao longo das semanas
 
 **content_md:**
 ```markdown
+![Bebê descobrindo o próprio reflexo no espelho](imagens/bebe-espelho.png)
+
 ## O bebê que explora o mundo pela boca
 
 A partir dos 3 meses, o bebê começa a levar tudo à boca. Isso não é sinal de fome nem de dentição precoce. É a forma principal de exploração sensorial nessa fase: a boca tem mais receptores táteis por centímetro quadrado do que qualquer outra parte do corpo do bebê.
@@ -1196,7 +1231,7 @@ Quando o bebê começa a rolar, nunca o deixe desacompanhado em superfícies ele
 - Canções com gestos (babá neguinho, palminhas)
 
 **IMAGEM DE QUEBRA**
-**PROMPT GEMINI — bebe-espelho.webp:**
+**PROMPT GEMINI - bebe-espelho.webp:**
 > Foto realista de bebê de 5 meses olhando para espelho inquebrável com expressão de fascínio. Adulto ao lado sorrindo. Luz natural. Paleta neutra e lilás. Proporção 3:2.
 
 :::ciencia
@@ -1218,6 +1253,8 @@ Registre os primeiros rolos no Yaya. O app salva a data e adiciona o marco à ca
 
 **content_md:**
 ```markdown
+![Adulto conversando frente a frente com bebê em desenvolvimento de linguagem](imagens/adulto-conversando-bebe.png)
+
 ## Como a linguagem começa
 
 O bebê não nasce sabendo falar, mas nasce preparado para aprender. O cérebro do recém-nascido já diferencia sons da língua materna de sons de outras línguas, e a exposição à fala humana desde o nascimento é o que constrói a base da linguagem.
@@ -1245,12 +1282,12 @@ Responda às vocalizações do bebê como se fossem falas: quando ele faz "ba ba
 Leia em voz alta, mesmo que o bebê não entenda. A prosódia (ritmo e entonação da fala) é processada e armazenada.
 
 **IMAGEM DE QUEBRA**
-**PROMPT GEMINI — adulto-conversando-bebe.webp:**
+**PROMPT GEMINI - adulto-conversando-bebe.webp:**
 > Foto realista de adulto brasileiro próximo ao rosto do bebê de 5 meses, conversando com expressão animada. Bebê com expressão atenta. Luz natural suave. Paleta neutra. Proporção 3:2.
 
 :::mito
 Mito: "Colocar o bebê para assistir vídeos educativos ajuda a falar mais cedo."
-Realidade: telas não substituem a fala humana para desenvolvimento de linguagem em bebês. Interação ao vivo, mesmo que informal, é o que estimula o desenvolvimento. A Sociedade Brasileira de Pediatria recomenda evitar exposição a telas antes dos 2 anos, exceto videochamadas — a tela não ensina, a interação humana ensina. (SBP, 2019; alinhado com AAP, 2016)
+Realidade: telas não substituem a fala humana para desenvolvimento de linguagem em bebês. Interação ao vivo, mesmo que informal, é o que estimula o desenvolvimento. A Sociedade Brasileira de Pediatria recomenda evitar exposição a telas antes dos 2 anos, exceto videochamadas - a tela não ensina, a interação humana ensina. (SBP, 2019; alinhado com AAP, 2016)
 :::
 
 :::alerta
@@ -1272,7 +1309,7 @@ Registre os primeiros sons e sílabas no Yaya. Datas de marco ficam salvas na ca
 
 ---
 
-## SEÇÃO: Vamos revisar? — Módulo 2
+## SEÇÃO: Vamos revisar? - Módulo 2
 **type:** `flashcards`  
 **slug:** `flashcards-modulo-2`  
 **parent:** `modulo-2`  
@@ -1320,13 +1357,13 @@ Registre os primeiros sons e sílabas no Yaya. Datas de marco ficam salvas na ca
 
 ---
 
-## SEÇÃO: Módulo 3 — 6 a 9 meses
+## SEÇÃO: Módulo 3 - 6 a 9 meses
 **type:** `part`  
 **slug:** `modulo-3`  
 **cover_image_url:** `primeiro-ano/img/hero-modulo-3.webp`  
 **estimated_minutes:** 2
 
-**PROMPT GEMINI — hero-modulo-3.webp:**
+**PROMPT GEMINI - hero-modulo-3.webp:**
 > Foto realista de bebê brasileiro de 7 meses sentado no chão com apoio, segurando um pedaço de banana com as duas mãos e levando à boca. Expressão de concentração e prazer. Luz natural. Superfície limpa, fundo desfocado em tons neutros e lilás. Proporção 21:9.
 
 ---
@@ -1339,6 +1376,8 @@ Registre os primeiros sons e sílabas no Yaya. Datas de marco ficam salvas na ca
 
 **content_md:**
 ```markdown
+![Bebê comendo a primeira papinha em cadeira de refeição](imagens/primeira-papinha.png)
+
 ## A maior virada do 1º ano
 
 A introdução alimentar é o momento em que o bebê passa de um ser que só conhece leite para alguém que vai comer o que a família come. É uma das fases mais aguardadas e, ao mesmo tempo, mais cheias de dúvidas.
@@ -1376,7 +1415,7 @@ Nos primeiros dias, o objetivo não é nutrição. O leite ainda é a principal 
 **O que oferecer primeiro:** não há uma ordem obrigatória. Legumes, verduras, proteínas e carboidratos podem ser introduzidos desde o início. A variedade é mais importante do que a sequência.
 
 **IMAGEM DE QUEBRA**
-**PROMPT GEMINI — primeira-papinha.webp:**
+**PROMPT GEMINI - primeira-papinha.webp:**
 > Foto realista de bebê de 6 meses em cadeirinha de alimentação, com expressão curiosa diante de prato colorido com purê de legumes. Colher pequena na mão do adulto. Luz natural. Paleta neutra e lilás. Proporção 3:2.
 
 ### O que evitar no 1º ano
@@ -1414,6 +1453,8 @@ Registre cada novo alimento introduzido no Yaya. O app mantém o histórico de a
 
 **content_md:**
 ```markdown
+![Bebê comendo legume em palito no método BLW](imagens/bebe-blw-palito-legume.png)
+
 ## Dois caminhos para o mesmo destino
 
 BLW (Baby-Led Weaning, ou desmame guiado pelo bebê) e papinha são duas abordagens para a introdução alimentar. As duas funcionam. A escolha depende do bebê, da família e da rotina.
@@ -1446,7 +1487,7 @@ Uma revisão sistemática de 2016 não encontrou diferença significativa no ris
 - Nunca: uva inteira, tomate-cereja inteiro, castanhas inteiras, pedaços duros
 
 **IMAGEM DE QUEBRA**
-**PROMPT GEMINI — bebe-blw-palito-legume.webp:**
+**PROMPT GEMINI - bebe-blw-palito-legume.webp:**
 > Foto realista de bebê de 7 meses em cadeirinha segurando palito de cenoura cozida com as duas mãos, levando à boca. Expressão concentrada. Mesa com outros alimentos coloridos ao redor. Luz natural. Proporção 3:2.
 
 :::mito
@@ -1469,6 +1510,8 @@ Registre a aceitação de cada alimento no Yaya. Com o tempo, você vê quais te
 
 **content_md:**
 ```markdown
+![Ovo mexido em prato de bebê: alergênico introduzido cedo](imagens/ovo-mexido-bebe.png)
+
 ## Por que introduzir cedo, não evitar
 
 Durante anos, a recomendação era adiar a introdução de alimentos alergênicos para reduzir o risco de alergia. A ciência inverteu esse entendimento: introduzir cedo, de forma consistente, é o que protege.
@@ -1500,7 +1543,7 @@ O estudo LEAP (Learning Early About Peanut Allergy, 2015) demonstrou que crianç
 **Manter após a introdução:** após introduzir sem reação, continue oferecendo regularmente. Exposição consistente é o que mantém a tolerância.
 
 **IMAGEM DE QUEBRA**
-**PROMPT GEMINI — ovo-mexido-bebe.webp:**
+**PROMPT GEMINI - ovo-mexido-bebe.webp:**
 > Foto realista de prato pequeno com ovo mexido e outros alimentos coloridos preparados para bebê. Apresentação simples e apetitosa. Luz natural. Paleta neutra. Proporção 3:2.
 
 ### Sinais de reação alérgica
@@ -1538,6 +1581,8 @@ Registre a introdução de cada alergênico no Yaya com a data. Se ocorrer reaç
 
 **content_md:**
 ```markdown
+![Cardápio colorido com variedade de alimentos para bebê](imagens/cardapio-bebe-colorido.png)
+
 ## Como montar as refeições nessa fase
 
 Entre 6 e 9 meses, o bebê passa de 1 refeição por dia para 2 a 3 refeições, além do leite materno ou fórmula que continua sendo a base da alimentação.
@@ -1575,7 +1620,7 @@ A diversidade alimentar nos primeiros 2 anos está diretamente associada a menor
 :::
 
 **IMAGEM DE QUEBRA**
-**PROMPT GEMINI — cardapio-bebe-colorido.webp:**
+**PROMPT GEMINI - cardapio-bebe-colorido.webp:**
 > Foto realista de mesa com pratos pequenos coloridos para bebê: purê laranja, proteína, legumes verdes. Apresentação organizada e apetitosa. Luz natural. Paleta vibrante mas natural. Proporção 3:2.
 
 ### Temperos permitidos
@@ -1599,6 +1644,8 @@ Registre as refeições no Yaya para ter um histórico de quais grupos alimentar
 
 **content_md:**
 ```markdown
+![Família comendo junto com bebê na mesa](imagens/familia-mesa-bebe.png)
+
 ## Recusa alimentar: o que é normal e o que investigar
 
 Bebê que recusa alimentos na introdução alimentar é a norma, não a exceção. O que parece rejeição muitas vezes é exploração: o bebê precisa de múltiplas exposições para aceitar um alimento novo.
@@ -1624,7 +1671,7 @@ Neofobia é o medo ou aversão a alimentos novos. É um comportamento evolutivo 
 **Coma junto:** bebês aprendem por imitação. Comer em família, com o bebê vendo adultos comendo os mesmos alimentos, é o estímulo mais eficaz.
 
 **IMAGEM DE QUEBRA**
-**PROMPT GEMINI — familia-mesa-bebe.webp:**
+**PROMPT GEMINI - familia-mesa-bebe.webp:**
 > Foto realista de família brasileira à mesa do almoço com bebê em cadeirinha participando da refeição. Adultos comendo, bebê explorando alimentos na frente. Ambiente doméstico acolhedor. Luz natural. Proporção 3:2.
 
 :::mito
@@ -1693,6 +1740,8 @@ Registre a oferta de água no Yaya junto com as refeições para ter o históric
 
 **content_md:**
 ```markdown
+![Bebê engatinhando em superfície segura](imagens/bebe-engatinhando.png)
+
 ## De sentado a em pé: a fase da mobilidade
 
 Entre 6 e 9 meses, o bebê passa por uma transformação motora radical. Em 90 dias, vai de bebê que precisava de apoio para sentar a criança que engatinha, puxa para ficar em pé e começa a explorar o ambiente.
@@ -1724,7 +1773,7 @@ O engatinhar não é um marco obrigatório. Cerca de 7% das crianças com desenv
 :::
 
 **IMAGEM DE QUEBRA**
-**PROMPT GEMINI — bebe-engatinhando.webp:**
+**PROMPT GEMINI - bebe-engatinhando.webp:**
 > Foto realista de bebê de 8 meses engatinhando em direção à câmera, expressão determinada e alegre. Chão de madeira, brinquedo ao fundo. Luz natural. Paleta neutra e lilás. Proporção 3:2.
 
 ### Como estimular
@@ -1754,6 +1803,8 @@ Registre cada marco motor conquistado no Yaya. A caderneta de desenvolvimento sa
 
 **content_md:**
 ```markdown
+![Bebê apontando para algo durante fase de ansiedade de separação](imagens/bebe-apontando.png)
+
 ## Por que voltou a acordar de noite
 
 Por volta dos 8 a 9 meses, muitos bebês que estavam dormindo bem voltam a acordar com frequência à noite. Isso não é retrocesso permanente: é uma regressão causada por dois fatores simultâneos.
@@ -1792,30 +1843,65 @@ O Yaya mostra a frequência de despertares ao longo das semanas. Durante a regre
 **data (JSON):**
 ```json
 {
-  "checklist_items": [
-    {"id": "seg-01", "text": "Protetor em todas as tomadas acessíveis ao bebê", "category": "Elétrica"},
-    {"id": "seg-02", "text": "Fios elétricos fora do alcance ou fixados à parede", "category": "Elétrica"},
-    {"id": "seg-03", "text": "Portão de segurança no topo e na base de escadas", "category": "Quedas"},
-    {"id": "seg-04", "text": "Móveis com quinas protegidas com cantoneiras", "category": "Quedas"},
-    {"id": "seg-05", "text": "Tapete antiderrapante em banheiro e áreas molhadas", "category": "Quedas"},
-    {"id": "seg-06", "text": "Janelas com tela ou travas que impeçam abertura ampla", "category": "Quedas"},
-    {"id": "seg-07", "text": "Medicamentos, vitaminas e suplementos em local alto com trava", "category": "Intoxicação"},
-    {"id": "seg-08", "text": "Produtos de limpeza em armário com trava de segurança", "category": "Intoxicação"},
-    {"id": "seg-09", "text": "Plantas tóxicas fora do alcance ou removidas", "category": "Intoxicação"},
-    {"id": "seg-10", "text": "Objetos pequenos (moedas, tampas, pilhas) fora do chão", "category": "Engasgo"},
-    {"id": "seg-11", "text": "Sacolas plásticas guardadas fora do alcance", "category": "Sufocamento"},
-    {"id": "seg-12", "text": "Panelas sempre com cabo voltado para dentro do fogão", "category": "Queimaduras"},
-    {"id": "seg-13", "text": "Líquidos quentes nunca deixados na borda de mesas ou bancadas", "category": "Queimaduras"},
-    {"id": "seg-14", "text": "Número do SAMU (192) e Disque Intoxicação (0800 722 6001) salvo no celular", "category": "Emergência"},
-    {"id": "seg-15", "text": "Bebê nunca deixado sozinho em banheira, mesmo por segundos", "category": "Afogamento"},
-    {"id": "seg-16", "text": "Baldes, bacias e piscinas infantis esvaziados após o uso", "category": "Afogamento"}
+  "groups": [
+    {
+      "title": "Elétrica",
+      "items": [
+        {"id": "seg-01", "text": "Protetor em todas as tomadas acessíveis ao bebê", "required": true},
+        {"id": "seg-02", "text": "Fios elétricos fora do alcance ou fixados à parede"}
+      ]
+    },
+    {
+      "title": "Quedas",
+      "items": [
+        {"id": "seg-03", "text": "Portão de segurança no topo e na base de escadas", "required": true},
+        {"id": "seg-04", "text": "Móveis com quinas protegidas com cantoneiras"},
+        {"id": "seg-05", "text": "Tapete antiderrapante em banheiro e áreas molhadas"},
+        {"id": "seg-06", "text": "Janelas com tela ou travas que impeçam abertura ampla", "required": true}
+      ]
+    },
+    {
+      "title": "Intoxicação",
+      "items": [
+        {"id": "seg-07", "text": "Medicamentos, vitaminas e suplementos em local alto com trava", "required": true},
+        {"id": "seg-08", "text": "Produtos de limpeza em armário com trava de segurança"},
+        {"id": "seg-09", "text": "Plantas tóxicas fora do alcance ou removidas"}
+      ]
+    },
+    {
+      "title": "Engasgo e sufocamento",
+      "items": [
+        {"id": "seg-10", "text": "Objetos pequenos (moedas, tampas, pilhas) fora do chão", "required": true},
+        {"id": "seg-11", "text": "Sacolas plásticas guardadas fora do alcance"}
+      ]
+    },
+    {
+      "title": "Queimaduras",
+      "items": [
+        {"id": "seg-12", "text": "Panelas sempre com cabo voltado para dentro do fogão"},
+        {"id": "seg-13", "text": "Líquidos quentes nunca deixados na borda de mesas ou bancadas"}
+      ]
+    },
+    {
+      "title": "Afogamento",
+      "items": [
+        {"id": "seg-15", "text": "Bebê nunca deixado sozinho em banheira, mesmo por segundos", "required": true},
+        {"id": "seg-16", "text": "Baldes, bacias e piscinas infantis esvaziados após o uso"}
+      ]
+    },
+    {
+      "title": "Emergência",
+      "items": [
+        {"id": "seg-14", "text": "Número do SAMU (192) e Disque Intoxicação (0800 722 6001) salvo no celular", "required": true}
+      ]
+    }
   ]
 }
 ```
 
 ---
 
-## SEÇÃO: Vamos revisar? — Módulo 3
+## SEÇÃO: Vamos revisar? - Módulo 3
 **type:** `flashcards`  
 **slug:** `flashcards-modulo-3`  
 **parent:** `modulo-3`  
@@ -1863,13 +1949,13 @@ O Yaya mostra a frequência de despertares ao longo das semanas. Durante a regre
 
 ---
 
-## SEÇÃO: Módulo 4 — 9 a 12 meses
+## SEÇÃO: Módulo 4 - 9 a 12 meses
 **type:** `part`  
 **slug:** `modulo-4`  
 **cover_image_url:** `primeiro-ano/img/hero-modulo-4.webp`  
 **estimated_minutes:** 2
 
-**PROMPT GEMINI — hero-modulo-4.webp:**
+**PROMPT GEMINI - hero-modulo-4.webp:**
 > Foto realista de bebê brasileiro de 11 meses de pé apoiado em sofá, olhando para a câmera com sorriso largo e confiante. Luz natural. Ambiente doméstico acolhedor. Paleta neutra e lilás suave. Proporção 21:9.
 
 ---
@@ -1882,6 +1968,8 @@ O Yaya mostra a frequência de despertares ao longo das semanas. Durante a regre
 
 **content_md:**
 ```markdown
+![Bebê dando os primeiros passos com apoio](imagens/bebe-primeiros-passos.png)
+
 ## Quando e como o bebê aprende a andar
 
 A marcha independente é o marco mais aguardado do 1º ano, e também um dos que mais variam em timing. O intervalo normal é amplo: de 9 a 18 meses. Um bebê que ainda não anda aos 12 meses está dentro da variação normal.
@@ -1899,7 +1987,7 @@ A maioria dos bebês segue esta progressão:
 **12 a 15 meses:** marcha estabelecida com quedas frequentes (normal); aumenta a confiança e a velocidade
 
 :::ciencia
-A variação normal para marcha independente é de 9 a 18 meses. Apenas 1% das crianças com desenvolvimento típico ainda não anda aos 18 meses. A avaliação pediátrica é indicada se a marcha não estiver estabelecida aos 18 meses. (AAP, Developmental Milestones, 2022)
+A variação normal para marcha independente é de 9 a 18 meses. Apenas 1% das crianças com desenvolvimento típico ainda não anda aos 18 meses. A avaliação pediátrica é indicada se a marcha não estiver estabelecida aos 18 meses. (SBP, Caderneta de Saúde da Criança, 2020; alinhado com AAP, Developmental Milestones, 2022)
 :::
 
 ### Como estimular sem forçar
@@ -1916,7 +2004,7 @@ A variação normal para marcha independente é de 9 a 18 meses. Apenas 1% das c
 - Ficar no colo ou no bebê conforto por períodos longos sem tempo no chão
 
 **IMAGEM DE QUEBRA**
-**PROMPT GEMINI — bebe-primeiros-passos.webp:**
+**PROMPT GEMINI - bebe-primeiros-passos.webp:**
 > Foto realista de bebê de 11-12 meses dando os primeiros passos em direção ao adulto com braços estendidos. Expressão de concentração e alegria. Chão de madeira. Luz natural. Paleta neutra e lilás. Proporção 3:2.
 
 :::mito
@@ -1947,6 +2035,8 @@ Registre o dia dos primeiros passos no Yaya. É um marco que fica na caderneta d
 
 **content_md:**
 ```markdown
+![Bebê apontando enquanto fala primeiras palavras](imagens/bebe-apontando.png)
+
 ## Quando o balbucio vira palavra
 
 A transição do balbucio para as primeiras palavras com significado é um dos marcos mais emocionantes do 1º ano. E também um dos mais mal compreendidos: o que conta como "primeira palavra"?
@@ -1982,7 +2072,7 @@ Entre 9 e 12 meses, os gestos são tão importantes quanto as palavras para aval
 Um bebê que aponta, dá objetos e faz gestos comunicativos está desenvolvendo linguagem bem, mesmo que ainda não tenha palavras.
 
 **IMAGEM DE QUEBRA**
-**PROMPT GEMINI — bebe-apontando.webp:**
+**PROMPT GEMINI - bebe-apontando.webp:**
 > Foto realista de bebê de 10-11 meses apontando para algo fora do quadro com expressão animada. Adulto ao lado olhando na direção do gesto. Luz natural. Paleta neutra. Proporção 3:2.
 
 :::alerta
@@ -2013,6 +2103,8 @@ Registre as primeiras palavras e gestos no Yaya com a data. O histórico de ling
 
 **content_md:**
 ```markdown
+![Bebê comendo com pinça (polegar e indicador)](imagens/bebe-pinca-comida.png)
+
 ## Rumo à mesa da família
 
 Entre 9 e 12 meses, a alimentação do bebê evolui rapidamente. A textura progride, o volume aumenta e o bebê começa a participar das refeições em família de forma mais ativa.
@@ -2036,7 +2128,7 @@ A autoalimentação com finger foods a partir dos 9 meses está associada a maio
 :::
 
 **IMAGEM DE QUEBRA**
-**PROMPT GEMINI — bebe-pinca-comida.webp:**
+**PROMPT GEMINI - bebe-pinca-comida.webp:**
 > Foto realista de bebê de 10 meses em cadeirinha pegando pedacinhos de comida com os dedos, concentrado. Bandeja com alimentos coloridos. Luz natural. Paleta neutra. Proporção 3:2.
 
 ### Seletividade alimentar emergente
@@ -2065,6 +2157,8 @@ Registre as refeições no Yaya e marque os alimentos que o bebê aceitou bem e 
 
 **content_md:**
 ```markdown
+![Bebê de 12 meses dormindo em transição para uma soneca](imagens/bebe-dormindo-12-meses.png)
+
 ## Consolidando o sono e navegando a regressão de 12 meses
 
 Entre 9 e 12 meses, a maioria dos bebês está em um padrão de 2 sonecas diurnas e uma noite de 10 a 12 horas. Por volta dos 12 meses, esse padrão começa a ser desafiado pela transição para 1 soneca.
@@ -2090,7 +2184,7 @@ A transição de 2 para 1 soneca ocorre, em média, entre 14 e 18 meses. Bebês 
 Se o bebê começa a resistir à soneca da manhã, tente atrasar o horário em 15 a 30 minutos a cada 3 a 4 dias. Se continuar resistindo, experimente uma soneca mais longa no meio do dia.
 
 **IMAGEM DE QUEBRA**
-**PROMPT GEMINI — bebe-dormindo-12-meses.webp:**
+**PROMPT GEMINI - bebe-dormindo-12-meses.webp:**
 > Foto realista de bebê de 1 ano dormindo de lado em berço, posição relaxada, lençol branco. Luz suave de abajur. Expressão serena. Paleta: branco, lilás muito suave. Proporção 3:2.
 
 :::yaya
@@ -2108,11 +2202,13 @@ Com o histórico de sono no Yaya, você consegue ver exatamente quando as soneca
 
 **content_md:**
 ```markdown
+![Bebê recebendo vacina em consulta pediátrica](imagens/vacinacao-bebe.png)
+
 ## O calendário completo e o que esperar de cada vacina
 
 O calendário vacinal do 1º ano é denso. Nos primeiros 12 meses, o bebê recebe mais vacinas do que em qualquer outro período da vida, e isso tem uma razão: é quando o sistema imune está mais vulnerável a doenças graves.
 
-### Calendário SUS — 1º ano
+### Calendário SUS - 1º ano
 
 | Idade | Vacinas |
 |-------|---------|
@@ -2137,7 +2233,7 @@ O calendário vacinal brasileiro é desenvolvido pelo Ministério da Saúde com 
 - Irritabilidade e choro: contato, colo, conforto
 
 **IMAGEM DE QUEBRA**
-**PROMPT GEMINI — vacinacao-bebe.webp:**
+**PROMPT GEMINI - vacinacao-bebe.webp:**
 > Foto realista de bebê no colo do adulto durante vacinação em posto de saúde. Enfermeira ao fundo desfocada. Adulto com expressão calma e acolhedora. Paleta neutra. Proporção 3:2.
 
 :::alerta
@@ -2183,6 +2279,8 @@ Registre cada vacina no Yaya com a data e o lote. O app mantém a caderneta vaci
 
 **content_md:**
 ```markdown
+![Pediatra examinando bebê em consulta de 1 ano](imagens/pediatra-consulta-1-ano.png)
+
 ## O que o pediatra avalia e como se preparar
 
 A consulta de 12 meses é uma das mais completas do 1º ano. O pediatra faz uma avaliação ampla de desenvolvimento, crescimento e saúde, e define os encaminhamentos necessários para o 2º ano.
@@ -2228,7 +2326,7 @@ A consulta de 12 meses inclui rastreamento de Transtorno do Espectro Autista (TE
 - Eventuais episódios de doença, febre ou sintomas registrados
 
 **IMAGEM DE QUEBRA**
-**PROMPT GEMINI — pediatra-consulta-1-ano.webp:**
+**PROMPT GEMINI - pediatra-consulta-1-ano.webp:**
 > Foto realista de pediatra brasileiro examinando bebê de 1 ano sorridente na maca de consultório. Pais ao fundo com expressão atenta. Ambiente de consultório pediátrico colorido. Luz artificial suave. Paleta neutra. Proporção 3:2.
 
 :::yaya
@@ -2246,6 +2344,8 @@ Antes da consulta de 1 ano, exporte o resumo do histórico do bebê no Yaya. É 
 
 **content_md:**
 ```markdown
+![Mãe cuidando de bebê com sintomas de virose](imagens/mae-bebe-doente.png)
+
 ## Casa vs. UPA vs. PS: como decidir
 
 Uma das maiores fontes de ansiedade dos pais é saber quando o filho precisa de atendimento médico urgente e quando pode ficar em casa com cuidados de suporte. Esta seção organiza as doenças mais comuns com critérios objetivos.
@@ -2261,7 +2361,7 @@ Febre é temperatura axilar acima de 37,5°C (SBP, 2023). É uma resposta imunol
 
 :::alerta
 Vá ao PS imediatamente se:
-- Qualquer febre (axilar ≥37,5°C) em bebê abaixo de 3 meses — emergência pediátrica até prova em contrário (SBP, 2023)
+- Qualquer febre (axilar ≥37,5°C) em bebê abaixo de 3 meses - emergência pediátrica até prova em contrário (SBP, 2023)
 - Febre acima de 39°C que não cede com antitérmico
 - Bebê letárgico, difícil de acordar, recusando líquidos
 - Febre por mais de 3 dias sem diagnóstico
@@ -2287,7 +2387,7 @@ Busque avaliação se: dificuldade para respirar (batendo asa do nariz, costelas
 Inflamação do ouvido médio, muito comum após resfriados. Sintomas: choro intenso, puxa o ouvido, piora ao deitar, febre.
 
 **IMAGEM DE QUEBRA**
-**PROMPT GEMINI — mae-bebe-doente.webp:**
+**PROMPT GEMINI - mae-bebe-doente.webp:**
 > Foto realista de mãe brasileira verificando temperatura de bebê com termômetro. Expressão atenta e calma. Bebê no colo com expressão cansada. Luz interna suave. Paleta neutra. Proporção 3:2.
 
 O diagnóstico é clínico, feito com otoscópio. Nem toda otite precisa de antibiótico: a maioria das otites virais resolve espontaneamente em 48 a 72 horas.
@@ -2321,6 +2421,8 @@ Registre episódios de doença no Yaya com início dos sintomas, temperatura e e
 
 **content_md:**
 ```markdown
+![Bebê de 1 ano saudável em momento de celebração](imagens/bebe-saudavel-consulta.png)
+
 ## 365 dias de conquistas
 
 O aniversário de 1 ano é uma celebração real. Não porque você "sobreviveu" (embora isso também mereça reconhecimento), mas porque você e seu bebê fizeram algo extraordinário: ele chegou ao mundo sem nenhuma habilidade e agora anda, fala, come, ri, chora com intenção e tem uma personalidade que é completamente dele.
@@ -2352,7 +2454,7 @@ Com 12 meses de dados no Yaya, você tem o registro mais completo possível do 1
 
 ---
 
-## SEÇÃO: Vamos revisar? — Módulo 4
+## SEÇÃO: Vamos revisar? - Módulo 4
 **type:** `flashcards`  
 **slug:** `flashcards-modulo-4`  
 **parent:** `modulo-4`  
@@ -2380,7 +2482,7 @@ Com 12 meses de dados no Yaya, você tem o registro mais completo possível do 1
     },
     {
       "front": "Febre em bebê abaixo de 3 meses: o que fazer?",
-      "back": "Qualquer temperatura axilar acima de 37,5°C em bebê abaixo de 3 meses é indicação de avaliação no PS imediatamente — sem esperar, sem dar antitérmico antes de ir. (SBP, 2023)"
+      "back": "Qualquer temperatura axilar acima de 37,5°C em bebê abaixo de 3 meses é indicação de avaliação no PS imediatamente - sem esperar, sem dar antitérmico antes de ir. (SBP, 2023)"
     },
     {
       "front": "Toda otite precisa de antibiótico?",
@@ -2428,7 +2530,7 @@ Use os recursos abaixo para revisar e registrar o que o bebê conquistou no 1º 
 
 ---
 
-## SEÇÃO: Quiz — Em que fase está o seu bebê?
+## SEÇÃO: Quiz - Em que fase está o seu bebê?
 **type:** `quiz`  
 **slug:** `quiz-fase-bebe`  
 **parent:** null  
@@ -2439,59 +2541,58 @@ Use os recursos abaixo para revisar e registrar o que o bebê conquistou no 1º 
 {
   "questions": [
     {
-      "question": "Quantos meses tem o seu bebê?",
+      "id": "q1",
+      "text": "Quantos meses tem o seu bebê?",
       "options": [
-        {"text": "0 a 3 meses", "profile": "modulo1"},
-        {"text": "3 a 6 meses", "profile": "modulo2"},
-        {"text": "6 a 9 meses", "profile": "modulo3"},
-        {"text": "9 a 12 meses", "profile": "modulo4"}
+        {"value": "a", "label": "0 a 3 meses"},
+        {"value": "b", "label": "3 a 6 meses"},
+        {"value": "c", "label": "6 a 9 meses"},
+        {"value": "d", "label": "9 a 12 meses"}
       ]
     },
     {
-      "question": "Qual é o maior desafio agora?",
+      "id": "q2",
+      "text": "Qual é o maior desafio agora?",
       "options": [
-        {"text": "Sono — ele acorda demais", "profile": "modulo1"},
-        {"text": "Amamentação ou alimentação", "profile": "modulo2"},
-        {"text": "Introdução alimentar", "profile": "modulo3"},
-        {"text": "Desenvolvimento e marcos", "profile": "modulo4"}
+        {"value": "a", "label": "Sono - ele acorda demais"},
+        {"value": "b", "label": "Amamentação ou alimentação"},
+        {"value": "c", "label": "Introdução alimentar"},
+        {"value": "d", "label": "Desenvolvimento e marcos"}
       ]
     },
     {
-      "question": "Como você está se sentindo nessa fase?",
+      "id": "q3",
+      "text": "Como você está se sentindo nessa fase?",
       "options": [
-        {"text": "Exausto/a, sobrevivendo", "profile": "modulo1"},
-        {"text": "Mais confiante, mas com dúvidas", "profile": "modulo2"},
-        {"text": "Animado/a com as novidades", "profile": "modulo3"},
-        {"text": "Impressionado/a com o quanto evoluiu", "profile": "modulo4"}
+        {"value": "a", "label": "Exausto/a, sobrevivendo"},
+        {"value": "b", "label": "Mais confiante, mas com dúvidas"},
+        {"value": "c", "label": "Animado/a com as novidades"},
+        {"value": "d", "label": "Impressionado/a com o quanto evoluiu"}
       ]
     }
   ],
-  "profiles": [
-    {
-      "id": "modulo1",
+  "results": {
+    "a": {
       "title": "Fase da sobrevivência",
       "description": "Você está nos primeiros 3 meses, a fase mais intensa do 1º ano. Tudo é novo, nada é previsível, e está tudo bem assim. O Módulo 1 foi feito para você.",
-      "icon": "🌱"
+      "recommended_sections": ["modulo-1"]
     },
-    {
-      "id": "modulo2",
+    "b": {
       "title": "Fase do despertar",
       "description": "Seu bebê está começando a se tornar uma pessoa. Sorri, responde, tem preferências. O Módulo 2 explica o que está acontecendo e o que esperar.",
-      "icon": "✨"
+      "recommended_sections": ["modulo-2"]
     },
-    {
-      "id": "modulo3",
+    "c": {
       "title": "Fase da exploração",
       "description": "A introdução alimentar transforma tudo. Seu bebê está descobrindo o mundo pela boca e pelo movimento. O Módulo 3 é o seu guia para essa fase.",
-      "icon": "🌍"
+      "recommended_sections": ["modulo-3"]
     },
-    {
-      "id": "modulo4",
+    "d": {
       "title": "Fase da conquista",
       "description": "O 1º ano está quase completo. Seu bebê está andando, falando e comendo. O Módulo 4 te prepara para o sprint final.",
-      "icon": "🏆"
+      "recommended_sections": ["modulo-4"]
     }
-  ]
+  }
 }
 ```
 
@@ -2587,7 +2688,7 @@ Use os recursos abaixo para revisar e registrar o que o bebê conquistou no 1º 
 
 **content_md:**
 ```markdown
-## Janelas de sono por fase — referência rápida
+## Janelas de sono por fase - referência rápida
 
 A janela de sono é o tempo que o bebê consegue ficar acordado entre um sono e outro sem ficar superestimulado. Use como referência, não como regra rígida.
 
@@ -2624,7 +2725,7 @@ O Yaya calcula a janela de sono do seu bebê com base no histórico real dele, n
 
 **content_md:**
 ```markdown
-## O que oferecer em cada fase — referência rápida
+## O que oferecer em cada fase - referência rápida
 
 Use como consulta rápida. Para detalhes, veja as seções completas do Módulo 3.
 
