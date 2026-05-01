@@ -87,14 +87,12 @@ export default function DynamicYayaCTA({ guideId, guideSlug, userId }: Props) {
     return (
       <div style={s.box}>
         <div style={s.icon}>💜</div>
-        <div style={{ flex: 1 }}>
-          <div style={s.title}>Continue sua jornada na biblioteca</div>
-          <p style={s.body}>
-            Você tem acesso ilimitado com Yaya+ {state.subscriptionPlan === 'lifetime' ? 'Vitalício' : 'Anual'}.
-            Veja outros guias pra você:
-          </p>
-          <OtherGuidesGrid guides={otherGuides} currentSlug={guideSlug} />
-        </div>
+        <div style={s.title}>Continue sua jornada na biblioteca</div>
+        <p style={s.body}>
+          Você tem acesso ilimitado com Yaya+ {state.subscriptionPlan === 'lifetime' ? 'Vitalício' : 'Anual'}.
+          Veja outros guias pra você:
+        </p>
+        <OtherGuidesGrid guides={otherGuides} currentSlug={guideSlug} />
       </div>
     )
   }
@@ -104,23 +102,21 @@ export default function DynamicYayaCTA({ guideId, guideSlug, userId }: Props) {
     return (
       <div style={s.box}>
         <div style={s.icon}>💎</div>
-        <div style={{ flex: 1 }}>
-          <div style={s.title}>Desbloqueie a biblioteca toda</div>
-          <p style={s.body}>
-            Com o Yaya+ Anual ou Vitalício você acessa todos os guias da biblioteca, sem pagar por cada um.
-          </p>
-          <a href="https://yayababy.app" target="_blank" rel="noopener noreferrer" style={s.btnPrimary}>
-            Fazer upgrade do plano
-          </a>
-          {otherGuides.length > 0 && (
-            <>
-              <p style={{ ...s.body, marginTop: 18, fontSize: 13 }}>
-                Outros guias que podem te interessar:
-              </p>
-              <OtherGuidesGrid guides={otherGuides} currentSlug={guideSlug} />
-            </>
-          )}
-        </div>
+        <div style={s.title}>Desbloqueie a biblioteca toda</div>
+        <p style={s.body}>
+          Com o Yaya+ Anual ou Vitalício você acessa todos os guias da biblioteca, sem pagar por cada um.
+        </p>
+        <a href="https://yayababy.app" target="_blank" rel="noopener noreferrer" style={s.btnPrimary}>
+          Fazer upgrade do plano
+        </a>
+        {otherGuides.length > 0 && (
+          <>
+            <p style={{ ...s.body, marginTop: 12, fontSize: 13 }}>
+              Outros guias que podem te interessar:
+            </p>
+            <OtherGuidesGrid guides={otherGuides} currentSlug={guideSlug} />
+          </>
+        )}
       </div>
     )
   }
@@ -132,19 +128,17 @@ export default function DynamicYayaCTA({ guideId, guideSlug, userId }: Props) {
     return (
       <div style={s.box}>
         <div style={s.icon}>📱</div>
-        <div style={{ flex: 1 }}>
-          <div style={s.title}>
-            {courtesyActive ? 'Sua Yaya+ gratuita está ativa' : 'Aproveite os 30 dias de Yaya+ que vieram com o guia'}
-          </div>
-          <p style={s.body}>
-            {courtesyActive
-              ? 'Use o app Yaya pra registrar sono, mamadas e fraldas. Os primeiros dias passam rápido.'
-              : 'Baixe o app Yaya e ative sua cortesia de 30 dias usando o mesmo email da compra.'}
-          </p>
-          <a href="https://yayababy.app" target="_blank" rel="noopener noreferrer" style={s.btnPrimary}>
-            Abrir o app
-          </a>
+        <div style={s.title}>
+          {courtesyActive ? 'Sua Yaya+ gratuita está ativa' : 'Aproveite os 30 dias de Yaya+ que vieram com o guia'}
         </div>
+        <p style={s.body}>
+          {courtesyActive
+            ? 'Use o app Yaya pra registrar sono, mamadas e fraldas. Os primeiros dias passam rápido.'
+            : 'Baixe o app Yaya e ative sua cortesia de 30 dias usando o mesmo email da compra.'}
+        </p>
+        <a href="https://yayababy.app" target="_blank" rel="noopener noreferrer" style={s.btnPrimary}>
+          Abrir o app
+        </a>
       </div>
     )
   }
@@ -153,17 +147,13 @@ export default function DynamicYayaCTA({ guideId, guideSlug, userId }: Props) {
   return (
     <div style={s.box}>
       <div style={s.icon}>✨</div>
-      <div style={{ flex: 1 }}>
-        <div style={s.title}>Continue lendo o guia completo</div>
-        <p style={s.body}>
-          Compre este guia avulso ou assine o Yaya+ pra acessar a biblioteca toda.
-        </p>
-        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-          <a href={`/biblioteca-yaya/${guideSlug}`} style={s.btnPrimary}>
-            Ver opções
-          </a>
-        </div>
-      </div>
+      <div style={s.title}>Continue lendo o guia completo</div>
+      <p style={s.body}>
+        Compre este guia avulso ou assine o Yaya+ pra acessar a biblioteca toda.
+      </p>
+      <a href={`/biblioteca-yaya/${guideSlug}`} style={s.btnPrimary}>
+        Ver opções
+      </a>
     </div>
   )
 }
@@ -227,44 +217,50 @@ function OtherGuidesGrid({ guides, currentSlug }: { guides: OtherGuide[]; curren
 const s: Record<string, React.CSSProperties> = {
   box: {
     width: '100%',
-    padding: '20px 22px',
+    padding: '24px 22px',
     background: 'color-mix(in srgb, var(--r-accent) 7%, var(--r-surface))',
     border: '1px solid color-mix(in srgb, var(--r-accent) 25%, transparent)',
     borderRadius: 14,
     display: 'flex',
-    alignItems: 'flex-start',
-    gap: 16,
+    flexDirection: 'column' as const,
+    alignItems: 'center',
+    textAlign: 'center' as const,
+    gap: 10,
     fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif',
   },
   icon: {
-    fontSize: 28,
+    fontSize: 32,
     flex: '0 0 auto',
-    marginTop: 2,
+    lineHeight: 1,
   },
   title: {
     fontFamily: 'Manrope, system-ui, sans-serif',
     fontWeight: 800,
-    fontSize: 15,
+    fontSize: 16,
     color: 'var(--r-text-strong)',
     letterSpacing: '-0.01em',
-    marginBottom: 6,
+    margin: 0,
   },
   body: {
     fontSize: 13,
     color: 'var(--r-text-muted)',
     lineHeight: 1.55,
-    margin: '0 0 12px',
+    margin: 0,
+    maxWidth: 320,
   },
   btnPrimary: {
     display: 'inline-flex',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: 6,
-    padding: '10px 20px',
+    padding: '12px 28px',
     borderRadius: 999,
     background: 'var(--r-accent)',
     color: 'var(--r-on-accent, #fff)',
+    fontFamily: 'Manrope, system-ui, sans-serif',
     fontWeight: 700,
-    fontSize: 13,
+    fontSize: 14,
+    marginTop: 4,
     textDecoration: 'none',
   },
 }

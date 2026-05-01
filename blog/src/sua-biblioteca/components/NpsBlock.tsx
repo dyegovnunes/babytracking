@@ -152,13 +152,13 @@ export default function NpsBlock({ guideId, sectionId, userId }: Props) {
             ))}
           </div>
 
-          {/* Comentário + botão alinhados no mesmo container */}
-          <div style={{ width: '100%', maxWidth: 440, margin: '0 auto' }}>
-            {rating > 0 && (
+          {/* Comentário + botão — só aparecem após o usuário marcar nota */}
+          {rating > 0 && (
+            <div style={{ width: '100%', maxWidth: 440, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 12 }}>
               <textarea
                 value={comment}
                 onChange={e => setComment(e.target.value)}
-                placeholder="Deixe um comentário (opcional)..."
+                placeholder="Deixe um comentário (opcional)…"
                 rows={3}
                 style={{
                   width: '100%',
@@ -169,33 +169,33 @@ export default function NpsBlock({ guideId, sectionId, userId }: Props) {
                   color: 'var(--r-text)',
                   fontFamily: 'inherit', fontSize: 13, lineHeight: 1.5,
                   resize: 'vertical', outline: 'none',
-                  boxSizing: 'border-box', marginBottom: 10,
+                  boxSizing: 'border-box',
                   transition: 'border-color 0.15s',
                   display: 'block',
                 }}
                 onFocus={e => { e.currentTarget.style.borderColor = '#f59e0b' }}
                 onBlur={e => { e.currentTarget.style.borderColor = 'var(--r-border)' }}
               />
-            )}
 
-            <button
-              onClick={handleSubmit}
-              disabled={!rating || status === 'submitting'}
-              style={{
-                display: 'block', marginLeft: 'auto',
-                padding: '12px 28px', borderRadius: 999,
-                background: rating ? 'var(--r-accent)' : 'var(--r-surface-strong)',
-                color: rating ? 'var(--r-on-accent)' : 'var(--r-text-subtle)',
-                border: 'none', fontFamily: 'inherit',
-                fontSize: 14, fontWeight: 700,
-                cursor: rating ? 'pointer' : 'default',
-                transition: 'background 0.2s, color 0.2s',
-                opacity: status === 'submitting' ? 0.7 : 1,
-              }}
-            >
-              {status === 'submitting' ? 'Enviando…' : 'Enviar avaliação'}
-            </button>
-          </div>
+              <button
+                onClick={handleSubmit}
+                disabled={status === 'submitting'}
+                style={{
+                  alignSelf: 'center',
+                  padding: '12px 28px', borderRadius: 999,
+                  background: 'var(--r-accent)',
+                  color: 'var(--r-on-accent)',
+                  border: 'none', fontFamily: 'inherit',
+                  fontSize: 14, fontWeight: 700,
+                  cursor: 'pointer',
+                  transition: 'opacity 0.2s',
+                  opacity: status === 'submitting' ? 0.7 : 1,
+                }}
+              >
+                {status === 'submitting' ? 'Enviando…' : 'Enviar avaliação'}
+              </button>
+            </div>
+          )}
         </>
       )}
     </div>

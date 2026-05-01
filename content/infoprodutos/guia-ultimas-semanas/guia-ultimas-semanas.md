@@ -1275,13 +1275,7 @@ Isso não significa que vai ser fácil. Mas significa que quando as situações 
 
 #### Próximos passos
 
-Você terminou a leitura, mas o guia continua útil nos próximos 60 dias. Antes de fechar:
-
-- **Faça o quiz "Qual seu estilo de cuidar?"** — em 3 minutos você descobre seu perfil e ganha uma trilha personalizada das seções que mais importam pra você.
-- **Use o Checklist Mestre** dividido em 3 fases (antes do parto, primeiros dias, semana 1-4). O estado fica salvo: marque conforme for fazendo.
-- **Revise os flashcards** ao fim de cada parte sempre que quiser refrescar os conceitos.
-
-Você encontra todos esses materiais na sidebar, na seção **Materiais complementares**.
+Você terminou a leitura, mas o guia continua útil nos próximos 60 dias. Use os materiais complementares abaixo nos próximos dias:
 ```
 
 ---

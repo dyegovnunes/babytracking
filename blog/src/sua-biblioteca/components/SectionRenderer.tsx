@@ -236,11 +236,53 @@ export default function SectionRenderer({
         return <div dangerouslySetInnerHTML={{ __html: html }} />
       })()}
 
-      {/* Tool link cards — ex: celebração da Conclusão com cards para quiz + checklist */}
+      {/* Tool link cards — celebração da Conclusão com cards pros materiais
+          complementares. Suporta section_id (UUID) ou section_slug. */}
       {(() => {
         const toolLinks = (section.data as { tool_links?: ToolLink[] } | null)?.tool_links
         if (!toolLinks || toolLinks.length === 0) return null
-        return <ToolLinkCards links={toolLinks} onNavigate={onNavigate} />
+        // Resolve slug → id quando preciso
+        const resolved = toolLinks
+          .map(l => {
+            if (l.section_id) return l
+            if (l.section_slug) {
+              const found = allSections.find(s => s.slug === l.section_slug)
+              return found ? { ...l, section_id: found.id } : null
+            }
+            return null
+          })
+          .filter((l): l is ToolLink => !!l && !!l.section_id)
+        if (resolved.length === 0) return null
+        return <ToolLinkCards links={resolved} onNavigate={onNavigate} />
+      })()}
+
+      {/* Conclusão: gera tool_links automáticos pros materiais complementares
+          quando o MD não definiu manualmente. Lista todas as seções
+          category=complementary que ainda não foram visitadas + as que foram
+          (com indicação de progresso). Aparecem como cards clicáveis acima
+          dos blocos de avaliação. */}
+      {(() => {
+        const isConclusion = section.slug?.startsWith('conclusao')
+        const hasManualToolLinks = !!(section.data as { tool_links?: ToolLink[] } | null)?.tool_links?.length
+        if (!isConclusion || hasManualToolLinks) return null
+        // Lista só quiz e checklist; flashcards já aparecem ao fim de cada
+        // parte naturalmente, não precisa repetir aqui.
+        const complementary = allSections.filter(
+          s => s.category === 'complementary' && s.type !== 'flashcards',
+        )
+        if (complementary.length === 0) return null
+        const iconByType: Record<string, string> = {
+          quiz: 'help_outline',
+          checklist: 'checklist',
+          flashcards: 'style',
+        }
+        const links: ToolLink[] = complementary.map(s => ({
+          section_id: s.id,
+          title: s.title,
+          description: descriptionForComplementary(s.type, s.title),
+          icon: iconByType[s.type] ?? 'auto_awesome',
+        }))
+        return <ToolLinkCards links={links} onNavigate={onNavigate} />
       })()}
 
       {/* Conclusão: auto-renderiza NpsBlock + DynamicYayaCTA (sem precisar de
@@ -824,10 +866,19 @@ function CountdownSnackbar({
 // ── ToolLinkCards ────────────────────────────────────────────────────────────
 
 interface ToolLink {
-  section_id: string
+  section_id?: string
+  section_slug?: string
   title: string
   description: string
   icon: string
+}
+
+/** Texto pequeno descritivo dos materiais complementares no card. */
+function descriptionForComplementary(type: string, _title: string): string {
+  if (type === 'quiz') return 'Descubra seu perfil e ganhe uma trilha personalizada das seções mais relevantes pra você.'
+  if (type === 'checklist') return 'Acompanhe seu progresso passo a passo. O estado fica salvo entre sessões.'
+  if (type === 'flashcards') return 'Cards rápidos pra revisar os conceitos sempre que precisar.'
+  return 'Material complementar pra aprofundar a leitura.'
 }
 
 function ToolLinkCards({ links, onNavigate }: { links: ToolLink[]; onNavigate: (id: string) => void }) {
@@ -840,8 +891,8 @@ function ToolLinkCards({ links, onNavigate }: { links: ToolLink[]; onNavigate: (
     }}>
       {links.map(link => (
         <button
-          key={link.section_id}
-          onClick={() => onNavigate(link.section_id)}
+          key={link.section_id ?? link.section_slug}
+          onClick={() => link.section_id && onNavigate(link.section_id)}
           style={{
             display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 10,
             padding: '18px 20px',
