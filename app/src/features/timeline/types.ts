@@ -15,7 +15,7 @@ import type { MedicationLog, Medication } from '../medications/medicationData'
  * "ainda não aconteceu".
  */
 export type TimelineItem =
-  | { kind: 'log'; id: string; ts: number; pairedLog?: LogEntry; data: LogEntry }
+  | { kind: 'log'; id: string; ts: number; pairedLog?: LogEntry; sleepLog?: LogEntry; data: LogEntry }
   | { kind: 'shift'; id: string; ts: number; data: CaregiverShift }
   | {
       kind: 'vaccine'

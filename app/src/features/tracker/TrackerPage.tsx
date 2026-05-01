@@ -12,7 +12,7 @@ import PredictionCard from './components/PredictionCard'
 import MedicationProjectionCard from './components/MedicationProjectionCard'
 import RecentLogs from './components/RecentLogs'
 import PrenatalView from './components/PrenatalView'
-import { isPrenatal, formatSleepDuration } from '../../lib/formatters'
+import { isPrenatal } from '../../lib/formatters'
 import { getMedicationProjections } from './medicationProjections'
 import ResumoDoDiaButton from './components/ResumoDoDiaButton'
 import ResumoDoDiaSheet from './components/ResumoDoDiaSheet'
@@ -344,21 +344,6 @@ export default function TrackerPage() {
         return
       }
 
-      // Calcular duração do sono quando pai registra "acordou" (só se bebê estava dormindo)
-      let wakePayload: Record<string, unknown> | null = null
-      if (eventId === 'wake' && isBabySleeping) {
-        const lastSleep = logs
-          .filter((l) => l.eventId === 'sleep' || l.eventId === 'wake')
-          .sort((a, b) => b.timestamp - a.timestamp)
-          .find((l) => l.eventId === 'sleep')
-        if (lastSleep) {
-          const durationMin = Math.round((Date.now() - lastSleep.timestamp) / 60_000)
-          if (durationMin > 0 && durationMin < 24 * 60) {
-            wakePayload = { sleepDurationMinutes: durationMin }
-          }
-        }
-      }
-
       // Offline: enfileirar localmente e dispatch otimista para feedback imediato
       if (!navigator.onLine && OFFLINE_QUEUE_ENABLED) {
         // Auto-sono offline
@@ -375,9 +360,8 @@ export default function TrackerPage() {
           return
         }
         const ts = Date.now()
-        const tempPayload = { source: 'offline', ...(wakePayload ?? {}) }
-        const tempId = enqueue({ eventId, babyId: baby.id, userId: user?.id, payload: tempPayload, timestamp: ts })
-        if (tempId) dispatch({ type: 'ADD_LOG', log: { id: tempId, eventId, timestamp: ts, payload: tempPayload, createdBy: user?.id } })
+        const tempId = enqueue({ eventId, babyId: baby.id, userId: user?.id, payload: { source: 'offline' }, timestamp: ts })
+        if (tempId) dispatch({ type: 'ADD_LOG', log: { id: tempId, eventId, timestamp: ts, payload: { source: 'offline' }, createdBy: user?.id } })
         hapticLight()
         setToast(`${event.label} salvo offline`)
         return
@@ -397,18 +381,14 @@ export default function TrackerPage() {
         return
       }
 
-      const log = await addLog(dispatch, eventId, baby.id, undefined, user?.id, wakePayload)
+      const log = await addLog(dispatch, eventId, baby.id, undefined, user?.id)
       if (log) {
         hapticSuccess()
-        if (eventId === 'wake' && wakePayload?.sleepDurationMinutes) {
-          setToast(`Acordou — ${formatSleepDuration(wakePayload.sleepDurationMinutes as number)}`)
-        } else {
-          setToast(`${event.label} registrado!`)
-        }
+        setToast(`${event.label} registrado!`)
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [baby, dispatch, user, checkAndRecord, isBabySleeping, enqueue, logs],
+    [baby, dispatch, user, checkAndRecord, isBabySleeping, enqueue],
   )
 
   const handleMealConfirm = useCallback(

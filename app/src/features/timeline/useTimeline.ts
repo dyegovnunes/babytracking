@@ -55,7 +55,22 @@ export function useTimeline(inputs: TimelineInputs): UseTimelineResult {
     // 1. Pares de peito — só afetam logs
     const { pairs, hidden } = detectBreastPairs(logs)
 
-    // 2. Montar todos os TimelineItems
+    // 2. Pares de sono: para cada "wake", encontra o "sleep" imediatamente anterior
+    //    Usamos os timestamps reais — editar qualquer um dos dois atualiza a duração.
+    const sleepPairs = new Map<string, LogEntry>()
+    const sleepWakeLogs = logs
+      .filter((l) => l.eventId === 'sleep' || l.eventId === 'wake')
+      .sort((a, b) => a.timestamp - b.timestamp)
+    for (let i = 0; i < sleepWakeLogs.length; i++) {
+      const l = sleepWakeLogs[i]
+      if (l.eventId === 'wake') {
+        // Procura o "sleep" mais próximo antes deste "wake"
+        const prev = sleepWakeLogs.slice(0, i).reverse().find((p) => p.eventId === 'sleep')
+        if (prev) sleepPairs.set(l.id, prev)
+      }
+    }
+
+    // 3. Montar todos os TimelineItems
     const items: TimelineItem[] = []
 
     for (const log of logs) {
@@ -65,6 +80,7 @@ export function useTimeline(inputs: TimelineInputs): UseTimelineResult {
         id: log.id,
         ts: log.timestamp,
         pairedLog: pairs.get(log.id),
+        sleepLog: sleepPairs.get(log.id),
         data: log,
       })
     }

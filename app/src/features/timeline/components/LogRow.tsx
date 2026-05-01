@@ -1,4 +1,4 @@
-import type { LogEntry, Member, MealPayload, MoodPayload, SickPayload, WakePayload } from '../../../types'
+import type { LogEntry, Member, MealPayload, MoodPayload, SickPayload } from '../../../types'
 import { EVENT_CATALOG } from '../../../lib/constants'
 import { formatTime, formatSleepDuration } from '../../../lib/formatters'
 
@@ -8,6 +8,8 @@ interface Props {
   onEdit: (log: LogEntry) => void
   /** Quando setado, a row representa uma sessão "ambos os peitos" (par left+right). */
   pairedLog?: LogEntry
+  /** Log de "Dormiu" pareado — usado para calcular duração da soneca no "Acordou". */
+  sleepLog?: LogEntry
 }
 
 const dotColorMap: Record<string, string> = {
@@ -58,7 +60,7 @@ const SYMPTOM_LABEL: Record<string, string> = {
  * Row de log (atividade recorrente: amamentação, fralda, sono, banho, refeição, humor).
  * Tap abre modal de edição inline (via callback).
  */
-export default function LogRow({ log, members, onEdit, pairedLog }: Props) {
+export default function LogRow({ log, members, onEdit, pairedLog, sleepLog }: Props) {
   const event = EVENT_CATALOG.find((e) => e.id === log.eventId)
   if (!event) return null
 
@@ -74,10 +76,14 @@ export default function LogRow({ log, members, onEdit, pairedLog }: Props) {
     ? new Date(Math.min(log.timestamp, pairedLog!.timestamp))
     : new Date(log.timestamp)
 
-  /* Payload info */
-  const wakePayload = log.eventId === 'wake' && log.payload
-    ? (log.payload as WakePayload)
+  /* Duração da soneca — calculada a partir dos timestamps reais (wake - sleep).
+     Sempre reflete edições em qualquer um dos dois logs. */
+  const sleepDurationMinutes = sleepLog && log.eventId === 'wake'
+    ? Math.round((log.timestamp - sleepLog.timestamp) / 60_000)
     : null
+  const showSleepDuration = sleepDurationMinutes !== null && sleepDurationMinutes > 0 && sleepDurationMinutes < 24 * 60
+
+  /* Payload info */
   const mealPayload = log.eventId === 'meal' && log.payload
     ? (log.payload as MealPayload)
     : null
@@ -159,17 +165,17 @@ export default function LogRow({ log, members, onEdit, pairedLog }: Props) {
         {log.ml && (
           <p className="font-label text-xs text-primary">{log.ml} ml</p>
         )}
-        {/* Duração do sono — exibe "dormiu Xmin/Xh" no log de acordou */}
-        {wakePayload?.sleepDurationMinutes && (
-          <p className="font-label text-xs text-on-surface-variant mt-0.5">
-            {formatSleepDuration(wakePayload.sleepDurationMinutes)}
-          </p>
-        )}
         {log.notes && (
           <p className="font-label text-xs text-on-surface-variant truncate">{log.notes}</p>
         )}
-        {memberName && (
-          <p className="font-label text-[10px] text-on-surface-variant/60">por {memberName}</p>
+        {/* Duração + autor numa única linha para manter a altura padrão da row */}
+        {(showSleepDuration || memberName) && (
+          <p className="font-label text-[10px] text-on-surface-variant/60">
+            {[
+              showSleepDuration ? formatSleepDuration(sleepDurationMinutes!) : null,
+              memberName ? `por ${memberName}` : null,
+            ].filter(Boolean).join(' · ')}
+          </p>
         )}
       </div>
 

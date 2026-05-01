@@ -39,6 +39,7 @@ export default function TimelineRow({
           members={members}
           onEdit={onEditLog}
           pairedLog={item.pairedLog}
+          sleepLog={item.sleepLog}
         />
       )
     case 'shift': {
