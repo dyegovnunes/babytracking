@@ -125,6 +125,7 @@ function AuthenticatedRoutes() {
 
 function AppRoutes() {
   const location = useLocation()
+  const { user, loading: authLoading } = useAuth()
 
   // Conta excluída — DEVE ser o primeiro check, antes de qualquer lógica de auth.
   // Quando useDeleteAccount limpa o localStorage, o Supabase dispara
@@ -208,15 +209,22 @@ function AppRoutes() {
     )
   }
 
-  // On web: root SEMPRE mostra landing page (mesmo se autenticado).
+  // On web: root mostra landing page quando não autenticado.
+  // Se usuário está logado e navega para /, cai no app normalmente (TrackerPage).
   // /mobile → entrada do web app (mobile-only guard).
   // Native app: vai direto pro auth flow.
   if (!isNative && location.pathname === '/') {
-    return (
-      <Suspense fallback={<RouteFallback />}>
-        <LandingPage />
-      </Suspense>
-    )
+    // Ainda carregando auth — mostra skeleton pra evitar flash de LP
+    if (authLoading) return <RouteFallbackSkeleton />
+    // Usuário não logado → landing page
+    if (!user) {
+      return (
+        <Suspense fallback={<RouteFallback />}>
+          <LandingPage />
+        </Suspense>
+      )
+    }
+    // Usuário logado → cai no AuthenticatedRoutes abaixo (TrackerPage no index)
   }
 
   if (!isNative && location.pathname === '/mobile') {

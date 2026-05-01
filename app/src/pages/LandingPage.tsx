@@ -8,6 +8,7 @@
  */
 
 import { useState, useEffect } from 'react'
+import { supabaseUrl, supabaseAnonKey } from '../lib/supabase'
 import { supabase } from '../lib/supabase'
 
 // ─── CSS injetado ─────────────────────────────────────────────────────────────
@@ -1087,13 +1088,11 @@ function AndroidWaitlistModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
     setErrorMsg('')
 
     try {
-      const SUPABASE_URL = (import.meta as { env: Record<string, string> }).env.VITE_SUPABASE_URL
-      const SUPABASE_ANON_KEY = (import.meta as { env: Record<string, string> }).env.VITE_SUPABASE_ANON_KEY
-      const res = await fetch(`${SUPABASE_URL}/functions/v1/android-waitlist`, {
+      const res = await fetch(`${supabaseUrl}/functions/v1/android-waitlist`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+          Authorization: `Bearer ${supabaseAnonKey}`,
         },
         body: JSON.stringify({ email: email.trim(), phone: phone.trim() || undefined }),
       })
