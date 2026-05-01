@@ -177,8 +177,10 @@ O leitor marca itens como concluídos; o estado é salvo em
 ao longo do tempo (ex: enxoval, kit primeiros socorros, mala da
 maternidade).
 
+**Modo simples (lista plana):**
+
 ```markdown
-## SEÇÃO: Checklist Mestre — o que você precisa garantir
+## SEÇÃO: Checklist Mestre
 
 **type:** `checklist`
 **slug:** `checklist-mestre`
@@ -197,10 +199,35 @@ maternidade).
 ```
 ```
 
+**Modo agrupado (recomendado para checklists longos):** quando os itens
+naturalmente se dividem em fases/etapas, use `groups` em vez de `items`.
+A sidebar do leitor mostra o progresso por grupo (ex: 4/6 marcados):
+
+```json
+{
+  "groups": [
+    {
+      "title": "Antes do parto (semana 35+)",
+      "items": [
+        {"id": "item-1", "text": "Mala da maternidade pronta", "required": true},
+        {"id": "item-2", "text": "Plano de parto entregue"}
+      ]
+    },
+    {
+      "title": "Primeiros dias em casa",
+      "items": [
+        {"id": "item-7", "text": "Pediatra agendado", "required": true}
+      ]
+    }
+  ]
+}
+```
+
 Campos do item:
-- `id` (string única dentro da checklist)
+- `id` (string única dentro da checklist inteira — não pode repetir
+  entre grupos)
 - `text` (texto exibido)
-- `required` (opcional, indica item crítico — UI marca com asterisco)
+- `required` (opcional, indica item crítico)
 
 ### 4.4 `quiz` — quiz fullscreen com perfis
 
