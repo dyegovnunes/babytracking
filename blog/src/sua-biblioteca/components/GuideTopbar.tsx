@@ -45,7 +45,7 @@ export default function GuideTopbar({
   }, [currentSection?.id])
 
   function handleBackToLibrary() {
-    window.location.href = 'https://blog.yayababy.app/biblioteca-yaya/'
+    window.location.href = '/minha-biblioteca'
   }
 
   return (

@@ -117,6 +117,87 @@ do tipo correspondente. Exemplos completos em §4.
 
 ## 4. Tipos de seção
 
+### 4.0 Estrutura de Introdução — regra obrigatória
+
+**Todo guia deve ter uma Introdução do tipo `part`** com exatamente 3
+sub-seções filhas (`parent: introducao`), nesta ordem:
+
+| Slug | Título sugerido | Conteúdo |
+|---|---|---|
+| `intro-o-que-voce-vai-encontrar` | O que você vai encontrar aqui | Estrutura do guia, abordagem editorial |
+| `intro-o-que-nao-e` | O que este guia não é | Expectativas: o que o guia não promete/resolve |
+| `intro-como-usar` | Como usar este guia | Caminhos de leitura por perfil do leitor |
+
+A `part` introdução tem `is_preview: true` (aparece como amostra grátis na
+landing) e `cover_image_url` apontando para `<slug-do-guia>/img/hero-introducao.webp`.
+O conteúdo da própria `part` é um parágrafo curto de gancho (2-3 frases).
+
+```markdown
+## SEÇÃO: Introdução
+
+**type:** `part`
+**slug:** `introducao`
+**parent:** `null`
+**category:** `narrative`
+**is_preview:** `true`
+**estimated_minutes:** `1`
+**cover_image_url:** `<slug-do-guia>/img/hero-introducao.webp`
+
+```markdown
+2-3 frases de gancho. O que o leitor vai ganhar com este guia.
+```
+
+---
+
+## SEÇÃO: O que você vai encontrar aqui
+
+**type:** `linear`
+**slug:** `intro-o-que-voce-vai-encontrar`
+**parent:** `introducao`
+**category:** `narrative`
+**estimated_minutes:** `2`
+
+```markdown
+Estrutura do guia. Abordagem editorial. Callout :::yaya com dica de uso do app.
+```
+
+---
+
+## SEÇÃO: O que este guia não é
+
+**type:** `linear`
+**slug:** `intro-o-que-nao-e`
+**parent:** `introducao`
+**category:** `narrative`
+**estimated_minutes:** `2`
+
+```markdown
+O que o guia não promete, não faz e não substitui.
+```
+
+---
+
+## SEÇÃO: Como usar este guia
+
+**type:** `linear`
+**slug:** `intro-como-usar`
+**parent:** `introducao`
+**category:** `narrative`
+**estimated_minutes:** `2`
+
+```markdown
+Caminhos de leitura por perfil (cronológico vs. consulta pontual).
+Onde encontrar conteúdos complementares.
+```
+```
+
+> **Por que `part` e não `linear`?** Seções `linear` com `parent: null` são
+> inseridas com `order_index` depois de todas as `part`s — a Introdução ficaria
+> no final da sidebar. Usando `type: part`, ela entra no fluxo de ordenação
+> correto (primeira `part`, order 0).
+
+---
+
 ### 4.1 `part` — abertura de capítulo
 
 Toda parte do guia (Parte 1, Parte 2, ...) tem `type: part`. Aparece como
