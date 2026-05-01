@@ -49,25 +49,22 @@ const readerUrl = slug ? `/biblioteca-yaya/${slug}/ler` : '/minha-biblioteca'
         )}
         <a
           href="/biblioteca-yaya"
-          class="inline-block px-7 py-3.5 rounded-xl text-yaya-cloud/60 font-sans text-sm transition-colors hover:text-yaya-cloud"
-          style="border: 1px solid rgba(231,226,255,0.1);"
+          class="inline-block px-7 py-3.5 rounded-xl text-yaya-cloud/60 font-sans text-sm transition-colors hover:text-yaya-cloud success-lib-btn"
         >
           Ir para a biblioteca
         </a>
       </div>
 
       <!-- Nota de cortesia Yaya+ -->
-      <div class="mt-12 rounded-xl p-5 max-w-sm mx-auto"
-           style="background: rgba(183,159,255,0.06); border: 1px solid rgba(183,159,255,0.15);">
-        <p class="text-xs font-display font-bold uppercase tracking-widest mb-2" style="color: rgba(183,159,255,0.75);">✦ Presente da Yaya</p>
+      <div class="mt-12 rounded-xl p-5 max-w-sm mx-auto success-courtesy-block">
+        <p class="text-xs font-display font-bold uppercase tracking-widest mb-2 text-yaya-purple">✦ Presente da Yaya</p>
         <p class="text-yaya-cloud/55 font-sans text-sm leading-relaxed">
           Junto com o guia, você ganha <strong class="text-yaya-cloud/80">30 dias de Yaya+ grátis</strong> no app.
           Baixe o app Yaya e use o mesmo email para ativar.
         </p>
         <a
           href="https://yayababy.app"
-          class="inline-block mt-3 text-xs font-display font-bold transition-opacity hover:opacity-80"
-          style="color: rgba(183,159,255,0.8);"
+          class="inline-block mt-3 text-xs font-display font-bold text-yaya-purple transition-opacity hover:opacity-80"
         >
           Baixar o app Yaya →
         </a>
@@ -80,6 +77,14 @@ const readerUrl = slug ? `/biblioteca-yaya/${slug}/ler` : '/minha-biblioteca'
 <style>
   .success-hero {
     background: radial-gradient(125% 125% at 50% 0%, #0d0a27 40%, #1a1145);
+  }
+  html.theme-light .success-hero {
+    background: linear-gradient(160deg, #f5f3ff 0%, #ede8ff 55%, #faf5ff 100%);
+  }
+  @media (prefers-color-scheme: light) {
+    html:not(.theme-dark) .success-hero {
+      background: linear-gradient(160deg, #f5f3ff 0%, #ede8ff 55%, #faf5ff 100%);
+    }
   }
 
   /* Ícone com anel pulsante */
@@ -118,5 +123,34 @@ const readerUrl = slug ? `/biblioteca-yaya/${slug}/ler` : '/minha-biblioteca'
   @keyframes success-icon-in {
     from { transform: scale(0.6); opacity: 0; }
     to   { transform: scale(1);   opacity: 1; }
+  }
+
+  /* Botão "Ir para a biblioteca" — borda adaptativa */
+  .success-lib-btn {
+    border: 1px solid rgba(231, 226, 255, 0.15);
+  }
+  html.theme-light .success-lib-btn {
+    border: 1px solid rgba(112, 86, 224, 0.2);
+  }
+  @media (prefers-color-scheme: light) {
+    html:not(.theme-dark) .success-lib-btn {
+      border: 1px solid rgba(112, 86, 224, 0.2);
+    }
+  }
+
+  /* Bloco de cortesia Yaya+ */
+  .success-courtesy-block {
+    background: rgba(183, 159, 255, 0.06);
+    border: 1px solid rgba(183, 159, 255, 0.15);
+  }
+  html.theme-light .success-courtesy-block {
+    background: rgba(112, 86, 224, 0.05);
+    border: 1px solid rgba(112, 86, 224, 0.18);
+  }
+  @media (prefers-color-scheme: light) {
+    html:not(.theme-dark) .success-courtesy-block {
+      background: rgba(112, 86, 224, 0.05);
+      border: 1px solid rgba(112, 86, 224, 0.18);
+    }
   }
 </style>

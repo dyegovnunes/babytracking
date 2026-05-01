@@ -378,6 +378,10 @@ function NoAccessCTA({ guideSlug, guideTitle, email }: { guideSlug: string; guid
         {email && (
           <button onClick={signOut} style={s.btnSecondary}>Entrar com outro email</button>
         )}
+
+        <a href="/biblioteca-yaya" style={{ display: 'block', marginTop: 20, fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif', fontSize: 12, color: 'var(--r-text-subtle)', textDecoration: 'none' }}>
+          ← Voltar para a biblioteca
+        </a>
       </div>
     </div>
   )

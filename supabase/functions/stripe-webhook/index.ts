@@ -375,12 +375,12 @@ function guideWelcomeEmailHTML({ guideTitle, magicLink }: { guideTitle: string; 
       <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(112,86,224,0.08);">
         <tr><td style="padding:40px 40px 24px;">
           <p style="margin:0 0 8px;font-size:14px;letter-spacing:0.08em;text-transform:uppercase;color:#7056e0;font-weight:700;">Sua Biblioteca Yaya</p>
-          <h1 style="margin:0 0 24px;font-size:28px;line-height:1.25;color:#2a1f4d;font-weight:700;">Sua compra chegou — e a leitura começa quando voce quiser.</h1>
+          <h1 style="margin:0 0 24px;font-size:28px;line-height:1.25;color:#2a1f4d;font-weight:700;">Sua compra chegou. A leitura come&ccedil;a quando voc&ecirc; quiser.</h1>
           <p style="margin:0 0 16px;font-size:16px;line-height:1.6;color:#4a3f6a;">
-            Voce acabou de garantir o <strong>${guideTitle}</strong> e ganhou <strong>30 dias do Yaya+</strong> de cortesia para acompanhar a rotina do bebe com calma.
+            Voc&ecirc; acabou de garantir o <strong>${guideTitle}</strong> e ganhou <strong>30 dias do Yaya+</strong> de cortesia para acompanhar a rotina do beb&ecirc; com calma.
           </p>
           <p style="margin:0 0 32px;font-size:16px;line-height:1.6;color:#4a3f6a;">
-            Clique no botao abaixo para entrar direto na sua leitura, sem precisar criar senha.
+            Clique no bot&atilde;o abaixo para entrar direto na sua leitura, sem precisar criar senha.
           </p>
           <table cellpadding="0" cellspacing="0"><tr><td>
             <a href="${magicLink}" style="display:inline-block;padding:14px 28px;background:linear-gradient(135deg,#ec4899,#a855f7);color:#ffffff;text-decoration:none;border-radius:8px;font-weight:700;font-size:16px;">
@@ -388,11 +388,11 @@ function guideWelcomeEmailHTML({ guideTitle, magicLink }: { guideTitle: string; 
             </a>
           </td></tr></table>
           <p style="margin:32px 0 8px;font-size:13px;line-height:1.5;color:#7a6e9a;">
-            Esse link e unico e expira em 24 horas. Se precisar de outro, e so responder esse email.
+            Esse link &eacute; &uacute;nico e expira em 24 horas. Se precisar de outro, &eacute; s&oacute; responder esse email.
           </p>
         </td></tr>
         <tr><td style="padding:24px 40px;text-align:center;">
-          <p style="margin:0;font-size:12px;color:#9b8fbf;">Yaya · Acompanhando a maternidade com voce</p>
+          <p style="margin:0;font-size:12px;color:#9b8fbf;">Yaya &middot; Acompanhando a maternidade com voc&ecirc;</p>
         </td></tr>
       </table>
     </td></tr>
@@ -411,12 +411,12 @@ function subscriptionWelcomeEmailHTML({ plan, magicLink }: { plan: string; magic
       <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(112,86,224,0.08);">
         <tr><td style="padding:40px 40px 24px;">
           <p style="margin:0 0 8px;font-size:14px;letter-spacing:0.08em;text-transform:uppercase;color:#7056e0;font-weight:700;">Yaya+</p>
-          <h1 style="margin:0 0 24px;font-size:28px;line-height:1.25;color:#2a1f4d;font-weight:700;">Seu Yaya+ ${plan} esta ativo.</h1>
+          <h1 style="margin:0 0 24px;font-size:28px;line-height:1.25;color:#2a1f4d;font-weight:700;">Seu Yaya+ ${plan} est&aacute; ativo.</h1>
           <p style="margin:0 0 16px;font-size:16px;line-height:1.6;color:#4a3f6a;">
-            Agora voce tem acesso completo ao app Yaya e a toda a Biblioteca Yaya, incluindo todos os guias disponiveis e os proximos que vierem.
+            Agora voc&ecirc; tem acesso completo ao app Yaya e a toda a Biblioteca Yaya, incluindo todos os guias dispon&iacute;veis e os pr&oacute;ximos que vierem.
           </p>
           <p style="margin:0 0 32px;font-size:16px;line-height:1.6;color:#4a3f6a;">
-            Use o botao abaixo para entrar com o mesmo email desta compra.
+            Use o bot&atilde;o abaixo para entrar com o mesmo email desta compra.
           </p>
           <table cellpadding="0" cellspacing="0"><tr><td>
             <a href="${magicLink}" style="display:inline-block;padding:14px 28px;background:linear-gradient(135deg,#ec4899,#a855f7);color:#ffffff;text-decoration:none;border-radius:8px;font-weight:700;font-size:16px;">
@@ -424,21 +424,21 @@ function subscriptionWelcomeEmailHTML({ plan, magicLink }: { plan: string; magic
             </a>
           </td></tr></table>
           <p style="margin:32px 0 8px;font-size:13px;line-height:1.5;color:#7a6e9a;">
-            Esse link e unico e expira em 24 horas. Se precisar de outro, e so responder esse email.
+            Esse link &eacute; &uacute;nico e expira em 24 horas. Se precisar de outro, &eacute; s&oacute; responder esse email.
           </p>
         </td></tr>
         <tr><td style="padding:24px 40px;background:#faf8ff;border-top:1px solid #ece7f9;">
           <p style="margin:0;font-size:13px;line-height:1.5;color:#7a6e9a;">
-            <strong>O que esta incluso no Yaya+:</strong><br>
-            Registro de alimentacao, sono e fraldas<br>
-            Insights e tendencias da rotina do bebe<br>
+            <strong>O que est&aacute; incluso no Yaya+:</strong><br>
+            Registro de alimenta&ccedil;&atilde;o, sono e fraldas<br>
+            Insights e tend&ecirc;ncias da rotina do beb&ecirc;<br>
             Marcos de desenvolvimento e vacinas<br>
-            Relatorio completo para o pediatra<br>
+            Relat&oacute;rio completo para o pediatra<br>
             Acesso a toda a Biblioteca Yaya
           </p>
         </td></tr>
         <tr><td style="padding:24px 40px;text-align:center;">
-          <p style="margin:0;font-size:12px;color:#9b8fbf;">Yaya · Acompanhando a maternidade com voce</p>
+          <p style="margin:0;font-size:12px;color:#9b8fbf;">Yaya &middot; Acompanhando a maternidade com voc&ecirc;</p>
         </td></tr>
       </table>
     </td></tr>
