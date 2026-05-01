@@ -114,10 +114,10 @@ export default function MinhaBliotecaApp() {
     return (
       <div style={s.page}>
         <div style={s.container}>
-          <div style={{ marginBottom: 24, height: 36, borderRadius: 8, width: '60%', background: 'rgba(183,159,255,0.08)' }} />
+          <div style={{ marginBottom: 24, height: 36, borderRadius: 8, width: '60%', background: 'rgb(var(--yaya-purple) / 0.08)' }} />
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {[1, 2].map(i => (
-              <div key={i} style={{ height: 88, borderRadius: 14, background: 'rgba(183,159,255,0.06)' }} />
+              <div key={i} style={{ height: 88, borderRadius: 14, background: 'rgb(var(--yaya-purple) / 0.06)' }} />
             ))}
           </div>
         </div>
@@ -138,7 +138,7 @@ export default function MinhaBliotecaApp() {
           <a href="/biblioteca-yaya/ultimas-semanas/ler" style={{ ...s.btnPrimary, display: 'block', textDecoration: 'none', marginBottom: 14 }}>
             Entrar na biblioteca
           </a>
-          <p style={{ fontSize: 12, color: 'rgba(231,226,255,0.35)', fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif' }}>
+          <p style={{ fontSize: 12, color: 'rgb(var(--yaya-cloud) / 0.45)', fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif' }}>
             Ainda não tem nenhum guia?{' '}
             <a href="/biblioteca-yaya" style={{ color: '#b79fff', textDecoration: 'underline' }}>Ver catálogo</a>
           </p>
@@ -195,7 +195,7 @@ export default function MinhaBliotecaApp() {
         </div>
 
         {!isPremium && (
-          <p style={{ marginTop: 28, fontSize: 12, color: 'rgba(231,226,255,0.35)', textAlign: 'center', fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif' }}>
+          <p style={{ marginTop: 28, fontSize: 12, color: 'rgb(var(--yaya-cloud) / 0.45)', textAlign: 'center', fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif' }}>
             Quer mais guias?{' '}
             <a href="/biblioteca-yaya" style={{ color: '#b79fff', textDecoration: 'underline' }}>Ver catálogo</a>
           </p>
@@ -266,13 +266,13 @@ const s: Record<string, React.CSSProperties> = {
     fontFamily: 'Manrope, system-ui, sans-serif',
     fontSize: 28,
     fontWeight: 700,
-    color: 'rgba(231,226,255,0.95)',
+    color: 'rgb(var(--yaya-cloud) / 0.95)',
     margin: 0,
     letterSpacing: '-0.02em',
     lineHeight: 1.2,
   },
   body: {
-    color: 'rgba(231,226,255,0.5)',
+    color: 'rgb(var(--yaya-cloud) / 0.55)',
     fontSize: 14,
     lineHeight: 1.65,
     margin: 0,
@@ -283,9 +283,9 @@ const s: Record<string, React.CSSProperties> = {
     gap: 4,
     padding: '4px 12px',
     borderRadius: 20,
-    background: 'rgba(183,159,255,0.12)',
-    border: '1px solid rgba(183,159,255,0.22)',
-    color: '#b79fff',
+    background: 'rgb(var(--yaya-purple) / 0.12)',
+    border: '1px solid rgb(var(--yaya-purple) / 0.22)',
+    color: 'rgb(var(--yaya-purple))',
     fontSize: 11,
     fontWeight: 700,
     letterSpacing: '0.04em',
@@ -298,8 +298,8 @@ const s: Record<string, React.CSSProperties> = {
     gap: 14,
     padding: '14px 16px',
     borderRadius: 14,
-    border: '1px solid rgba(231,226,255,0.07)',
-    background: 'rgba(183,159,255,0.03)',
+    border: '1px solid rgb(var(--yaya-cloud) / 0.1)',
+    background: 'rgb(var(--yaya-purple) / 0.04)',
   },
   thumb: {
     width: 64,
@@ -307,7 +307,7 @@ const s: Record<string, React.CSSProperties> = {
     borderRadius: 10,
     overflow: 'hidden',
     flexShrink: 0,
-    background: 'rgba(183,159,255,0.08)',
+    background: 'rgb(var(--yaya-purple) / 0.08)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -316,13 +316,13 @@ const s: Record<string, React.CSSProperties> = {
     fontFamily: 'Manrope, system-ui, sans-serif',
     fontWeight: 700,
     fontSize: 15,
-    color: 'rgba(231,226,255,0.9)',
+    color: 'rgb(var(--yaya-cloud) / 0.9)',
     margin: '4px 0 0',
     lineHeight: 1.3,
   },
   cardSubtitle: {
     fontSize: 11,
-    color: 'rgba(231,226,255,0.4)',
+    color: 'rgb(var(--yaya-cloud) / 0.5)',
     margin: '3px 0 0',
     lineHeight: 1.4,
     display: '-webkit-box',
@@ -334,9 +334,9 @@ const s: Record<string, React.CSSProperties> = {
     display: 'inline-block',
     fontSize: 10,
     fontWeight: 700,
-    color: '#b79fff',
-    background: 'rgba(183,159,255,0.1)',
-    border: '1px solid rgba(183,159,255,0.18)',
+    color: 'rgb(var(--yaya-purple))',
+    background: 'rgb(var(--yaya-purple) / 0.1)',
+    border: '1px solid rgb(var(--yaya-purple) / 0.2)',
     borderRadius: 4,
     padding: '2px 7px',
     letterSpacing: '0.06em',
@@ -346,9 +346,9 @@ const s: Record<string, React.CSSProperties> = {
     display: 'inline-block',
     fontSize: 10,
     fontWeight: 700,
-    color: 'rgba(231,226,255,0.4)',
-    background: 'rgba(231,226,255,0.05)',
-    border: '1px solid rgba(231,226,255,0.08)',
+    color: 'rgb(var(--yaya-cloud) / 0.5)',
+    background: 'rgb(var(--yaya-cloud) / 0.06)',
+    border: '1px solid rgb(var(--yaya-cloud) / 0.1)',
     borderRadius: 4,
     padding: '2px 7px',
     letterSpacing: '0.06em',
