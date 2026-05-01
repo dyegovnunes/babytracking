@@ -56,18 +56,19 @@ seo:
   snippet_type: lista
   snippet_section: Os blocos de uma boa rotina de sono
 sources:
-  - name: AAP. Sleep Hygiene for Infants and Toddlers. HealthyChildren.org.
-    url: >-
-      https://www.healthychildren.org/English/healthy-living/sleep/Pages/Healthy-Sleep-Habits-How-Many-Hours-Does-Your-Child-Need.aspx
   - name: >-
       SBP. Síndrome da Morte Súbita do Lactente e Sono Seguro. Departamento
       Científico de Medicina do Sono. 2018.
     url: >-
       https://www.sbp.com.br/fileadmin/user_upload/20226d-DocCient_-_Sindrome_Morte_Subita_do_Lactente.pdf
+  - name: AAP. Sleep Hygiene for Infants and Toddlers. HealthyChildren.org.
+    url: >-
+      https://www.healthychildren.org/English/healthy-living/sleep/Pages/Healthy-Sleep-Habits-How-Many-Hours-Does-Your-Child-Need.aspx
   - name: >-
       Mindell JA et al. A Nightly Bedtime Routine: Impact on Sleep in Young
       Children and Maternal Mood. Sleep, 2009.
     url: 'https://pubmed.ncbi.nlm.nih.gov/19480226/'
+
 images:
   hero: img46-1.png
   complementar: img46-2.png
@@ -112,7 +113,7 @@ Entre 3 e 4 meses, a rotina ganha mais importância porque é quando o [sono do 
 
 ## Os blocos de uma boa rotina de sono
 
-Não existe uma receita única, mas os elementos mais eficazes, segundo a AAP e a SBP, incluem:
+Não existe uma receita única, mas os elementos mais eficazes, segundo a SBP e a AAP, incluem:
 
 1. **Banho morno** — Não precisa ser todos os dias (a pele do bebê agradece). Nos dias sem banho, uma higiene suave com água morna no rosto e nas mãos já funciona como sinal.
 2. **Massagem leve** — 3 a 5 minutos de toques suaves nas perninhas e costas. Reduz cortisol e aumenta ocitocina.

@@ -32,15 +32,15 @@ seo:
   snippet_section: Quantas horas um recém-nascido dorme por dia
 sources:
   - name: >-
-      AAP. Sleep-Related Infant Deaths: Updated 2022 Recommendations.
-      Pediatrics. 2022.
-    url: >-
-      https://publications.aap.org/pediatrics/article/150/1/e2022057990/188304/Sleep-Related-Infant-Deaths-Updated-2022
-  - name: >-
       SBP. Síndrome da Morte Súbita do Lactente. Departamento Científico de
       Medicina do Sono. 2018.
     url: >-
       https://www.sbp.com.br/fileadmin/user_upload/20226d-DocCient_-_Sindrome_Morte_Subita_do_Lactente.pdf
+  - name: >-
+      AAP. Sleep-Related Infant Deaths: Updated 2022 Recommendations.
+      Pediatrics. 2022.
+    url: >-
+      https://publications.aap.org/pediatrics/article/150/1/e2022057990/188304/Sleep-Related-Infant-Deaths-Updated-2022
   - name: >-
       Mindell JA, Owens JA. A Clinical Guide to Pediatric Sleep. Lippincott.
       2015.
@@ -48,6 +48,7 @@ sources:
   - name: National Sleep Foundation. Sleep Duration Recommendations. 2015.
     url: >-
       https://www.sleepfoundation.org/how-sleep-works/how-much-sleep-do-we-really-need
+
 images:
   hero: img3-1.png
   complementar: img3-2.png
@@ -94,7 +95,7 @@ Se você está lendo isso às 3 da manhã com um bebê no colo, saiba que é nor
 
 ## Quantas horas o recém-nascido dorme
 
-Entre 14 e 17 horas por dia (National Sleep Foundation), mas distribuídas em blocos de 2 a 4 horas ao longo das 24 horas, sem distinção entre dia e noite. Nunca de uma vez.
+Entre 14 e 17 horas por dia, segundo as referências em saúde infantil, mas distribuídas em blocos de 2 a 4 horas ao longo das 24 horas, sem distinção entre dia e noite. Nunca de uma vez.
 
 ## Por que ele acorda tantas vezes
 

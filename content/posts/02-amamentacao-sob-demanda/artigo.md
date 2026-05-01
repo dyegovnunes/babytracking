@@ -33,15 +33,15 @@ seo:
   snippet_section: O que é amamentação sob demanda
 sources:
   - name: >-
-      OMS. Exclusive breastfeeding for six months best for babies everywhere.
-      2011.
-    url: >-
-      https://www.who.int/news/item/15-01-2011-exclusive-breastfeeding-for-six-months-best-for-babies-everywhere
-  - name: >-
       SBP. Guia Prático de Aleitamento Materno. Departamento Científico de
       Aleitamento Materno. Atualizado.
     url: >-
       https://www.sbp.com.br/fileadmin/user_upload/24585d-GPRATICO-GuiaPratico_de_AM-Atualizacao.pdf
+  - name: >-
+      OMS. Exclusive breastfeeding for six months best for babies everywhere.
+      2011.
+    url: >-
+      https://www.who.int/news/item/15-01-2011-exclusive-breastfeeding-for-six-months-best-for-babies-everywhere
   - name: AAP. Breastfeeding and the Use of Human Milk. Pediatrics. 2022.
     url: >-
       https://publications.aap.org/pediatrics/article/150/1/e2022057988/188347/Breastfeeding-and-the-Use-of-Human-Milk
@@ -50,6 +50,7 @@ sources:
       Anos. 2019.
     url: >-
       https://bvsms.saude.gov.br/bvs/publicacoes/guia_alimentar_criancas_menores_2anos.pdf
+
 images:
   hero: img2-1.png
   complementar: img2-2.png
@@ -93,7 +94,7 @@ image_url: 'https://blog.yayababy.app/posts/amamentacao-sob-demanda/hero.webp'
 mid_image_url: 'https://blog.yayababy.app/posts/amamentacao-sob-demanda/mid.webp'
 ---
 
-"De quanto em quanto tempo eu preciso amamentar?" A resposta é simples: quando o bebê pedir. Isso é amamentação sob demanda, e é o que a OMS, a SBP e a AAP recomendam.
+"De quanto em quanto tempo eu preciso amamentar?" A resposta é simples: quando o bebê pedir. Isso é amamentação sob demanda, posição recomendada pela SBP e endossada pela OMS e pela AAP.
 
 ## O que é, na prática
 

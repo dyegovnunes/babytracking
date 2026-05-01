@@ -56,18 +56,19 @@ seo:
   snippet_type: featured-snippet
   snippet_section: Janelas de sono por mês
 sources:
-  - name: AAP — Healthy Sleep Habits for Infants 4-7 Months
-    url: >-
-      https://www.healthychildren.org/English/ages-stages/baby/sleep/Pages/default.aspx
   - name: >-
       SBP. Síndrome da Morte Súbita do Lactente e Sono Seguro. Departamento
       Científico de Medicina do Sono. 2018.
     url: >-
       https://www.sbp.com.br/fileadmin/user_upload/20226d-DocCient_-_Sindrome_Morte_Subita_do_Lactente.pdf
+  - name: AAP — Healthy Sleep Habits for Infants 4-7 Months
+    url: >-
+      https://www.healthychildren.org/English/ages-stages/baby/sleep/Pages/default.aspx
   - name: >-
       Mindell JA et al. A nightly bedtime routine: impact on sleep in young
       children. Sleep. 2009;32(5):599-606.
     url: 'https://pubmed.ncbi.nlm.nih.gov/19480226/'
+
 images:
   hero: img41-1.png
   complementar: img41-2.png
@@ -231,7 +232,7 @@ Escuridão total (blackout), temperatura entre 20-22 °C, ruído branco constant
 
 Treino de sono (sleep training) é um tema polarizador. Algumas famílias defendem métodos estruturados; outras são radicalmente contra. A ciência mostra que:
 
-- Métodos de treino de sono **com suporte parental** (como o método de extinção gradual) são seguros e não prejudicam o apego, segundo revisões sistemáticas.
+- Métodos de treino de sono **com suporte parental** (como o método de extinção gradual) são seguros e não prejudicam o apego, segundo revisões sistemáticas — posição compatível com as orientações da SBP para bebês a partir de 4 a 6 meses.
 - Nenhum método funciona para 100% dos bebês — há variação temperamental significativa.
 - Antes dos 4 meses, treino de sono não é recomendado.
 - Ninguém é obrigado a fazer treino de sono. Se a família está bem, o sono pode se organizar naturalmente — leva mais tempo, mas acontece.

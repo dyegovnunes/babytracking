@@ -58,16 +58,17 @@ seo:
   snippet_type: lista
   snippet_section: O que é realmente essencial
 sources:
-  - name: 'AAP. Safe Sleep: Recommendations. Updated 2022.'
-    url: >-
-      https://publications.aap.org/pediatrics/article/150/1/e2022057990/188304/Sleep-Related-Infant-Deaths-Updated-2022
   - name: >-
       SBP. Síndrome da Morte Súbita do Lactente e Sono Seguro. Departamento
       Científico de Medicina do Sono. 2018.
     url: >-
       https://www.sbp.com.br/fileadmin/user_upload/20226d-DocCient_-_Sindrome_Morte_Subita_do_Lactente.pdf
+  - name: 'AAP. Safe Sleep: Recommendations. Updated 2022.'
+    url: >-
+      https://publications.aap.org/pediatrics/article/150/1/e2022057990/188304/Sleep-Related-Infant-Deaths-Updated-2022
   - name: CPSC. Safe Sleep for Babies.
     url: 'https://www.cpsc.gov/SafeSleep'
+
 images:
   hero: img24-1.png
   complementar: img24-2.png
@@ -104,9 +105,9 @@ Para trocas: uma superfície com trocador e os itens básicos (fraldas, algodão
 
 É isso. Todo o resto é conforto para os pais ou estética. O que não tem nada de errado — desde que não comprometa a segurança.
 
-## Sono seguro: o que dizem a AAP e a SBP
+## Sono seguro: o que recomenda a SBP
 
-As recomendações de sono seguro da AAP (atualizadas em 2022) e endossadas pela SBP são claras:
+As recomendações de sono seguro da SBP, alinhadas às da AAP (2022), são claras:
 
 **Sim:**
 - Bebê de barriga para cima (decúbito dorsal) para todas as situações de sono
