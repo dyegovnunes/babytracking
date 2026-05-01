@@ -353,6 +353,11 @@ function PushNavigationHandler() {
       return
     }
 
+    // Cold-start force-to-home só faz sentido no app nativo (Capacitor
+    // restaura URL antiga). No web, respeita a URL que o usuário acessou
+    // (especialmente /mobile, magic links, etc.)
+    if (!Capacitor.isNativePlatform()) return
+
     const path = window.location.pathname
     const isPublic =
       path === '/privacy' ||
@@ -360,9 +365,6 @@ function PushNavigationHandler() {
       path.startsWith('/paineladmin') ||
       path.startsWith('/i/')
     if (!isPublic) {
-      // Sempre força '/' — é idempotente se já estiver lá, e garante que
-      // rotas privadas (/settings, /profile, /marcos, /vacinas, /insights,
-      // etc.) caiam pra Home no cold start.
       navigate('/', { replace: true })
     }
   }, [authLoading, dataLoading, user, navigate])
