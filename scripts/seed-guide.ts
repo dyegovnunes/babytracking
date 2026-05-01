@@ -304,10 +304,18 @@ async function maybeGenerateAudio(parsed: ParsedSection[], slugToId: Map<string,
     console.log(`\n🔇 Áudio TTS não gerado (defina GENERATE_AUDIO=1 pra ativar).`)
     return
   }
-  console.log(`\n🎙️  Disparando geração de áudio TTS para seções linear…`)
+  console.log(`\n🎙️  Disparando geração de áudio TTS para seções narrativas…`)
 
-  const linearSections = parsed.filter(s => s.type === 'linear' && s.content_md)
-  for (const sec of linearSections) {
+  // Gera áudio pra `linear` (sempre que tem content_md) e pra `part` quando
+  // tem content_md substancial (≥200 chars). Parts geralmente são só capa,
+  // mas Introdução e Conclusão como `part` podem ter texto significativo.
+  const audibleSections = parsed.filter(s => {
+    if (!s.content_md) return false
+    if (s.type === 'linear') return true
+    if (s.type === 'part' && s.content_md.length >= 200) return true
+    return false
+  })
+  for (const sec of audibleSections) {
     const sectionId = slugToId.get(sec.slug)
     if (!sectionId) continue
     const textHash = hashText(sec.content_md ?? '')

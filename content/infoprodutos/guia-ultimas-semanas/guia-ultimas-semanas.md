@@ -97,7 +97,7 @@ O Yaya não é um app de ansiedade. Ele não te manda alerta para cada coisa que
 **parent:** `null`
 **category:** `narrative`
 **estimated_minutes:** `1`
-**cover_image_url:** `ultimas-semanas/img/capa-parte-1-preparacao.webp`
+**cover_image_url:** `ultimas-semanas/img/mala-maternidade-arrumada.webp`
 
 ```markdown
 
@@ -457,7 +457,7 @@ Você organizou tudo para o bebê chegar. O Yaya é a última coisa da lista: ba
 **parent:** `null`
 **category:** `narrative`
 **estimated_minutes:** `1`
-**cover_image_url:** `ultimas-semanas/img/capa-parte-2-o-parto.webp`
+**cover_image_url:** `ultimas-semanas/img/tipos-de-parto-timeline.webp`
 
 ```markdown
 
@@ -653,7 +653,7 @@ Quando sair da maternidade, abra o Yaya e registre o horário da primeira amamen
 **parent:** `null`
 **category:** `narrative`
 **estimated_minutes:** `1`
-**cover_image_url:** `ultimas-semanas/img/capa-parte-3-primeiras-72-horas-em-casa.webp`
+**cover_image_url:** `ultimas-semanas/img/primeiras-horas-pele-a-pele.webp`
 
 ```markdown
 
@@ -984,7 +984,7 @@ Com o bebê em casa, cada registro conta. Amamentação, sono, fralda: o Yaya or
 **parent:** `null`
 **category:** `narrative`
 **estimated_minutes:** `1`
-**cover_image_url:** `ultimas-semanas/img/capa-parte-4-primeiras-quatro-semanas-semana-a-semana.webp`
+**cover_image_url:** `ultimas-semanas/img/bebe-semana-4-rotina.webp`
 
 ```markdown
 
