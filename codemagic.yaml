@@ -24,6 +24,12 @@ workflows:
           cd app
           CAPACITOR_BUILD=1 npm run build
 
+      - name: Remove web-only assets from native bundle
+        script: |
+          # Vídeos e assets grandes ficam em public/ para o site web,
+          # mas não devem entrar no bundle nativo (aumentam o IPA/AAB sem utilidade).
+          rm -f app/dist/lp/yaia.mp4 app/dist/lp/relatorio.mp4
+
       - name: Sync Capacitor iOS (copy web assets only)
         script: |
           cd app
