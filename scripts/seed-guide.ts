@@ -28,6 +28,7 @@ import {
   hashText,
 } from './lib/seed-utils'
 import { parseGuideMarkdown, ParsedSection } from './lib/md-parser'
+import { runValidation, printIssues } from './lib/validation-rules'
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 // ── Config / args ───────────────────────────────────────────────────────────
@@ -335,6 +336,22 @@ async function main() {
   console.log(`   Types: ${types.join(', ')}`)
   const categories = [...new Set(sections.map(s => s.category))]
   console.log(`   Categories: ${categories.join(', ')}`)
+
+  // 4.5) Validação editorial (bloqueia o seed se houver erros)
+  const skipValidation = process.argv.includes('--skip-validation')
+  if (skipValidation) {
+    console.warn(`\n⚠️  Validação editorial PULADA (--skip-validation).`)
+  } else {
+    console.log(`\n🔍 Validando guia…`)
+    const issues = await runValidation(sections, { imgDir: IMG_DIR })
+    const { errors } = printIssues(issues)
+    if (errors > 0) {
+      console.error(`\n❌ Validação falhou com ${errors} erro(s) bloqueante(s).`)
+      console.error('   Corrija o markdown e rode novamente.')
+      console.error('   (Use --skip-validation pra ignorar em emergência.)')
+      process.exit(1)
+    }
+  }
 
   // 5) Persiste no DB
   const { totalParts, totalChildren, errors: dbErrors, slugToId } = await persistSections(sections)

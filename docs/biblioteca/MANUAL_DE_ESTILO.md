@@ -454,7 +454,46 @@ Voz padrão: OpenAI TTS modelo `tts-1`, voz `nova` (em PT-BR).
 
 ---
 
-## 9. Checklist de QA pré-publicação
+## 9. Validador automático (use SEMPRE antes do seed)
+
+Antes de rodar o seed, valide o guia:
+
+```bash
+cd blog
+npx tsx ../scripts/validate-guide.ts <slug-do-guia>
+```
+
+O validador checa:
+
+**Bloqueantes (impedem o seed):**
+- Estrutura: `Introdução` + ≥1 Parte + `Conclusão` (e Conclusão é a **última seção raiz `narrative`**, depois de todas as Partes)
+- Conclusão é `parent: null` + `category: narrative`
+- Callouts fora do catálogo (`:::ciencia`, `:::mito`, `:::alerta`, `:::yaya`, `:::disclaimer`)
+- **Travessão `—`** em título ou conteúdo (use hífen simples, vírgula, ou dois-pontos)
+- Imagens referenciadas que não existem em `imagens/`
+- Quiz sem os 4 perfis (a, b, c, d) ou results sem title/description
+- Flashcards com `front` ou `back` vazio
+- Checklist sem items, com ids duplicados, ou items incompletos
+
+**Avisos (passa mas reclama):**
+- Sem `:::disclaimer` em nenhum lugar do guia (médico-legal)
+- Imagem com alt-text vazio ou <8 chars
+- Seção `linear` com <200 caracteres
+- Parts sem `cover_image_url` (capa)
+- Checklist com >10 items sem `groups`
+- Nenhuma seção com `is_preview: true`
+- Cita OMS/NICE/ACOG/AAP mas zero menções a SBP (SBP é fonte prioritária)
+- Tom Yaya: termos como "mamãezinha", "minha mãe", "amada", "querida", "você é incrível"
+- Excesso de pontos de exclamação
+
+**Sugestões (info):**
+- Tempo total >180min (talvez dividir em 2 guias?)
+
+O `seed-guide.ts` roda o validador automaticamente antes do INSERT. Se houver erros, o seed para. Em emergência, use `--skip-validation` (mas isso é exceção, não regra).
+
+---
+
+## 10. Checklist de QA pré-publicação
 
 Antes de pedir publicação do guia (mudar `status` de `draft` pra
 `published`), confira:
