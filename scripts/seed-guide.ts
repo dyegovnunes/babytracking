@@ -119,8 +119,25 @@ async function persistSections(parsed: ParsedSection[]): Promise<PersistResult> 
   // Cleanup idempotente. Apaga FKs dependentes primeiro pra não bater em RLS silencioso.
   console.log(`🗑️  Apagando seções existentes do guide…`)
   const { data: existingSections } = await supabase
-    .from('guide_sections').select('id').eq('guide_id', guideId)
+    .from('guide_sections').select('id, slug').eq('guide_id', guideId)
   const existingIds = (existingSections ?? []).map((s: { id: string }) => s.id)
+
+  // Salva cache de áudio existente antes de deletar (slug+hash → url).
+  // Permite reaproveitar MP3s de seções cujo texto não mudou.
+  type AudioCache = { audio_url: string; duration_seconds: number | null }
+  const audioCache = new Map<string, AudioCache>()
+  if (existingIds.length > 0) {
+    const { data: existingAudio } = await supabase
+      .from('guide_audio_segments')
+      .select('section_id, text_hash, voice_id, audio_url, duration_seconds')
+      .in('section_id', existingIds)
+    const idToSlug = new Map((existingSections ?? []).map((s: { id: string; slug: string }) => [s.id, s.slug]))
+    for (const a of existingAudio ?? []) {
+      const slug = idToSlug.get(a.section_id)
+      if (slug) audioCache.set(`${slug}:${a.text_hash}:${a.voice_id}`, { audio_url: a.audio_url, duration_seconds: a.duration_seconds })
+    }
+    if (audioCache.size > 0) console.log(`  🔊 ${audioCache.size} áudio(s) em cache — serão reaproveitados se o texto não mudou`)
+  }
 
   if (existingIds.length > 0) {
     const dependentTables = [
@@ -226,6 +243,31 @@ async function persistSections(parsed: ParsedSection[]): Promise<PersistResult> 
       : '📄'
     const previewLabel = sec.is_preview ? ' 👁️' : ''
     console.log(`  ${typeLabel} [${sec.type}/${sec.category}] ${sec.slug}${previewLabel}`)
+  }
+
+  // Re-vincula áudios do cache para seções cujo texto não mudou.
+  // O MP3 continua no storage; apenas recria o registro no banco com o novo section_id.
+  if (audioCache.size > 0) {
+    const toRelink: Array<{ section_id: string; text_hash: string; voice_id: string; audio_url: string; duration_seconds: number | null }> = []
+    for (const sec of parsed) {
+      if (sec.type !== 'linear') continue
+      const newId = slugToId.get(sec.slug)
+      if (!newId) continue
+      const textHash = hashText(sec.content_md ?? '')
+      // Tenta voice_id canônico; edge function usa 'nova-v2'
+      for (const voiceId of ['nova-v2', 'nova-v1', 'nova']) {
+        const cached = audioCache.get(`${sec.slug}:${textHash}:${voiceId}`)
+        if (cached) {
+          toRelink.push({ section_id: newId, text_hash: textHash, voice_id: voiceId, audio_url: cached.audio_url, duration_seconds: cached.duration_seconds })
+          break
+        }
+      }
+    }
+    if (toRelink.length > 0) {
+      const { error } = await supabase.from('guide_audio_segments').insert(toRelink)
+      if (error) console.warn(`  ⚠️  re-link de áudio: ${error.message}`)
+      else console.log(`  🔊 ${toRelink.length}/${audioCache.size} áudio(s) reaproveitados (${audioCache.size - toRelink.length} seção(ões) com texto alterado ou novo)`)
+    }
   }
 
   return {
