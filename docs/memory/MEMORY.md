@@ -1,7 +1,38 @@
 ## Build atual
-- iOS: v1.9.2 / build 49 — TestFlight ativo. Pending: validar IAP sandbox → Apple App Review.
-- Android: v1.9.2 / versionCode 48 — APK/AAB gerado localmente em `build/`.
-- Próximo bump: iOS build 50, Android versionCode 49.
+- iOS: v1.9.4 / build 67 — TestFlight ativo. App Store Connect: selecionar build 67 e submeter review.
+- Android: v1.9.4 / versionCode 67 — AAB em `build/yaya-1.9.4-build67.aab` (16.2MB). Play Console: closed testing, aguardando 14 dias (~12 maio).
+- Próximo bump: iOS build 68, Android versionCode 68 (SEMPRE iguais, SEMPRE no mesmo commit).
+
+## Regras de build — OBRIGATÓRIO seguir
+
+### iOS + Android sempre juntos
+- Bumpar `codemagic.yaml` (MARKETING_VERSION + CURRENT_PROJECT_VERSION) e `app/android/app/build.gradle` (versionCode + versionName) no **mesmo commit**.
+- iOS build number == Android versionCode. Nunca desalinhar.
+- `app/android/app/build.gradle` está no `.gitignore` mas é rastreado — usar `git add -f` para commitar.
+
+### Build Android (local)
+```bash
+cd app
+npm run build:native        # build + remove vídeos do dist/ automaticamente
+npx cap sync android
+cd android && ./gradlew bundleRelease
+# Copiar para build/:
+cp app/android/app/build/outputs/bundle/release/app-release.aab build/yaya-X.X.X-buildNN.aab
+```
+- JAVA_HOME: `export JAVA_HOME="/c/Program Files/Android/Android Studio/jbr"`
+- Keystore: `app/android/app/yaya-release.keystore` (senha: yayababy2026)
+
+### Build iOS (Codemagic — automático no push)
+- Todo push no `main` dispara build iOS automaticamente.
+- O Codemagic faz tudo: compila, assina, sobe para TestFlight.
+- Se o build number já existe no App Store Connect → erro "attribute already used". Solução: bumpar o build number.
+
+### Assets: public/ vs bundle nativo
+- `app/public/` é compartilhado entre web e nativo. Tudo que está lá entra no AAB/IPA.
+- Vídeos (`lp/yaia.mp4`, `lp/relatorio.mp4`) ficam em `public/` para o **site web** mas são **removidos do `dist/`** antes do `cap sync`:
+  - iOS: passo "Remove web-only assets" no `codemagic.yaml` faz `rm -f app/dist/lp/*.mp4`
+  - Android: `npm run build:native` (em vez de `npm run build`) já remove os vídeos do dist/
+- NUNCA usar `npm run build` + `cap sync android` diretamente — usar `npm run build:native`.
 
 ## Features implementadas
 - **Sua Biblioteca Yaya — infoprodutos (2026-04-27)** — Primeiro infoproduto pago lançado: "Guia das Últimas Semanas" R$47. Stack completa: 7 tabelas Supabase (`guides`, `guide_sections`, `guide_purchases`, `guide_progress`, `guide_highlights`, `guide_notes`, `guide_quiz_responses`) + função `process_guide_purchase` SQL idempotente concedendo 30d Yaya+ cortesia (padrão GREATEST do MGM v1) + bucket público `guide-images` + bucket privado `guide-assets` + edge functions `stripe-create-checkout-session` e `stripe-webhook` (com magic link via Resend). Admin do blog em `/admin/biblioteca` (CRUD de guias e seções, Tiptap por tipo linear/quiz/checklist/part). Leitor SPA premium em `blog.yayababy.app/sua-biblioteca/[slug]/ler` com tipografia editorial Fraunces (corpo + h1/h2/h3 do conteúdo) + Manrope/PJS (UI), drop cap, pull quote, 4 callouts (`:::ciencia/mito/alerta/yaya`), highlights, notas auto-save, quiz fullscreen com 4 perfis, countdown 3s pra próxima seção, light mode espelhando theme.css do blog, modo leitura, resume reading. Pricing R$47 lançamento (Stripe price `price_1TQcxQ2ZxL6z9xaKdR0vjZvJ`). Conteúdo seedado via `scripts/seed-guia-ultimas-semanas.ts` (parse markdown hierárquico, conversão de callouts, upload de imagens PNG→WebP).
