@@ -571,9 +571,11 @@ const productLd = {
 
   /* ── Sidebar ── */
   .lp-sidebar {
-    background: rgb(var(--yaya-purple) / 0.04);
-    border: 1px solid rgb(var(--yaya-purple) / 0.2);
-    box-shadow: 0 0 40px rgb(var(--yaya-purple) / 0.07);
+    background: rgba(13, 10, 39, 0.88);
+    border: 1px solid rgba(183, 159, 255, 0.2);
+    box-shadow: 0 0 40px rgba(183, 159, 255, 0.08);
+    --yaya-cloud: var(--yaya-cloud-dark);
+    --yaya-purple: var(--yaya-purple-dark);
   }
 
   /* Seções com fundo sempre escuro — forçar cores dark-mode internamente */
@@ -616,10 +618,10 @@ const productLd = {
   .prose-yaya strong { color: rgb(var(--yaya-cloud) / 0.9); font-weight: 700; }
   .prose-yaya em { font-style: italic; }
   .prose-yaya blockquote {
-    border-left: 3px solid rgba(183, 159, 255, 0.4);
+    border-left: 3px solid rgb(var(--yaya-purple) / 0.4);
     margin-left: 0;
     padding-left: 1em;
-    color: rgba(231, 226, 255, 0.55);
+    color: rgb(var(--yaya-cloud) / 0.55);
     font-style: italic;
   }
   .prose-yaya a { color: #b79fff; text-underline-offset: 3px; }
