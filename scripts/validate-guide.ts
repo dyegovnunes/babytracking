@@ -15,7 +15,6 @@
 import * as fs from 'node:fs/promises'
 import * as path from 'node:path'
 
-import { loadBlogEnv, createSupabaseAdmin } from './lib/seed-utils'
 import { parseGuideMarkdown } from './lib/md-parser'
 import { runValidation, printIssues } from './lib/validation-rules'
 
@@ -53,7 +52,6 @@ function resolveContentPaths(slug: string) {
 }
 
 async function main() {
-  loadBlogEnv(REPO_ROOT)
   const slug = getSlugFromArgs()
   const { dir, md: mdFile } = resolveContentPaths(slug)
   const imgDir = path.join(dir, 'imagens')

@@ -9,7 +9,9 @@
     "publish:content": "tsx scripts/publish-content.ts",
     "publish:content:execute": "tsx scripts/publish-content.ts --execute",
     "optimize:images": "tsx scripts/optimize-images.ts",
-    "optimize:images:dry": "tsx scripts/optimize-images.ts --dry"
+    "optimize:images:dry": "tsx scripts/optimize-images.ts --dry",
+    "validate": "tsx ../scripts/validate-guide.ts",
+    "seed:guide": "tsx ../scripts/seed-guide.ts"
   },
   "dependencies": {
     "@astrojs/react": "^5.0.4",

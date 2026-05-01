@@ -29,7 +29,7 @@
 //   ```
 // ════════════════════════════════════════════════════════════════════════════
 
-import { rewriteImagePaths, resolveStorageUrl, stripAnchors } from './seed-utils'
+import { rewriteImagePaths, resolveStorageUrl, stripAnchors } from './md-utils'
 
 export type SectionType = 'part' | 'linear' | 'checklist' | 'quiz' | 'flashcards'
 export type SectionCategory = 'narrative' | 'complementary'

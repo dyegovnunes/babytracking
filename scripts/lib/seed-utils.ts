@@ -152,34 +152,10 @@ export async function uploadImages(opts: UploadImagesOptions): Promise<Map<strin
   return imagePathMap
 }
 
-/**
- * Substitui paths locais (`imagens/foo.png` ou `./foo.png` ou `foo.png`)
- * pelas URLs públicas correspondentes no markdown.
- */
-export function rewriteImagePaths(md: string, imageMap: Map<string, string>): string {
-  return md.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (full, alt: string, src: string) => {
-    const cleaned = src.trim().replace(/^\.\//, '')
-    const url = imageMap.get(cleaned) ?? imageMap.get(path.basename(cleaned))
-    return url ? `![${alt}](${url})` : full
-  })
-}
-
-/**
- * Resolve um path relativo dentro do bucket pra URL pública.
- * Útil pra `cover_image_url` que vem como path relativo no markdown.
- */
-export function resolveStorageUrl(relativePath: string, publicUrlBase: string): string {
-  return `${publicUrlBase}/${relativePath}`
-}
-
-// ── Markdown auxiliares ─────────────────────────────────────────────────────
-
-/**
- * Remove âncoras Markdown extras `{#anchor}` no fim de headings.
- */
-export function stripAnchors(line: string): string {
-  return line.replace(/\s*\{#[a-z0-9-]+\}\s*$/i, '').trim()
-}
+// ── Markdown helpers (re-export pra retro-compat) ──────────────────────────
+// As implementações reais ficam em md-utils.ts (puro, sem deps Supabase)
+// pra que o validator possa importá-las sem puxar o cliente.
+export { rewriteImagePaths, resolveStorageUrl, stripAnchors } from './md-utils'
 
 /**
  * Conta caracteres do texto markdown final (sem markup) — útil pra estimar
