@@ -1,5 +1,5 @@
 ---
-title: 'Cólicas do Bebê: O Que São e O Que Alivia'
+title: 'Cólicas do bebê: o que são e o que alivia'
 slug: colicas-do-bebe
 description: >-
   Entenda por que as cólicas acontecem, quanto tempo duram e o que realmente

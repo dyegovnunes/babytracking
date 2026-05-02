@@ -1,5 +1,5 @@
 ---
-title: 'Babá Eletrônica: Áudio, Vídeo ou com Sensor — Qual Comprar em 2026'
+title: 'Babá eletrônica: áudio, vídeo ou com sensor — qual comprar em 2026'
 slug: melhor-baba-eletronica-para-bebe
 description: >-
   Como escolher a melhor babá eletrônica para bebê: diferenças entre modelos de
@@ -56,8 +56,8 @@ seo:
 sources:
   - name: 'American Academy of Pediatrics. Safe Sleep Recommendations. 2024.'
     url: 'https://www.healthychildren.org/English/ages-stages/baby/sleep/Pages/A-Parents-Guide-to-Safe-Sleep.aspx'
-  - name: 'Which? Baby monitor buying guide. 2025.'
-    url: 'https://www.which.co.uk/reviews/baby-monitors/article/baby-monitor-buying-guide'
+  - name: 'INMETRO. Programa de Análise de Produtos — Monitores de Bebê. Instituto Nacional de Metrologia, Qualidade e Tecnologia.'
+    url: 'https://www.inmetro.gov.br/consumidor/produtos/monitor-para-bebes.asp'
 images:
   hero: img66-1.png
   complementar: img66-2.png

@@ -1,5 +1,5 @@
 ---
-title: 'Tummy Time: Por Que É Importante e Como Fazer'
+title: 'Tummy Time: por que é importante e como fazer'
 slug: tummy-time-como-fazer
 description: >-
   Guia completo de tummy time: quando começar, quanto tempo por idade, posições,
@@ -54,18 +54,19 @@ seo:
   snippet_type: lista
   snippet_section: 'Como fazer tummy time: passo a passo'
 sources:
-  - name: 'AAP. Back to Sleep, Tummy to Play. HealthyChildren.org.'
-    url: >-
-      https://www.healthychildren.org/English/ages-stages/baby/sleep/Pages/Back-to-Sleep-Tummy-to-Play.aspx
   - name: >-
       SBP. Cartilha de Desenvolvimento: dos 2 meses aos 5 anos. Departamento
       Científico de Pediatria do Desenvolvimento e Comportamento.
     url: >-
       https://www.sbp.com.br/fileadmin/user_upload/_24327e-Cartilha_de_Desenvolvimento-2m-5anos_compressed.pdf
+  - name: 'AAP. Back to Sleep, Tummy to Play. HealthyChildren.org.'
+    url: >-
+      https://www.healthychildren.org/English/ages-stages/baby/sleep/Pages/Back-to-Sleep-Tummy-to-Play.aspx
   - name: >-
       WHO. Guidelines on Physical Activity, Sedentary Behaviour and Sleep for
       Children Under 5 Years of Age. 2019.
     url: 'https://www.who.int/publications/i/item/9789241550536'
+
 images:
   hero: img48-1.png
   complementar: img48-2.png

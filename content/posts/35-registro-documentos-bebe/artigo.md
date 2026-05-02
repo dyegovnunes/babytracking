@@ -1,5 +1,5 @@
 ---
-title: 'Registro do Bebê: Documentos, Prazos e Passo a Passo'
+title: 'Registro do bebê: documentos, prazos e passo a passo'
 slug: registro-bebe-documentos
 description: >-
   Certidão de nascimento, CPF, cartão SUS, plano de saúde: tudo o que você

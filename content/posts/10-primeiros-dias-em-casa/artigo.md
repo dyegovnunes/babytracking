@@ -1,5 +1,5 @@
 ---
-title: Primeiros Dias em Casa com o Recém-Nascido
+title: 'Primeiros dias em casa com o recém-nascido'
 slug: primeiros-dias-em-casa-com-recem-nascido
 description: >-
   O que esperar dos primeiros dias em casa com o bebê. Rotina, sono,

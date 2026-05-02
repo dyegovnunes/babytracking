@@ -1,5 +1,5 @@
 ---
-title: 'Ganho de Peso do Bebê: O Que É Normal'
+title: 'Ganho de peso do bebê: o que é normal'
 slug: ganho-peso-bebe
 description: >-
   Quanto peso o bebê deve ganhar por mês? Entenda a perda de peso
@@ -60,17 +60,18 @@ seo:
   snippet_section: Quanto peso o bebê ganha por mês?
 sources:
   - name: >-
-      OMS. WHO Child Growth Standards: Length/height-for-age, weight-for-age.
-      2006.
-    url: 'https://www.who.int/tools/child-growth-standards/standards'
-  - name: >-
       SBP. Manual de Avaliação Nutricional da Criança e do Adolescente. 2ª ed.
       atualizada. Departamento Científico de Nutrologia. 2021.
     url: >-
       https://www.sbp.com.br/fileadmin/user_upload/_22962e-ManAval_Nutricional_-_2Ed_Atualizada_SITE.pdf
+  - name: >-
+      OMS. WHO Child Growth Standards: Length/height-for-age, weight-for-age.
+      2006.
+    url: 'https://www.who.int/tools/child-growth-standards/standards'
   - name: AAP. Amount and Schedule of Baby Formula Feedings. HealthyChildren.org.
     url: >-
       https://www.healthychildren.org/English/ages-stages/baby/formula-feeding/Pages/Amount-and-Schedule-of-Formula-Feedings.aspx
+
 images:
   hero: img20-1.png
   complementar: img20-2.png

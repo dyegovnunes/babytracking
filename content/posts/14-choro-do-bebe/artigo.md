@@ -1,5 +1,5 @@
 ---
-title: 'Choro do Bebê: Tipos, O Que Significam e Como Acalmar'
+title: 'Choro do bebê: tipos, o que significam e como acalmar'
 slug: choro-do-bebe
 description: >-
   Entenda por que o bebê chora, conheça os tipos de choro (fome, sono,

@@ -1,5 +1,5 @@
 ---
-title: 'Dermatite de Fralda (Assadura): Prevenção, Tratamento e Quando Preocupar'
+title: 'Dermatite de fralda (assadura): prevenção, tratamento e quando preocupar'
 slug: dermatite-de-fralda
 description: >-
   Assadura no bebê: o que causa, como prevenir, como tratar e quando é

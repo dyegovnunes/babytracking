@@ -1,5 +1,5 @@
 ---
-title: 'Amamentação: O Que Saber Antes do Bebê Nascer'
+title: 'Amamentação: o que saber antes do bebê nascer'
 slug: amamentacao-o-que-saber-antes-do-bebe-nascer
 description: >-
   Prepare-se para a amamentação ainda na gestação. O que esperar, como o corpo
@@ -31,16 +31,17 @@ seo:
   snippet_section: Como o corpo se prepara para amamentar
 sources:
   - name: >-
-      OMS. Protecting, promoting and supporting breastfeeding in facilities
-      providing maternity and newborn services. 2017.
-    url: 'https://www.who.int/publications/i/item/9789241550086'
-  - name: >-
       SBP. Guia Prático de Aleitamento Materno. Departamento Científico de
       Aleitamento Materno. Atualizado.
     url: >-
       https://www.sbp.com.br/fileadmin/user_upload/24585d-GPRATICO-GuiaPratico_de_AM-Atualizacao.pdf
+  - name: >-
+      OMS. Protecting, promoting and supporting breastfeeding in facilities
+      providing maternity and newborn services. 2017.
+    url: 'https://www.who.int/publications/i/item/9789241550086'
   - name: La Leche League International. The Womanly Art of Breastfeeding. 8th ed.
     url: 'https://llli.org/resources/womanly-art-breastfeeding/'
+
 images:
   hero: img5-1.png
   complementar: img5-2.png

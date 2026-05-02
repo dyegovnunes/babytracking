@@ -1,5 +1,5 @@
 ---
-title: 'Bebê Coloca Tudo na Boca: A Fase Oral e Como Lidar'
+title: 'Bebê coloca tudo na boca: a fase oral e como lidar'
 slug: fase-oral-bebe
 description: >-
   Por que o bebê coloca tudo na boca? Entenda a fase oral, quando começa e
@@ -54,17 +54,18 @@ seo:
   snippet_type: faq
   snippet_section: Por que o bebê coloca tudo na boca?
 sources:
-  - name: 'AAP — Developmental Milestones: 7 Months'
-    url: >-
-      https://www.healthychildren.org/English/ages-stages/baby/Pages/Developmental-Milestones-7-Months.aspx
   - name: >-
       SBP. Cartilha de Desenvolvimento: dos 2 meses aos 5 anos. Departamento
       Científico de Pediatria do Desenvolvimento e Comportamento.
     url: >-
       https://www.sbp.com.br/fileadmin/user_upload/_24327e-Cartilha_de_Desenvolvimento-2m-5anos_compressed.pdf
+  - name: 'AAP — Developmental Milestones: 7 Months'
+    url: >-
+      https://www.healthychildren.org/English/ages-stages/baby/Pages/Developmental-Milestones-7-Months.aspx
   - name: 'Piaget J. The Origin of Intelligence in the Child. Routledge, 1953.'
     url: >-
       https://www.routledge.com/The-Origin-of-Intelligence-in-the-Child/Piaget/p/book/9780415513623
+
 images:
   hero: img42-1.png
   complementar: img42-2.png

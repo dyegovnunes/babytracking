@@ -1,5 +1,5 @@
 ---
-title: 'Andador para Bebê: Por Que a SBP e a AAP Contraindicam'
+title: 'Andador para bebê: por que a SBP e a AAP contraindicam'
 slug: andador-bebe-seguro-ou-nao
 description: >-
   Andador para bebê: por que a SBP, AAP e Health Canada contraindicam o uso,

@@ -1,5 +1,5 @@
 ---
-title: 'Enxoval do Bebê: O Que Realmente Precisa'
+title: 'Enxoval do bebê: o que realmente precisa'
 slug: enxoval-do-bebe-o-que-realmente-precisa
 description: >-
   Lista prática de enxoval do bebê sem exageros. O que comprar, o que esperar

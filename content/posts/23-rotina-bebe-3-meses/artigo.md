@@ -1,5 +1,5 @@
 ---
-title: 'Rotina do Bebê aos 3-4 Meses: Horários, Sonecas e Estrutura'
+title: 'Rotina do bebê aos 3-4 meses: horários, sonecas e estrutura'
 slug: rotina-bebe-3-4-meses
 description: >-
   Como montar uma rotina flexível para o bebê de 3-4 meses. Janelas de sono,
@@ -60,15 +60,16 @@ seo:
   snippet_section: O que muda aos 3-4 meses
 sources:
   - name: >-
-      AAP. Healthy Sleep Habits: How Many Hours Does Your Child Need?.
-      HealthyChildren.org.
-    url: >-
-      https://www.healthychildren.org/English/ages-stages/baby/sleep/Pages/healthy-sleep-habits-how-many-hours-does-your-child-need.aspx
-  - name: >-
       SBP. Síndrome da Morte Súbita do Lactente e Sono Seguro. Departamento
       Científico de Medicina do Sono. 2018.
     url: >-
       https://www.sbp.com.br/fileadmin/user_upload/20226d-DocCient_-_Sindrome_Morte_Subita_do_Lactente.pdf
+
+  - name: >-
+      AAP. Healthy Sleep Habits: How Many Hours Does Your Child Need?.
+      HealthyChildren.org.
+    url: >-
+      https://www.healthychildren.org/English/ages-stages/baby/sleep/Pages/healthy-sleep-habits-how-many-hours-does-your-child-need.aspx
 images:
   hero: img23-1.png
   complementar: img23-2.png

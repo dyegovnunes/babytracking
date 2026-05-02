@@ -1,5 +1,5 @@
 ---
-title: Como Criar uma Rotina de Sono para o Bebê
+title: 'Como criar uma rotina de sono para o bebê'
 slug: rotina-sono-bebe
 description: >-
   Guia prático para criar uma rotina de sono que funciona: quando começar,

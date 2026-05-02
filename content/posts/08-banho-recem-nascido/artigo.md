@@ -1,5 +1,5 @@
 ---
-title: 'Banho do Recém-Nascido: Passo a Passo Seguro'
+title: 'Banho do recém-nascido: passo a passo seguro'
 slug: banho-do-recem-nascido
 description: >-
   Aprenda a dar banho no recém-nascido com segurança. Temperatura, frequência,

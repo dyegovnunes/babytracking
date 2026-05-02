@@ -1,5 +1,5 @@
 ---
-title: 'Icterícia Neonatal: O Que É e Quando Preocupar'
+title: 'Icterícia neonatal: o que é e quando preocupar'
 slug: ictericia-neonatal
 description: >-
   Entenda o que é icterícia no recém-nascido, por que acontece, como é tratada e

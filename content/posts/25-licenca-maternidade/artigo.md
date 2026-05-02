@@ -1,5 +1,5 @@
 ---
-title: 'Licença-Maternidade: Direitos, Prazos e Como Se Organizar'
+title: 'Licença-maternidade: direitos, prazos e como se organizar'
 slug: licenca-maternidade-direitos-organizacao
 description: >-
   Tudo sobre licença-maternidade no Brasil: regras da CLT, INSS, MEI, Empresa

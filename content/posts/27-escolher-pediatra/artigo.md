@@ -1,5 +1,5 @@
 ---
-title: Como Escolher o Pediatra do Seu Bebê
+title: 'Como escolher o pediatra do seu bebê'
 slug: como-escolher-pediatra
 description: >-
   Guia prático para escolher o pediatra do seu bebê: o que avaliar, perguntas

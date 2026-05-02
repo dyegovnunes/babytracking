@@ -39,6 +39,15 @@ related_slugs:
   - quando-levar-bebe-ao-pronto-socorro
 schema: Article
 audience: parent
+affiliate_products:
+  - tipo: saude
+    nome: balança digital para bebê
+    asin: ""
+    url: ""
+  - tipo: saude
+    nome: fita métrica para bebê com trava
+    asin: ""
+    url: ""
 sources:
   - name: "OMS — Curvas de Crescimento Infantil (WHO Child Growth Standards)"
     url: "https://www.who.int/tools/child-growth-standards"
@@ -48,6 +57,9 @@ sources:
     url: "https://bmcpediatr.biomedcentral.com/articles/10.1186/1471-2431-13-59"
   - name: "Yaya Baby — app de registro de rotina do bebê"
     url: "https://yayababy.app"
+images:
+  hero: img81-1.png
+  complementar: img81-2.png
 published: true
 ---
 

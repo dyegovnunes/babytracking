@@ -1,5 +1,5 @@
 ---
-title: 'Marcos de Desenvolvimento: 3 a 6 Meses'
+title: 'Marcos de desenvolvimento: 3 a 6 meses'
 slug: marcos-desenvolvimento-3-6-meses
 description: >-
   O que esperar do desenvolvimento do bebê de 3 a 6 meses. Marcos motores,

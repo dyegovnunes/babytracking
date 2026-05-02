@@ -1,5 +1,5 @@
 ---
-title: 'Plano de Parto: Como Fazer o Seu Passo a Passo (com Modelo)'
+title: 'Plano de parto: como fazer o seu passo a passo (com modelo)'
 slug: plano-de-parto
 description: >-
   Guia completo com passo a passo para montar seu plano de parto. Inclui modelo

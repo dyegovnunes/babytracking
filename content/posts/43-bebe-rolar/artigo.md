@@ -1,5 +1,5 @@
 ---
-title: Quando o Bebê Começa a Rolar e Como Ajudar
+title: 'Quando o bebê começa a rolar e como ajudar'
 slug: bebe-quando-comeca-rolar
 description: >-
   Quando o bebê começa a rolar, o que é necessário antes, como estimular com
@@ -54,17 +54,18 @@ seo:
   snippet_type: featured-snippet
   snippet_section: Timeline do rolar
 sources:
-  - name: AAP — Motor Development Milestones
-    url: >-
-      https://www.healthychildren.org/English/ages-stages/baby/Pages/Movement-4-to-7-Months.aspx
   - name: >-
       SBP. Cartilha de Desenvolvimento: dos 2 meses aos 5 anos. Departamento
       Científico de Pediatria do Desenvolvimento e Comportamento.
     url: >-
       https://www.sbp.com.br/fileadmin/user_upload/_24327e-Cartilha_de_Desenvolvimento-2m-5anos_compressed.pdf
+  - name: AAP — Motor Development Milestones
+    url: >-
+      https://www.healthychildren.org/English/ages-stages/baby/Pages/Movement-4-to-7-Months.aspx
   - name: WHO Multicentre Growth Reference Study — Motor Development Milestones
     url: >-
       https://www.who.int/tools/child-growth-standards/standards/motor-development-milestones
+
 images:
   hero: img43-1.png
   complementar: img43-2.png

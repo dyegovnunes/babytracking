@@ -1,5 +1,5 @@
 ---
-title: 'Balbucio, Risada e Primeiras Palavras: Marcos de Linguagem do Bebê'
+title: 'Balbucio, risada e primeiras palavras: marcos de linguagem do bebê'
 slug: marcos-linguagem-bebe
 description: >-
   Do primeiro arrulho às primeiras palavras: entenda a timeline do
@@ -55,18 +55,19 @@ seo:
   snippet_section: 'Timeline: do nascimento aos 12 meses'
 sources:
   - name: >-
-      AAP. Hearing Language Development: 1 to 12 Months Making Sounds: Your
-      Baby's Milestones. HealthyChildren.org.
-    url: >-
-      https://www.healthychildren.org/English/ages-stages/baby/Pages/Hearing-and-Making-Sounds.aspx
-  - name: >-
       SBP. Cartilha de Desenvolvimento: dos 2 meses aos 5 anos. Departamento
       Científico de Pediatria do Desenvolvimento e Comportamento.
     url: >-
       https://www.sbp.com.br/fileadmin/user_upload/_24327e-Cartilha_de_Desenvolvimento-2m-5anos_compressed.pdf
+  - name: >-
+      AAP. Hearing Language Development: 1 to 12 Months Making Sounds: Your
+      Baby's Milestones. HealthyChildren.org.
+    url: >-
+      https://www.healthychildren.org/English/ages-stages/baby/Pages/Hearing-and-Making-Sounds.aspx
   - name: ASHA. How Does Your Child Hear and Talk? Birth to One Year.
     url: >-
       https://www.asha.org/public/developmental-milestones/communication-milestones-birth-to-1-year/
+
 images:
   hero: img47-1.png
   complementar: img47-2.png

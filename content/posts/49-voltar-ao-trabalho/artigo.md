@@ -1,5 +1,5 @@
 ---
-title: 'Voltar ao Trabalho Após a Licença: Amamentação, Rotina e Emoções'
+title: 'Voltar ao trabalho após a licença: amamentação, rotina e emoções'
 slug: voltar-trabalho-amamentacao
 description: >-
   Guia prático para a volta ao trabalho após a licença-maternidade: como manter

@@ -1,5 +1,5 @@
 ---
-title: 'Brincadeiras para Bebê de 3 a 6 Meses: Estímulo com Simplicidade'
+title: 'Brincadeiras para bebê de 3 a 6 meses: estímulo com simplicidade'
 slug: brincadeiras-bebe-3-6-meses
 description: >-
   Lista prática de brincadeiras para bebê de 3 a 6 meses, organizadas por área
@@ -56,16 +56,17 @@ seo:
   snippet_type: lista
   snippet_section: Brincadeiras por mês
 sources:
-  - name: 'AAP — Playing With Your Baby: Activities for 4 to 7 Months'
-    url: >-
-      https://www.healthychildren.org/English/ages-stages/baby/Pages/Playing-With-Your-Baby.aspx
   - name: >-
       SBP. Cartilha de Desenvolvimento: dos 2 meses aos 5 anos. Departamento
       Científico de Pediatria do Desenvolvimento e Comportamento.
     url: >-
       https://www.sbp.com.br/fileadmin/user_upload/_24327e-Cartilha_de_Desenvolvimento-2m-5anos_compressed.pdf
+  - name: 'AAP — Playing With Your Baby: Activities for 4 to 7 Months'
+    url: >-
+      https://www.healthychildren.org/English/ages-stages/baby/Pages/Playing-With-Your-Baby.aspx
   - name: 'CDC — Milestone Moments: Learn the Signs, Act Early'
     url: 'https://www.cdc.gov/act-early/milestones/index.html'
+
 images:
   hero: img40-1.png
   complementar: img40-2.png

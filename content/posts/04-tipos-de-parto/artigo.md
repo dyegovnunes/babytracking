@@ -1,5 +1,5 @@
 ---
-title: 'Tipos de Parto: Normal, Cesárea e Humanizado'
+title: 'Tipos de parto: normal, cesárea e humanizado'
 slug: tipos-de-parto
 description: >-
   Conheça as diferenças entre parto normal, cesárea e parto humanizado.
@@ -32,13 +32,13 @@ seo:
   snippet_section: Comparativo entre os tipos de parto
 sources:
   - name: >-
-      OMS. WHO recommendations: intrapartum care for a positive childbirth
-      experience. 2018.
-    url: 'https://www.who.int/publications/i/item/9789241550215'
-  - name: >-
       SBP. A Importância do Pediatra na Assistência Perinatal. Departamento
       Científico de Neonatologia. 2023.
     url: 'https://www.sbp.com.br/departamentos/neonatologia/documentos-cientificos/'
+  - name: >-
+      OMS. WHO recommendations: intrapartum care for a positive childbirth
+      experience. 2018.
+    url: 'https://www.who.int/publications/i/item/9789241550215'
   - name: >-
       Ministério da Saúde. Diretrizes de Atenção à Gestante: operação cesariana.
       2016.
@@ -49,6 +49,7 @@ sources:
       Consensus. 2014.
     url: >-
       https://www.acog.org/clinical/clinical-guidance/obstetric-care-consensus/articles/2014/03/safe-prevention-of-the-primary-cesarean-delivery
+
 images:
   hero: img4-1.png
   complementar: img4-2.png

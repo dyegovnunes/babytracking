@@ -1,5 +1,5 @@
 ---
-title: 'Quando Levar o Bebê ao Pronto-Socorro: Sinais de Alerta'
+title: 'Quando levar o bebê ao pronto-socorro: sinais de alerta'
 slug: quando-levar-bebe-pronto-socorro
 description: >-
   Checklist dos sinais de alerta que indicam quando levar o bebê ao

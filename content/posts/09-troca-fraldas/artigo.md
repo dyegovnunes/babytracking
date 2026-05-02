@@ -1,5 +1,5 @@
 ---
-title: 'Troca de Fraldas: Guia Completo para Recém-Nascidos'
+title: 'Troca de fraldas: guia completo para recém-nascidos'
 slug: troca-de-fraldas-guia-completo
 description: >-
   Quantas fraldas por dia, como trocar corretamente, quando se preocupar e como

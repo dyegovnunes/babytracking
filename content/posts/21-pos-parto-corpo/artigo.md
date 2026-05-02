@@ -1,5 +1,5 @@
 ---
-title: 'O Que Muda no Corpo Depois do Parto: Guia Completo de Recuperação'
+title: 'O que muda no corpo depois do parto: guia completo de recuperação'
 slug: o-que-muda-no-corpo-depois-do-parto
 description: >-
   Tudo o que acontece com o corpo no pós-parto: involução uterina, lóquios,
@@ -56,14 +56,14 @@ seo:
   snippet_type: paragrafo
   snippet_section: Como é a linha do tempo de recuperação pós-parto
 sources:
-  - name: ACOG. Optimizing Postpartum Care. Committee Opinion No. 736. 2018.
-    url: >-
-      https://www.acog.org/clinical/clinical-guidance/committee-opinion/articles/2018/05/optimizing-postpartum-care
   - name: >-
       SBP. Guia Prático de Aleitamento Materno. Departamento Científico de
       Aleitamento Materno. 2021.
     url: >-
       https://www.sbp.com.br/fileadmin/user_upload/24585d-GPRATICO-GuiaPratico_de_AM-Atualizacao.pdf
+  - name: ACOG. Optimizing Postpartum Care. Committee Opinion No. 736. 2018.
+    url: >-
+      https://www.acog.org/clinical/clinical-guidance/committee-opinion/articles/2018/05/optimizing-postpartum-care
   - name: >-
       OMS. WHO recommendations on postnatal care of the mother and newborn.
       2013.
@@ -73,6 +73,7 @@ sources:
       Atenção Básica nº 32. 2013.
     url: >-
       https://bvsms.saude.gov.br/bvs/publicacoes/cadernos_atencao_basica_32_prenatal.pdf
+
 images:
   hero: img21-1.png
   complementar: img21-2.png

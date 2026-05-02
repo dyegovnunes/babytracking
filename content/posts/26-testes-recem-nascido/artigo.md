@@ -1,5 +1,5 @@
 ---
-title: 'Teste do Pezinho, Olhinho e Orelhinha: Guia Completo'
+title: 'Teste do pezinho, olhinho e orelhinha: guia completo'
 slug: testes-do-recem-nascido
 description: >-
   Guia completo sobre os testes neonatais obrigatórios: pezinho, olhinho,

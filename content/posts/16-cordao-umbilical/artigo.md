@@ -1,5 +1,5 @@
 ---
-title: 'Cordão Umbilical: Cuidados Essenciais Até Cair'
+title: 'Cordão umbilical: cuidados essenciais até cair'
 slug: cordao-umbilical
 description: >-
   Guia prático sobre cuidados com o coto umbilical do recém-nascido. Saiba o que

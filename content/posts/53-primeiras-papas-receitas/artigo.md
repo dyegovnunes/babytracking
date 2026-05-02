@@ -1,5 +1,5 @@
 ---
-title: 'Primeiras Papas para o Bebê de 6 Meses: Receitas Simples e Como Preparar'
+title: 'Primeiras papas para o bebê de 6 meses: receitas simples e como preparar'
 slug: primeiras-papas-receitas-bebe-6-meses
 description: >-
   Receitas simples de primeiras papas para o bebê de 6 meses: como preparar,

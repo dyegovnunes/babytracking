@@ -1,5 +1,5 @@
 ---
-title: 'Percentis e Curvas de Crescimento: Como Interpretar o Crescimento do Bebê'
+title: 'Percentis e curvas de crescimento: como interpretar o crescimento do bebê'
 slug: percentis-curvas-crescimento-bebe
 description: >-
   Entenda o que são percentis, como ler as curvas de crescimento da OMS, quando
@@ -54,16 +54,17 @@ seo:
   snippet_type: parágrafo
   snippet_section: O que são percentis?
 sources:
-  - name: OMS. Child Growth Standards. WHO Multicentre Growth Reference Study.
-    url: 'https://www.who.int/tools/child-growth-standards'
   - name: >-
       SBP. Manual de Avaliação Nutricional da Criança e do Adolescente. 2ª ed.
       atualizada. Departamento Científico de Nutrologia. 2021.
     url: >-
       https://www.sbp.com.br/fileadmin/user_upload/_22962f-ManAval_Nutricional_-_2Ed_Atualizada_SITE.pdf
+  - name: OMS. Child Growth Standards. WHO Multicentre Growth Reference Study.
+    url: 'https://www.who.int/tools/child-growth-standards'
   - name: Ministério da Saúde. Caderneta da Criança. 2024.
     url: >-
       https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/s/saude-da-crianca/caderneta
+
 images:
   hero: img50-1.png
   complementar: img50-2.png

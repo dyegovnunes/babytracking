@@ -1,5 +1,5 @@
 ---
-title: 'Leite Materno: Produção, Armazenamento e Dúvidas Frequentes'
+title: 'Leite materno: produção, armazenamento e dúvidas frequentes'
 slug: leite-materno-armazenamento
 description: >-
   Guia completo sobre leite materno: como a produção funciona, técnicas de

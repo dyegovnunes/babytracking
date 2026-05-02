@@ -1,5 +1,5 @@
 ---
-title: 'Introdução Alimentar aos 6 Meses: Guia Completo para Começar'
+title: 'Introdução alimentar aos 6 meses: guia completo para começar'
 slug: introducao-alimentar-6-meses-guia-completo
 description: >-
   Guia completo sobre introdução alimentar aos 6 meses: quando começar, sinais

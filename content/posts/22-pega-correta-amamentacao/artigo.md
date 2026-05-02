@@ -1,5 +1,5 @@
 ---
-title: 'Pega Correta na Amamentação: Posições e Passo a Passo'
+title: 'Pega correta na amamentação: posições e passo a passo'
 slug: pega-correta-posicoes-amamentacao
 description: >-
   Como saber se a pega do bebê está correta, sinais de pega inadequada e as
@@ -58,15 +58,16 @@ seo:
   snippet_type: lista
   snippet_section: Passo a passo para conseguir a pega correta
 sources:
-  - name: 'OMS. Breastfeeding counselling: a training course. 2022.'
-    url: 'https://www.who.int/publications/i/item/9789241550468'
   - name: >-
       SBP. Guia Prático de Aleitamento Materno. Departamento Científico de
       Aleitamento Materno. 2021.
     url: >-
       https://www.sbp.com.br/fileadmin/user_upload/24585d-GPRATICO-GuiaPratico_de_AM-Atualizacao.pdf
+  - name: 'OMS. Breastfeeding counselling: a training course. 2022.'
+    url: 'https://www.who.int/publications/i/item/9789241550468'
   - name: La Leche League International. Positioning and Latch.
     url: 'https://www.llli.org/breastfeeding-info/positioning/'
+
 images:
   hero: img22-1.png
   complementar: img22-2.png

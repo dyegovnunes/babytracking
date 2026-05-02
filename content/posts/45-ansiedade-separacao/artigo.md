@@ -1,5 +1,5 @@
 ---
-title: 'Ansiedade de Separação no Bebê: Quando Começa e Como Lidar'
+title: 'Ansiedade de separação no bebê: quando começa e como lidar'
 slug: ansiedade-separacao-bebe
 description: >-
   Bebê chora quando você sai do quarto? Entenda o que é ansiedade de separação,
@@ -55,20 +55,21 @@ seo:
   snippet_section: O que é ansiedade de separação no bebê?
 sources:
   - name: >-
-      AAP. Emotional and Social Development: 8 to 12 Months.
-      HealthyChildren.org.
-    url: >-
-      https://www.healthychildren.org/English/ages-stages/baby/Pages/Emotional-and-Social-Development-8-12-Months.aspx
-  - name: >-
       SBP. Cartilha de Desenvolvimento: dos 2 meses aos 5 anos. Departamento
       Científico de Pediatria do Desenvolvimento e Comportamento.
     url: >-
       https://www.sbp.com.br/fileadmin/user_upload/_24327e-Cartilha_de_Desenvolvimento-2m-5anos_compressed.pdf
+  - name: >-
+      AAP. Emotional and Social Development: 8 to 12 Months.
+      HealthyChildren.org.
+    url: >-
+      https://www.healthychildren.org/English/ages-stages/baby/Pages/Emotional-and-Social-Development-8-12-Months.aspx
   - name: 'Bowlby, J. Attachment and Loss. Vol. 1: Attachment. Basic Books, 1969.'
     url: 'https://pubmed.ncbi.nlm.nih.gov/7148988/'
   - name: AAP. Separation Anxiety. HealthyChildren.org.
     url: >-
       https://www.healthychildren.org/English/ages-stages/toddler/Pages/Soothing-Your-Childs-Separation-Anxiety.aspx
+
 images:
   hero: img45-1.png
   complementar: img45-2.png

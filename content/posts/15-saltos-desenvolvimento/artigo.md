@@ -1,5 +1,5 @@
 ---
-title: 'Saltos de Desenvolvimento do Bebê: Guia Completo dos 0 aos 6 Meses'
+title: 'Saltos de desenvolvimento do bebê: guia completo dos 0 aos 6 meses'
 slug: saltos-desenvolvimento
 description: >-
   Guia completo sobre os saltos de desenvolvimento do bebê de 0 a 6 meses.

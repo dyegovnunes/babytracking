@@ -1,5 +1,5 @@
 ---
-title: 'Berço, Mini Berço e Moisés: Diferenças e Qual Comprar Primeiro'
+title: 'Berço, mini berço e moisés: diferenças e qual comprar primeiro'
 slug: berco-moises-qual-comprar
 description: >-
   Diferença entre berço, mini berço e moisés para bebê: o que cada um oferece,
@@ -55,12 +55,13 @@ seo:
   snippet_type: lista
   snippet_section: Diferenças entre berço, mini berço e moisés
 sources:
-  - name: 'American Academy of Pediatrics. Safe Sleep: Back to Sleep for Every Sleep. 2024.'
-    url: 'https://www.healthychildren.org/English/ages-stages/baby/sleep/Pages/A-Parents-Guide-to-Safe-Sleep.aspx'
   - name: 'SBP. Morte Súbita Infantil — Prevenção e Orientação. 2023.'
     url: 'https://www.sbp.com.br/fileadmin/user_upload/sbp/2023/09/11/23282d-DC-Morte_Subita_Infantil.pdf'
+  - name: 'American Academy of Pediatrics. Safe Sleep: Back to Sleep for Every Sleep. 2024.'
+    url: 'https://www.healthychildren.org/English/ages-stages/baby/sleep/Pages/A-Parents-Guide-to-Safe-Sleep.aspx'
   - name: 'ABNT NBR 16941. Berços e cercados para crianças — Requisitos de segurança. 2021.'
     url: 'https://www.abntcatalogo.com.br/norma.aspx?ID=442024'
+
 images:
   hero: img70-1.png
   complementar: img70-2.png

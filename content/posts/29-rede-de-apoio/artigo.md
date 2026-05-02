@@ -1,5 +1,5 @@
 ---
-title: 'Rede de Apoio na Maternidade: Por Que Importa e Como Construir'
+title: 'Rede de apoio na maternidade: por que importa e como construir'
 slug: rede-de-apoio-maternidade
 description: >-
   Entenda por que a rede de apoio é essencial no pós-parto e aprenda a construir
@@ -58,20 +58,21 @@ seo:
   snippet_section: Tipos de apoio que fazem diferença
 sources:
   - name: >-
-      OMS — Recommendations on Maternal and Newborn Care for a Positive
-      Postnatal Experience
-    url: 'https://www.who.int/publications/i/item/9789240045989'
-  - name: >-
       SBP. O papel do pediatra na prevenção do estresse tóxico na primeira
       infância. Departamento Científico de Pediatria do Desenvolvimento e
       Comportamento. 2017.
     url: >-
       https://www.sbp.com.br/fileadmin/user_upload/2017/06/Ped.-Desenv.-Comp.-MOrient-Papel-pediatra-prev-estresse.pdf
   - name: >-
+      OMS — Recommendations on Maternal and Newborn Care for a Positive
+      Postnatal Experience
+    url: 'https://www.who.int/publications/i/item/9789240045989'
+  - name: >-
       AAP. Caring for Your Baby and Young Child: Birth to Age 5.
       HealthyChildren.org.
     url: >-
       https://www.healthychildren.org/English/family-life/family-dynamics/Pages/Support-for-Families.aspx
+
 images:
   hero: img29-1.png
   complementar: img29-2.png

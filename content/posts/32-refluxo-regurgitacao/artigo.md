@@ -1,5 +1,5 @@
 ---
-title: 'Bebê Regurgita Muito: Refluxo, Quando É Normal e Quando Preocupar'
+title: 'Bebê regurgita muito: refluxo, quando é normal e quando preocupar'
 slug: refluxo-regurgitacao-bebe
 description: >-
   Seu bebê regurgita após mamar? Entenda a diferença entre golfada e vômito,

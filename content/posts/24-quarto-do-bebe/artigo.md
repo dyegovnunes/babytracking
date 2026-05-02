@@ -1,5 +1,5 @@
 ---
-title: 'Quarto do Bebê: O Que É Essencial (e O Que É Marketing)'
+title: 'Quarto do bebê: o que é essencial (e o que é marketing)'
 slug: quarto-do-bebe-o-que-e-essencial
 description: >-
   O que você realmente precisa no quarto do bebê e o que é só marketing. Sono

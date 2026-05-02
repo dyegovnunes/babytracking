@@ -1,5 +1,5 @@
 ---
-title: 'Cadeirinha do Carro: Como Escolher, Instalar e Usar com Segurança'
+title: 'Cadeirinha do carro: como escolher, instalar e usar com segurança'
 slug: cadeirinha-bebe-carro
 description: >-
   Guia completo sobre cadeirinha de bebê para o carro: grupos por peso e idade,

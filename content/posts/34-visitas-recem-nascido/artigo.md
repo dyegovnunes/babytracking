@@ -1,5 +1,5 @@
 ---
-title: 'Visitas ao Recém-Nascido: Como Gerenciar Sem Estresse'
+title: 'Visitas ao recém-nascido: como gerenciar sem estresse'
 slug: visitas-recem-nascido
 description: >-
   Regras de higiene, como definir horários, scripts para recusar educadamente e

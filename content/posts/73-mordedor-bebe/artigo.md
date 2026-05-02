@@ -1,5 +1,5 @@
 ---
-title: 'Mordedor para Bebê: Tipos, Segurança e Quando Usar'
+title: 'Mordedor para bebê: tipos, segurança e quando usar'
 slug: mordedor-bebe-quando-usar
 description: >-
   Mordedor para bebê: quando o bebê precisa, tipos disponíveis (silicone, água,

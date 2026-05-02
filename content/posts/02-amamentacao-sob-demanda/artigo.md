@@ -1,5 +1,5 @@
 ---
-title: 'Amamentação sob Demanda: Como Funciona na Prática'
+title: 'Amamentação sob demanda: como funciona na prática'
 slug: amamentacao-sob-demanda
 description: >-
   Entenda o que é amamentação sob demanda, por que é recomendada e como

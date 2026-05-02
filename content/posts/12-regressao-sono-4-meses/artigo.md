@@ -1,5 +1,5 @@
 ---
-title: 'Regressão do Sono aos 4 Meses: O Que Acontece'
+title: 'Regressão do sono aos 4 meses: o que acontece'
 slug: regressao-do-sono-4-meses
 description: >-
   Entenda por que o bebê que dormia bem voltou a acordar várias vezes. O que é a
@@ -31,18 +31,19 @@ seo:
   snippet_section: O que é a regressão do sono aos 4 meses
 sources:
   - name: >-
-      Mindell JA, Owens JA. A Clinical Guide to Pediatric Sleep. Lippincott.
-      2015.
-    url: 'https://shop.lww.com/a-clinical-guide-to-pediatric-sleep/p/9781451193008'
-  - name: >-
       SBP. Síndrome da Morte Súbita do Lactente e Sono Seguro. Departamento
       Científico de Medicina do Sono. 2018.
     url: >-
       https://www.sbp.com.br/fileadmin/user_upload/20226d-DocCient_-_Sindrome_Morte_Subita_do_Lactente.pdf
   - name: >-
+      Mindell JA, Owens JA. A Clinical Guide to Pediatric Sleep. Lippincott.
+      2015.
+    url: 'https://shop.lww.com/a-clinical-guide-to-pediatric-sleep/p/9781451193008'
+  - name: >-
       Galland BC, et al. Normal sleep patterns in infants and children: a
       systematic review. Sleep Medicine Reviews. 2012.
     url: 'https://pubmed.ncbi.nlm.nih.gov/21784676/'
+
 images:
   hero: img12-1.png
   complementar: img12-2.png

@@ -1,5 +1,5 @@
 ---
-title: 'Sono do Bebê de 3 a 6 Meses: Transição de Ciclos e Noites Melhores'
+title: 'Sono do bebê de 3 a 6 meses: transição de ciclos e noites melhores'
 slug: sono-bebe-3-6-meses
 description: >-
   Guia completo sobre o sono do bebê de 3 a 6 meses: por que a regressão dos 4

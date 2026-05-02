@@ -1,5 +1,5 @@
 ---
-title: 'Rotina do Recém-Nascido: Existe?'
+title: 'Rotina do recém-nascido: existe?'
 slug: rotina-recem-nascido
 description: >-
   Dá para ter rotina com recém-nascido? Entenda a diferença entre rotina e
@@ -63,14 +63,15 @@ seo:
   snippet_type: paragrafo
   snippet_section: É possível ter rotina com recém-nascido?
 sources:
-  - name: AAP. Stages of Newborn Sleep. HealthyChildren.org.
-    url: >-
-      https://www.healthychildren.org/English/ages-stages/baby/sleep/Pages/phases-of-sleep.aspx
   - name: >-
       SBP. Síndrome da Morte Súbita do Lactente e Sono Seguro. Departamento
       Científico de Medicina do Sono. 2018.
     url: >-
       https://www.sbp.com.br/fileadmin/user_upload/20226d-DocCient_-_Sindrome_Morte_Subita_do_Lactente.pdf
+
+  - name: AAP. Stages of Newborn Sleep. HealthyChildren.org.
+    url: >-
+      https://www.healthychildren.org/English/ages-stages/baby/sleep/Pages/phases-of-sleep.aspx
 images:
   hero: img18-1.png
   complementar: img18-2.png

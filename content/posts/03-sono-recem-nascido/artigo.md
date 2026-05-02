@@ -1,5 +1,5 @@
 ---
-title: 'Sono do Recém-Nascido: O Que Esperar nos Primeiros Meses'
+title: 'Sono do recém-nascido: o que esperar nos primeiros meses'
 slug: sono-do-recem-nascido
 description: >-
   Entenda como funciona o sono do recém-nascido, quantas horas ele dorme por dia

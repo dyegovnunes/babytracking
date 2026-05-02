@@ -1,5 +1,5 @@
 ---
-title: 'Fraldas de Pano vs. Descartáveis: Comparativo Completo'
+title: 'Fraldas de pano vs. descartáveis: comparativo completo'
 slug: fraldas-pano-vs-descartaveis
 description: >-
   Fralda de pano moderna ou descartável? Comparativo de custo, praticidade,

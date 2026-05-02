@@ -1,5 +1,5 @@
 ---
-title: 'Mala da Maternidade: Lista Completa do Que Levar'
+title: 'Mala da maternidade: lista completa do que levar'
 slug: mala-da-maternidade-lista-completa
 description: >-
   Saiba exatamente o que colocar na mala da maternidade para você e seu bebê.

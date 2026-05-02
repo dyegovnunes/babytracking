@@ -1,5 +1,5 @@
 ---
-title: 'Sinais de Prontidão para Introdução Alimentar: Quando o Bebê Está Pronto'
+title: 'Sinais de prontidão para introdução alimentar: quando o bebê está pronto'
 slug: sinais-prontidao-introducao-alimentar
 description: >-
   Os 4 sinais de prontidão para introdução alimentar, mitos comuns, por que
