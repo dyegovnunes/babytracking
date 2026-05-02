@@ -23,16 +23,21 @@ function useAuth() {
   }, [])
 
   async function checkSession() {
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session) { setState('unauthenticated'); return }
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) { setState('unauthenticated'); return }
 
-    const { data: ped } = await supabase
-      .from('pediatricians')
-      .select('approved_at')
-      .single<Pick<Pediatrician, 'approved_at'>>()
+      const { data: ped } = await supabase
+        .from('pediatricians')
+        .select('approved_at')
+        .eq('user_id', session.user.id)
+        .maybeSingle()
 
-    if (!ped) { setState('needs-profile'); return }
-    setState(ped.approved_at ? 'approved' : 'pending')
+      if (!ped) { setState('needs-profile'); return }
+      setState(ped.approved_at ? 'approved' : 'pending')
+    } catch {
+      setState('unauthenticated')
+    }
   }
 
   return state
