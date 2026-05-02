@@ -58,12 +58,14 @@ serve(async (req) => {
     if (!baby) return json({ error: 'Bebê não encontrado' }, 404)
 
     // 7. Logs dos últimos 30 dias
-    const thirtyDaysAgo = new Date(Date.now() - 30 * 86400000).toISOString()
+    // IMPORTANTE: a coluna `timestamp` em `logs` é bigint (ms desde epoch),
+    // não timestamptz — comparar com número, não com string ISO.
+    const thirtyDaysAgoMs = Date.now() - 30 * 86400000
     const { data: logs } = await supabase
       .from('logs')
       .select('event_id, timestamp, ml, duration, notes')
       .eq('baby_id', baby_id)
-      .gte('timestamp', thirtyDaysAgo)
+      .gte('timestamp', thirtyDaysAgoMs)
       .order('timestamp', { ascending: false })
       .limit(2000)
 
@@ -117,7 +119,9 @@ serve(async (req) => {
       },
       logs: (logs ?? []).map((l: any) => ({
         eventId: l.event_id,
-        timestamp: l.timestamp,
+        // timestamp é bigint (ms) no banco — converter para número JS para
+        // evitar que o JSON serializer o trate como string em alguns ambientes
+        timestamp: new Date(Number(l.timestamp)).toISOString(),
         ml: l.ml,
         duration: l.duration,
         notes: l.notes,
