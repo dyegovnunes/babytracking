@@ -1,0 +1,158 @@
+@import "tailwindcss";
+
+/* ============================================================
+   Tokens da marca Yaya — light mode fixo (portal web, uso diurno)
+   Mesma família do app, sem dark mode toggle.
+   ============================================================ */
+@theme {
+  /* Surfaces — branco com tint lilás suave */
+  --color-surface:                   #fafafe;
+  --color-surface-dim:               #f3f2f8;
+  --color-surface-container-lowest:  #fafafe;
+  --color-surface-container-low:     #efedf6;
+  --color-surface-container:         #e8e5f2;
+  --color-surface-container-high:    #ded9ea;
+  --color-surface-container-highest: #d0ccde;
+  --color-surface-variant:           #ded9ea;
+
+  /* Primary — roxo Yaya, contraste AA em fundo claro */
+  --color-primary:           #7056e0;
+  --color-primary-dim:       #5a45c4;
+  --color-primary-container: #e8e1ff;
+  --color-primary-fixed:     #ab8ffe;
+  --color-primary-fixed-dim: #9d81f0;
+
+  /* Secondary */
+  --color-secondary:           #7d6fa8;
+  --color-secondary-dim:       #6a5d93;
+  --color-secondary-container: #e8e1ff;
+
+  /* Tertiary — rosa quente, accent de celebração */
+  --color-tertiary:           #c5487a;
+  --color-tertiary-dim:       #a73562;
+  --color-tertiary-container: #ffd9e5;
+
+  /* Error */
+  --color-error:           #b3001f;
+  --color-error-dim:       #7c0016;
+  --color-error-container: #ffd9dd;
+
+  /* On-colors */
+  --color-on-surface:         #1c1b2b;
+  --color-on-surface-variant: #5a5870;
+  --color-on-background:      #1c1b2b;
+  --color-on-primary:         #ffffff;
+  --color-on-secondary:       #ffffff;
+  --color-on-error:           #ffffff;
+
+  /* Utility */
+  --color-outline:         #9e9cb0;
+  --color-outline-variant: #d5d3de;
+
+  /* Lavender muted — metadata, placeholders, labels secundários */
+  --color-lavender-muted: #6f6896;
+
+  /* Tipografia — Manrope única família (mesma decisão do app) */
+  --font-sans: 'Manrope', sans-serif;
+
+  /* Border radius — 6px padrão do app */
+  --radius-sm: 4px;
+  --radius:    6px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --radius-xl: 16px;
+
+  /* Animações */
+  --animate-fade-in:    fade-in 0.2s ease-out;
+  --animate-slide-up:   slide-up 0.25s ease-out;
+  --animate-shimmer:    shimmer 1.5s ease-in-out infinite;
+}
+
+/* Base */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-surface);
+  color: var(--color-on-surface);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Material Symbols */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 20px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Elevação — 2 camadas roxas (sem gradiente, conforme design system) */
+.shadow-primary-sm {
+  box-shadow:
+    0 1px 2px rgba(112, 86, 224, 0.12),
+    0 4px 12px rgba(112, 86, 224, 0.08);
+}
+.shadow-primary {
+  box-shadow:
+    0 1px 2px rgba(112, 86, 224, 0.18),
+    0 8px 24px rgba(112, 86, 224, 0.12);
+}
+.shadow-primary-lg {
+  box-shadow:
+    0 2px 4px rgba(112, 86, 224, 0.20),
+    0 12px 32px rgba(112, 86, 224, 0.16);
+}
+
+/* Card padrão */
+.card {
+  background-color: #ffffff;
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--radius);
+}
+
+/* Shimmer skeleton */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-surface-container-low) 25%,
+    var(--color-surface-container) 50%,
+    var(--color-surface-container-low) 75%
+  );
+  background-size: 200% 100%;
+  animation: var(--animate-shimmer);
+  border-radius: var(--radius);
+}
+
+/* Keyframes */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
