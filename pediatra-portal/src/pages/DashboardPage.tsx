@@ -214,7 +214,9 @@ function PatientCard({
   const [menuOpen, setMenuOpen] = useState(false)
 
   const photoUrl = patient.photo_url
-    ? `${supabaseUrl}/storage/v1/object/public/baby-photos/${patient.photo_url}`
+    ? patient.photo_url.startsWith('http')
+      ? patient.photo_url
+      : `${supabaseUrl}/storage/v1/object/public/baby-photos/${patient.photo_url}`
     : null
 
   const lastSeenLabel = formatLastSeen(patient.last_active_at)
