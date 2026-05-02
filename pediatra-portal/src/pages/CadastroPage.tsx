@@ -158,14 +158,30 @@ export default function CadastroPage() {
         userId = authData.user.id
       }
 
+      // Se já tem registro, redireciona direto (evita insert duplicado)
+      const { data: existing } = await supabase
+        .from('pediatricians')
+        .select('approved_at')
+        .eq('user_id', userId)
+        .maybeSingle()
+
+      if (existing) {
+        navigate(existing.approved_at ? '/dashboard' : '/aguardando')
+        return
+      }
+
       const rqeNumbers = rqeList.filter(r => r.numero).map(r => r.numero)
       const { error: insertError } = await supabase.from('pediatricians').insert({
         user_id: userId, name: form.name, crm: form.crm, crm_state: form.crm_state,
         specialties: [form.specialty], rqe: rqeNumbers.length > 0 ? rqeNumbers : null,
       })
       if (insertError) {
-        setError(insertError.code === '23505' ? 'Já existe uma conta cadastrada com esse CRM.' : 'Erro ao salvar dados. Tente novamente.')
-        await supabase.auth.signOut()
+        if (insertError.code === '23505') {
+          setError('Já existe uma conta cadastrada com esse CRM.')
+        } else {
+          setError(`Erro ao salvar dados (${insertError.code}): ${insertError.message}`)
+        }
+        // Não faz signOut — mantém a sessão para o usuário tentar novamente
         return
       }
       navigate('/aguardando')
