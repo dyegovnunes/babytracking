@@ -460,7 +460,7 @@ function Hero({ isMobile }: { isMobile: boolean }) {
 
         {/* Subtítulo */}
         <p className="lp-fade lp-d2" style={{ fontSize: '1rem', lineHeight: 1.7, color: 'hsl(250 30% 70%)', maxWidth: 480, marginBottom: '2rem' }}>
-          Do recém-nascido ao primeiro aniversário. Registre em segundos,
+          Seu bebê muda a cada semana. Registre em segundos,
           entenda os padrões e mantenha toda a família sincronizada em tempo real.
         </p>
 
