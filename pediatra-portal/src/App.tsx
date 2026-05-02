@@ -8,17 +8,15 @@ import LoginPage from './pages/LoginPage'
 import AguardandoPage from './pages/AguardandoPage'
 import DashboardPage from './pages/DashboardPage'
 
-type AuthState = 'loading' | 'unauthenticated' | 'pending' | 'approved'
+// needs-profile: autenticado via OAuth mas sem registro de CRM ainda
+type AuthState = 'loading' | 'unauthenticated' | 'needs-profile' | 'pending' | 'approved'
 
 function useAuth() {
   const [state, setState] = useState<AuthState>('loading')
 
   useEffect(() => {
     checkSession()
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
-      checkSession()
-    })
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => checkSession())
     return () => subscription.unsubscribe()
   }, [])
 
@@ -31,7 +29,7 @@ function useAuth() {
       .select('approved_at')
       .single<Pick<Pediatrician, 'approved_at'>>()
 
-    if (!ped) { setState('unauthenticated'); return }
+    if (!ped) { setState('needs-profile'); return }
     setState(ped.approved_at ? 'approved' : 'pending')
   }
 
@@ -58,8 +56,14 @@ function AppRoutes() {
 
   if (auth === 'loading') {
     return (
-      <div className="min-h-screen bg-[#fafafe] flex items-center justify-center">
-        <span className="text-[28px] font-[800] text-[#7056e0] tracking-[-0.03em] lowercase animate-pulse">yaya</span>
+      <div style={{
+        minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
+        background: 'radial-gradient(ellipse 80% 60% at 50% -10%, rgba(183,159,255,0.14) 0%, transparent 70%)',
+        backgroundColor: '#f8f7ff',
+      }}>
+        <span style={{ fontFamily: 'Manrope, sans-serif', fontSize: 28, fontWeight: 800, color: '#7056e0', letterSpacing: '-0.03em' }}>
+          ya<span style={{ color: '#b79fff' }}>ya</span>
+        </span>
       </div>
     )
   }
@@ -80,6 +84,16 @@ function AppRoutes() {
     return <Navigate to="/login" replace />
   }
 
+  // Autenticado via OAuth mas sem CRM ainda → completa o cadastro
+  if (auth === 'needs-profile') {
+    return (
+      <Routes>
+        <Route path="/cadastro" element={<CadastroPage />} />
+        <Route path="*"         element={<Navigate to="/cadastro" replace />} />
+      </Routes>
+    )
+  }
+
   if (auth === 'pending') {
     return (
       <Routes>
@@ -89,7 +103,6 @@ function AppRoutes() {
     )
   }
 
-  // approved
   return <PortalLayout />
 }
 
