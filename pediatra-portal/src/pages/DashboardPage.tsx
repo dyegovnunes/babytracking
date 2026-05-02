@@ -84,7 +84,7 @@ export default function DashboardPage() {
           {new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })}
         </p>
         <h1 className="text-[26px] font-[800] text-[#1c1b2b] tracking-[-0.02em]">
-          Olá, {ped?.name?.startsWith('Dr') ? '' : 'Dra. '}{firstName} 👋
+          Olá, {firstName} 👋
         </h1>
       </header>
 
