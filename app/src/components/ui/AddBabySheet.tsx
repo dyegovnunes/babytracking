@@ -166,7 +166,7 @@ export default function AddBabySheet({ onClose }: Props) {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Ex: Helena"
-              className="w-full px-3 py-2.5 rounded-md bg-surface-container border border-outline-variant text-on-surface font-body text-sm focus:outline-none focus:border-primary"
+              className="w-full px-3 py-2.5 rounded-md bg-surface-container border border-outline-variant text-on-surface font-body text-base focus:outline-none focus:border-primary"
               maxLength={30}
               required
             />

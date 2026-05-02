@@ -188,7 +188,7 @@ export default function CaregiverEditSheet({ babyId, caregiverId, caregiverName,
                     type="time"
                     value={start}
                     onChange={(e) => setStart(e.target.value)}
-                    className="w-full px-3 py-3 rounded-md bg-surface-container border border-outline-variant text-on-surface font-body text-sm focus:outline-none focus:border-primary min-h-[44px]"
+                    className="w-full px-3 py-3 rounded-md bg-surface-container border border-outline-variant text-on-surface font-body text-base focus:outline-none focus:border-primary min-h-[44px]"
                   />
                 </div>
                 <div>
@@ -197,7 +197,7 @@ export default function CaregiverEditSheet({ babyId, caregiverId, caregiverName,
                     type="time"
                     value={end}
                     onChange={(e) => setEnd(e.target.value)}
-                    className="w-full px-3 py-3 rounded-md bg-surface-container border border-outline-variant text-on-surface font-body text-sm focus:outline-none focus:border-primary min-h-[44px]"
+                    className="w-full px-3 py-3 rounded-md bg-surface-container border border-outline-variant text-on-surface font-body text-base focus:outline-none focus:border-primary min-h-[44px]"
                   />
                 </div>
               </div>
@@ -238,7 +238,7 @@ export default function CaregiverEditSheet({ babyId, caregiverId, caregiverName,
                 onChange={(e) => setInstructions(e.target.value.slice(0, INSTRUCTIONS_MAX))}
                 placeholder="Ex: Medicação às 15h, prefere colo para dormir, alergia a leite..."
                 rows={5}
-                className="w-full px-3 py-2.5 rounded-md bg-surface-container border border-outline-variant text-on-surface font-body text-sm focus:outline-none focus:border-primary resize-none"
+                className="w-full px-3 py-2.5 rounded-md bg-surface-container border border-outline-variant text-on-surface font-body text-base focus:outline-none focus:border-primary resize-none"
               />
               <div className="mt-1 text-right font-label text-[10px] text-on-surface-variant/70">
                 {instructions.length}/{INSTRUCTIONS_MAX}

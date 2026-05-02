@@ -202,7 +202,7 @@ export default function MedicationForm({ isOpen, onClose, onSave, initialData }:
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="ex: Dipirona, Vitamina D"
-            className="w-full px-3 py-2.5 rounded-md bg-surface-container border border-white/5 text-on-surface font-body text-sm focus:outline-none focus:border-primary/40"
+            className="w-full px-3 py-2.5 rounded-md bg-surface-container border border-white/5 text-on-surface font-body text-base focus:outline-none focus:border-primary/40"
           />
         </div>
 
@@ -216,7 +216,7 @@ export default function MedicationForm({ isOpen, onClose, onSave, initialData }:
             value={dosage}
             onChange={(e) => setDosage(e.target.value)}
             placeholder='ex: "3 gotas", "5ml", "1 comprimido"'
-            className="w-full px-3 py-2.5 rounded-md bg-surface-container border border-white/5 text-on-surface font-body text-sm focus:outline-none focus:border-primary/40"
+            className="w-full px-3 py-2.5 rounded-md bg-surface-container border border-white/5 text-on-surface font-body text-base focus:outline-none focus:border-primary/40"
           />
         </div>
 
@@ -255,7 +255,7 @@ export default function MedicationForm({ isOpen, onClose, onSave, initialData }:
             type="time"
             value={firstTime}
             onChange={(e) => setFirstTime(e.target.value)}
-            className="w-full px-3 py-3 rounded-md bg-surface-container border border-white/5 text-on-surface font-body text-sm focus:outline-none focus:border-primary/40 min-h-[44px]"
+            className="w-full px-3 py-3 rounded-md bg-surface-container border border-white/5 text-on-surface font-body text-base focus:outline-none focus:border-primary/40 min-h-[44px]"
           />
         </div>
 
@@ -321,7 +321,7 @@ export default function MedicationForm({ isOpen, onClose, onSave, initialData }:
                 onChange={(e) =>
                   setDurationDays(Math.max(1, parseInt(e.target.value, 10) || 1))
                 }
-                className="w-20 px-3 py-2 rounded-md bg-surface-container border border-white/5 text-on-surface font-body text-sm focus:outline-none focus:border-primary/40"
+                className="w-20 px-3 py-2 rounded-md bg-surface-container border border-white/5 text-on-surface font-body text-base focus:outline-none focus:border-primary/40"
               />
               <span className="font-body text-xs text-on-surface-variant">
                 dias · termina em {endDate}
@@ -340,7 +340,7 @@ export default function MedicationForm({ isOpen, onClose, onSave, initialData }:
             onChange={(e) => setNotes(e.target.value)}
             placeholder='ex: "dar antes da mamada", "com suco"'
             rows={2}
-            className="w-full px-3 py-2.5 rounded-md bg-surface-container border border-white/5 text-on-surface font-body text-sm focus:outline-none focus:border-primary/40 resize-none"
+            className="w-full px-3 py-2.5 rounded-md bg-surface-container border border-white/5 text-on-surface font-body text-base focus:outline-none focus:border-primary/40 resize-none"
           />
         </div>
 

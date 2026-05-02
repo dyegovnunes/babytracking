@@ -107,6 +107,17 @@ export interface Projection {
   lastTime: Date
 }
 
+/** Pediatra vinculada ao bebê (lida via RPC get_baby_linked_pediatrician) */
+export interface LinkedPediatrician {
+  linkId: string
+  pediatricianId: string
+  name: string
+  crm: string
+  crmState: string
+  linkedAt: string
+  consentGivenAt?: string | null
+}
+
 /** Uma linha da tabela baby_grid_items — config de visibilidade do grid por bebê */
 export interface GridItem {
   id: string

@@ -163,6 +163,18 @@ function AppRoutes() {
     try { localStorage.setItem('yaya_pending_ref', refParam.toUpperCase()) } catch { /* ignore */ }
   }
 
+  // Deep link de convite da pediatra: /p/:code → salva código para consumo
+  // pelo LinkPediatricianSheet ao abrir o app logado
+  if (location.pathname.startsWith('/p/')) {
+    const pedCode = location.pathname.split('/p/')[1]?.trim().toUpperCase()
+    if (pedCode && /^[A-Z0-9]{6,12}$/.test(pedCode)) {
+      try { localStorage.setItem('yaya_pending_ped_code', pedCode) } catch { /* ignore */ }
+    }
+    // Redireciona para o app; o PediatricianSection/LinkPediatricianSheet
+    // lê o código pendente ao montar
+    window.history.replaceState(null, '', '/')
+  }
+
   // Public routes (no auth required)
   if (location.pathname === '/privacy') {
     return (

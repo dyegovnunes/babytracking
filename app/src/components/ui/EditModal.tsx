@@ -81,7 +81,7 @@ export default function EditModal({ log, onSave, onDelete, onClose, onAddBottle 
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full bg-surface-container-low rounded-md px-3 py-3 text-on-surface font-body text-sm outline-none focus:ring-2 focus:ring-primary/40 min-h-[44px]"
+              className="w-full bg-surface-container-low rounded-md px-3 py-3 text-on-surface font-body text-base outline-none focus:ring-2 focus:ring-primary/40 min-h-[44px]"
             />
           </div>
           <div>
@@ -92,7 +92,7 @@ export default function EditModal({ log, onSave, onDelete, onClose, onAddBottle 
               type="time"
               value={time}
               onChange={(e) => setTime(e.target.value)}
-              className="w-full bg-surface-container-low rounded-md px-3 py-3 text-on-surface font-body text-sm outline-none focus:ring-2 focus:ring-primary/40 min-h-[44px]"
+              className="w-full bg-surface-container-low rounded-md px-3 py-3 text-on-surface font-body text-base outline-none focus:ring-2 focus:ring-primary/40 min-h-[44px]"
             />
           </div>
         </div>
@@ -143,7 +143,7 @@ export default function EditModal({ log, onSave, onDelete, onClose, onAddBottle 
               value={ml}
               onChange={(e) => setMl(e.target.value.replace(/\D/g, ''))}
               placeholder="ex: 60"
-              className="w-full bg-surface-container-low rounded-md px-3 py-3 text-on-surface font-body text-sm outline-none focus:ring-2 focus:ring-primary/40 min-h-[44px]"
+              className="w-full bg-surface-container-low rounded-md px-3 py-3 text-on-surface font-body text-base outline-none focus:ring-2 focus:ring-primary/40 min-h-[44px]"
             />
           </div>
         )}

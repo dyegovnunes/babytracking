@@ -134,7 +134,7 @@ export default function SickModal({ babyName, initialLog, onConfirm, onDelete, o
                 value={tempStr}
                 onChange={(e) => setTempStr(e.target.value)}
                 placeholder="37.0"
-                className={`w-full px-3 py-2.5 rounded-md border font-body text-sm focus:outline-none pr-10 ${
+                className={`w-full px-3 py-2.5 rounded-md border font-body text-base focus:outline-none pr-10 ${
                   hasFever
                     ? 'bg-error/10 border-error/50 text-on-surface focus:border-error'
                     : 'bg-surface-container border-outline-variant text-on-surface focus:border-primary'

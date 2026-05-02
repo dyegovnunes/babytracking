@@ -237,7 +237,7 @@ export default function MealModal({ babyName, initialLog, onConfirm, onDelete, o
                   type="date"
                   value={dateVal}
                   onChange={(e) => setDateVal(e.target.value)}
-                  className="w-full px-3 py-3 rounded-md bg-surface-container border border-outline-variant text-on-surface font-body text-sm focus:outline-none focus:border-primary min-h-[44px]"
+                  className="w-full px-3 py-3 rounded-md bg-surface-container border border-outline-variant text-on-surface font-body text-base focus:outline-none focus:border-primary min-h-[44px]"
                 />
               </div>
               <div className="flex-1">
@@ -246,7 +246,7 @@ export default function MealModal({ babyName, initialLog, onConfirm, onDelete, o
                   type="time"
                   value={timeVal}
                   onChange={(e) => setTimeVal(e.target.value)}
-                  className="w-full px-3 py-3 rounded-md bg-surface-container border border-outline-variant text-on-surface font-body text-sm focus:outline-none focus:border-primary min-h-[44px]"
+                  className="w-full px-3 py-3 rounded-md bg-surface-container border border-outline-variant text-on-surface font-body text-base focus:outline-none focus:border-primary min-h-[44px]"
                 />
               </div>
             </div>
@@ -319,7 +319,7 @@ export default function MealModal({ babyName, initialLog, onConfirm, onDelete, o
                 onChange={(e) => setCustomInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && addCustom()}
                 placeholder="Outro alimento..."
-                className="flex-1 px-3 py-2 rounded-md bg-surface-container border border-outline-variant text-on-surface font-body text-sm focus:outline-none focus:border-primary"
+                className="flex-1 px-3 py-2 rounded-md bg-surface-container border border-outline-variant text-on-surface font-body text-base focus:outline-none focus:border-primary"
               />
               <button
                 onClick={addCustom}
