@@ -1,9 +1,12 @@
+import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { signOutAdmin } from '../lib/adminAuth';
+import { supabase } from '../../lib/supabase';
 
-const NAV_ITEMS = [
+const NAV_ITEMS: Array<{ path: string; label: string; icon: string }> = [
   { path: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
   { path: 'users', label: 'Usuários', icon: 'group' },
+  { path: 'pediatricians', label: 'Pediatras', icon: 'stethoscope' },
   { path: 'push', label: 'Push', icon: 'notifications' },
   { path: 'monetization', label: 'Receita', icon: 'payments' },
   { path: 'config', label: 'Configurações', icon: 'settings' },
@@ -13,6 +16,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const navigate = useNavigate();
   const location = useLocation();
   const current = location.pathname.split('/paineladmin/')[1]?.split('/')[0] || 'dashboard';
+  const [pendingPeds, setPendingPeds] = useState(0);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      const { count } = await supabase
+        .from('pediatricians')
+        .select('*', { count: 'exact', head: true })
+        .is('approved_at', null);
+      if (!cancelled) setPendingPeds(count ?? 0);
+    }
+    load();
+    // Recarrega o badge sempre que voltar pra fora da pagina de pediatras
+    // (depois de aprovar alguem, por exemplo)
+    if (current !== 'pediatricians') load();
+    return () => { cancelled = true; };
+  }, [current]);
 
   async function handleSignOut() {
     await signOutAdmin();
@@ -61,6 +81,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <nav className="admin-sidebar flex-shrink-0 py-6 px-3 border-r border-outline-variant/20" style={{ width: 220 }}>
           {NAV_ITEMS.map(item => {
             const isActive = current === item.path;
+            const badge = item.path === 'pediatricians' ? pendingPeds : 0;
             return (
               <button
                 key={item.path}
@@ -72,7 +93,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 }`}
               >
                 <span className="material-symbols-outlined text-xl">{item.icon}</span>
-                {item.label}
+                <span className="flex-1 text-left">{item.label}</span>
+                {badge > 0 && (
+                  <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-amber-500 text-[10px] font-bold text-white">
+                    {badge}
+                  </span>
+                )}
               </button>
             );
           })}
@@ -97,11 +123,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="flex justify-around px-1 py-2">
           {NAV_ITEMS.map(item => {
             const isActive = current === item.path;
+            const badge = item.path === 'pediatricians' ? pendingPeds : 0;
             return (
               <button
                 key={item.path}
                 onClick={() => navigate(`/paineladmin/${item.path}`)}
-                className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-md bg-transparent border-none cursor-pointer transition-colors ${
+                className={`relative flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-md bg-transparent border-none cursor-pointer transition-colors ${
                   isActive
                     ? 'bg-primary/15 text-primary'
                     : 'text-on-surface-variant/70 hover:text-on-surface'
@@ -111,6 +138,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <span className={`font-label text-[10px] ${isActive ? 'font-semibold' : 'font-medium'}`}>
                   {item.label}
                 </span>
+                {badge > 0 && (
+                  <span className="absolute top-0 right-0 inline-flex items-center justify-center min-w-[16px] h-4 px-1 rounded-full bg-amber-500 text-[9px] font-bold text-white">
+                    {badge}
+                  </span>
+                )}
               </button>
             );
           })}
