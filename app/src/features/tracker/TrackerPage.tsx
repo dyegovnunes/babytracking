@@ -3,7 +3,7 @@ import { useAppState, useAppDispatch, addLog, updateLog, deleteLog } from '../..
 import { useOfflineQueue, OFFLINE_QUEUE_ENABLED } from './useOfflineQueue'
 import { useAuth } from '../../contexts/AuthContext'
 import { DEFAULT_EVENTS, EVENT_CATALOG } from '../../lib/constants'
-import { getNextProjection } from './projections'
+import { getNextProjection, isInQuietHours } from './projections'
 import { useTimer } from '../../hooks/useTimer'
 import { hapticSuccess, hapticLight, hapticMedium } from '../../lib/haptics'
 import HeroIdentity from './components/HeroIdentity'
@@ -306,6 +306,13 @@ export default function TrackerPage() {
   // Eventos que indicam que o bebê acordou (alimentação ou troca de fralda)
   const WAKE_TRIGGER_EVENTS = ['breast_left', 'breast_right', 'breast_both', 'bottle', 'diaper_wet', 'diaper_dirty']
 
+  // Auto-sono só faz sentido durante o horário noturno configurado.
+  // Durante o dia, o pai pode ter simplesmente esquecido de registrar o acordou.
+  const isNighttime = useMemo(() => {
+    if (!quietHours?.enabled) return false
+    return isInQuietHours(new Date(), { start: quietHours.start, end: quietHours.end })
+  }, [quietHours, now])
+
   const handleLog = useCallback(
     async (eventId: string) => {
       if (!baby) return
@@ -346,8 +353,8 @@ export default function TrackerPage() {
 
       // Offline: enfileirar localmente e dispatch otimista para feedback imediato
       if (!navigator.onLine && OFFLINE_QUEUE_ENABLED) {
-        // Auto-sono offline
-        if (isBabySleeping && WAKE_TRIGGER_EVENTS.includes(eventId)) {
+        // Auto-sono offline — só durante horário noturno
+        if (isBabySleeping && isNighttime && WAKE_TRIGGER_EVENTS.includes(eventId)) {
           const ts = Date.now()
           const wakeId = enqueue({ eventId: 'wake',  babyId: baby.id, userId: user?.id, payload: { source: 'offline' }, timestamp: ts - 5 * 60_000 })
           const evtId  = enqueue({ eventId,           babyId: baby.id, userId: user?.id, payload: { source: 'offline' }, timestamp: ts })
@@ -367,9 +374,10 @@ export default function TrackerPage() {
         return
       }
 
-      // Auto-sono: se bebê está dormindo e registrou amamentação/fralda,
+      // Auto-sono: se bebê está dormindo E é horário noturno e registrou amamentação/fralda,
       // insere "acordou" 5 min antes e "dormiu" 30 min depois automaticamente.
-      if (isBabySleeping && WAKE_TRIGGER_EVENTS.includes(eventId)) {
+      // Fora do horário noturno, o pai pode ter simplesmente esquecido de registrar o acordou.
+      if (isBabySleeping && isNighttime && WAKE_TRIGGER_EVENTS.includes(eventId)) {
         const ts = Date.now()
         await addLog(dispatch, 'wake',  baby.id, undefined, user?.id, null, ts - 5 * 60_000)
         const log = await addLog(dispatch, eventId, baby.id, undefined, user?.id, null, ts)

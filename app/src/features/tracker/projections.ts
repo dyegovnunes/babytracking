@@ -78,7 +78,7 @@ export function getNextProjection(
  * Check if a given time falls within quiet hours range.
  * Handles wrapping across midnight (e.g., start=19, end=7).
  */
-function isInQuietHours(date: Date, qh: { start: number; end: number }): boolean {
+export function isInQuietHours(date: Date, qh: { start: number; end: number }): boolean {
   const h = date.getHours()
   if (qh.start <= qh.end) return h >= qh.start && h < qh.end
   return h >= qh.start || h < qh.end
