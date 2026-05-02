@@ -16,9 +16,14 @@ function useAuth() {
   const [state, setState] = useState<AuthState>('loading')
 
   useEffect(() => {
+    // Timeout de segurança: nunca ficar preso em 'loading' mais de 6s
+    const timeout = setTimeout(() => setState(s => s === 'loading' ? 'unauthenticated' : s), 6000)
     checkSession()
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => checkSession())
-    return () => subscription.unsubscribe()
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) checkSession()
+      else setState('unauthenticated')
+    })
+    return () => { clearTimeout(timeout); subscription.unsubscribe() }
   }, [])
 
   async function checkSession() {
