@@ -16,6 +16,7 @@ export default function DashboardPage() {
   const [endedOpen, setEndedOpen] = useState(false)
   const [loading, setLoading] = useState(true)
   const [copied, setCopied] = useState(false)
+  const [copiedCode, setCopiedCode] = useState(false)
   const [removingId, setRemovingId] = useState<string | null>(null)
   const qrCanvasRef = useRef<HTMLCanvasElement>(null)
 
@@ -64,6 +65,13 @@ export default function DashboardPage() {
     navigator.clipboard.writeText(inviteUrl)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
+  }
+
+  function copyInviteCode() {
+    if (!ped?.invite_code) return
+    navigator.clipboard.writeText(ped.invite_code)
+    setCopiedCode(true)
+    setTimeout(() => setCopiedCode(false), 2000)
   }
 
   function shareWhatsApp() {
@@ -161,12 +169,34 @@ export default function DashboardPage() {
         </div>
 
         {/* Coluna lateral — convite */}
-        <div className="w-full lg:w-[260px] shrink-0">
+        <div className="w-full lg:w-[280px] shrink-0">
           <p className="text-[11px] font-[700] tracking-[0.1em] uppercase text-[#9e9cb0] mb-4">Seu link de convite</p>
           <div className="card p-5 flex flex-col gap-4">
             <p className="text-[13px] text-[#5a5870] leading-[1.5]">
               Compartilhe com as famílias dos seus pacientes para conectar o histórico do bebê ao seu portal.
             </p>
+
+            {/* Código de convite em destaque */}
+            <div>
+              <p className="text-[11px] font-[700] tracking-[0.08em] uppercase text-[#9e9cb0] mb-2">Código</p>
+              <div className="flex items-center justify-between gap-2 bg-[#ede9ff] border border-[#c5b8f8] rounded-[8px] px-4 py-3">
+                <p className="font-mono text-[22px] font-[800] text-[#7056e0] tracking-[0.2em] leading-none select-all">
+                  {ped?.invite_code ?? '------'}
+                </p>
+                <button
+                  onClick={copyInviteCode}
+                  className="text-[#7056e0] hover:text-[#5a45c4] cursor-pointer shrink-0 transition-colors"
+                  title="Copiar código"
+                >
+                  <span className="material-symbols-outlined text-[20px]">
+                    {copiedCode ? 'check' : 'content_copy'}
+                  </span>
+                </button>
+              </div>
+              <p className="text-[11px] text-[#9e9cb0] mt-1.5">
+                A família digita este código no app Yaya.
+              </p>
+            </div>
 
             {/* QR Code */}
             <div className="flex justify-center">
