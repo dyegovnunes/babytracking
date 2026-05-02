@@ -64,6 +64,11 @@ for (const s of previewSections) {
 const canonicalUrl = `${SITE}/biblioteca-yaya/${slug}`
 const priceFormatted = formatPrice(guide.price_cents)
 
+const ORIGINAL_PRICES: Record<string, string> = {
+  'ultimas-semanas': 'R$ 69,90',
+}
+const originalPrice = ORIGINAL_PRICES[slug as string] ?? null
+
 const breadcrumbLd = {
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
@@ -129,6 +134,7 @@ const productLd = {
                 src={guide.cover_image_url}
                 alt={guide.title}
                 class="w-full h-full object-cover"
+                style="object-position: left center;"
                 loading="eager"
                 decoding="async"
               />
@@ -156,28 +162,22 @@ const productLd = {
             </p>
           )}
 
-          <!-- Meta stats -->
-          <div class="flex flex-wrap items-center gap-4 text-xs font-sans text-yaya-cloud/45 mb-8 justify-center lg:justify-start">
-            {totalMinutes > 0 && (
-              <span class="flex items-center gap-1.5">⏱ ~{totalMinutes} min de leitura</span>
-            )}
-            {parts.length > 0 && (
-              <span class="flex items-center gap-1.5">📖 {parts.length} {parts.length === 1 ? 'parte' : 'partes'}</span>
-            )}
-            {previewSections.length > 0 && (
-              <span class="flex items-center gap-1.5" style="color: rgb(var(--yaya-purple) / 0.7);">🔓 Amostra grátis</span>
-            )}
-          </div>
-
           <!-- CTA hero -->
           <div class="flex flex-col items-center lg:items-start gap-3 max-w-xs mx-auto lg:mx-0">
+            {originalPrice && (
+              <div class="flex items-center gap-2">
+                <span class="text-yaya-cloud/35 text-xs font-sans line-through">{originalPrice}</span>
+                <span class="text-[10px] font-display font-bold uppercase tracking-widest px-2 py-0.5 rounded-full"
+                      style="background: rgba(183,159,255,0.15); color: #b79fff;">Lançamento</span>
+              </div>
+            )}
             <a
               href="#cta-final"
               class="lp-btn-primary w-full text-center"
             >
               Quero o guia por {priceFormatted} →
             </a>
-            <p class="text-yaya-cloud/30 text-xs font-sans">7 dias de garantia · Acesso imediato · Stripe</p>
+            <p class="text-yaya-cloud/30 text-xs font-sans">7 dias de garantia · Acesso imediato</p>
           </div>
         </div>
 
@@ -238,12 +238,13 @@ const productLd = {
 
         <!-- Amostra grátis -->
         {previewSections.length > 0 && (
-          <div class="mb-10">
-            <div class="flex items-center gap-2 mb-5">
+          <details class="mb-10 group">
+            <summary class="flex items-center gap-2 cursor-pointer list-none select-none">
               <span class="flex-none w-px h-5 rounded-full" style="background: rgba(183,159,255,0.5);"></span>
               <h2 class="lp-section-title" style="margin-bottom: 0;">Amostra grátis</h2>
-            </div>
-            <div class="space-y-8">
+              <span class="ml-2 text-yaya-cloud/30 text-xs group-open:rotate-180 transition-transform">▾</span>
+            </summary>
+            <div class="space-y-8 mt-5">
               {previewSections.map((section) => (
                 <div class="rounded-xl border border-yaya-cloud/8 bg-yaya-cloud/[0.02] p-5 md:p-6 overflow-hidden relative">
                   <h3 class="font-display font-bold text-[11px] uppercase tracking-widest mb-3" style="color: rgba(183,159,255,0.8);">
@@ -257,13 +258,14 @@ const productLd = {
                 </div>
               ))}
             </div>
-          </div>
+          </details>
         )}
 
         <!-- ── Checklist de benefícios ── -->
         <div class="lp-benefit-block mb-10">
           <ul class="space-y-3">
             {[
+              'Áudio por seção — ouça o guia onde e quando quiser',
               'Mais de 18.000 palavras de conteúdo estruturado',
               'Fontes citadas inline: OMS, SBP, AAP, Ministério da Saúde, ACOG',
               'Tabelas de decisão, checklists e resumos em cada seção',
@@ -376,7 +378,7 @@ const productLd = {
 
         <!-- ── Prova social ── -->
         <div class="mb-10">
-          <h2 class="lp-section-title">O que quem leu diz</h2>
+          <h2 class="lp-section-title">O que quem comprou diz</h2>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
               {
@@ -420,6 +422,13 @@ const productLd = {
             fontes que se contradizem.
           </h2>
           <p class="text-yaya-cloud/45 font-sans text-sm mb-6">Um guia. Do início ao fim. Com fontes que você pode verificar.</p>
+          {originalPrice && (
+            <div class="flex items-center justify-center gap-2 mb-2">
+              <span class="text-yaya-cloud/35 text-sm font-sans line-through">{originalPrice}</span>
+              <span class="text-[10px] font-display font-bold uppercase tracking-widest px-2 py-0.5 rounded-full"
+                    style="background: rgba(183,159,255,0.15); color: #b79fff;">Lançamento</span>
+            </div>
+          )}
           <div class="flex items-baseline justify-center gap-2 mb-6">
             <span class="font-display font-bold text-4xl" style="color: rgb(var(--yaya-purple));">{priceFormatted}</span>
             <span class="text-yaya-cloud/40 text-sm font-sans">pagamento único</span>
@@ -427,7 +436,7 @@ const productLd = {
           <div class="max-w-xs mx-auto">
             <GuideCTA client:only="react" guideSlug={slug} priceFormatted={priceFormatted} />
           </div>
-          <p class="mt-5 text-yaya-cloud/25 text-xs font-sans">7 dias de garantia · Pagamento seguro via Stripe</p>
+          <p class="mt-5 text-yaya-cloud/25 text-xs font-sans">7 dias de garantia · Pagamento seguro</p>
         </div>
 
       </div>
@@ -436,6 +445,13 @@ const productLd = {
       <aside class="lg:w-72 shrink-0">
         <div class="lp-sidebar sticky top-24 rounded-2xl p-6">
           <p class="text-yaya-cloud/35 text-xs font-sans uppercase tracking-wider text-center mb-1.5">Acesso completo</p>
+          {originalPrice && (
+            <div class="flex items-center justify-center gap-2 mb-1">
+              <span class="text-yaya-cloud/30 text-xs font-sans line-through">{originalPrice}</span>
+              <span class="text-[10px] font-display font-bold uppercase tracking-widest px-2 py-0.5 rounded-full"
+                    style="background: rgba(183,159,255,0.15); color: #b79fff;">Lançamento</span>
+            </div>
+          )}
           <div class="flex items-baseline justify-center gap-2 mb-5">
             <span class="font-display font-bold text-4xl tracking-tight" style="color: rgb(var(--yaya-purple));">
               {priceFormatted}
@@ -459,7 +475,7 @@ const productLd = {
 
           <GuideCTA client:only="react" guideSlug={slug} priceFormatted={priceFormatted} />
 
-          <p class="mt-4 text-center text-yaya-cloud/20 text-xs font-sans">Pagamento seguro via Stripe</p>
+          <p class="mt-4 text-center text-yaya-cloud/20 text-xs font-sans">Pagamento seguro</p>
         </div>
       </aside>
 
