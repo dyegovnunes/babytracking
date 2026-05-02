@@ -15,10 +15,7 @@ const [{ data: guideData, error }, { data: sectionsData }] = await Promise.all([
     .eq('slug', GUIDE_SLUG)
     .eq('status', 'published')
     .single(),
-  supabase
-    .from('guide_sections')
-    .select('id, guide_id, parent_id, order_index, slug, title, cover_image_url, estimated_minutes, content_md, type, is_preview')
-    .order('order_index', { ascending: true }),
+  supabase.rpc('get_guide_sections_lp', { p_guide_slug: GUIDE_SLUG }),
 ])
 
 if (error || !guideData) {
@@ -26,8 +23,7 @@ if (error || !guideData) {
 }
 
 const guide = guideData as Guide
-const allSections = (sectionsData ?? []) as GuideSection[]
-const guideSections = allSections.filter((s) => s.guide_id === guide.id)
+const guideSections = (sectionsData ?? []) as GuideSection[]
 
 const parts = guideSections.filter((s) => s.type === 'part' && !s.parent_id)
 const sectionsByPart: Record<string, GuideSection[]> = {}
