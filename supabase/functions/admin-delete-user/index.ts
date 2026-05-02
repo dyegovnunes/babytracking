@@ -2,14 +2,18 @@ import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 /**
- * Admin Delete User — Edge Function v4
+ * Admin Delete User — Edge Function v5
  *
- * verify_jwt=false + validacao interna (decode JWT + checa is_admin
- * via service role). Isso contorna 401 vindos do gateway de forma
- * opaca.
+ * verify_jwt=false + validação interna (decode JWT + checa is_admin
+ * via service role).
  *
- * v4 adiciona nullificacao de profiles.referred_by e babies.created_by
- * que eram as ultimas FKs NO ACTION faltando.
+ * v5 BLOQUEIA delete se o target tem papel de pediatra
+ * (linha em pediatricians). Retorna 409 com hint pra remover papel
+ * de pediatra primeiro (botão na página de detalhe do pediatra).
+ * Forço fluxo de 2 passos pra evitar nukar pediatra por engano.
+ *
+ * v4 nullifica profiles.referred_by e babies.created_by (ultimas FKs
+ * NO ACTION que bloqueavam o cascade).
  */
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
@@ -86,6 +90,24 @@ serve(async (req) => {
       return json({ error: 'Missing or invalid user_id' }, 400)
     }
     if (targetId === callerId) return json({ error: 'Não pode se auto-excluir.' }, 400)
+
+    // ── BLOCK: refuse if target has pediatrician role ─────────────────
+    // Força fluxo de 2 passos: remover papel de pediatra primeiro (na
+    // página de detalhe do pediatra), depois excluir a conta de usuário.
+    // Evita admin nukar pediatra por engano.
+    const { data: pedRow } = await admin
+      .from('pediatricians')
+      .select('id, name')
+      .eq('user_id', targetId)
+      .maybeSingle()
+    if (pedRow) {
+      return json({
+        error: 'Usuário tem papel de pediatra ativo.',
+        hint: `Remova o papel de pediatra primeiro em Pediatras > ${pedRow.name} > "Remover papel de pediatra".`,
+        pediatrician_id: pedRow.id,
+        pediatrician_name: pedRow.name,
+      }, 409)
+    }
 
     console.log('[admin-delete-user] starting delete', { callerId, targetId })
 

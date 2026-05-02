@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { formatRelativeShort } from '../../lib/formatters';
+import { useSheetBackClose } from '../../hooks/useSheetBackClose';
 
 interface Pediatrician {
   id: string;
@@ -69,6 +70,14 @@ export default function AdminPediatricianDetailPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState('');
+  const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
+  const [removeConfirmText, setRemoveConfirmText] = useState('');
+  const [removing, setRemoving] = useState(false);
+
+  useSheetBackClose(showRemoveConfirm, () => {
+    setShowRemoveConfirm(false);
+    setRemoveConfirmText('');
+  });
 
   useEffect(() => {
     if (id) load(id);
@@ -84,6 +93,24 @@ export default function AdminPediatricianDetailPage() {
     setPed(found);
     setPatients((patsRes.data as PatientRow[]) ?? []);
     setLoading(false);
+  }
+
+  async function removeRole() {
+    if (!ped || removeConfirmText.toLowerCase() !== 'remover') return;
+    setRemoving(true);
+    // RLS: policy admin_all_pediatricians permite delete pra is_admin.
+    // Cascade limpa pediatrician_patients automaticamente.
+    const { error } = await supabase.from('pediatricians').delete().eq('id', ped.id);
+    setRemoving(false);
+    if (error) {
+      setToast(`Erro: ${error.message}`);
+      setTimeout(() => setToast(''), 5000);
+      return;
+    }
+    setShowRemoveConfirm(false);
+    setRemoveConfirmText('');
+    setToast('Papel de pediatra removido. Conta do usuário preservada.');
+    setTimeout(() => navigate('/paineladmin/pediatricians'), 1500);
   }
 
   async function approve() {
@@ -248,6 +275,15 @@ export default function AdminPediatricianDetailPage() {
         </button>
       )}
 
+      {/* Acao destrutiva: remover papel de pediatra (mantém conta) */}
+      <button
+        onClick={() => setShowRemoveConfirm(true)}
+        className="w-full py-3 px-4 rounded-md bg-error/10 hover:bg-error/15 text-error font-label text-sm font-semibold border border-error/20 cursor-pointer transition-colors flex items-center justify-center gap-2 mb-3"
+      >
+        <span className="material-symbols-outlined text-base">person_off</span>
+        Remover papel de pediatra
+      </button>
+
       {/* Pacientes */}
       <h3 className="font-label text-xs font-semibold text-on-surface-variant/70 uppercase tracking-wider mb-3 mt-5">
         Pacientes ativos {activePatients.length > 0 && `(${activePatients.length})`}
@@ -275,6 +311,67 @@ export default function AdminPediatricianDetailPage() {
             ))}
           </div>
         </>
+      )}
+
+      {/* Remove role confirm modal */}
+      {showRemoveConfirm && (
+        <div
+          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-5"
+          onClick={() => {
+            setShowRemoveConfirm(false);
+            setRemoveConfirmText('');
+          }}
+        >
+          <div
+            className="bg-surface-container-high border border-error/30 rounded-md p-7 w-full max-w-md"
+            onClick={e => e.stopPropagation()}
+          >
+            <h3 className="font-headline text-lg font-bold text-error mb-3">
+              Remover papel de pediatra
+            </h3>
+            <p className="font-body text-sm text-on-surface-variant mb-2">
+              <strong className="text-on-surface">{ped.name}</strong> deixará de ser pediatra
+              no sistema. Os {ped.patients_count} pacientes ativos vão ser desvinculados.
+            </p>
+            <p className="font-body text-sm text-on-surface-variant mb-2">
+              {ped.baby_members_count > 0 ? (
+                <>A conta do usuário <strong className="text-on-surface">permanece</strong> — ele continua
+                logando como pai/cuidador no app.</>
+              ) : (
+                <>A conta de auth do usuário <strong className="text-on-surface">permanece</strong>, mas
+                ficará sem nenhum papel ativo. Você pode então excluí-la pela aba Usuários.</>
+              )}
+            </p>
+            <p className="font-label text-[13px] text-on-surface-variant/70 mb-4 mt-3">
+              Digite <strong className="text-error">remover</strong> para confirmar:
+            </p>
+            <input
+              type="text"
+              value={removeConfirmText}
+              onChange={e => setRemoveConfirmText(e.target.value)}
+              placeholder="Digite remover"
+              className="w-full rounded-md px-4 py-3 text-sm bg-surface-container-low text-on-surface outline-none focus:ring-2 focus:ring-error/40 border border-error/20 mb-5"
+            />
+            <div className="flex gap-2.5">
+              <button
+                onClick={() => {
+                  setShowRemoveConfirm(false);
+                  setRemoveConfirmText('');
+                }}
+                className="flex-1 py-3.5 rounded-md bg-surface-container-lowest text-on-surface-variant font-label text-sm font-semibold border-none cursor-pointer"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={removeRole}
+                disabled={removing || removeConfirmText.toLowerCase() !== 'remover'}
+                className="flex-[2] py-3.5 rounded-md bg-error text-white font-label text-sm font-semibold border-none cursor-pointer disabled:opacity-40 transition-opacity"
+              >
+                {removing ? 'Removendo...' : 'Remover papel de pediatra'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {toast && (
