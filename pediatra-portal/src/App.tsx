@@ -8,6 +8,7 @@ import LoginPage from './pages/LoginPage'
 import AguardandoPage from './pages/AguardandoPage'
 import DashboardPage from './pages/DashboardPage'
 import ContaPage from './pages/ContaPage'
+import PacientePage from './pages/PacientePage'
 
 // needs-profile: autenticado via OAuth mas sem registro de CRM ainda
 type AuthState = 'loading' | 'unauthenticated' | 'needs-profile' | 'pending' | 'approved'
@@ -44,8 +45,9 @@ function PortalLayout() {
       <main className="flex-1 min-w-0">
         <Routes>
           <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/conta"     element={<ContaPage />} />
-          <Route path="*"          element={<Navigate to="/dashboard" replace />} />
+          <Route path="/conta"            element={<ContaPage />} />
+          <Route path="/paciente/:babyId" element={<PacientePage />} />
+          <Route path="*"                 element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </main>
     </div>

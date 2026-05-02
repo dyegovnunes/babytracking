@@ -134,11 +134,13 @@ export default function CadastroPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
-    if (!form.name || !form.email || !form.password || !form.crm || !form.crm_state || !form.specialty) {
+    const needsEmailPassword = !hasSession
+    if (!form.name || !form.crm || !form.crm_state || !form.specialty ||
+        (needsEmailPassword && (!form.email || !form.password))) {
       setError('Preencha todos os campos obrigatórios.')
       return
     }
-    if (form.password.length < 8) {
+    if (needsEmailPassword && form.password.length < 8) {
       setError('A senha precisa ter pelo menos 8 caracteres.')
       return
     }
