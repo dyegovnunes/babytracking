@@ -8,6 +8,7 @@ import AdminPushPage from './pages/AdminPushPage';
 import AdminMonetizationPage from './pages/AdminMonetizationPage';
 import AdminConfigPage from './pages/AdminConfigPage';
 import AdminPediatriciansPage from './pages/AdminPediatriciansPage';
+import AdminPediatricianDetailPage from './pages/AdminPediatricianDetailPage';
 import AdminLayout from './components/AdminLayout';
 
 export default function AdminApp() {
@@ -19,6 +20,7 @@ export default function AdminApp() {
           <Route path="users" element={<AdminUsersPage />} />
           <Route path="users/:id" element={<AdminUserDetailPage />} />
           <Route path="pediatricians" element={<AdminPediatriciansPage />} />
+          <Route path="pediatricians/:id" element={<AdminPediatricianDetailPage />} />
           <Route path="engagement" element={<AdminEngagementPage />} />
           <Route path="push" element={<AdminPushPage />} />
           <Route path="monetization" element={<AdminMonetizationPage />} />

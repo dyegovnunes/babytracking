@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { formatRelativeShort } from '../../lib/formatters';
 
@@ -16,6 +17,25 @@ interface PediatricianRow {
   approved_by: string | null;
   created_at: string;
   baby_members_count: number;
+  patients_count: number;
+  last_seen_at: string | null;
+  last_seen_platform: string | null;
+  last_activity_at: string | null;
+  platforms: string[] | null;
+}
+
+function platformLabel(p: string): string {
+  if (p === 'android') return 'Android';
+  if (p === 'ios') return 'iOS';
+  if (p === 'web') return 'Web';
+  return p.charAt(0).toUpperCase() + p.slice(1);
+}
+
+function renderPlatforms(p: PediatricianRow): string {
+  if (p.platforms && p.platforms.length > 0) {
+    return p.platforms.map(platformLabel).join(' | ');
+  }
+  return '—';
 }
 
 export default function AdminPediatriciansPage() {
@@ -24,6 +44,7 @@ export default function AdminPediatriciansPage() {
   const [savingId, setSavingId] = useState<string | null>(null);
   const [toast, setToast] = useState('');
   const [search, setSearch] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     load();
@@ -41,7 +62,8 @@ export default function AdminPediatriciansPage() {
     setLoading(false);
   }
 
-  async function approve(id: string) {
+  async function approve(e: React.MouseEvent, id: string) {
+    e.stopPropagation();
     setSavingId(id);
     const { error } = await supabase.rpc('admin_approve_pediatrician', { p_id: id });
     setSavingId(null);
@@ -96,7 +118,6 @@ export default function AdminPediatriciansPage() {
         </div>
       ) : (
         <>
-          {/* Pendentes */}
           <SectionLabel>
             Pendentes
             {pending.length > 0 && (
@@ -115,20 +136,24 @@ export default function AdminPediatriciansPage() {
                   key={p.id}
                   pediatrician={p}
                   saving={savingId === p.id}
-                  onApprove={() => approve(p.id)}
+                  onApprove={(e) => approve(e, p.id)}
+                  onClick={() => navigate(`/paineladmin/pediatricians/${p.id}`)}
                 />
               ))}
             </div>
           )}
 
-          {/* Aprovados */}
           <SectionLabel>Aprovados</SectionLabel>
           {approved.length === 0 ? (
             <EmptyHint>Nenhum pediatra aprovado ainda.</EmptyHint>
           ) : (
             <div className="flex flex-col gap-1.5">
               {approved.map(p => (
-                <ApprovedRow key={p.id} pediatrician={p} />
+                <ApprovedRow
+                  key={p.id}
+                  pediatrician={p}
+                  onClick={() => navigate(`/paineladmin/pediatricians/${p.id}`)}
+                />
               ))}
             </div>
           )}
@@ -164,13 +189,18 @@ function PendingCard({
   pediatrician: p,
   saving,
   onApprove,
+  onClick,
 }: {
   pediatrician: PediatricianRow;
   saving: boolean;
-  onApprove: () => void;
+  onApprove: (e: React.MouseEvent) => void;
+  onClick: () => void;
 }) {
   return (
-    <div className="bg-amber-500/8 border border-amber-500/25 rounded-md px-5 py-4">
+    <button
+      onClick={onClick}
+      className="bg-amber-500/8 border border-amber-500/25 rounded-md px-5 py-4 text-left cursor-pointer hover:bg-amber-500/12 transition-colors w-full"
+    >
       <div className="flex items-start justify-between gap-3 mb-3">
         <div className="min-w-0 flex-1">
           <div className="font-headline text-base font-semibold text-on-surface truncate">
@@ -210,18 +240,28 @@ function PendingCard({
 
       <div className="font-label text-[11px] text-on-surface-variant/60 flex flex-wrap gap-x-3 gap-y-0.5">
         <span>Cadastrado {formatRelativeShort(p.created_at)}</span>
-        <span>Código convite: <span className="font-mono">{p.invite_code}</span></span>
+        <span>Plataforma: {renderPlatforms(p)}</span>
         {p.baby_members_count > 0 && (
-          <span>· Também é membro de {p.baby_members_count} bebê(s)</span>
+          <span>Também é pai/cuidador de {p.baby_members_count} bebê(s)</span>
         )}
       </div>
-    </div>
+    </button>
   );
 }
 
-function ApprovedRow({ pediatrician: p }: { pediatrician: PediatricianRow }) {
+function ApprovedRow({
+  pediatrician: p,
+  onClick,
+}: {
+  pediatrician: PediatricianRow;
+  onClick: () => void;
+}) {
+  const lastAccess = formatRelativeShort(p.last_activity_at);
   return (
-    <div className="bg-surface-container-lowest border border-outline-variant/30 rounded-md px-4 py-3 flex items-center justify-between gap-3">
+    <button
+      onClick={onClick}
+      className="bg-surface-container-lowest border border-outline-variant/30 rounded-md px-4 py-3 flex items-center justify-between gap-3 text-left cursor-pointer hover:bg-surface-container-low transition-colors w-full"
+    >
       <div className="min-w-0 flex-1">
         <div className="font-body text-sm font-medium text-on-surface truncate">
           {p.name}
@@ -229,19 +269,23 @@ function ApprovedRow({ pediatrician: p }: { pediatrician: PediatricianRow }) {
             CRM {p.crm}/{p.crm_state}
           </span>
         </div>
-        {p.email && (
-          <div className="font-label text-[11px] text-on-surface-variant/60 truncate mt-0.5">
-            {p.email}
-            {p.baby_members_count > 0 && <> · também membro de {p.baby_members_count} bebê(s)</>}
-          </div>
-        )}
-      </div>
-      <div className="text-right shrink-0">
-        <div className="font-label text-[11px] text-on-surface-variant/60">Aprovado</div>
-        <div className="font-label text-xs text-primary">
-          {p.approved_at ? formatRelativeShort(p.approved_at) : '—'}
+        <div className="font-label text-[11px] text-on-surface-variant/60 truncate mt-0.5 flex flex-wrap gap-x-2.5">
+          {p.email && <span>{p.email}</span>}
+          <span>{p.patients_count} {p.patients_count === 1 ? 'paciente' : 'pacientes'}</span>
+          <span>· {renderPlatforms(p)}</span>
+          {p.baby_members_count > 0 && <span>· também pai/cuidador</span>}
         </div>
       </div>
-    </div>
+      <div className="text-right shrink-0">
+        <div className="font-label text-[11px] text-on-surface-variant/60">Último acesso</div>
+        <div
+          className={`font-label text-xs ${
+            p.last_activity_at ? 'text-primary' : 'text-on-surface-variant/50'
+          }`}
+        >
+          {lastAccess}
+        </div>
+      </div>
+    </button>
   );
 }
