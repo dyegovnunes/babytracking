@@ -163,10 +163,11 @@ function AppRoutes() {
     try { localStorage.setItem('yaya_pending_ref', refParam.toUpperCase()) } catch { /* ignore */ }
   }
 
-  // Deep link de convite da pediatra: /p/:code → salva código para consumo
-  // pelo LinkPediatricianSheet ao abrir o app logado
-  if (location.pathname.startsWith('/p/')) {
-    const pedCode = location.pathname.split('/p/')[1]?.trim().toUpperCase()
+  // Deep link de convite da pediatra: /conectar/:code → salva código para consumo
+  // pelo LinkPediatricianSheet ao abrir o app logado.
+  // O portal gera links no formato yayababy.app/conectar/:code.
+  if (location.pathname.startsWith('/conectar/')) {
+    const pedCode = location.pathname.split('/conectar/')[1]?.trim().toUpperCase()
     if (pedCode && /^[A-Z0-9]{6,12}$/.test(pedCode)) {
       try { localStorage.setItem('yaya_pending_ped_code', pedCode) } catch { /* ignore */ }
     }

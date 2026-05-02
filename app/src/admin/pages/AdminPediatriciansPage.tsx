@@ -72,8 +72,16 @@ export default function AdminPediatriciansPage() {
       setTimeout(() => setToast(''), 5000);
       return;
     }
-    setToast('Pediatra aprovado(a)');
-    setTimeout(() => setToast(''), 3000);
+
+    // Disparar email de boas-vindas (fire-and-forget — não bloqueia a UX)
+    supabase.functions.invoke('pediatra-approved-email', {
+      body: { pediatrician_id: id },
+    }).then(({ error: emailErr }) => {
+      if (emailErr) console.warn('[approve] email error', emailErr.message);
+    });
+
+    setToast('Pediatra aprovado(a) — email enviado');
+    setTimeout(() => setToast(''), 4000);
     load();
   }
 
