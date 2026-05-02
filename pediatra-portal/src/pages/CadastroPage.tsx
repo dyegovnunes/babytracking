@@ -182,15 +182,22 @@ export default function CadastroPage() {
         <h1 style={{ ...c.heading, marginTop: 24 }}>
           {hasSession ? 'Complete seu cadastro' : 'Crie sua conta'}
         </h1>
-        <p style={{ ...c.body, marginBottom: 28 }}>
-          {hasSession ? 'Informe seus dados profissionais para continuar.' : 'Portal gratuito para pediatras.'}
+        <p style={{ ...c.body, marginBottom: hasSession ? 16 : 28 }}>
+          {hasSession ? 'Autenticação concluída! Preencha seus dados profissionais para ativar o acesso.' : 'Portal gratuito para pediatras.'}
         </p>
+        {hasSession && (
+          <div style={{ background: 'rgba(112,86,224,0.07)', border: '1px solid rgba(112,86,224,0.18)', borderRadius: 10, padding: '10px 14px', marginBottom: 20, textAlign: 'left' }}>
+            <p style={{ fontFamily: 'Manrope, sans-serif', fontSize: 13, color: '#7056e0', fontWeight: 600, margin: 0, lineHeight: 1.5 }}>
+              Preencha: Nome completo · CRM · UF · Especialidade
+            </p>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 14 }}>
           {/* Nome */}
           <div>
             <label style={c.label}>Nome completo</label>
-            <input type="text" value={form.name} onChange={e => set('name', e.target.value)} placeholder="Dra. Nome Sobrenome" autoComplete="name" style={c.input} />
+            <input type="text" value={form.name} onChange={e => set('name', e.target.value)} placeholder="Nome completo" autoComplete="name" style={c.input} />
           </div>
 
           {/* Email + Senha — apenas sem sessão OAuth */}
@@ -231,7 +238,7 @@ export default function CadastroPage() {
             </div>
             <div style={{ width: 100 }}>
               <label style={c.label}>UF</label>
-              <select value={form.crm_state} onChange={e => set('crm_state', e.target.value)} style={{ ...c.input, appearance: 'none' as React.CSSProperties['appearance'] }}>
+              <select value={form.crm_state} onChange={e => set('crm_state', e.target.value)} style={{ ...c.input, appearance: 'none' as React.CSSProperties['appearance'], backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%239e9cb0'/%3E%3C/svg%3E\")", backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center', cursor: 'pointer' }}>
                 <option value="">UF</option>
                 {UF_LIST.map(uf => <option key={uf} value={uf}>{uf}</option>)}
               </select>
@@ -241,7 +248,7 @@ export default function CadastroPage() {
           {/* Especialidade */}
           <div>
             <label style={c.label}>Especialidade principal</label>
-            <select value={form.specialty} onChange={e => set('specialty', e.target.value)} style={{ ...c.input, appearance: 'none' as React.CSSProperties['appearance'] }}>
+            <select value={form.specialty} onChange={e => set('specialty', e.target.value)} style={{ ...c.input, appearance: 'none' as React.CSSProperties['appearance'], backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%239e9cb0'/%3E%3C/svg%3E\")", backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center', cursor: 'pointer' }}>
               <option value="">Selecione...</option>
               {SPECIALTIES.map(s => <option key={s} value={s}>{s}</option>)}
             </select>
