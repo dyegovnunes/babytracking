@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { supabase } from './lib/supabase'
-import type { Pediatrician } from './types'
 import Sidebar from './components/Sidebar'
 import CadastroPage from './pages/CadastroPage'
 import LoginPage from './pages/LoginPage'
