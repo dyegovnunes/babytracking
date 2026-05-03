@@ -110,6 +110,13 @@ export async function signInWithEmail(email: string): Promise<{ error: string | 
     email,
     options: {
       shouldCreateUser: true,
+      // signup_platform vai pra raw_user_meta_data e o trigger handle_new_user
+      // copia pro profile.signup_platform no INSERT inicial. Pra usuários OAuth
+      // (Google/Apple), o usePresenceTracker captura via touch_last_seen no
+      // primeiro foreground.
+      data: {
+        signup_platform: Capacitor.getPlatform(), // 'web' | 'ios' | 'android'
+      },
     },
   })
   return { error: error?.message ?? null }
