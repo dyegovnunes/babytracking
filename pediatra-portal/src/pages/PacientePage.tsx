@@ -13,9 +13,19 @@ interface LogEntry { eventId: string; timestamp: string; ml: number | null; dura
 interface Measurement { type: string; value: number; unit: string; measuredAt: string }
 interface Vaccine { appliedAt: string; code: string | null; name: string; fullName: string | null; doseLabel: string | null; recommendedAgeDays: number | null }
 interface MilestoneItem { code: string | null; title: string; category: string; ageMinDays: number; ageMaxDays: number }
-interface AchievedMilestone { code: string | null; achievedAt: string; note: string | null }
+interface AchievedMilestone { code: string | null; title: string | null; achievedAt: string; note: string | null }
 interface Medication { id: string; name: string; dosage: string; frequencyHours: number; startDate: string; endDate: string | null; durationType: string }
 interface MedLog { medicationId: string; administeredAt: string }
+interface PedDocument { id: string; doc_type: DocType; title: string; content: string; created_at: string }
+interface DocShare { id: string; token: string; doc_type: DocType; title: string; shared_at: string; read_at: string | null }
+
+type DocType = 'receita' | 'atestado' | 'encaminhamento' | 'orientacoes'
+const DOC_CONFIG: Record<DocType, { emoji: string; label: string; color: string; bg: string; placeholder: string }> = {
+  receita:        { emoji: '💊', label: 'Receita',         color: '#3b82f6', bg: '#eff6ff', placeholder: 'Ex: Dipirona 500mg\n1 comprimido a cada 6h por 3 dias se febre > 38°C' },
+  atestado:       { emoji: '📋', label: 'Atestado',        color: '#10b981', bg: '#ecfdf5', placeholder: 'Atesto que o paciente encontra-se em boas condições de saúde...' },
+  encaminhamento: { emoji: '🔗', label: 'Encaminhamento',  color: '#f59e0b', bg: '#fffbeb', placeholder: 'Encaminhar para avaliação com neurologista pediátrico...' },
+  orientacoes:    { emoji: '💡', label: 'Orientações',     color: '#7056e0', bg: '#f3f0ff', placeholder: '1. Manter amamentação exclusiva até os 6 meses\n2. ...' },
+}
 
 interface ReportData {
   baby: BabyData
@@ -26,31 +36,6 @@ interface ReportData {
   achievedMilestones: AchievedMilestone[]
   medications: Medication[]
   medicationLogs: MedLog[]
-}
-
-// ── Constantes ────────────────────────────────────────────────────────────────
-const EVENT_LABELS: Record<string, { label: string; emoji: string; cat: string }> = {
-  breast_left:  { label: 'Peito Esq.',   emoji: '🤱', cat: 'feed' },
-  breast_right: { label: 'Peito Dir.',   emoji: '🤱', cat: 'feed' },
-  breast_both:  { label: 'Ambos',        emoji: '🤱', cat: 'feed' },
-  bottle:       { label: 'Mamadeira',    emoji: '🍼', cat: 'feed' },
-  diaper_wet:   { label: 'Xixi',         emoji: '💧', cat: 'diaper' },
-  diaper_dirty: { label: 'Cocô',         emoji: '💩', cat: 'diaper' },
-  sleep:        { label: 'Dormiu',       emoji: '🌙', cat: 'sleep' },
-  wake:         { label: 'Acordou',      emoji: '☀️', cat: 'sleep' },
-  bath:         { label: 'Banho',        emoji: '🛁', cat: 'care' },
-  meal:         { label: 'Refeição',     emoji: '🥣', cat: 'care' },
-  mood:         { label: 'Humor',        emoji: '😊', cat: 'care' },
-  sick_log:     { label: 'Doente',       emoji: '🤒', cat: 'care' },
-  potty_pee:    { label: 'Penico Xixi',  emoji: '🚽', cat: 'care' },
-  potty_poop:   { label: 'Penico Cocô',  emoji: '💩', cat: 'care' },
-}
-
-const CAT_COLORS: Record<string, string> = {
-  feed:   'bg-[#fde8f5] text-[#c5487a]',
-  diaper: 'bg-[#e8f4ff] text-[#2563eb]',
-  sleep:  'bg-[#eae6ff] text-[#7056e0]',
-  care:   'bg-[#e6f6ef] text-[#00734a]',
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -86,21 +71,35 @@ function photoUrl(url: string | null, supabaseUrl: string): string | null {
   return `${supabaseUrl}/storage/v1/object/public/baby-photos/${url}`
 }
 
+function buildSleepSessions(logs: LogEntry[], fromMs: number, toMs: number) {
+  const asc = [...logs].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
+  const sessions: { startMs: number; endMs: number; durationMin: number }[] = []
+  let sleepStart: number | null = null
+  for (const l of asc) {
+    const ts = new Date(l.timestamp).getTime()
+    if (l.eventId === 'sleep') { sleepStart = ts }
+    else if (l.eventId === 'wake' && sleepStart !== null) {
+      const dur = (ts - sleepStart) / 60000
+      if (dur > 5 && dur < 18 * 60) sessions.push({ startMs: sleepStart, endMs: ts, durationMin: dur })
+      sleepStart = null
+    }
+  }
+  return sessions.filter(s => s.endMs > fromMs && s.startMs < toMs)
+}
+
+function formatDuration(minutes: number): string {
+  const h = Math.floor(minutes / 60)
+  const m = Math.round(minutes % 60)
+  if (h === 0) return `${m}min`
+  if (m === 0) return `${h}h`
+  return `${h}h ${m}min`
+}
+
 // ── Componentes ───────────────────────────────────────────────────────────────
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return <h2 className="text-[13px] font-[700] tracking-[0.08em] uppercase text-[#9e9cb0] mb-3">{children}</h2>
 }
 
-function StatCard({ emoji, label, value, sub }: { emoji: string; label: string; value: string | number; sub?: string }) {
-  return (
-    <div className="card p-4 flex flex-col gap-1">
-      <p className="text-[22px] leading-none">{emoji}</p>
-      <p className="text-[22px] font-[800] text-[#1c1b2b] tracking-[-0.02em] leading-none mt-2">{value}</p>
-      <p className="text-[12px] font-[600] text-[#6f6896]">{label}</p>
-      {sub && <p className="text-[11px] text-[#9e9cb0]">{sub}</p>}
-    </div>
-  )
-}
 
 // ── Página principal ──────────────────────────────────────────────────────────
 export default function PacientePage() {
@@ -109,12 +108,28 @@ export default function PacientePage() {
   const [data, setData] = useState<ReportData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [tab, setTab] = useState<'resumo' | 'registros' | 'vacinas' | 'marcos' | 'medicamentos'>('resumo')
+  const [tab, setTab] = useState<'resumo' | 'vacinas' | 'marcos' | 'medicamentos' | 'documentos'>('resumo')
+  const [measurementOpen, setMeasurementOpen] = useState(false)
+  const [savingMeasurement, setSavingMeasurement] = useState(false)
+
+  // Documents state
+  const [myDocs, setMyDocs] = useState<PedDocument[]>([])
+  const [docShares, setDocShares] = useState<DocShare[]>([])
+  const [loadingDocs, setLoadingDocs] = useState(false)
+  const [docEditorOpen, setDocEditorOpen] = useState(false)
+  const [editingDoc, setEditingDoc] = useState<PedDocument | null>(null)
+  const [sendingDocId, setSendingDocId] = useState<string | null>(null)
+  const [docToast, setDocToast] = useState<string | null>(null)
 
   useEffect(() => {
     if (!babyId) return
     loadReport()
   }, [babyId])
+
+  useEffect(() => {
+    if (tab === 'documentos') loadDocuments()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab, babyId])
 
   async function loadReport() {
     setLoading(true)
@@ -142,6 +157,76 @@ export default function PacientePage() {
     }
   }
 
+  async function handleAddMeasurement(type: string, value: number, unit: string, measuredAt: string) {
+    if (!babyId) return
+    setSavingMeasurement(true)
+    try {
+      const { error } = await supabase.rpc('add_measurement_by_pediatrician', {
+        p_baby_id: babyId,
+        p_type: type,
+        p_value: value,
+        p_unit: unit,
+        p_measured_at: measuredAt,
+      })
+      if (!error) {
+        setMeasurementOpen(false)
+        await loadReport()
+      }
+    } finally {
+      setSavingMeasurement(false)
+    }
+  }
+
+  async function loadDocuments() {
+    if (!babyId) return
+    setLoadingDocs(true)
+    try {
+      const [{ data: docs }, { data: shares }] = await Promise.all([
+        supabase.from('pediatrician_documents').select('id, doc_type, title, content, created_at').order('created_at', { ascending: false }),
+        supabase.rpc('get_baby_documents', { p_baby_id: babyId }),
+      ])
+      setMyDocs((docs ?? []) as PedDocument[])
+      setDocShares(((shares ?? []) as Array<{
+        share_id: string; token: string; doc_type: string; title: string; shared_at: string; read_at: string | null
+      }>).map(s => ({
+        id: s.share_id,
+        token: s.token,
+        doc_type: s.doc_type as DocType,
+        title: s.title,
+        shared_at: s.shared_at,
+        read_at: s.read_at,
+      })))
+    } finally {
+      setLoadingDocs(false)
+    }
+  }
+
+  async function handleSendDocument(docId: string) {
+    if (!babyId) return
+    setSendingDocId(docId)
+    const { error } = await supabase.rpc('send_document_to_baby', { p_doc_id: docId, p_baby_id: babyId })
+    setSendingDocId(null)
+    if (!error) {
+      setDocToast('Documento enviado! 💜')
+      setTimeout(() => setDocToast(null), 3000)
+      loadDocuments()
+    }
+  }
+
+  async function handleSaveDocument(docType: DocType, title: string, content: string, sendNow: boolean) {
+    let docId = editingDoc?.id
+    if (editingDoc) {
+      await supabase.from('pediatrician_documents').update({ doc_type: docType, title, content }).eq('id', editingDoc.id)
+    } else {
+      const { data } = await supabase.from('pediatrician_documents').insert({ doc_type: docType, title, content }).select('id').single()
+      docId = data?.id
+    }
+    setDocEditorOpen(false)
+    setEditingDoc(null)
+    if (docId && sendNow && babyId) handleSendDocument(docId)
+    else loadDocuments()
+  }
+
   if (loading) return (
     <div className="flex-1 flex items-center justify-center min-h-screen bg-[#fafafe]">
       <span className="material-symbols-outlined text-[#7056e0] animate-spin text-[28px]">progress_activity</span>
@@ -161,13 +246,37 @@ export default function PacientePage() {
 
   const { baby, logs, measurements, vaccines, allMilestones, achievedMilestones, medications, medicationLogs } = data
 
-  // Calcular stats dos últimos 7 dias
-  const sevenDaysAgo = Date.now() - 7 * 86400000
-  const recentLogs = logs.filter(l => new Date(l.timestamp).getTime() > sevenDaysAgo)
-  const feedCount = recentLogs.filter(l => ['breast_left','breast_right','breast_both','bottle'].includes(l.eventId)).length
-  const diaperCount = recentLogs.filter(l => l.eventId.startsWith('diaper')).length
-  const sleepSessions = recentLogs.filter(l => l.eventId === 'sleep').length
-  const avgFeedPerDay = Math.round(feedCount / 7 * 10) / 10
+  // ── AHA Summary ────────────────────────────────────────────────────────────
+  const now = Date.now()
+  const twoDaysAgoMs = now - 2 * 86400000
+  const sevenDaysAgoMs = now - 7 * 86400000
+  const fourteenDaysAgoMs = now - 14 * 86400000
+
+  const logs48h = logs.filter(l => new Date(l.timestamp).getTime() > twoDaysAgoMs)
+  const logs7d  = logs.filter(l => new Date(l.timestamp).getTime() > sevenDaysAgoMs)
+  // Sono 48h
+  const sleepSessions48h = buildSleepSessions(logs, twoDaysAgoMs, now)
+  const totalSleepMin48h = sleepSessions48h.reduce((s, x) => s + x.durationMin, 0)
+
+  // Alimentação 48h
+  const feeds48h = logs48h.filter(l => ['breast_left','breast_right','breast_both','bottle'].includes(l.eventId))
+  const feedsWithMl = feeds48h.filter(l => l.ml && l.ml > 0)
+  const avgMl48h = feedsWithMl.length ? Math.round(feedsWithMl.reduce((s, l) => s + (l.ml ?? 0), 0) / feedsWithMl.length) : null
+
+  // Fraldas 48h
+  const wet48h   = logs48h.filter(l => l.eventId === 'diaper_wet').length
+  const dirty48h = logs48h.filter(l => l.eventId === 'diaper_dirty').length
+  const alertDiaper = dirty48h < 2 && logs48h.length > 5 // só alerta se tem registros suficientes
+
+  // Tendências 7d
+  const sessions7d = buildSleepSessions(logs, sevenDaysAgoMs, now)
+  const sessionsPrev = buildSleepSessions(logs, fourteenDaysAgoMs, sevenDaysAgoMs)
+  const avgSleepMin7d   = sessions7d.length   ? sessions7d.reduce((s, x) => s + x.durationMin, 0)   / sessions7d.length   : 0
+  const avgSleepMinPrev = sessionsPrev.length ? sessionsPrev.reduce((s, x) => s + x.durationMin, 0) / sessionsPrev.length : 0
+  const sleepTrendPct   = avgSleepMinPrev > 0 ? Math.round((avgSleepMin7d - avgSleepMinPrev) / avgSleepMinPrev * 100) : null
+
+  const feedCount7d = logs7d.filter(l => ['breast_left','breast_right','breast_both','bottle'].includes(l.eventId)).length
+  const avgFeedPerDay = Math.round(feedCount7d / 7 * 10) / 10
 
   // Última medição de peso
   const lastWeight = measurements.find(m => m.type === 'weight')
@@ -221,10 +330,10 @@ export default function PacientePage() {
         <div className="flex gap-0">
           {([
             { id: 'resumo',       label: 'Resumo' },
-            { id: 'registros',    label: 'Registros' },
             { id: 'vacinas',      label: 'Vacinas' },
             { id: 'marcos',       label: 'Marcos' },
             { id: 'medicamentos', label: 'Medicamentos' },
+            { id: 'documentos',   label: 'Documentos' },
           ] as const).map(t => (
             <button
               key={t.id}
@@ -247,19 +356,92 @@ export default function PacientePage() {
         {/* ── RESUMO ─────────────────────────────────────────────────────── */}
         {tab === 'resumo' && (
           <div className="max-w-[700px]">
-            <p className="text-[12px] font-[600] text-[#9e9cb0] uppercase tracking-[0.08em] mb-4">Últimos 7 dias</p>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
-              <StatCard emoji="🤱" label="Alimentações" value={feedCount} sub={`~${avgFeedPerDay}/dia`} />
-              <StatCard emoji="💧" label="Fraldas" value={diaperCount} sub={`~${Math.round(diaperCount/7*10)/10}/dia`} />
-              <StatCard emoji="🌙" label="Sonos" value={sleepSessions} />
-              <StatCard emoji="📝" label="Total registros" value={recentLogs.length} />
+            {/* ── AHA Summary — Últimas 48h ─────────────────────────── */}
+            <p className="text-[11px] font-[700] tracking-[0.1em] uppercase text-[#9e9cb0] mb-3">Últimas 48h</p>
+            <div className="grid grid-cols-3 gap-3 mb-6">
+              {/* Sono */}
+              <div className="card p-4 flex flex-col gap-2">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[16px] leading-none">🌙</span>
+                  <span className="text-[11px] font-[700] text-[#9e9cb0] uppercase tracking-[0.06em]">Sono</span>
+                </div>
+                <p className="text-[18px] font-[800] text-[#1c1b2b] tracking-[-0.02em] leading-none">
+                  {totalSleepMin48h > 0 ? formatDuration(totalSleepMin48h) : '—'}
+                </p>
+                <p className="text-[11px] text-[#9e9cb0]">
+                  {sleepSessions48h.length > 0 ? `${sleepSessions48h.length} sessoões` : 'sem dados'}
+                </p>
+              </div>
+
+              {/* Alimentação */}
+              <div className="card p-4 flex flex-col gap-2">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[16px] leading-none">🍼</span>
+                  <span className="text-[11px] font-[700] text-[#9e9cb0] uppercase tracking-[0.06em]">Alimentação</span>
+                </div>
+                <p className="text-[18px] font-[800] text-[#1c1b2b] tracking-[-0.02em] leading-none">
+                  {avgMl48h ? `~${avgMl48h}ml` : feeds48h.length > 0 ? `${feeds48h.length}x` : '—'}
+                </p>
+                <p className="text-[11px] text-[#9e9cb0]">
+                  {feeds48h.length > 0 ? `${feeds48h.length} mamadas · ~${avgFeedPerDay}/dia` : 'sem dados'}
+                </p>
+              </div>
+
+              {/* Fraldas */}
+              <div className={`card p-4 flex flex-col gap-2 ${alertDiaper ? 'ring-1 ring-[#f59e0b]/40' : ''}`}>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[16px] leading-none">💧</span>
+                  <span className="text-[11px] font-[700] text-[#9e9cb0] uppercase tracking-[0.06em]">Fraldas</span>
+                  {alertDiaper && <span className="ml-auto text-[#f59e0b] text-[12px] leading-none">⚠️</span>}
+                </div>
+                <p className="text-[18px] font-[800] text-[#1c1b2b] tracking-[-0.02em] leading-none">
+                  {wet48h + dirty48h > 0 ? `${wet48h + dirty48h}` : '—'}
+                </p>
+                <p className="text-[11px] text-[#9e9cb0]">
+                  {wet48h + dirty48h > 0 ? `${wet48h} molh. · ${dirty48h} suj.` : 'sem dados'}
+                </p>
+              </div>
+            </div>
+
+            {/* ── Tendências 7 dias ──────────────────────────────────── */}
+            <div className="card p-4 mb-8">
+              <p className="text-[11px] font-[700] tracking-[0.1em] uppercase text-[#9e9cb0] mb-3">Tendências — 7 dias</p>
+              <div className="flex flex-wrap gap-x-6 gap-y-2">
+                {sessions7d.length > 0 && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-[13px] text-[#5a5870] font-[500]">Sono médio/sessão:</span>
+                    <span className="text-[13px] font-[700] text-[#1c1b2b]">{formatDuration(avgSleepMin7d)}</span>
+                    {sleepTrendPct !== null && (
+                      <span className={`text-[11px] font-[700] px-1.5 py-0.5 rounded-full ${
+                        sleepTrendPct >= 0
+                          ? 'bg-[#e6f6ef] text-[#00734a]'
+                          : 'bg-[#ffd9dd] text-[#b3001f]'
+                      }`}>
+                        {sleepTrendPct >= 0 ? '↑' : '↓'} {Math.abs(sleepTrendPct)}%
+                      </span>
+                    )}
+                  </div>
+                )}
+                {sessions7d.length === 0 && (
+                  <p className="text-[13px] text-[#9e9cb0]">Dados insuficientes de sono para análise.</p>
+                )}
+              </div>
             </div>
 
             {/* Medições */}
-            {(lastWeight || lastHeight) && (
-              <div className="mb-8">
+            <div className="mb-8">
+              <div className="flex items-center justify-between mb-3">
                 <SectionTitle>Crescimento</SectionTitle>
+                <button
+                  onClick={() => setMeasurementOpen(true)}
+                  className="flex items-center gap-1 text-[12px] font-[600] text-[#7056e0] hover:text-[#5a45c4] transition-colors cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-[15px]">add</span>
+                  Registrar medição
+                </button>
+              </div>
+              {(lastWeight || lastHeight) ? (
                 <div className="grid grid-cols-2 gap-3">
                   {lastWeight && (
                     <div className="card p-4">
@@ -276,8 +458,10 @@ export default function PacientePage() {
                     </div>
                   )}
                 </div>
-              </div>
-            )}
+              ) : (
+                <p className="text-[13px] text-[#9e9cb0]">Nenhuma medição registrada ainda.</p>
+              )}
+            </div>
 
             {/* Medicamentos ativos */}
             {medications.length > 0 && (
@@ -309,52 +493,18 @@ export default function PacientePage() {
                 <div className="card divide-y divide-[#f3f2f8]">
                   {achievedMilestones.slice(0, 5).map((m, i) => {
                     const def = allMilestones.find(a => a.code === m.code)
+                    const title = m.title ?? def?.title ?? m.code?.replace(/_/g, ' ') ?? '—'
                     return (
                       <div key={i} className="px-4 py-3 flex items-center gap-3">
                         <span className="material-symbols-outlined text-[16px] text-[#7056e0]">check_circle</span>
                         <div>
-                          <p className="text-[13px] font-[600] text-[#1c1b2b]">{def?.title ?? m.code}</p>
+                          <p className="text-[13px] font-[600] text-[#1c1b2b]">{title}</p>
                           <p className="text-[11px] text-[#9e9cb0]">{fmtDate(m.achievedAt)}</p>
                         </div>
                       </div>
                     )
                   })}
                 </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* ── REGISTROS ──────────────────────────────────────────────────── */}
-        {tab === 'registros' && (
-          <div className="max-w-[600px]">
-            <p className="text-[12px] font-[600] text-[#9e9cb0] uppercase tracking-[0.08em] mb-4">Últimos 30 dias · {logs.length} registros</p>
-            {logs.length === 0 ? (
-              <p className="text-[14px] text-[#9e9cb0]">Nenhum registro encontrado.</p>
-            ) : (
-              <div className="card divide-y divide-[#f3f2f8]">
-                {logs.slice(0, 100).map((l, i) => {
-                  const ev = EVENT_LABELS[l.eventId]
-                  const catColor = CAT_COLORS[ev?.cat ?? 'care']
-                  return (
-                    <div key={i} className="flex items-center gap-3 px-4 py-3">
-                      <span className={`text-[11px] font-[700] px-2 py-0.5 rounded-full shrink-0 ${catColor}`}>
-                        {ev?.emoji ?? '📋'} {ev?.label ?? l.eventId}
-                      </span>
-                      <div className="flex-1 min-w-0">
-                        {l.ml && <span className="text-[12px] text-[#6f6896]">{l.ml} ml · </span>}
-                        {l.duration && <span className="text-[12px] text-[#6f6896]">{l.duration} min · </span>}
-                        {l.notes && <span className="text-[12px] text-[#6f6896] truncate">{l.notes}</span>}
-                      </div>
-                      <p className="text-[11px] text-[#9e9cb0] shrink-0">{fmt(l.timestamp)}</p>
-                    </div>
-                  )
-                })}
-                {logs.length > 100 && (
-                  <div className="px-4 py-3 text-center">
-                    <p className="text-[12px] text-[#9e9cb0]">Exibindo os 100 mais recentes de {logs.length}</p>
-                  </div>
-                )}
               </div>
             )}
           </div>
@@ -429,11 +579,12 @@ export default function PacientePage() {
               <div className="card divide-y divide-[#f3f2f8]">
                 {achievedMilestones.map((m, i) => {
                   const def = allMilestones.find(a => a.code === m.code)
+                  const title = m.title ?? def?.title ?? m.code?.replace(/_/g, ' ') ?? '—'
                   return (
                     <div key={i} className="px-4 py-3 flex items-start gap-3">
                       <span className="material-symbols-outlined text-[18px] text-[#7056e0] mt-0.5 shrink-0">check_circle</span>
                       <div className="flex-1">
-                        <p className="text-[14px] font-[700] text-[#1c1b2b]">{def?.title ?? m.code}</p>
+                        <p className="text-[14px] font-[700] text-[#1c1b2b]">{title}</p>
                         {def?.category && <p className="text-[11px] text-[#9e9cb0] capitalize">{def.category}</p>}
                         {m.note && <p className="text-[12px] text-[#6f6896] mt-0.5">{m.note}</p>}
                       </div>
@@ -491,7 +642,371 @@ export default function PacientePage() {
           </div>
         )}
 
+        {/* ── DOCUMENTOS ─────────────────────────────────────────────────── */}
+        {tab === 'documentos' && (
+          <div className="max-w-[700px]">
+
+            {/* Toast */}
+            {docToast && (
+              <div className="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-[#1c1b2b] text-white text-[13px] font-[600] px-5 py-3 rounded-full shadow-xl pointer-events-none" style={{ animation: 'fade-in 0.2s ease-out' }}>
+                {docToast}
+              </div>
+            )}
+
+            {/* Header */}
+            <div className="flex items-center justify-between mb-5">
+              <div>
+                <SectionTitle>Meus modelos</SectionTitle>
+              </div>
+              <button
+                onClick={() => { setEditingDoc(null); setDocEditorOpen(true) }}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[6px] bg-[#7056e0] text-white text-[13px] font-[700] hover:bg-[#5a45c4] transition-colors cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-[15px]">add</span>
+                Novo modelo
+              </button>
+            </div>
+
+            {loadingDocs ? (
+              <div className="flex items-center justify-center py-10">
+                <span className="material-symbols-outlined text-[#7056e0] animate-spin text-[24px]">progress_activity</span>
+              </div>
+            ) : myDocs.length === 0 ? (
+              <div className="card p-8 text-center mb-8">
+                <p className="text-[32px] mb-3">📄</p>
+                <p className="text-[14px] font-[600] text-[#5a5870] mb-1">Nenhum modelo ainda</p>
+                <p className="text-[12px] text-[#9e9cb0] mb-4">Crie modelos de receitas, atestados e orientações para enviar às famílias.</p>
+                <button
+                  onClick={() => { setEditingDoc(null); setDocEditorOpen(true) }}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[6px] bg-[#7056e0] text-white text-[13px] font-[700] hover:bg-[#5a45c4] cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-[15px]">add</span>
+                  Criar primeiro modelo
+                </button>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-3 mb-8">
+                {myDocs.map(doc => {
+                  const cfg = DOC_CONFIG[doc.doc_type]
+                  const isSending = sendingDocId === doc.id
+                  return (
+                    <div
+                      key={doc.id}
+                      className="card p-4 flex items-center gap-4"
+                      style={{ borderLeft: `4px solid ${cfg.color}` }}
+                    >
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center text-[20px] shrink-0" style={{ background: cfg.bg }}>
+                        {cfg.emoji}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <span className="text-[10px] font-[700] uppercase tracking-[0.08em]" style={{ color: cfg.color }}>{cfg.label}</span>
+                        </div>
+                        <p className="text-[14px] font-[600] text-[#1c1b2b] truncate">{doc.title || '(sem título)'}</p>
+                        <p className="text-[12px] text-[#9e9cb0] truncate">{doc.content.slice(0, 60)}{doc.content.length > 60 ? '…' : ''}</p>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <button
+                          onClick={() => { setEditingDoc(doc); setDocEditorOpen(true) }}
+                          className="p-2 rounded-[6px] text-[#9e9cb0] hover:bg-[#f3f2f8] hover:text-[#5a5870] transition-colors cursor-pointer"
+                          title="Editar"
+                        >
+                          <span className="material-symbols-outlined text-[18px]">edit</span>
+                        </button>
+                        <button
+                          onClick={() => handleSendDocument(doc.id)}
+                          disabled={isSending}
+                          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-[6px] bg-[#e8e1ff] text-[#7056e0] text-[12px] font-[700] hover:bg-[#d8cffe] transition-colors cursor-pointer disabled:opacity-50"
+                        >
+                          {isSending
+                            ? <span className="material-symbols-outlined text-[15px] animate-spin">progress_activity</span>
+                            : <span className="material-symbols-outlined text-[15px]">send</span>
+                          }
+                          Enviar para {data?.baby.name ?? 'paciente'}
+                        </button>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+
+            {/* Histórico de envios */}
+            {docShares.length > 0 && (
+              <>
+                <SectionTitle>Histórico de envios</SectionTitle>
+                <div className="flex flex-col gap-2">
+                  {docShares.map(share => {
+                    const cfg = DOC_CONFIG[share.doc_type]
+                    return (
+                      <div key={share.id} className="flex items-center gap-3 py-2.5 px-4 rounded-[8px] bg-white border border-[#e8e5f2]">
+                        <div className="w-7 h-7 rounded-md flex items-center justify-center text-[14px] shrink-0" style={{ background: cfg.bg }}>
+                          {cfg.emoji}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[13px] font-[600] text-[#1c1b2b] truncate">{share.title || cfg.label}</p>
+                          <p className="text-[11px] text-[#9e9cb0]">{fmtDate(share.shared_at)}</p>
+                        </div>
+                        {share.read_at ? (
+                          <span className="flex items-center gap-1 text-[11px] text-[#00734a] font-[600]">
+                            <span className="material-symbols-outlined text-[13px]">check_circle</span>
+                            Lido
+                          </span>
+                        ) : (
+                          <span className="flex items-center gap-1 text-[11px] text-[#9e9cb0]">
+                            <span className="material-symbols-outlined text-[13px]">schedule</span>
+                            Enviado
+                          </span>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
       </div>
+
+      {/* Modal de medição */}
+      {measurementOpen && (
+        <MeasurementModal
+          onClose={() => setMeasurementOpen(false)}
+          onSave={handleAddMeasurement}
+          saving={savingMeasurement}
+        />
+      )}
+
+      {/* Modal de edição de documento */}
+      {docEditorOpen && (
+        <DocumentEditorModal
+          initial={editingDoc}
+          babyName={data?.baby.name ?? 'paciente'}
+          onClose={() => { setDocEditorOpen(false); setEditingDoc(null) }}
+          onSave={handleSaveDocument}
+        />
+      )}
     </div>
+  )
+}
+
+// ── DocumentEditorModal ───────────────────────────────────────────────────────
+function DocumentEditorModal({
+  initial, babyName, onClose, onSave,
+}: {
+  initial: PedDocument | null
+  babyName: string
+  onClose: () => void
+  onSave: (type: DocType, title: string, content: string, sendNow: boolean) => void
+}) {
+  const [docType, setDocType] = useState<DocType>(initial?.doc_type ?? 'receita')
+  const [title, setTitle] = useState(initial?.title ?? '')
+  const [content, setContent] = useState(initial?.content ?? '')
+  const [saving, setSaving] = useState(false)
+
+  const cfg = DOC_CONFIG[docType]
+
+  async function handleSubmit(sendNow: boolean) {
+    if (!content.trim()) return
+    setSaving(true)
+    onSave(docType, title.trim() || cfg.label, content.trim(), sendNow)
+  }
+
+  return (
+    <>
+      <div className="fixed inset-0 z-40 bg-black/30" onClick={onClose} />
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-[12px] shadow-xl w-full max-w-[520px] overflow-hidden flex flex-col max-h-[90vh]">
+          {/* Header */}
+          <div className="px-6 py-5 border-b border-[#e8e5f2] flex items-center justify-between shrink-0">
+            <h2 className="text-[16px] font-[800] text-[#1c1b2b]">
+              {initial ? 'Editar modelo' : 'Novo modelo'}
+            </h2>
+            <button onClick={onClose} className="text-[#9e9cb0] hover:text-[#5a5870] cursor-pointer">
+              <span className="material-symbols-outlined text-[20px]">close</span>
+            </button>
+          </div>
+
+          <div className="flex-1 overflow-y-auto px-6 py-5 flex flex-col gap-4">
+            {/* Tipo */}
+            <div>
+              <label className="text-[11px] font-[700] text-[#9e9cb0] uppercase tracking-[0.06em] mb-2 block">Tipo de documento</label>
+              <div className="grid grid-cols-2 gap-2">
+                {(['receita', 'atestado', 'encaminhamento', 'orientacoes'] as const).map(t => {
+                  const c = DOC_CONFIG[t]
+                  return (
+                    <button
+                      key={t}
+                      type="button"
+                      onClick={() => setDocType(t)}
+                      className={`flex items-center gap-2.5 px-3 py-2.5 rounded-[8px] border-2 text-left transition-all cursor-pointer ${
+                        docType === t ? 'border-current' : 'border-[#e8e5f2]'
+                      }`}
+                      style={docType === t ? { borderColor: c.color, background: c.bg } : {}}
+                    >
+                      <span className="text-[18px]">{c.emoji}</span>
+                      <span className="text-[13px] font-[700]" style={{ color: docType === t ? c.color : '#5a5870' }}>{c.label}</span>
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* Título */}
+            <div>
+              <label className="text-[11px] font-[700] text-[#9e9cb0] uppercase tracking-[0.06em] mb-1.5 block">Título <span className="normal-case font-[400] text-[#c4c2d0]">(opcional)</span></label>
+              <input
+                type="text"
+                value={title}
+                onChange={e => setTitle(e.target.value)}
+                placeholder={`Ex: ${cfg.label} para ${babyName}`}
+                className="w-full bg-[#f3f2f8] rounded-[6px] px-3 py-2.5 text-base text-[#1c1b2b] outline-none focus:ring-2 focus:ring-[#7056e0]/30"
+              />
+            </div>
+
+            {/* Conteúdo */}
+            <div className="flex-1">
+              <label className="text-[11px] font-[700] text-[#9e9cb0] uppercase tracking-[0.06em] mb-1.5 block">Conteúdo</label>
+              <textarea
+                value={content}
+                onChange={e => setContent(e.target.value)}
+                placeholder={cfg.placeholder}
+                rows={7}
+                className="w-full bg-[#f3f2f8] rounded-[6px] px-3 py-2.5 text-base text-[#1c1b2b] outline-none focus:ring-2 focus:ring-[#7056e0]/30 resize-none"
+                required
+              />
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="px-6 pb-5 pt-3 border-t border-[#e8e5f2] flex gap-3 shrink-0">
+            <button
+              type="button"
+              onClick={() => !saving && handleSubmit(false)}
+              disabled={saving || !content.trim()}
+              className="flex-1 py-2.5 rounded-[6px] border border-[#d5d3de] text-[#5a5870] text-[13px] font-[700] hover:bg-[#f3f2f8] transition-colors cursor-pointer disabled:opacity-50"
+            >
+              Salvar modelo
+            </button>
+            <button
+              type="button"
+              onClick={() => !saving && handleSubmit(true)}
+              disabled={saving || !content.trim()}
+              className="flex-1 py-2.5 rounded-[6px] bg-[#7056e0] text-white text-[13px] font-[700] hover:bg-[#5a45c4] transition-colors cursor-pointer disabled:opacity-50 inline-flex items-center justify-center gap-1.5"
+            >
+              {saving
+                ? <span className="material-symbols-outlined text-[15px] animate-spin">progress_activity</span>
+                : <span className="material-symbols-outlined text-[15px]">send</span>
+              }
+              Salvar e enviar para {babyName}
+            </button>
+          </div>
+        </div>
+      </div>
+    </>
+  )
+}
+
+// ── Modal de medição ──────────────────────────────────────────────────────────
+function MeasurementModal({
+  onClose, onSave, saving,
+}: {
+  onClose: () => void
+  onSave: (type: string, value: number, unit: string, date: string) => void
+  saving: boolean
+}) {
+  const [type, setType] = useState('weight')
+  const [value, setValue] = useState('')
+  const today = new Date().toISOString().split('T')[0]
+  const [date, setDate] = useState(today)
+
+  const typeConfig = {
+    weight:  { label: 'Peso',               unit: 'kg', placeholder: 'Ex: 7.2' },
+    height:  { label: 'Comprimento/Altura', unit: 'cm', placeholder: 'Ex: 65.5' },
+    head:    { label: 'Perímetro cefálico', unit: 'cm', placeholder: 'Ex: 40.2' },
+  }
+  const cfg = typeConfig[type as keyof typeof typeConfig]
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    const num = parseFloat(value.replace(',', '.'))
+    if (isNaN(num) || num <= 0) return
+    onSave(type, num, cfg.unit, date)
+  }
+
+  return (
+    <>
+      <div className="fixed inset-0 z-40 bg-black/30" onClick={onClose} />
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-[10px] shadow-xl w-full max-w-[360px] overflow-hidden">
+          <div className="px-6 py-5 border-b border-[#e8e5f2] flex items-center justify-between">
+            <h2 className="text-[16px] font-[800] text-[#1c1b2b]">Registrar medição</h2>
+            <button onClick={onClose} className="text-[#9e9cb0] hover:text-[#5a5870] cursor-pointer">
+              <span className="material-symbols-outlined text-[20px]">close</span>
+            </button>
+          </div>
+          <form onSubmit={handleSubmit} className="px-6 py-5 flex flex-col gap-4">
+            {/* Tipo */}
+            <div className="grid grid-cols-3 gap-2">
+              {(['weight','height','head'] as const).map(t => (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => setType(t)}
+                  className={`py-2.5 rounded-[6px] text-[12px] font-[700] transition-colors cursor-pointer ${
+                    type === t
+                      ? 'bg-[#e8e1ff] text-[#7056e0]'
+                      : 'bg-[#f3f2f8] text-[#5a5870] hover:bg-[#e8e5f2]'
+                  }`}
+                >
+                  {typeConfig[t].label.split('/')[0]}
+                </button>
+              ))}
+            </div>
+
+            {/* Valor */}
+            <div>
+              <label className="text-[11px] font-[700] text-[#9e9cb0] uppercase tracking-[0.06em] mb-1.5 block">
+                {cfg.label} ({cfg.unit})
+              </label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  value={value}
+                  onChange={e => setValue(e.target.value)}
+                  placeholder={cfg.placeholder}
+                  className="flex-1 bg-[#f3f2f8] rounded-[6px] px-3 py-2.5 text-base text-[#1c1b2b] outline-none focus:ring-2 focus:ring-[#7056e0]/30"
+                  required
+                />
+                <span className="text-[13px] font-[600] text-[#9e9cb0]">{cfg.unit}</span>
+              </div>
+            </div>
+
+            {/* Data */}
+            <div>
+              <label className="text-[11px] font-[700] text-[#9e9cb0] uppercase tracking-[0.06em] mb-1.5 block">Data</label>
+              <input
+                type="date"
+                value={date}
+                onChange={e => setDate(e.target.value)}
+                max={today}
+                className="w-full bg-[#f3f2f8] rounded-[6px] px-3 py-2.5 text-base text-[#1c1b2b] outline-none focus:ring-2 focus:ring-[#7056e0]/30"
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={saving || !value}
+              className="w-full bg-[#7056e0] text-white font-[700] text-[14px] py-3 rounded-[6px] hover:bg-[#5a45c4] transition-colors cursor-pointer disabled:opacity-50"
+            >
+              {saving ? 'Salvando...' : 'Salvar medição'}
+            </button>
+          </form>
+        </div>
+      </div>
+    </>
   )
 }

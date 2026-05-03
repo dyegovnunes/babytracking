@@ -9,6 +9,7 @@ export interface Pediatrician {
   approved_at: string | null
   invite_code: string
   created_at: string
+  phone: string | null
 }
 
 export interface PatientRow {
@@ -20,6 +21,7 @@ export interface PatientRow {
   gender: string
   photo_url: string | null
   last_active_at: string | null
+  next_appointment_at: string | null
 }
 
 export interface EndedPatientRow {

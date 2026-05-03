@@ -214,6 +214,31 @@ serve(async (req) => {
         `inclua contexto de desenvolvimento de linguagem e autonomia.]`;
     }
 
+    // C4 — Injetar contexto da pediatra vinculada (se houver)
+    try {
+      const { data: pedRows } = await admin
+        .from('pediatrician_patients')
+        .select('next_appointment_at, pediatricians(name, crm, crm_state, phone)')
+        .eq('baby_id', babyId)
+        .is('unlinked_at', null)
+        .limit(1)
+        .maybeSingle();
+      if (pedRows) {
+        const ped = (pedRows.pediatricians ?? {}) as { name?: string; crm?: string; crm_state?: string; phone?: string };
+        if (ped.name) {
+          let pedCtx = `\n[PEDIATRA DE ${babyBasics.name?.toUpperCase()}: ${ped.name}` +
+            (ped.crm && ped.crm_state ? `, CRM ${ped.crm}/${ped.crm_state}` : '') + '.';
+          if (ped.phone) pedCtx += ` Telefone: ${ped.phone}.`;
+          if (pedRows.next_appointment_at) {
+            const d = new Date(pedRows.next_appointment_at as string);
+            pedCtx += ` Próxima consulta agendada: ${d.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' })} às ${d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}.`;
+          }
+          pedCtx += ']';
+          phaseContext += pedCtx;
+        }
+      }
+    } catch { /* silencioso — contexto de pediatra é opcional */ }
+
     const messageWithGrounding = groundingPrefix + (phaseContext ? phaseContext + '\n\n' : '') + message;
 
     // Chamada slim pro n8n. O nome do bebê vai tanto no campo `baby` (pro

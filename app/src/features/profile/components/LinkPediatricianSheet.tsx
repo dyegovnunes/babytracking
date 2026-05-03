@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { Share } from '@capacitor/share'
 import { useSheetBackClose } from '../../../hooks/useSheetBackClose'
 import { usePediatricianLink, type LinkResult } from '../usePediatricianLink'
 import type { LinkedPediatrician } from '../../../types'
@@ -97,7 +98,7 @@ export default function LinkPediatricianSheet({
 
         <div className="px-5 pb-6">
           {/* Header */}
-          <div className="flex items-center gap-3 mb-5">
+          <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 rounded-full bg-primary/15 flex items-center justify-center shrink-0">
               <span className="material-symbols-outlined text-primary text-xl">stethoscope</span>
             </div>
@@ -106,9 +107,35 @@ export default function LinkPediatricianSheet({
                 Vincular pediatra
               </h2>
               <p className="font-label text-xs text-on-surface-variant">
-                Insira o código ou link recebido da profissional
+                Conecte o app com o sistema da pediatra
               </p>
             </div>
+          </div>
+
+          {/* Portal explanation */}
+          <div className="rounded-md bg-primary/8 border border-primary/15 px-3.5 py-3 mb-4">
+            <p className="font-label text-xs text-on-surface-variant leading-relaxed">
+              Para usar este recurso, a pediatra precisa ter conta gratuita no{' '}
+              <strong className="text-primary">Portal Yaya</strong> (pediatra.yayababy.app).
+              Se ela ainda não tem, compartilhe o link:
+            </p>
+            <button
+              type="button"
+              onClick={async () => {
+                hapticLight()
+                try {
+                  await Share.share({
+                    title: 'Portal Yaya Pediatra',
+                    text: 'Acesse o Portal Yaya gratuito para pediatras e acompanhe seus pacientes pelo app Yaya.',
+                    url: 'https://pediatra.yayababy.app',
+                  })
+                } catch { /* dismissed */ }
+              }}
+              className="mt-2 flex items-center gap-1.5 font-label text-xs font-[600] text-primary active:opacity-70 transition-opacity"
+            >
+              <span className="material-symbols-outlined text-[14px]">share</span>
+              Compartilhar link do portal
+            </button>
           </div>
 
           {success ? (

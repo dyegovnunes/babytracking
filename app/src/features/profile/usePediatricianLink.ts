@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../../lib/supabase'
-import type { LinkedPediatrician } from '../../types'
+import type { LinkedPediatrician, BabyDocument } from '../../types'
 
 export type LinkResult =
   | 'ok'
@@ -13,6 +13,8 @@ export type LinkResult =
 export function usePediatricianLink(babyId: string | undefined) {
   const [linked, setLinked] = useState<LinkedPediatrician[]>([])
   const [loading, setLoading] = useState(false)
+  const [documents, setDocuments] = useState<BabyDocument[]>([])
+  const [loadingDocs, setLoadingDocs] = useState(false)
 
   const reload = useCallback(async () => {
     if (!babyId) { setLinked([]); return }
@@ -31,6 +33,8 @@ export function usePediatricianLink(babyId: string | undefined) {
           crm_state: string
           linked_at: string
           consent_given_at: string | null
+          phone: string | null
+          next_appointment_at: string | null
         }) => ({
           linkId: row.link_id,
           pediatricianId: row.pediatrician_id,
@@ -39,6 +43,8 @@ export function usePediatricianLink(babyId: string | undefined) {
           crmState: row.crm_state,
           linkedAt: row.linked_at,
           consentGivenAt: row.consent_given_at,
+          phone: row.phone,
+          nextAppointmentAt: row.next_appointment_at,
         }))
       )
     } catch {
@@ -47,6 +53,71 @@ export function usePediatricianLink(babyId: string | undefined) {
       setLoading(false)
     }
   }, [babyId])
+
+  const loadDocuments = useCallback(async () => {
+    if (!babyId) { setDocuments([]); return }
+    setLoadingDocs(true)
+    try {
+      const { data } = await supabase.rpc('get_baby_documents', { p_baby_id: babyId })
+      setDocuments(
+        (data ?? []).map((row: {
+          share_id: string
+          token: string
+          doc_type: string
+          title: string
+          content: string
+          ped_name: string
+          ped_crm: string
+          ped_crm_state: string
+          ped_phone: string | null
+          shared_at: string
+          read_at: string | null
+        }) => ({
+          shareId: row.share_id,
+          token: row.token,
+          docType: row.doc_type as BabyDocument['docType'],
+          title: row.title,
+          content: row.content,
+          pedName: row.ped_name,
+          pedCrm: row.ped_crm,
+          pedCrmState: row.ped_crm_state,
+          pedPhone: row.ped_phone,
+          sharedAt: row.shared_at,
+          readAt: row.read_at,
+        }))
+      )
+    } catch {
+      setDocuments([])
+    } finally {
+      setLoadingDocs(false)
+    }
+  }, [babyId])
+
+  const markDocumentRead = useCallback(async (token: string) => {
+    try {
+      await supabase.rpc('mark_document_read', { p_token: token })
+      setDocuments(prev => prev.map(d => d.token === token ? { ...d, readAt: new Date().toISOString() } : d))
+    } catch {
+      // silencioso
+    }
+  }, [])
+
+  const scheduleAppointment = useCallback(
+    async (linkId: string, dateTime: string): Promise<boolean> => {
+      try {
+        const { error } = await supabase.rpc('set_next_appointment', {
+          p_link_id: linkId,
+          p_datetime: dateTime,
+        })
+        if (error) return false
+        await reload()
+        return true
+      } catch {
+        return false
+      }
+    },
+    [reload]
+  )
 
   const link = useCallback(
     async (inviteCode: string): Promise<LinkResult> => {
@@ -93,6 +164,7 @@ export function usePediatricianLink(babyId: string | undefined) {
   )
 
   useEffect(() => { reload() }, [reload])
+  useEffect(() => { loadDocuments() }, [loadDocuments])
 
-  return { linked, loading, link, unlink, reload }
+  return { linked, loading, documents, loadingDocs, link, unlink, reload, loadDocuments, markDocumentRead, scheduleAppointment }
 }

@@ -8,6 +8,23 @@ import type { Pediatrician, PatientRow, EndedPatientRow } from '../types'
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string
 
+type SortKey = 'name' | 'youngest' | 'oldest' | 'appointment'
+
+function ageDays(birthDate: string): number {
+  return Math.floor((Date.now() - new Date(birthDate).getTime()) / 86400000)
+}
+
+function formatAppointmentCountdown(dt: string | null): { label: string; urgent: boolean } | null {
+  if (!dt) return null
+  const diff = new Date(dt).getTime() - Date.now()
+  const days = Math.ceil(diff / 86400000)
+  if (days < 0) return null // passada
+  if (days === 0) return { label: 'Hoje', urgent: true }
+  if (days === 1) return { label: 'Amanhã', urgent: true }
+  if (days <= 7) return { label: `em ${days} dias`, urgent: true }
+  return { label: `em ${days} dias`, urgent: false }
+}
+
 export default function DashboardPage() {
   const navigate = useNavigate()
   const [ped, setPed] = useState<Pediatrician | null>(null)
@@ -18,6 +35,7 @@ export default function DashboardPage() {
   const [copied, setCopied] = useState(false)
   const [copiedCode, setCopiedCode] = useState(false)
   const [removingId, setRemovingId] = useState<string | null>(null)
+  const [sortKey, setSortKey] = useState<SortKey>('name')
   const qrCanvasRef = useRef<HTMLCanvasElement>(null)
 
   const inviteUrl = ped ? `${window.location.origin.replace('pediatra.', '')}/conectar/${ped.invite_code}` : ''
@@ -79,6 +97,18 @@ export default function DashboardPage() {
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank')
   }
 
+  const sortedPatients = [...patients].sort((a, b) => {
+    if (sortKey === 'name') return a.baby_name.localeCompare(b.baby_name, 'pt-BR')
+    if (sortKey === 'youngest') return ageDays(b.birth_date) - ageDays(a.birth_date)
+    if (sortKey === 'oldest')   return ageDays(a.birth_date) - ageDays(b.birth_date)
+    if (sortKey === 'appointment') {
+      const da = a.next_appointment_at ? new Date(a.next_appointment_at).getTime() : Infinity
+      const db = b.next_appointment_at ? new Date(b.next_appointment_at).getTime() : Infinity
+      return da - db
+    }
+    return 0
+  })
+
   const firstName = ped?.name?.split(' ')[0] ?? ''
 
   if (loading) return <DashboardSkeleton />
@@ -101,11 +131,23 @@ export default function DashboardPage() {
         {/* Coluna principal — pacientes */}
         <div className="flex-1 min-w-0">
 
-          {/* Label */}
+          {/* Label + sorting */}
           <div className="flex items-center justify-between mb-4">
             <p className="text-[11px] font-[700] tracking-[0.1em] uppercase text-[#9e9cb0]">
               Seus pacientes · {patients.length}
             </p>
+            {patients.length > 1 && (
+              <select
+                value={sortKey}
+                onChange={e => setSortKey(e.target.value as SortKey)}
+                className="text-[12px] font-[600] text-[#5a5870] bg-transparent border-none outline-none cursor-pointer hover:text-[#7056e0] transition-colors"
+              >
+                <option value="name">Nome (A-Z)</option>
+                <option value="youngest">Mais jovem</option>
+                <option value="oldest">Mais velho</option>
+                <option value="appointment">Próxima consulta</option>
+              </select>
+            )}
           </div>
 
           {/* Grid de pacientes */}
@@ -116,8 +158,8 @@ export default function DashboardPage() {
               <p className="text-[13px] text-[#6f6896]">Compartilhe seu link de convite para começar.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {patients.map(p => (
+            <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3">
+              {sortedPatients.map(p => (
                 <PatientCard
                   key={p.baby_id}
                   patient={p}
@@ -243,73 +285,80 @@ function PatientCard({
 }) {
   const [menuOpen, setMenuOpen] = useState(false)
 
-  const photoUrl = patient.photo_url
+  const photo = patient.photo_url
     ? patient.photo_url.startsWith('http')
       ? patient.photo_url
       : `${supabaseUrl}/storage/v1/object/public/baby-photos/${patient.photo_url}`
     : null
 
+  const appointment = formatAppointmentCountdown(patient.next_appointment_at)
   const lastSeenLabel = formatLastSeen(patient.last_active_at)
   const isRecent = patient.last_active_at
     ? Date.now() - new Date(patient.last_active_at).getTime() < 86400000 * 2
     : false
 
   return (
-    <div className="card p-4 flex gap-3 hover:shadow-primary-sm transition-shadow duration-150 relative">
-
-      {/* Foto */}
-      <div className="w-12 h-12 rounded-full bg-[#e8e5f2] shrink-0 overflow-hidden flex items-center justify-center">
-        {photoUrl ? (
-          <img src={photoUrl} alt={patient.baby_name} className="w-full h-full object-cover" />
+    <div
+      className="card flex flex-col overflow-hidden hover:shadow-primary-sm transition-shadow duration-150 cursor-pointer relative"
+      onClick={onView}
+    >
+      {/* Foto — topo do card */}
+      <div className="relative w-full aspect-square bg-[#e8e5f2] flex items-center justify-center overflow-hidden">
+        {photo ? (
+          <img src={photo} alt={patient.baby_name} className="w-full h-full object-cover" />
         ) : (
-          <span className="material-symbols-outlined text-[22px] text-[#9e9cb0]">child_care</span>
+          <span className="material-symbols-outlined text-[36px] text-[#9e9cb0]">child_care</span>
         )}
+
+        {/* Badge próxima consulta */}
+        {appointment && (
+          <div className={`absolute bottom-2 left-2 right-2 flex items-center justify-center gap-1 px-2 py-1 rounded-full text-[10px] font-[700] ${
+            appointment.urgent
+              ? 'bg-[#7056e0] text-white'
+              : 'bg-white/90 text-[#5a5870]'
+          }`}>
+            <span className="material-symbols-outlined text-[11px]">calendar_month</span>
+            {appointment.label}
+          </div>
+        )}
+
+        {/* Botão menu */}
+        <button
+          onClick={e => { e.stopPropagation(); setMenuOpen(v => !v) }}
+          className="absolute top-2 right-2 w-7 h-7 rounded-full bg-white/80 hover:bg-white flex items-center justify-center text-[#5a5870] transition-colors"
+        >
+          <span className="material-symbols-outlined text-[16px]">more_vert</span>
+        </button>
       </div>
 
-      {/* Info */}
-      <div className="flex-1 min-w-0">
-        <p className="text-[14px] font-[700] text-[#1c1b2b] truncate">{patient.baby_name}</p>
-        <p className="text-[12px] text-[#6f6896]">{formatAge(patient.birth_date)}</p>
-        <div className={`inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 rounded-full text-[11px] font-[600] ${
+      {/* Info — rodapé do card */}
+      <div className="px-3 pt-2.5 pb-3 flex flex-col gap-1">
+        <p className="text-[13px] font-[700] text-[#1c1b2b] truncate">{patient.baby_name}</p>
+        <p className="text-[11px] text-[#6f6896]">{formatAge(patient.birth_date)}</p>
+        <div className={`inline-flex items-center gap-1 mt-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-[600] w-fit ${
           isRecent
             ? 'bg-[#e8e1ff] text-[#7056e0]'
             : 'bg-[#f3f2f8] text-[#9e9cb0]'
         }`}>
-          <span className={`w-1.5 h-1.5 rounded-full ${isRecent ? 'bg-[#7056e0]' : 'bg-[#9e9cb0]'}`} />
+          <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${isRecent ? 'bg-[#7056e0]' : 'bg-[#9e9cb0]'}`} />
           {lastSeenLabel}
         </div>
-      </div>
-
-      {/* Ações */}
-      <div className="flex flex-col items-end gap-1 shrink-0">
-        <button
-          onClick={() => setMenuOpen(v => !v)}
-          className="text-[#9e9cb0] hover:text-[#5a5870] cursor-pointer"
-        >
-          <span className="material-symbols-outlined text-[18px]">more_vert</span>
-        </button>
-        <button
-          onClick={onView}
-          className="text-[12px] font-[600] text-[#7056e0] hover:text-[#5a45c4] cursor-pointer mt-auto"
-        >
-          Ver histórico
-        </button>
       </div>
 
       {/* Mini menu */}
       {menuOpen && (
         <>
-          <div className="fixed inset-0 z-10" onClick={() => setMenuOpen(false)} />
-          <div className="absolute top-8 right-4 z-20 bg-white border border-[#d5d3de] rounded-[6px] shadow-primary-sm overflow-hidden min-w-[160px]">
+          <div className="fixed inset-0 z-10" onClick={e => { e.stopPropagation(); setMenuOpen(false) }} />
+          <div className="absolute top-9 right-2 z-20 bg-white border border-[#d5d3de] rounded-[6px] shadow-primary-sm overflow-hidden min-w-[160px]">
             <button
-              onClick={() => { setMenuOpen(false); onView() }}
+              onClick={e => { e.stopPropagation(); setMenuOpen(false); onView() }}
               className="flex items-center gap-2 px-4 py-3 text-[13px] text-[#1c1b2b] hover:bg-[#f3f2f8] w-full text-left cursor-pointer"
             >
               <span className="material-symbols-outlined text-[16px]">open_in_new</span>
               Ver histórico
             </button>
             <button
-              onClick={() => { setMenuOpen(false); onRemove() }}
+              onClick={e => { e.stopPropagation(); setMenuOpen(false); onRemove() }}
               disabled={removing}
               className="flex items-center gap-2 px-4 py-3 text-[13px] text-[#b3001f] hover:bg-[#ffd9dd] w-full text-left cursor-pointer disabled:opacity-50"
             >
@@ -327,8 +376,8 @@ function DashboardSkeleton() {
   return (
     <div className="flex-1 p-8 flex flex-col gap-6 animate-pulse">
       <div className="skeleton h-7 w-48 rounded-[6px]" />
-      <div className="grid grid-cols-2 gap-3">
-        {[1,2,3,4].map(i => <div key={i} className="skeleton h-24 rounded-[6px]" />)}
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        {[1,2,3,4,5,6].map(i => <div key={i} className="skeleton aspect-square rounded-[6px]" />)}
       </div>
     </div>
   )

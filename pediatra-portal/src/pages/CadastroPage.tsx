@@ -119,7 +119,7 @@ export default function CadastroPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [rqeList, setRqeList] = useState<RqeEntry[]>([])
   const [hasSession, setHasSession] = useState(false)
-  const [form, setForm] = useState({ name: '', email: '', password: '', crm: '', crm_state: '', specialty: '' })
+  const [form, setForm] = useState({ name: '', email: '', password: '', crm: '', crm_state: '', specialty: '', phone: '' })
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -174,6 +174,7 @@ export default function CadastroPage() {
       const { error: insertError } = await supabase.from('pediatricians').insert({
         user_id: userId, name: form.name, crm: form.crm, crm_state: form.crm_state,
         specialties: [form.specialty], rqe: rqeNumbers.length > 0 ? rqeNumbers : null,
+        phone: form.phone.trim() || null,
       })
       if (insertError) {
         if (insertError.code === '23505') {
@@ -268,6 +269,12 @@ export default function CadastroPage() {
               <option value="">Selecione...</option>
               {SPECIALTIES.map(s => <option key={s} value={s}>{s}</option>)}
             </select>
+          </div>
+
+          {/* Telefone */}
+          <div>
+            <label style={c.label}>Telefone / WhatsApp <span style={{ textTransform: 'none', fontWeight: 400, color: '#c4c2d0' }}>(opcional)</span></label>
+            <input type="tel" value={form.phone} onChange={e => set('phone', e.target.value)} placeholder="(11) 99999-9999" style={c.input} />
           </div>
 
           {/* RQE */}

@@ -19,6 +19,7 @@ export default function ContaPage() {
   const [crm, setCrm]             = useState('')
   const [crmState, setCrmState]   = useState('')
   const [specialty, setSpecialty] = useState('')
+  const [phone, setPhone]         = useState('')
 
   useEffect(() => {
     supabase.from('pediatricians').select('*').maybeSingle().then(({ data }) => {
@@ -28,6 +29,7 @@ export default function ContaPage() {
         setCrm(data.crm)
         setCrmState(data.crm_state)
         setSpecialty(data.specialties?.[0] ?? '')
+        setPhone(data.phone ?? '')
       }
       setLoading(false)
     })
@@ -37,7 +39,8 @@ export default function ContaPage() {
     name !== ped?.name ||
     crm !== ped?.crm ||
     crmState !== ped?.crm_state ||
-    specialty !== (ped?.specialties?.[0] ?? '')
+    specialty !== (ped?.specialties?.[0] ?? '') ||
+    phone !== (ped?.phone ?? '')
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault()
@@ -50,11 +53,11 @@ export default function ContaPage() {
         crm: crm.trim(),
         crm_state: crmState,
         specialties: specialty.trim() ? [specialty.trim()] : [],
+        phone: phone.trim() || null,
       })
       .eq('id', ped!.id)
     setSaving(false)
     if (err) {
-      // Unique constraint CRM+UF
       if (err.code === '23505') {
         setError('Já existe um cadastro com esse CRM nessa UF.')
       } else {
@@ -62,7 +65,7 @@ export default function ContaPage() {
       }
       return
     }
-    setPed(p => p ? { ...p, name: name.trim(), crm: crm.trim(), crm_state: crmState, specialties: specialty.trim() ? [specialty.trim()] : [] } : p)
+    setPed(p => p ? { ...p, name: name.trim(), crm: crm.trim(), crm_state: crmState, specialties: specialty.trim() ? [specialty.trim()] : [], phone: phone.trim() || null } : p)
     setSuccess(true)
     setTimeout(() => setSuccess(false), 3000)
   }
@@ -130,6 +133,19 @@ export default function ContaPage() {
                 placeholder="ex: Pediatria, Neonatologia"
                 className={inputCls}
               />
+            </div>
+
+            {/* Telefone / WhatsApp */}
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[12px] font-[700] text-[#9e9cb0] uppercase tracking-[0.08em]">Telefone / WhatsApp <span className="normal-case font-[500] text-[#9e9cb0]">(opcional)</span></label>
+              <input
+                type="tel"
+                value={phone}
+                onChange={e => setPhone(e.target.value)}
+                placeholder="(11) 99999-9999"
+                className={inputCls}
+              />
+              <p className="text-[11px] text-[#9e9cb0]">Visível para as famílias vinculadas no app Yaya.</p>
             </div>
 
             {/* Status (read-only) */}

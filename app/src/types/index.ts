@@ -116,6 +116,23 @@ export interface LinkedPediatrician {
   crmState: string
   linkedAt: string
   consentGivenAt?: string | null
+  phone?: string | null
+  nextAppointmentAt?: string | null
+}
+
+/** Documento clínico compartilhado pela pediatra (lido via RPC get_baby_documents) */
+export interface BabyDocument {
+  shareId: string
+  token: string
+  docType: 'receita' | 'atestado' | 'encaminhamento' | 'orientacoes'
+  title: string
+  content: string
+  pedName: string
+  pedCrm: string
+  pedCrmState: string
+  pedPhone: string | null
+  sharedAt: string
+  readAt: string | null
 }
 
 /** Uma linha da tabela baby_grid_items — config de visibilidade do grid por bebê */

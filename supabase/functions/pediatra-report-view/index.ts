@@ -87,7 +87,7 @@ serve(async (req) => {
     // 10. Todos os marcos do catálogo + quais foram alcançados
     const [{ data: allMilestones }, { data: achieved }] = await Promise.all([
       supabase.from('milestones').select('code, title, category, age_min_days, age_max_days').order('age_min_days'),
-      supabase.from('baby_milestones').select('achieved_at, photo_url, note, milestones(code)').eq('baby_id', baby_id).not('achieved_at', 'is', null),
+      supabase.from('baby_milestones').select('achieved_at, photo_url, note, milestones(code, title)').eq('baby_id', baby_id).not('achieved_at', 'is', null),
     ])
 
     // 11. Medicamentos ativos
@@ -150,6 +150,7 @@ serve(async (req) => {
       })),
       achievedMilestones: (achieved ?? []).map((m: any) => ({
         code: m.milestones?.code ?? null,
+        title: m.milestones?.title ?? null,
         achievedAt: m.achieved_at,
         photoUrl: m.photo_url,
         note: m.note,
