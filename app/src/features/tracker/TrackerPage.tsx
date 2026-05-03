@@ -51,6 +51,9 @@ import PottyPanel from './components/PottyPanel'
 import TwoYearSummaryModal from './components/TwoYearSummaryModal'
 import type { LogEntry, MealPayload, MoodPayload, SickPayload } from '../../types'
 import { useContentArticles, ContentArticleCard } from '../content'
+import { useDiscoveryNudges } from './useDiscoveryNudges'
+import DiscoveryNudgeCard from './components/DiscoveryNudgeCard'
+import DiscoveryTrail from './components/DiscoveryTrail'
 
 const PROJECTION_CATEGORIES: string[] = ['feed', 'diaper', 'sleep_nap', 'sleep_awake', 'bath']
 
@@ -223,6 +226,9 @@ export default function TrackerPage() {
     utmMedium: 'home_card',
   })
   const contentArticle = contentArticles[0] ?? null
+
+  // Progressive Discovery: nudge contextual (aparece após a trilha expirar)
+  const { nudge: discoveryNudge, dismissNudge } = useDiscoveryNudges(baby?.id, logs, baby)
 
   // Highlights strip (saltos + marcos + vacinas + medicamentos)
   const [highlightsTick, setHighlightsTick] = useState(0)
@@ -642,6 +648,16 @@ export default function TrackerPage() {
         </button>
       </div>
 
+      {/* Trilha de descoberta pós-onboarding — guia o usuário pelas features
+          nos primeiros 14 dias. Grid permanece intocável e no topo. */}
+      {baby && (
+        <DiscoveryTrail
+          babyId={baby.id}
+          babyAgeWeeks={babyAgeWeeks}
+          babyName={baby.name}
+        />
+      )}
+
       {/* Card comemorativo 2 anos — aparece quando bebê completa 24 meses */}
       {ageDays >= 730 && !twoYearCardDismissed && baby && (
         <div className="mx-5 mt-3 rounded-md overflow-hidden border border-[#ffd77a]/30"
@@ -843,6 +859,15 @@ export default function TrackerPage() {
           babyGender={baby.gender}
           birthDate={baby.birthDate}
           onChange={() => setHighlightsTick((t) => t + 1)}
+        />
+      )}
+
+      {/* Nudge de descoberta contextual — aparece após os 14 dias da trilha
+          quando o usuário ainda não explorou uma feature de valor relevante */}
+      {discoveryNudge && (
+        <DiscoveryNudgeCard
+          nudge={discoveryNudge}
+          onDismiss={() => dismissNudge(discoveryNudge.id)}
         />
       )}
 

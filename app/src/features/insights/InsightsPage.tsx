@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppState } from '../../contexts/AppContext'
+import { trackOnce } from '../../lib/analytics'
+import { SpotlightOverlay } from '../../components/ui/SpotlightOverlay'
 import { useInsightsEngine, type PeriodOption } from './useInsightsEngine'
 import { useBabyPremium } from '../../hooks/useBabyPremium'
 import { useMyRole } from '../../hooks/useMyRole'
@@ -26,6 +28,29 @@ export default function InsightsPage() {
   const navigate = useNavigate()
   const [period, setPeriod] = useState<PeriodOption>('last_7')
   const [showPaywall, setShowPaywall] = useState(false)
+
+  // Feature Spotlight: aparece na primeira visita quando há dados
+  const spotlightKey = baby?.id ? `yaya_spotlight_insights_${baby.id}` : null
+  const [showSpotlight, setShowSpotlight] = useState(false)
+
+  useEffect(() => {
+    if (!baby || !spotlightKey) return
+    if (logs.length === 0) return // só mostra quando há dados pra ver
+    if (localStorage.getItem(spotlightKey)) return
+    setShowSpotlight(true)
+  }, [baby?.id, spotlightKey, logs.length]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  function dismissSpotlight() {
+    if (spotlightKey) localStorage.setItem(spotlightKey, '1')
+    setShowSpotlight(false)
+  }
+
+  // Analytics: primeira abertura da aba Insights
+  useEffect(() => {
+    if (!baby) return
+    const babyAgeDays = Math.floor((Date.now() - new Date(baby.birthDate).getTime()) / 86400000)
+    trackOnce('insights_tab_opened', 'insights_tab_opened', { baby_age_days: babyAgeDays })
+  }, [baby?.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const { periodSummary, insights, weekTrends, availablePeriods } = useInsightsEngine(
     logs,
@@ -229,6 +254,15 @@ export default function InsightsPage() {
         isOpen={showPaywall}
         onClose={() => setShowPaywall(false)}
         trigger="insights"
+      />
+
+      {/* Feature Spotlight — primeira visita com dados */}
+      <SpotlightOverlay
+        isOpen={showSpotlight}
+        onClose={dismissSpotlight}
+        emoji="✨"
+        title="Aqui ficam os padrões do bebê"
+        description={`O Yaya identificou tendências na rotina ${baby?.gender === 'girl' ? 'da' : baby?.gender === 'boy' ? 'do' : 'de'} ${baby?.name ?? 'bebê'} — sono, alimentação e mais.`}
       />
     </div>
   )

@@ -1,9 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAppState } from '../../../contexts/AppContext';
 import { useAuth } from '../../../contexts/AuthContext';
+import { track, trackOnce } from '../../../lib/analytics';
 import { useBabyPremium } from '../../../hooks/useBabyPremium';
 import { useSheetBackClose } from '../../../hooks/useSheetBackClose';
 import { PaywallModal } from '../../../components/ui/PaywallModal';
+import { SpotlightOverlay } from '../../../components/ui/SpotlightOverlay';
 import Toast from '../../../components/ui/Toast';
 import {
   createSharedReport,
@@ -36,6 +38,23 @@ export default function SharedReports() {
 
   const [showPaywall, setShowPaywall] = useState(false);
   const [reports, setReports] = useState<SharedReport[]>([]);
+
+  // Feature Spotlight: primeira visita ao componente de Super Relatório
+  const spotlightKey = baby?.id ? `yaya_spotlight_reports_${baby.id}` : null;
+  const [showSpotlight, setShowSpotlight] = useState(false);
+
+  useEffect(() => {
+    if (!baby || !spotlightKey) return;
+    if (localStorage.getItem(spotlightKey)) return;
+    // Delay mínimo para evitar flicker durante carregamento inicial
+    const timer = setTimeout(() => setShowSpotlight(true), 400);
+    return () => clearTimeout(timer);
+  }, [baby?.id, spotlightKey]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  function dismissSpotlight() {
+    if (spotlightKey) localStorage.setItem(spotlightKey, '1');
+    setShowSpotlight(false);
+  }
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
@@ -65,6 +84,13 @@ export default function SharedReports() {
   }, [baby]);
 
   useEffect(() => { loadReports(); }, [loadReports]);
+
+  // Analytics: super_report_viewed (só quando usuário autenticado abre a tela)
+  useEffect(() => {
+    if (!user || !baby) return;
+    const babyAgeDays = Math.floor((Date.now() - new Date(baby.birthDate).getTime()) / 86400000);
+    trackOnce('super_report_viewed', 'super_report_viewed', { baby_age_days: babyAgeDays });
+  }, [user?.id, baby?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleOpenCreate = () => {
     hapticLight();
@@ -100,6 +126,9 @@ export default function SharedReports() {
       hapticSuccess();
       setCreatedReport({ url: getReportUrl(report.token), password });
       await loadReports();
+      // Analytics: super_report_generated
+      const babyAgeDays = baby ? Math.floor((Date.now() - new Date(baby.birthDate).getTime()) / 86400000) : undefined;
+      track('super_report_generated', { audience, baby_age_days: babyAgeDays });
     }
   };
 
@@ -128,6 +157,8 @@ export default function SharedReports() {
 
   const handleShareWhatsApp = (report: SharedReport) => {
     hapticLight();
+    // Analytics: super_report_shared
+    track('super_report_shared', { audience: report.audience });
     const url = getReportUrl(report.token);
     // Nota: não incluímos senha aqui porque, depois que o link é fechado,
     // a senha não é mais acessível via UI (só conhecida pelo pai no momento
@@ -574,6 +605,15 @@ export default function SharedReports() {
           onDismiss={() => setCopyToast(null)}
         />
       )}
+
+      {/* Feature Spotlight — primeira visita à seção de Super Relatório */}
+      <SpotlightOverlay
+        isOpen={showSpotlight}
+        onClose={dismissSpotlight}
+        emoji="📋"
+        title="Compartilhe com o pediatra"
+        description={`Crie um link seguro com a evolução ${genderContraction} ${baby?.name ?? 'bebê'} — marcos, vacinas e padrões de rotina.`}
+      />
     </>
   );
 }
