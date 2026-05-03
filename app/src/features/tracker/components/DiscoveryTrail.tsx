@@ -32,19 +32,22 @@ const TRAIL_STEPS: Record<AgeBucket, TrailStep[]> = {
     { id: 'record',    label: 'Faça seu primeiro registro',         doneKey: 'yaya_evt_first_record_created',    destination: '/' },
     { id: 'insights',  label: 'Veja os insights da rotina',         doneKey: 'yaya_evt_insights_tab_opened',     destination: '/insights' },
     { id: 'yaia',      label: 'Pergunte algo para a yaIA',          doneKey: 'yaya_evt_yaia_first_message',      destination: '/yaia' },
+    { id: 'invite',    label: 'Convide alguém para o grupo',        doneKey: 'yaya_evt_family_invite_sent',      destination: '/' },
     { id: 'report',    label: 'Crie um relatório para o pediatra',  doneKey: 'yaya_evt_super_report_viewed',     destination: '/profile' },
   ],
   '3to12m': [
-    { id: 'record',     label: 'Faça seu primeiro registro',         doneKey: 'yaya_evt_first_record_created',    destination: '/' },
-    { id: 'milestones', label: 'Explore os marcos de desenvolvimento', doneKey: 'yaya_evt_milestone_registered',  destination: '/milestones' },
-    { id: 'yaia',       label: 'Pergunte algo para a yaIA',          doneKey: 'yaya_evt_yaia_first_message',      destination: '/yaia' },
-    { id: 'report',     label: 'Crie um relatório para o pediatra',  doneKey: 'yaya_evt_super_report_viewed',     destination: '/profile' },
+    { id: 'record',     label: 'Faça seu primeiro registro',          doneKey: 'yaya_evt_first_record_created',    destination: '/' },
+    { id: 'milestones', label: 'Explore os marcos de desenvolvimento', doneKey: 'yaya_evt_milestone_registered',   destination: '/milestones' },
+    { id: 'yaia',       label: 'Pergunte algo para a yaIA',           doneKey: 'yaya_evt_yaia_first_message',      destination: '/yaia' },
+    { id: 'invite',     label: 'Convide alguém para o grupo',         doneKey: 'yaya_evt_family_invite_sent',      destination: '/' },
+    { id: 'report',     label: 'Crie um relatório para o pediatra',   doneKey: 'yaya_evt_super_report_viewed',     destination: '/profile' },
   ],
   '12mplus': [
-    { id: 'record',  label: 'Faça seu primeiro registro',            doneKey: 'yaya_evt_first_record_created',    destination: '/' },
-    { id: 'leaps',   label: 'Explore os saltos de desenvolvimento',  doneKey: 'yaya_evt_development_leap_opened', destination: '/saltos' },
-    { id: 'yaia',    label: 'Pergunte algo para a yaIA',             doneKey: 'yaya_evt_yaia_first_message',      destination: '/yaia' },
-    { id: 'report',  label: 'Crie um relatório para o pediatra',     doneKey: 'yaya_evt_super_report_viewed',     destination: '/profile' },
+    { id: 'record',  label: 'Faça seu primeiro registro',             doneKey: 'yaya_evt_first_record_created',    destination: '/' },
+    { id: 'leaps',   label: 'Explore os saltos de desenvolvimento',   doneKey: 'yaya_evt_development_leap_opened', destination: '/saltos' },
+    { id: 'yaia',    label: 'Pergunte algo para a yaIA',              doneKey: 'yaya_evt_yaia_first_message',      destination: '/yaia' },
+    { id: 'invite',  label: 'Convide alguém para o grupo',            doneKey: 'yaya_evt_family_invite_sent',      destination: '/' },
+    { id: 'report',  label: 'Crie um relatório para o pediatra',      doneKey: 'yaya_evt_super_report_viewed',     destination: '/profile' },
   ],
 }
 
@@ -58,9 +61,11 @@ interface Props {
   babyId: string
   babyAgeWeeks: number
   babyName: string
+  /** Override de navegação por step.id — quando fornecido, chama a função em vez de navegar */
+  onStepAction?: Record<string, () => void>
 }
 
-export default function DiscoveryTrail({ babyId, babyAgeWeeks, babyName }: Props) {
+export default function DiscoveryTrail({ babyId, babyAgeWeeks, babyName, onStepAction }: Props) {
   const navigate = useNavigate()
 
   // Forçar re-render ao retornar de outra tela (itens podem ter sido completados)
@@ -165,7 +170,11 @@ export default function DiscoveryTrail({ babyId, babyAgeWeeks, babyName }: Props
               onClick={() => {
                 if (done) return
                 hapticLight()
-                navigate(step.destination)
+                if (onStepAction?.[step.id]) {
+                  onStepAction[step.id]()
+                } else {
+                  navigate(step.destination)
+                }
               }}
               className={`w-full flex items-center gap-2.5 py-1 text-left ${
                 done ? 'cursor-default' : 'active:opacity-70 transition-opacity'

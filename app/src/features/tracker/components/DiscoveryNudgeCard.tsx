@@ -11,14 +11,20 @@ import type { DiscoveryNudge } from '../useDiscoveryNudges'
 interface Props {
   nudge: DiscoveryNudge
   onDismiss: () => void
+  /** Quando fornecido, substitui a navegação para nudge.destination */
+  onExplore?: () => void
 }
 
-export default function DiscoveryNudgeCard({ nudge, onDismiss }: Props) {
+export default function DiscoveryNudgeCard({ nudge, onDismiss, onExplore }: Props) {
   const navigate = useNavigate()
 
   function handleTap() {
     hapticLight()
-    navigate(nudge.destination)
+    if (onExplore) {
+      onExplore()
+    } else {
+      navigate(nudge.destination)
+    }
   }
 
   return (

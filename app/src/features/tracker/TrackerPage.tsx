@@ -54,6 +54,7 @@ import { useContentArticles, ContentArticleCard } from '../content'
 import { useDiscoveryNudges } from './useDiscoveryNudges'
 import DiscoveryNudgeCard from './components/DiscoveryNudgeCard'
 import DiscoveryTrail from './components/DiscoveryTrail'
+import FamilyInviteSheet from '../profile/components/FamilyInviteSheet'
 
 const PROJECTION_CATEGORIES: string[] = ['feed', 'diaper', 'sleep_nap', 'sleep_awake', 'bath']
 
@@ -228,7 +229,7 @@ export default function TrackerPage() {
   const contentArticle = contentArticles[0] ?? null
 
   // Progressive Discovery: nudge contextual (aparece após a trilha expirar)
-  const { nudge: discoveryNudge, dismissNudge } = useDiscoveryNudges(baby?.id, logs, baby)
+  const { nudge: discoveryNudge, dismissNudge } = useDiscoveryNudges(baby?.id, logs, baby, members)
 
   // Highlights strip (saltos + marcos + vacinas + medicamentos)
   const [highlightsTick, setHighlightsTick] = useState(0)
@@ -282,6 +283,7 @@ export default function TrackerPage() {
   const [sickModalOpen, setSickModalOpen] = useState(false)
   const [editingSickLog, setEditingSickLog] = useState<LogEntry | null>(null)
   const [gridSettingsOpen, setGridSettingsOpen] = useState(false)
+  const [showFamilyInviteSheet, setShowFamilyInviteSheet] = useState(false)
   const [editingLog, setEditingLog] = useState<LogEntry | null>(null)
   const [toast, setToast] = useState<string | null>(null)
   const [showAdModal, setShowAdModal] = useState(false)
@@ -655,6 +657,7 @@ export default function TrackerPage() {
           babyId={baby.id}
           babyAgeWeeks={babyAgeWeeks}
           babyName={baby.name}
+          onStepAction={{ invite: () => setShowFamilyInviteSheet(true) }}
         />
       )}
 
@@ -868,6 +871,11 @@ export default function TrackerPage() {
         <DiscoveryNudgeCard
           nudge={discoveryNudge}
           onDismiss={() => dismissNudge(discoveryNudge.id)}
+          onExplore={
+            discoveryNudge.id === 'nudge_family' || discoveryNudge.id === 'nudge_family_remind'
+              ? () => setShowFamilyInviteSheet(true)
+              : undefined
+          }
         />
       )}
 
@@ -1055,6 +1063,11 @@ export default function TrackerPage() {
           }}
         />
       )}
+
+      <FamilyInviteSheet
+        isOpen={showFamilyInviteSheet}
+        onClose={() => setShowFamilyInviteSheet(false)}
+      />
     </div>
   )
 }

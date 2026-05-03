@@ -12,6 +12,7 @@ import BabySwitcher from '../../components/ui/BabySwitcher'
 import { PaywallModal } from '../../components/ui/PaywallModal'
 import SharedReports from './components/SharedReports'
 import { hapticLight } from '../../lib/haptics'
+import { trackOnce } from '../../lib/analytics'
 import { contractionDe } from '../../lib/genderUtils'
 import { useSheetBackClose } from '../../hooks/useSheetBackClose'
 import { useInviteCodes } from './useInviteCodes'
@@ -144,16 +145,20 @@ export default function ProfilePage() {
   }, [deactivateInvite])
 
   const handleCopyCode = useCallback(() => {
-    if (!inviteCode) return
+    if (!inviteCode || !baby) return
     navigator.clipboard.writeText(inviteCode)
     setToast('Código copiado!')
-  }, [inviteCode])
+    trackOnce('family_invite_sent', 'family_invite_sent', { source: 'profile' })
+    localStorage.setItem(`yaya_invite_shared_at_${baby.id}`, String(Date.now()))
+  }, [inviteCode, baby])
 
   const handleShareWhatsApp = useCallback(() => {
     if (!inviteCode || !baby) return
     const de = contractionDe(baby.gender)
     const text = `Oi! Use o código *${inviteCode}* para acompanhar ${de} ${baby.name} no app Yaya. Baixe em yayababy.app`
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank')
+    trackOnce('family_invite_sent', 'family_invite_sent', { source: 'profile_whatsapp' })
+    localStorage.setItem(`yaya_invite_shared_at_${baby.id}`, String(Date.now()))
   }, [inviteCode, baby])
 
   const isParent = can.manageMembers(myRole)

@@ -8,7 +8,7 @@
 // usuário volta para a home.
 
 import { useState, useEffect, useCallback } from 'react'
-import type { LogEntry, Baby } from '../../types'
+import type { LogEntry, Baby, Member } from '../../types'
 
 export interface DiscoveryNudge {
   id: string
@@ -27,14 +27,56 @@ function isTrailActive(babyId: string): boolean {
   return daysSinceStart <= 14
 }
 
-function computeNudge(babyId: string, logs: LogEntry[], baby: Baby): DiscoveryNudge | null {
+function computeNudge(
+  babyId: string,
+  logs: LogEntry[],
+  baby: Baby,
+  members: Record<string, Member>,
+): DiscoveryNudge | null {
   // Trilha ativa → nudges suprimidos
   if (isTrailActive(babyId)) return null
 
   const name = baby.name
   const gen = baby.gender === 'girl' ? 'da' : baby.gender === 'boy' ? 'do' : 'de'
+  const memberCount = Object.keys(members).length
 
-  // Prioridade 1 — nudge_insights: 5+ registros de sono + nunca abriu Insights
+  // Prioridade 1 — nudge_family: grupo solo + 3+ registros + nunca convidou
+  if (
+    memberCount === 1 &&
+    logs.length >= 3 &&
+    !localStorage.getItem('yaya_evt_family_invite_sent') &&
+    !localStorage.getItem(`yaya_nudge_nudge_family_dismissed_${babyId}`)
+  ) {
+    return {
+      id: 'nudge_family',
+      emoji: '👨‍👩‍👦',
+      title: `${name} tem mais gente que cuida, né?`,
+      subtitle: 'Chame o pai, mãe ou avó — eles veem a rotina em tempo real.',
+      destination: '/',
+    }
+  }
+
+  // Prioridade 2 — nudge_family_remind: convidou mas ninguém entrou em 2+ dias
+  const inviteSentFlag = localStorage.getItem('yaya_evt_family_invite_sent')
+  if (inviteSentFlag && memberCount === 1) {
+    const sharedAt = Number(localStorage.getItem(`yaya_invite_shared_at_${babyId}`) ?? '0')
+    const daysSinceShared = sharedAt > 0 ? (Date.now() - sharedAt) / (1000 * 60 * 60 * 24) : 0
+    const alreadyShown = localStorage.getItem(`yaya_nudge_family_remind_shown_${babyId}`) === '1'
+
+    if (daysSinceShared >= 2 && !alreadyShown) {
+      // Marca como mostrado imediatamente (exibe apenas 1 vez)
+      localStorage.setItem(`yaya_nudge_family_remind_shown_${babyId}`, '1')
+      return {
+        id: 'nudge_family_remind',
+        emoji: '👥',
+        title: 'O convite ainda está aberto',
+        subtitle: 'Parece que ninguém entrou ainda. Quer enviar de novo?',
+        destination: '/',
+      }
+    }
+  }
+
+  // Prioridade 3 — nudge_insights: 5+ registros de sono + nunca abriu Insights
   const sleepCount = logs.filter((l) => l.eventId === 'sleep').length
   if (
     sleepCount >= 5 &&
@@ -50,7 +92,7 @@ function computeNudge(babyId: string, logs: LogEntry[], baby: Baby): DiscoveryNu
     }
   }
 
-  // Prioridade 2 — nudge_yaia: 10+ registros + nunca usou yaIA
+  // Prioridade 4 — nudge_yaia: 10+ registros + nunca usou yaIA
   if (
     localStorage.getItem('yaya_evt_first_record_created') &&
     logs.length >= 10 &&
@@ -66,7 +108,7 @@ function computeNudge(babyId: string, logs: LogEntry[], baby: Baby): DiscoveryNu
     }
   }
 
-  // Prioridade 3 — nudge_report: registrou marco + nunca viu super relatório
+  // Prioridade 5 — nudge_report: registrou marco + nunca viu super relatório
   if (
     localStorage.getItem('yaya_evt_milestone_registered') &&
     !localStorage.getItem('yaya_evt_super_report_viewed') &&
@@ -88,6 +130,7 @@ export function useDiscoveryNudges(
   babyId: string | undefined,
   logs: LogEntry[],
   baby: Baby | null,
+  members: Record<string, Member>,
 ) {
   // Forçar re-render quando o usuário volta para a home (foco/visibilidade)
   const [, forceUpdate] = useState(0)
@@ -111,7 +154,7 @@ export function useDiscoveryNudges(
     [babyId],
   )
 
-  const nudge = babyId && baby ? computeNudge(babyId, logs, baby) : null
+  const nudge = babyId && baby ? computeNudge(babyId, logs, baby, members) : null
 
   return { nudge, dismissNudge }
 }
