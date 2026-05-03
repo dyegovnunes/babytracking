@@ -5,6 +5,7 @@ import { supabase } from '../../lib/supabase';
 
 const NAV_ITEMS: Array<{ path: string; label: string; icon: string }> = [
   { path: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
+  { path: 'analytics', label: 'Analytics', icon: 'analytics' },
   { path: 'users', label: 'Usuários', icon: 'group' },
   { path: 'pediatricians', label: 'Pediatras', icon: 'stethoscope' },
   { path: 'push', label: 'Push', icon: 'notifications' },
