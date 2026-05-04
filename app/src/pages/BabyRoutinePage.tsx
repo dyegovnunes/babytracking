@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppState } from '../contexts/AppContext'
+import { setTrailKey } from '../lib/analytics'
 import { useNotificationPrefs } from './settings/useNotificationPrefs'
 import { useBathHours } from './settings/useBathHours'
 import { useMyRole } from '../hooks/useMyRole'
@@ -37,9 +38,13 @@ export default function BabyRoutinePage() {
   const handleSavePrefs = useCallback(
     async (updated: Parameters<typeof savePrefs>[0]) => {
       const ok = await savePrefs(updated)
-      if (!ok) setToast('Erro ao salvar preferências')
+      if (!ok) {
+        setToast('Erro ao salvar preferências')
+      } else if (baby?.id) {
+        setTrailKey('routine_configured', baby.id)
+      }
     },
-    [savePrefs],
+    [savePrefs, baby?.id],
   )
 
   const handlePickBathHour = useCallback(
@@ -48,6 +53,7 @@ export default function BabyRoutinePage() {
       if (res === 'ok') {
         setToast('Horário adicionado!')
         setPickingBathHour(false)
+        if (baby?.id) setTrailKey('routine_configured', baby.id)
       } else if (res === 'duplicate') {
         setToast('Horário já existe')
       } else if (res === 'max') {
