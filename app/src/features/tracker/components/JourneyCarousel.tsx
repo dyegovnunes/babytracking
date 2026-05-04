@@ -110,6 +110,76 @@ const BLOG_KICKER_LABEL: Record<ContentCategory, string> = {
   seguranca:       'Segurança do bebê',
 }
 
+// ---------- Texto personalizado para cada tipo de feature ----------
+//
+// Sobrescreve o kicker/title genéricos do highlights.ts com copy
+// específico para o contexto do carrossel — mais direto e com nome do bebê.
+
+interface CarouselFeatureText {
+  /** Texto curto exibido no badge overlay da imagem (ex: "7 chegando") */
+  badge: string
+  /** Label da categoria no bloco de texto */
+  kicker: string
+  /** Título principal — personalizado com o nome do bebê */
+  title: string
+}
+
+function getCarouselFeatureText(h: Highlight, babyName: string): CarouselFeatureText {
+  const d = h.data
+
+  if (d.type === 'vaccine_upcoming') {
+    const total = 1 + d.othersCount
+    const countLabel = total === 1 ? '1 chegando' : `${total} chegando`
+    return {
+      badge:  countLabel,
+      kicker: 'Próximas vacinas',
+      title:  total === 1
+        ? `${d.vaccine.shortName} está chegando para ${babyName}`
+        : `${babyName} tem ${total} vacinas chegando`,
+    }
+  }
+
+  if (d.type === 'vaccine_overdue') {
+    const total = 1 + d.othersCount
+    const countLabel = total === 1 ? '1 em atraso' : `${total} em atraso`
+    return {
+      badge:  countLabel,
+      kicker: 'Vacinas pendentes',
+      title:  total === 1
+        ? `${babyName} está com ${d.vaccine.shortName} em atraso`
+        : `${babyName} tem ${total} vacinas em atraso`,
+    }
+  }
+
+  if (d.type === 'milestone') {
+    return {
+      badge:  'Próximo marco',
+      kicker: 'Marco de desenvolvimento',
+      title:  `${babyName} está perto de: ${d.milestone.name}`,
+    }
+  }
+
+  if (d.type === 'leap_active') {
+    return {
+      badge:  `Salto ${d.leap.id} — ativo`,
+      kicker: 'Salto mental em andamento',
+      title:  `${babyName} está no Salto ${d.leap.id}: ${d.leap.name}`,
+    }
+  }
+
+  if (d.type === 'leap_upcoming') {
+    const weeks = d.weeksUntil
+    return {
+      badge:  `Em ${weeks} semana${weeks !== 1 ? 's' : ''}`,
+      kicker: 'Próximo salto mental',
+      title:  `O Salto ${d.leap.id} está chegando para ${babyName}`,
+    }
+  }
+
+  // Fallback genérico
+  return { badge: h.kicker, kicker: h.kicker, title: h.title }
+}
+
 // ---------- Sequence builder ----------
 
 /**
@@ -432,6 +502,7 @@ export default function JourneyCarousel({
                     <FeatureCard
                       highlight={item.highlight}
                       imageUrl={getFeatureImageUrl(item.highlight)}
+                      babyName={babyName}
                       onTap={() => {
                         hapticLight()
                         setOpenHighlight(item.highlight)
@@ -651,13 +722,16 @@ function BlogCard({
 function FeatureCard({
   highlight,
   imageUrl,
+  babyName,
   onTap,
 }: {
   highlight: Highlight
   imageUrl:  string | null
+  babyName:  string
   onTap:     () => void
 }) {
   const hasBg = Boolean(imageUrl)
+  const ct    = getCarouselFeatureText(highlight, babyName)
 
   return (
     <CardShell
@@ -672,7 +746,7 @@ function FeatureCard({
         </div>
       }
       imageOverlay={
-        // Badge kicker overlay no canto inferior-esquerdo da imagem
+        // Badge personalizado no canto inferior-esquerdo da imagem
         <div
           className="absolute bottom-2 left-2 flex items-center gap-1.5 px-2 py-1 rounded"
           style={{
@@ -683,19 +757,19 @@ function FeatureCard({
           <span style={{ fontSize: 12 }} aria-hidden>{highlight.emoji}</span>
           <span
             className="font-label font-bold text-white"
-            style={{ fontSize: 10, letterSpacing: '0.06em', textTransform: 'uppercase' }}
+            style={{ fontSize: 10, letterSpacing: '0.05em', textTransform: 'uppercase' }}
           >
-            {highlight.kicker}
+            {ct.badge}
           </span>
         </div>
       }
       borderColor="rgba(183,159,255,0.10)"
       onClick={onTap}
-      ariaLabel={`${highlight.kicker}: ${highlight.title}`}
+      ariaLabel={`${ct.kicker}: ${ct.title}`}
     >
       <div className="px-3 pt-2.5 pb-3">
         <p className={`font-label text-[10px] font-bold uppercase tracking-wider mb-1 ${ACCENT_KICKER[highlight.accent]}`}>
-          {highlight.kicker}
+          {ct.kicker}
         </p>
         <p
           className="font-headline text-sm font-bold text-on-surface leading-snug mb-2"
@@ -706,7 +780,7 @@ function FeatureCard({
             overflow: 'hidden',
           }}
         >
-          {highlight.title}
+          {ct.title}
         </p>
         <div className={`inline-flex items-center gap-1 px-2.5 py-1 rounded font-label text-xs font-semibold ${ACCENT_BTN[highlight.accent]}`}>
           Ver mais →
