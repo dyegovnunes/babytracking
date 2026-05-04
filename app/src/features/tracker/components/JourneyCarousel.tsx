@@ -16,7 +16,6 @@ import { useState, useRef, useMemo, useEffect, useCallback } from 'react'
 import { Browser } from '@capacitor/browser'
 import { Capacitor } from '@capacitor/core'
 import { hapticLight } from '../../../lib/haptics'
-import { track } from '../../../lib/analytics'
 import type { Highlight } from '../highlights'
 import type { ContentArticle } from '../../content/contentTypes'
 import { CONTENT_CATEGORY_EMOJI } from '../../content/contentTypes'
@@ -312,9 +311,8 @@ export default function JourneyCarousel({
 
 // ---------- BlogCard ----------
 
-async function openUrl(url: string, slug: string) {
+async function openUrl(url: string, _slug: string) {
   hapticLight()
-  track('blog_article_opened', { article_slug: slug, source: 'journey_carousel' })
   if (Capacitor.isNativePlatform()) {
     await Browser.open({ url })
   } else {
