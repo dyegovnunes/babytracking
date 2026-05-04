@@ -110,12 +110,18 @@ serve(async (req) => {
 
     // Get latest log per baby per category
     const latestByBabyCategory = new Map<string, number>();
+    // Most recent log of any type per baby (for no-record-5h and reactivation checks)
+    const lastLogByBaby = new Map<string, number>();
     for (const log of allLogs ?? []) {
       const cat = eventToCategory(log.event_id);
-      if (!cat) continue;
-      const key = `${log.baby_id}_${cat}`;
-      if (!latestByBabyCategory.has(key)) {
-        latestByBabyCategory.set(key, log.timestamp);
+      if (cat) {
+        const key = `${log.baby_id}_${cat}`;
+        if (!latestByBabyCategory.has(key)) {
+          latestByBabyCategory.set(key, log.timestamp);
+        }
+      }
+      if (!lastLogByBaby.has(log.baby_id)) {
+        lastLogByBaby.set(log.baby_id, log.timestamp);
       }
     }
 
@@ -142,18 +148,20 @@ serve(async (req) => {
       recentPushSet.add(`${p.user_id}_${p.baby_id}_${p.type}`);
     }
 
-    // 6. Get babies info for names, birth_date and quiet hours (per-baby source of truth)
+    // 6. Get babies info for names, birth_date, created_at and quiet hours (per-baby source of truth)
     const { data: babies } = await supabase
       .from('babies')
-      .select('id, name, birth_date, quiet_hours_enabled, quiet_hours_start, quiet_hours_end')
+      .select('id, name, birth_date, created_at, quiet_hours_enabled, quiet_hours_start, quiet_hours_end')
       .in('id', babyIds);
 
     const babyNames = new Map<string, string>();
     const babyBirthDates = new Map<string, string>();
+    const babyCreatedAt = new Map<string, string>();
     const babyQuietHours = new Map<string, { enabled: boolean; start: number; end: number }>();
     for (const b of babies ?? []) {
       babyNames.set(b.id, b.name);
       if (b.birth_date) babyBirthDates.set(b.id, b.birth_date);
+      if (b.created_at) babyCreatedAt.set(b.id, b.created_at);
       babyQuietHours.set(b.id, {
         enabled: b.quiet_hours_enabled ?? false,
         start: b.quiet_hours_start ?? 22,
@@ -181,6 +189,12 @@ serve(async (req) => {
     for (const [babyId, targets] of babyTokens) {
       const babyName = babyNames.get(babyId) ?? 'Bebê';
 
+      // Compute baby age in months for age-conditional push copy
+      const birthDate = babyBirthDates.get(babyId);
+      const babyAgeMonths = birthDate
+        ? (nowTs - new Date(birthDate).getTime()) / (30.4375 * 86400000)
+        : 0;
+
       // Check routine intervals: feed, diaper, sleep
       const categories = ['feed', 'diaper', 'sleep_nap', 'sleep_awake'];
 
@@ -194,15 +208,17 @@ serve(async (req) => {
         const elapsed = nowTs - lastLogTs;
         const intervalMs = interval.minutes * 60_000;
         const warnMs = (interval.warn ?? interval.minutes * 0.8) * 60_000;
+        // P2 sleep_nap fires at 150% of configured interval (long nap alert)
+        const expiredMs = cat === 'sleep_nap' ? intervalMs * 1.5 : intervalMs;
 
         // Check if interval expired or warning
         let pushType: string | null = null;
         let message: PushMessage | null = null;
 
-        if (elapsed >= intervalMs) {
+        if (elapsed >= expiredMs) {
           pushType = `${cat}_expired`;
-          message = getExpiredMessage(cat, interval.minutes, babyName);
-        } else if (elapsed >= warnMs && elapsed < intervalMs) {
+          message = getExpiredMessage(cat, interval.minutes, babyName, babyAgeMonths);
+        } else if (elapsed >= warnMs && elapsed < expiredMs) {
           pushType = `${cat}_warn`;
           message = getWarnMessage(cat, interval.minutes, babyName);
         }
@@ -420,6 +436,132 @@ serve(async (req) => {
         }
       }
     }
+    // ─── P2 — Sem registro há 5h (apenas horário diurno) ─────────────────────
+    // Dispara quando nenhum registro foi criado nos últimos 5h consecutivos
+    // dentro do horário diurno (entre quiet_end e quiet_start).
+    // Máximo 1x por dia por bebê.
+    for (const [babyId, targets] of babyTokens) {
+      const bq = babyQuietHours.get(babyId) ?? { enabled: true, start: 22, end: 7 };
+
+      // isDaytime: entre quiet_end (manhã) e quiet_start (noite)
+      const isDaytime = bq.end <= bq.start
+        ? (brtHour >= bq.end && brtHour < bq.start)
+        : (brtHour >= bq.end || brtHour < bq.start);
+      if (!isDaytime) continue;
+
+      const lastLogTs = lastLogByBaby.get(babyId);
+      if (!lastLogTs) continue; // nunca teve log — não enviar para usuários sem histórico
+
+      const hoursSinceLastLog = (nowTs - lastLogTs) / 3_600_000;
+      if (hoursSinceLastLog < 5) continue;
+
+      // Dedup: máximo 1x por dia diurno
+      const brtDateStr = new Date(nowTs - 3 * 3600 * 1000).toISOString().slice(0, 10);
+      const quietEndUTC = (bq.end + 3) % 24;
+      const dayStart = new Date(`${brtDateStr}T${String(quietEndUTC).padStart(2, '0')}:00:00.000Z`);
+
+      const { count: sentToday } = await supabase
+        .from('push_log')
+        .select('id', { count: 'exact', head: true })
+        .eq('baby_id', babyId)
+        .eq('type', 'no_record_5h')
+        .gte('sent_at', dayStart.toISOString());
+
+      if ((sentToday ?? 0) > 0) continue;
+
+      const h = Math.floor(hoursSinceLastLog);
+      const timeStr = `${h}h`;
+      const babyName = babyNames.get(babyId) ?? 'Bebê';
+      const msg: PushMessage = {
+        title: `Cadê vocês? Estou sentindo falta do ${babyName}.`,
+        body: `Faz ${timeStr} desde o último registro do ${babyName}. Aconteceu algo diferente hoje?`,
+        type: 'no_record_5h',
+        data: { category: 'no_record' },
+      };
+
+      for (const target of targets) {
+        const prefs = prefsMap.get(`${target.userId}_${babyId}`);
+        if (prefs && !prefs.enabled) continue;
+        if (prefs && isInQuietHours(prefs, now)) continue;
+
+        pushPromises.push(
+          sendFCMPush(target.token, msg).then(async (ok) => {
+            if (ok) {
+              totalSent++;
+              await logPush(target.userId, babyId, 'no_record_5h', msg.title, msg.body);
+            }
+          }),
+        );
+      }
+    }
+
+    // ─── Reativação: D0+2h e D1 ───────────────────────────────────────────────
+    // Dispara uma única vez para usuários que se cadastraram mas ainda não
+    // fizeram nenhum registro. D0+2h: ~2h após criar o bebê. D1: ~20h após.
+    {
+      const D0_MIN = 110 * 60_000;  // 1h50m
+      const D0_MAX = 130 * 60_000;  // 2h10m
+      const D1_MIN = 1190 * 60_000; // 19h50m
+      const D1_MAX = 1210 * 60_000; // 20h10m
+
+      for (const [babyId, targets] of babyTokens) {
+        const createdAt = babyCreatedAt.get(babyId);
+        if (!createdAt) continue;
+
+        const ageMs = nowTs - new Date(createdAt).getTime();
+
+        let reactType: string | null = null;
+        let reactMsg: PushMessage | null = null;
+        const babyName = babyNames.get(babyId) ?? 'Bebê';
+
+        if (ageMs >= D0_MIN && ageMs <= D0_MAX) {
+          reactType = 'reactivation_d0';
+          reactMsg = {
+            title: 'Oi!',
+            body: `O ${babyName} está te esperando no app. Vai levar uns 10 segundos pro primeiro registro.`,
+            type: 'reactivation',
+          };
+        } else if (ageMs >= D1_MIN && ageMs <= D1_MAX) {
+          reactType = 'reactivation_d1';
+          reactMsg = {
+            title: `Como está sendo a rotina do ${babyName}?`,
+            body: 'O Yaya está aqui quando você precisar.',
+            type: 'reactivation',
+          };
+        }
+
+        if (!reactType || !reactMsg) continue;
+
+        // Só envia se o usuário não tem nenhum registro (objetivo: primeiro uso)
+        if (lastLogByBaby.has(babyId)) continue;
+
+        // Dedup lifetime: não reenviar para este bebê
+        const { count: existingCount } = await supabase
+          .from('push_log')
+          .select('id', { count: 'exact', head: true })
+          .eq('baby_id', babyId)
+          .eq('type', reactType);
+
+        if ((existingCount ?? 0) > 0) continue;
+
+        for (const target of targets) {
+          const prefs = prefsMap.get(`${target.userId}_${babyId}`);
+          if (prefs && !prefs.enabled) continue;
+          if (prefs && isInQuietHours(prefs, now)) continue;
+
+          const msgCopy = reactMsg!;
+          const typeCopy = reactType!;
+          pushPromises.push(
+            sendFCMPush(target.token, msgCopy).then(async (ok) => {
+              if (ok) {
+                totalSent++;
+                await logPush(target.userId, babyId, typeCopy, msgCopy.title, msgCopy.body);
+              }
+            }),
+          );
+        }
+      }
+    }
     // ─────────────────────────────────────────────────────────────────────────
 
     await Promise.allSettled(pushPromises);
@@ -494,8 +636,8 @@ function getWarnMessage(cat: string, minutes: number, babyName: string): PushMes
       };
     case 'sleep_awake':
       return {
-        title: `Janela de sono chegando 🌙`,
-        body: `${babyName} está acordado há quase ${timeStr}`,
+        title: 'zzZzzZzzZzz...',
+        body: `O ${babyName} pode começar a ficar com sono nos próximos minutos.`,
         type: 'routine_alert',
         data: { category: 'sleep' },
       };
@@ -504,19 +646,21 @@ function getWarnMessage(cat: string, minutes: number, babyName: string): PushMes
   }
 }
 
-function getExpiredMessage(cat: string, minutes: number, babyName: string): PushMessage {
+function getExpiredMessage(cat: string, minutes: number, babyName: string, babyAgeMonths = 0): PushMessage {
   const h = Math.floor(minutes / 60);
   const m = minutes % 60;
   const timeStr = h > 0 ? `${h}h${m > 0 ? m + 'min' : ''}` : `${m}min`;
 
   switch (cat) {
-    case 'feed':
+    case 'feed': {
+      const isSolid = babyAgeMonths >= 6;
       return {
-        title: `Hora da amamentação! 🍼`,
-        body: `Última mamada de ${babyName} foi há ${timeStr}`,
+        title: isSolid ? 'Hora do lanche!' : 'Hora do tetê!',
+        body: `Acho que o ${babyName} vai querer ${isSolid ? 'comer' : 'tetê'} em breve. Faz ${timeStr} desde a última vez.`,
         type: 'routine_alert',
         data: { category: 'feed' },
       };
+    }
     case 'diaper':
       return {
         title: `Hora de trocar a fralda! 💧`,
@@ -526,8 +670,8 @@ function getExpiredMessage(cat: string, minutes: number, babyName: string): Push
       };
     case 'sleep_nap':
       return {
-        title: `Soneca passou do tempo ⏰`,
-        body: `${babyName} está dormindo há mais de ${timeStr}`,
+        title: 'Que soneca boa!',
+        body: `Passando pra avisar que o ${babyName} está dormindo há um tempo. Talvez seja hora de acordar.`,
         type: 'routine_alert',
         data: { category: 'sleep' },
       };

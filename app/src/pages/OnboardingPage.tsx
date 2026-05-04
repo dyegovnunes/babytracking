@@ -5,6 +5,7 @@ import { getDefaultIntervals } from '../lib/ageUtils'
 import { validateBabyBirthDate, isPrenatal } from '../lib/formatters'
 import { autoRegisterPastMilestones } from '../features/milestones/autoRegister'
 import { autoRegisterPastVaccines } from '../features/vaccines/autoRegister'
+import { track } from '../lib/analytics'
 
 interface Props {
   onComplete: () => void
@@ -79,6 +80,11 @@ export default function OnboardingPage({ onComplete }: Props) {
     }
 
     setLoading(false)
+    // Analytics: onboarding concluído com criação de bebê
+    const babyAgeDays = Math.floor((Date.now() - new Date(birthDate).getTime()) / 86400000)
+    track('onboarding_completed', { baby_age_days: babyAgeDays, baby_gender: gender })
+    // Email M0: boas-vindas — fire-and-forget, não bloqueia o onboarding
+    void supabase.functions.invoke('send-welcome-email', { body: { babyId: baby.id } })
     onComplete()
   }
 

@@ -110,6 +110,8 @@ function handlePushAction(action: ActionPerformed): void {
   switch (data?.type) {
     case 'routine_alert':
     case 'streak_risk':
+    case 'no_record_5h':
+    case 'reactivation':
       route = '/';
       break;
     case 'development_leap':
