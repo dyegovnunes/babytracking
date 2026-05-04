@@ -70,7 +70,7 @@ export default function FamilyInviteSheet({ isOpen, onClose }: Props) {
   const de = contractionDe(baby?.gender ?? null)
   const babyName = baby?.name ?? 'bebê'
   const shareText = code
-    ? `Oi! Usa o código *${code}* para acompanhar ${de} ${babyName} no app Yaya. Baixe em yayababy.app`
+    ? `Oi! Te convidei para acompanhar ${de} ${babyName} no app Yaya 🍼\n\nPara entrar no grupo:\n1. Baixe o app: yayababy.app\n2. Crie sua conta\n3. Na tela de cadastro, escolha *"Entrar no grupo de um bebê"*\n4. Insira o código: *${code}*`
     : ''
 
   function markShared() {
