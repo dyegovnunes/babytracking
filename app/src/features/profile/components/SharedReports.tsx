@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAppState } from '../../../contexts/AppContext';
 import { useAuth } from '../../../contexts/AuthContext';
-import { track, trackOnce } from '../../../lib/analytics';
+import { track, trackOnce, setTrailKey } from '../../../lib/analytics';
 import { useBabyPremium } from '../../../hooks/useBabyPremium';
 import { useSheetBackClose } from '../../../hooks/useSheetBackClose';
 import { PaywallModal } from '../../../components/ui/PaywallModal';
@@ -126,9 +126,10 @@ export default function SharedReports() {
       hapticSuccess();
       setCreatedReport({ url: getReportUrl(report.token), password });
       await loadReports();
-      // Analytics: super_report_generated
+      // Analytics: super_report_generated + trail key
       const babyAgeDays = baby ? Math.floor((Date.now() - new Date(baby.birthDate).getTime()) / 86400000) : undefined;
       track('super_report_generated', { audience, baby_age_days: babyAgeDays });
+      if (baby?.id) setTrailKey('super_report_generated', baby.id);
     }
   };
 
