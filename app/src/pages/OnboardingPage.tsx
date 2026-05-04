@@ -73,6 +73,25 @@ export default function OnboardingPage({ onComplete }: Props) {
     const defaultIntervals = getDefaultIntervals(baby.id, birthDate)
     await supabase.from('interval_configs').insert(defaultIntervals)
 
+    // Cria prefs de notificação com categorias desativadas por padrão.
+    // feed e sleep serão ativados automaticamente no primeiro registro (AppContext.addLog).
+    // diaper e bath só ativam se o usuário ativar manualmente em Configurações.
+    await supabase.from('notification_prefs').upsert(
+      {
+        user_id: user.id,
+        baby_id: baby.id,
+        enabled: true,
+        cat_feed: false,
+        cat_diaper: false,
+        cat_sleep: false,
+        cat_bath: false,
+        quiet_enabled: false,
+        quiet_start: 22,
+        quiet_end: 7,
+      },
+      { onConflict: 'user_id,baby_id' },
+    )
+
     // Auto-registro só faz sentido se o bebê já nasceu
     if (!isPrenatal(birthDate)) {
       await autoRegisterPastMilestones(baby.id, birthDate).catch(() => {})

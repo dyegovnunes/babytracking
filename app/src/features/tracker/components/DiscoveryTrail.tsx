@@ -41,7 +41,7 @@ const TRAIL_STEPS: Record<AgeBucket, TrailStep[]> = {
   '3to12m': [
     { id: 'record',     label: 'Acompanhe tudo em um lugar',               doneKey: 'yaya_evt_first_record_created',    destination: '/' },
     { id: 'routine',    label: 'Ajuste para a rotina [de] [nome]',         doneKey: 'yaya_evt_routine_configured',      destination: '/routine' },
-    { id: 'milestones', label: 'Acompanhe o desenvolvimento [de] [nome]',  doneKey: 'yaya_evt_milestone_registered',    destination: '/milestones' },
+    { id: 'milestones', label: 'Acompanhe o desenvolvimento [de] [nome]',  doneKey: 'yaya_evt_insights_tab_opened',     destination: '/insights' },
     { id: 'yaia',       label: 'Tenha uma IA que conhece [art] [nome]',    doneKey: 'yaya_evt_yaia_first_message',      destination: '/yaia' },
     { id: 'invite',     label: 'Quem cuida [de] [nome] com você?',          doneKey: 'yaya_evt_family_invite_sent',      destination: '/' },
     { id: 'report',     label: 'Compartilhe a rotina com o pediatra',      doneKey: 'yaya_evt_super_report_generated',  destination: '/profile' },

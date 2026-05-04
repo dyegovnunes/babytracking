@@ -430,6 +430,18 @@ export async function addLog(
   // Analytics: primeiro registro na vida do usuário
   trackOnce('first_record_created', 'first_record_created', { record_type: eventId }, babyId)
 
+  // Auto-ativa notificações de alimentação e sono no primeiro registro.
+  // Diaper e bath continuam desativados até ativação manual pelo usuário.
+  const notifAutoKey = `yaya_notif_autoactivated_${babyId}`
+  if (!localStorage.getItem(notifAutoKey)) {
+    localStorage.setItem(notifAutoKey, '1')
+    void supabase
+      .from('notification_prefs')
+      .update({ cat_feed: true, cat_sleep: true })
+      .eq('user_id', userId ?? '')
+      .eq('baby_id', babyId)
+  }
+
   // Analytics: 5º registro no mesmo dia (fire-and-forget)
   void (async () => {
     try {

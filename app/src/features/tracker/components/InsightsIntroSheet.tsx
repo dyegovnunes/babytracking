@@ -78,8 +78,8 @@ const CONTENT: Record<StepId, StepContent> = {
         desc: 'O app mostra o que esperar de cada fase, com base nas diretrizes de desenvolvimento.',
       },
     ],
-    ctaLabel: 'Explorar os marcos',
-    destination: '/milestones',
+    ctaLabel: 'Ver o que o Yaya descobriu',
+    destination: '/insights',
   },
   leaps: {
     emoji: '🚀',
