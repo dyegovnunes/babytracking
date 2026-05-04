@@ -48,7 +48,7 @@ export default function FamilyInviteSheet({ isOpen, onClose }: Props) {
     if (!baby) return
     trackOnce('family_invite_sent', 'family_invite_sent', {
       baby_age_days: Math.floor((Date.now() - new Date(baby.birthDate).getTime()) / 86400000),
-    })
+    }, baby.id)
     localStorage.setItem(`yaya_invite_shared_at_${baby.id}`, String(Date.now()))
     // Sinaliza para o DiscoveryTrail re-checar (focus event)
     window.dispatchEvent(new Event('focus'))

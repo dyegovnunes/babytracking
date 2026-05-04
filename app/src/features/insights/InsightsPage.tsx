@@ -49,7 +49,7 @@ export default function InsightsPage() {
   useEffect(() => {
     if (!baby) return
     const babyAgeDays = Math.floor((Date.now() - new Date(baby.birthDate).getTime()) / 86400000)
-    trackOnce('insights_tab_opened', 'insights_tab_opened', { baby_age_days: babyAgeDays })
+    trackOnce('insights_tab_opened', 'insights_tab_opened', { baby_age_days: babyAgeDays }, baby.id)
   }, [baby?.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const { periodSummary, insights, weekTrends, availablePeriods } = useInsightsEngine(

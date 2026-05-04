@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAppState } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
+import { track, setTrailKey } from '../../lib/analytics'
 import { useMyRole } from '../../hooks/useMyRole'
 import { useMyCaregiverPermissions } from '../../hooks/useMyCaregiverPermissions'
 import { useMilestones } from './useMilestones'
@@ -218,6 +219,12 @@ export default function MilestonesPage() {
     if (entry) {
       setCelebrationData({ milestone: m, entry })
       setDetailEntry(null)
+      // Analytics: marco registrado
+      if (baby?.birthDate) {
+        const babyAgeDays = Math.floor((Date.now() - new Date(baby.birthDate).getTime()) / 86400000)
+        track('milestone_registered', { milestone_type: m.code, baby_age_days: babyAgeDays })
+        if (baby.id) setTrailKey('milestone_registered', baby.id)
+      }
     } else {
       setToast('Não foi possível salvar. Tente novamente.')
     }
@@ -236,7 +243,15 @@ export default function MilestonesPage() {
   const handleCheckboxTap = async (code: string, isAchieved: boolean) => {
     triggerPreset('delight')
     const ok = await quickToggle(code, user?.id)
-    if (ok) setToast(isAchieved ? 'Marco desmarcado' : 'Marco registrado')
+    if (ok) {
+      setToast(isAchieved ? 'Marco desmarcado' : 'Marco registrado')
+      // Analytics: marco registrado via checkbox (caminho mais comum)
+      if (!isAchieved && baby?.birthDate) {
+        const babyAgeDays = Math.floor((Date.now() - new Date(baby.birthDate).getTime()) / 86400000)
+        track('milestone_registered', { milestone_type: code, baby_age_days: babyAgeDays })
+        if (baby.id) setTrailKey('milestone_registered', baby.id)
+      }
+    }
   }
 
   if (loading || !baby) {

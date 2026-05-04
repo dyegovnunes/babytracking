@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useAppState } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
+import { track, trackOnce } from '../../lib/analytics'
 import {
   sendToYaIA,
   submitFeedback,
@@ -231,6 +232,18 @@ export function useYaIA(): UseYaIAReturn {
     const trimmed = content.trim()
     if (!trimmed || !babyId || isLoading) return
 
+    // Analytics: primeira mensagem na yaIA (uma única vez na vida)
+    const babyAgeDays = baby?.birthDate
+      ? Math.floor((Date.now() - new Date(baby.birthDate).getTime()) / 86400000)
+      : undefined
+    trackOnce('yaia_first_message', 'yaia_first_message', { baby_age_days: babyAgeDays }, babyId ?? undefined)
+
+    // Analytics: sessão profunda — 3ª mensagem do usuário
+    const userMessagesSoFar = messages.filter((m) => m.role === 'user').length
+    if (userMessagesSoFar === 2) {
+      track('yaia_session_deep', { message_count: 3, baby_age_days: babyAgeDays })
+    }
+
     const tempId = `tmp_${++tempIdRef.current}`
     const nowIso = new Date().toISOString()
     setMessages((prev) => {
@@ -249,7 +262,7 @@ export function useYaIA(): UseYaIAReturn {
       ]
     })
     await dispatchSend(tempId, trimmed, babyId)
-  }, [babyId, isLoading])
+  }, [babyId, isLoading, messages, baby])
 
   const retryMessage = useCallback(async (messageId: string) => {
     if (!babyId || isLoading) return

@@ -44,7 +44,7 @@ function computeNudge(
   if (
     memberCount === 1 &&
     logs.length >= 3 &&
-    !localStorage.getItem('yaya_evt_family_invite_sent') &&
+    !localStorage.getItem(`yaya_evt_family_invite_sent_${babyId}`) &&
     !localStorage.getItem(`yaya_nudge_nudge_family_dismissed_${babyId}`)
   ) {
     return {
@@ -57,7 +57,7 @@ function computeNudge(
   }
 
   // Prioridade 2 — nudge_family_remind: convidou mas ninguém entrou em 2+ dias
-  const inviteSentFlag = localStorage.getItem('yaya_evt_family_invite_sent')
+  const inviteSentFlag = localStorage.getItem(`yaya_evt_family_invite_sent_${babyId}`)
   if (inviteSentFlag && memberCount === 1) {
     const sharedAt = Number(localStorage.getItem(`yaya_invite_shared_at_${babyId}`) ?? '0')
     const daysSinceShared = sharedAt > 0 ? (Date.now() - sharedAt) / (1000 * 60 * 60 * 24) : 0
@@ -80,7 +80,7 @@ function computeNudge(
   const sleepCount = logs.filter((l) => l.eventId === 'sleep').length
   if (
     sleepCount >= 5 &&
-    !localStorage.getItem('yaya_evt_insights_tab_opened') &&
+    !localStorage.getItem(`yaya_evt_insights_tab_opened_${babyId}`) &&
     !localStorage.getItem(`yaya_nudge_nudge_insights_dismissed_${babyId}`)
   ) {
     return {
@@ -94,9 +94,9 @@ function computeNudge(
 
   // Prioridade 4 — nudge_yaia: 10+ registros + nunca usou yaIA
   if (
-    localStorage.getItem('yaya_evt_first_record_created') &&
+    localStorage.getItem(`yaya_evt_first_record_created_${babyId}`) &&
     logs.length >= 10 &&
-    !localStorage.getItem('yaya_evt_yaia_first_message') &&
+    !localStorage.getItem(`yaya_evt_yaia_first_message_${babyId}`) &&
     !localStorage.getItem(`yaya_nudge_nudge_yaia_dismissed_${babyId}`)
   ) {
     return {
@@ -110,8 +110,8 @@ function computeNudge(
 
   // Prioridade 5 — nudge_report: registrou marco + nunca viu super relatório
   if (
-    localStorage.getItem('yaya_evt_milestone_registered') &&
-    !localStorage.getItem('yaya_evt_super_report_viewed') &&
+    localStorage.getItem(`yaya_evt_milestone_registered_${babyId}`) &&
+    !localStorage.getItem(`yaya_evt_super_report_viewed_${babyId}`) &&
     !localStorage.getItem(`yaya_nudge_nudge_report_dismissed_${babyId}`)
   ) {
     return {

@@ -108,8 +108,8 @@ export default function DiscoveryTrail({ babyId, babyAgeWeeks, babyName, onStepA
   const bucket = getAgeBucket(babyAgeWeeks)
   const steps = TRAIL_STEPS[bucket]
 
-  // Verificar conclusão de cada passo
-  const doneFlags = steps.map((s) => !!localStorage.getItem(s.doneKey))
+  // Verificar conclusão de cada passo — chave baby-scoped para isolar entre bebês
+  const doneFlags = steps.map((s) => !!localStorage.getItem(`${s.doneKey}_${babyId}`))
 
   // Se todos os passos estiverem concluídos, esconder silenciosamente
   const allDone = doneFlags.every(Boolean)

@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppState } from '../../contexts/AppContext'
+import { trackOnce } from '../../lib/analytics'
 import { useBabyPremium } from '../../hooks/useBabyPremium'
 import { useMyRole } from '../../hooks/useMyRole'
 import { useMyCaregiverPermissions } from '../../hooks/useMyCaregiverPermissions'
@@ -46,6 +47,17 @@ export default function LeapsPage() {
       navigate('/', { replace: true })
     }
   }, [myRole, perms.show_leaps, navigate])
+
+  // Analytics: primeira abertura da página de Saltos
+  useEffect(() => {
+    if (!baby) return
+    const babyAgeDays = Math.floor((Date.now() - new Date(baby.birthDate).getTime()) / 86400000)
+    const activeLeap = activeLeapEntry?.leap.id
+    trackOnce('development_leap_opened', 'development_leap_opened', {
+      leap_number: activeLeap ?? null,
+      baby_age_days: babyAgeDays,
+    }, baby.id)
+  }, [baby?.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
 
   const leapsWithStatus = useMemo(() => {

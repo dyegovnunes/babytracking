@@ -89,7 +89,7 @@ export default function SharedReports() {
   useEffect(() => {
     if (!user || !baby) return;
     const babyAgeDays = Math.floor((Date.now() - new Date(baby.birthDate).getTime()) / 86400000);
-    trackOnce('super_report_viewed', 'super_report_viewed', { baby_age_days: babyAgeDays });
+    trackOnce('super_report_viewed', 'super_report_viewed', { baby_age_days: babyAgeDays }, baby.id);
   }, [user?.id, baby?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleOpenCreate = () => {

@@ -6,6 +6,7 @@ import { useAuth } from './AuthContext'
 import { updateStreak, getStreak, type StreakData } from '../lib/streak'
 import { Capacitor } from '@capacitor/core'
 import { initPushNotifications, updateLastSeen } from '../lib/pushNotifications'
+import { trackOnce } from '../lib/analytics'
 
 interface AppState {
   logs: LogEntry[]
@@ -426,9 +427,38 @@ export async function addLog(
     initPushNotifications(userId, babyId).catch(() => {})
   }
 
+  // Analytics: primeiro registro na vida do usuário
+  trackOnce('first_record_created', 'first_record_created', { record_type: eventId }, babyId)
+
+  // Analytics: 5º registro no mesmo dia (fire-and-forget)
+  void (async () => {
+    try {
+      const todayStart = new Date()
+      todayStart.setHours(0, 0, 0, 0)
+      const { count } = await supabase
+        .from('logs')
+        .select('id', { count: 'exact', head: true })
+        .eq('baby_id', babyId)
+        .gte('timestamp', todayStart.getTime())
+      if ((count ?? 0) >= 5) {
+        const todayKey = `records_day_5plus_${todayStart.toLocaleDateString('pt-BR')}`
+        trackOnce(todayKey, 'records_day_5plus', { record_type: eventId })
+      }
+    } catch {
+      // silencioso
+    }
+  })()
+
   // Update streak on every log
   updateStreak(babyId).then((streakData) => {
     dispatch({ type: 'SET_STREAK', streak: streakData })
+    // Analytics: marcos de streak (3 e 7 dias)
+    if (streakData.currentStreak === 3) {
+      trackOnce('streak_day_3', 'streak_day_3', { streak_count: 3 })
+    }
+    if (streakData.currentStreak === 7) {
+      trackOnce('streak_day_7', 'streak_day_7', { streak_count: 7 })
+    }
   }).catch(() => {})
 
   return log
