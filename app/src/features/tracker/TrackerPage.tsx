@@ -27,6 +27,7 @@ import { RewardedAdModal } from '../../components/ui/RewardedAdModal'
 import { PaywallModal } from '../../components/ui/PaywallModal'
 import { useDailyLimit } from './useDailyLimit'
 import HighlightsStrip from './components/HighlightsStrip'
+import JourneyCarousel from './components/JourneyCarousel'
 import { collectHighlights } from './highlights'
 import { getAgeBand, getHighlightedEvents } from '../../lib/ageUtils'
 import { useMilestones } from '../milestones'
@@ -223,10 +224,9 @@ export default function TrackerPage() {
   // Artigo contextual do blog (1 artigo para a fase do bebê)
   const babyAgeWeeks = ageDays > 0 ? Math.floor(ageDays / 7) : 0
   const { articles: contentArticles, dismissArticle } = useContentArticles(babyAgeWeeks, {
-    limit: 1,
-    utmMedium: 'home_card',
+    limit: 5,
+    utmMedium: 'home_carousel',
   })
-  const contentArticle = contentArticles[0] ?? null
 
   // Progressive Discovery: nudge contextual (aparece após a trilha expirar)
   const { nudge: discoveryNudge, dismissNudge } = useDiscoveryNudges(baby?.id, logs, baby, members)
@@ -854,14 +854,16 @@ export default function TrackerPage() {
       {/* Painel de desfralde — aparece a partir de 18 meses quando há registros */}
       <PottyPanel logs={logs} ageDays={ageDays} gridEvents={gridEvents} />
 
-      {/* Acompanhe a jornada: saltos, marcos, (futuro) vacinas e remédios */}
+      {/* Journey Carousel — saltos, marcos, vacinas + artigos do blog */}
       {baby && (can.viewLeaps(myRole) || can.viewMilestones(myRole)) && (
-        <HighlightsStrip
+        <JourneyCarousel
           highlights={highlights}
+          articles={contentArticles}
           babyName={baby.name}
           babyGender={baby.gender}
           birthDate={baby.birthDate}
           onChange={() => setHighlightsTick((t) => t + 1)}
+          onDismissArticle={(slug) => dismissArticle(slug)}
         />
       )}
 
@@ -876,14 +878,6 @@ export default function TrackerPage() {
               ? () => setShowFamilyInviteSheet(true)
               : undefined
           }
-        />
-      )}
-
-      {/* Artigo contextual do blog — entre highlights e registros recentes */}
-      {contentArticle && (
-        <ContentArticleCard
-          article={contentArticle}
-          onDismiss={() => dismissArticle(contentArticle.slug)}
         />
       )}
 
