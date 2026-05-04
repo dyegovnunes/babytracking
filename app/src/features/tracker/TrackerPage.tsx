@@ -293,6 +293,40 @@ export default function TrackerPage() {
   const [showFamilyInviteSheet, setShowFamilyInviteSheet] = useState(false)
   const [showTrailCompletion, setShowTrailCompletion] = useState(false)
   const [showFirstRecord, setShowFirstRecord] = useState(false)
+
+  // Detectar conclusão da trilha diretamente no TrackerPage — mais confiável que
+  // depender do useEffect interno do DiscoveryTrail (que pode ser perdido no remount).
+  // Usa flag localStorage para persistir entre remounts ao trocar de aba.
+  useEffect(() => {
+    if (!baby) return
+    const completedKey  = `yaya_trail_completed_${baby.id}`
+    const pendingKey    = `yaya_trail_pending_celebration_${baby.id}`
+    const dismissKey    = `yaya_trail_dismissed_${baby.id}`
+
+    // Se já tem comemoração pendente (definida pelo DiscoveryTrail), mostrar agora
+    if (localStorage.getItem(pendingKey)) {
+      localStorage.removeItem(pendingKey)
+      const t = setTimeout(() => setShowTrailCompletion(true), 400)
+      return () => clearTimeout(t)
+    }
+
+    // Verificar também na home se todos os passos estão done mas a comemoração ainda não saiu
+    if (localStorage.getItem(completedKey)) return
+    if (localStorage.getItem(dismissKey)) return
+
+    const bucket = babyAgeWeeks < 13 ? '0to3m' : babyAgeWeeks < 52 ? '3to12m' : '12mplus'
+    const BUCKET_KEYS: Record<string, string[]> = {
+      '0to3m':   ['yaya_evt_first_record_created', 'yaya_evt_routine_configured', 'yaya_evt_insights_tab_opened', 'yaya_evt_yaia_first_message', 'yaya_evt_family_invite_sent', 'yaya_evt_super_report_generated'],
+      '3to12m':  ['yaya_evt_first_record_created', 'yaya_evt_routine_configured', 'yaya_evt_yaia_first_message', 'yaya_evt_family_invite_sent', 'yaya_evt_super_report_generated'],
+      '12mplus': ['yaya_evt_first_record_created', 'yaya_evt_routine_configured', 'yaya_evt_development_leap_opened', 'yaya_evt_yaia_first_message', 'yaya_evt_family_invite_sent', 'yaya_evt_super_report_generated'],
+    }
+    const allDone = BUCKET_KEYS[bucket].every(k => localStorage.getItem(`${k}_${baby.id}`))
+    if (allDone) {
+      localStorage.setItem(completedKey, '1')
+      const t = setTimeout(() => setShowTrailCompletion(true), 400)
+      return () => clearTimeout(t)
+    }
+  }, [baby?.id, babyAgeWeeks])
   const { notification: memberJoinNotif, clearNotification: clearMemberJoin } = useMemberJoinNotification(baby?.id)
   const [showRoutineIntro, setShowRoutineIntro] = useState(false)
   const [showInsightsIntro, setShowInsightsIntro] = useState<'insights' | 'milestones' | 'leaps' | null>(null)

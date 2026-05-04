@@ -155,12 +155,15 @@ export default function DiscoveryTrail({ babyId, babyAgeWeeks, babyName, babyGen
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tick, logsCount])
 
-  // Celebração ao completar todos os passos — useEffect para não chamar setState durante render
+  // Celebração ao completar todos os passos.
+  // Usa pendingKey persistido no localStorage para que o TrackerPage
+  // mostre o sheet mesmo após remounts (troca de aba).
   const allDone = doneFlags.every(Boolean)
   useEffect(() => {
-    if (allDone && !localStorage.getItem(completedKey) && onComplete) {
+    if (allDone && !localStorage.getItem(completedKey)) {
       localStorage.setItem(completedKey, '1')
-      onComplete()
+      localStorage.setItem(`yaya_trail_pending_celebration_${babyId}`, '1')
+      onComplete?.()
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allDone])

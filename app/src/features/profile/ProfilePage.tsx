@@ -25,7 +25,6 @@ import { useMyRole } from '../../hooks/useMyRole'
 import { useBabyPremium } from '../../hooks/useBabyPremium'
 import { useMyCaregiverPermissions } from '../../hooks/useMyCaregiverPermissions'
 import { can, roleLabel, nextRoleUp, nextRoleDown, type BabyRole } from '../../lib/roles'
-import PediatricianSection from './components/PediatricianSection'
 
 interface Caregiver {
   userId: string
