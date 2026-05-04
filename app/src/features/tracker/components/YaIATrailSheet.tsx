@@ -105,7 +105,7 @@ export default function YaIATrailSheet({ isOpen, babyName, babyAgeWeeks, babyId,
 
         {/* Corpo */}
         <p className="font-body text-xs text-on-surface-variant leading-relaxed mb-4">
-          Ela tem acesso a tudo que você registrou — sono, alimentação, fraldas, marcos de desenvolvimento. Não é uma IA genérica: ela conhece a rotina {de} {name}.
+          Ela tem acesso a tudo que você registrou: sono, alimentação, fraldas, marcos de desenvolvimento. Não é uma IA genérica. Ela conhece a rotina {de} {name}.
         </p>
 
         {/* Exemplos de perguntas */}

@@ -35,7 +35,7 @@ const TRAIL_STEPS: Record<AgeBucket, TrailStep[]> = {
     { id: 'routine',  label: 'Ajuste para a rotina [de] [nome]',         doneKey: 'yaya_evt_routine_configured',      destination: '/routine' },
     { id: 'insights', label: 'Descubra os padrões [de] [nome]',          doneKey: 'yaya_evt_insights_tab_opened',     destination: '/insights' },
     { id: 'yaia',     label: 'Tenha uma IA que conhece [art] [nome]',    doneKey: 'yaya_evt_yaia_first_message',      destination: '/yaia' },
-    { id: 'invite',   label: 'Cuide junto com quem você confia',         doneKey: 'yaya_evt_family_invite_sent',      destination: '/' },
+    { id: 'invite',   label: 'Quem cuida [de] [nome] com você?',          doneKey: 'yaya_evt_family_invite_sent',      destination: '/' },
     { id: 'report',   label: 'Compartilhe a rotina com o pediatra',      doneKey: 'yaya_evt_super_report_generated',  destination: '/profile' },
   ],
   '3to12m': [
@@ -43,7 +43,7 @@ const TRAIL_STEPS: Record<AgeBucket, TrailStep[]> = {
     { id: 'routine',    label: 'Ajuste para a rotina [de] [nome]',         doneKey: 'yaya_evt_routine_configured',      destination: '/routine' },
     { id: 'milestones', label: 'Acompanhe o desenvolvimento [de] [nome]',  doneKey: 'yaya_evt_milestone_registered',    destination: '/milestones' },
     { id: 'yaia',       label: 'Tenha uma IA que conhece [art] [nome]',    doneKey: 'yaya_evt_yaia_first_message',      destination: '/yaia' },
-    { id: 'invite',     label: 'Cuide junto com quem você confia',         doneKey: 'yaya_evt_family_invite_sent',      destination: '/' },
+    { id: 'invite',     label: 'Quem cuida [de] [nome] com você?',          doneKey: 'yaya_evt_family_invite_sent',      destination: '/' },
     { id: 'report',     label: 'Compartilhe a rotina com o pediatra',      doneKey: 'yaya_evt_super_report_generated',  destination: '/profile' },
   ],
   '12mplus': [
@@ -51,22 +51,22 @@ const TRAIL_STEPS: Record<AgeBucket, TrailStep[]> = {
     { id: 'routine', label: 'Ajuste para a rotina [de] [nome]',         doneKey: 'yaya_evt_routine_configured',      destination: '/routine' },
     { id: 'leaps',   label: 'Explore os saltos [de] [nome]',            doneKey: 'yaya_evt_development_leap_opened', destination: '/saltos' },
     { id: 'yaia',    label: 'Tenha uma IA que conhece [art] [nome]',    doneKey: 'yaya_evt_yaia_first_message',      destination: '/yaia' },
-    { id: 'invite',  label: 'Cuide junto com quem você confia',         doneKey: 'yaya_evt_family_invite_sent',      destination: '/' },
+    { id: 'invite',  label: 'Quem cuida [de] [nome] com você?',          doneKey: 'yaya_evt_family_invite_sent',      destination: '/' },
     { id: 'report',  label: 'Compartilhe a rotina com o pediatra',      doneKey: 'yaya_evt_super_report_generated',  destination: '/profile' },
   ],
 }
 
 // Mensagens "depois" — exibidas inline na trilha logo após o step ser concluído.
 // Recebem: name (nome do bebê), de (contração "do"/"da"/"de"), art (artigo "o"/"a")
+// Nota: 'record' não tem mensagem — o toast de confirmação do registro já é feedback suficiente.
 const STEP_AFTER_MESSAGES: Record<string, (name: string, de: string, art: string) => string> = {
-  record:     (n, _de, art) => `Pronto. O Yaya começou a acompanhar ${art} ${n}. Cada registro vai tornando os padrões mais claros.`,
-  routine:    (n, de)       => `O Yaya agora conhece a rotina ${de} ${n}. Você vai receber alertas na hora certa — não antes, não depois.`,
-  insights:   (n, de)       => `Isso é o Yaya trabalhando para você. Quanto mais você registrar, mais precisos ficam os padrões ${de} ${n}.`,
-  milestones: (n, de)       => `Marco registrado. Isso vai para a linha do tempo ${de} ${n} — e para o relatório do pediatra.`,
-  leaps:      (n, de)       => `Faz sentido, né? Quando você entende o salto, a agitação ${de} ${n} vira informação, não mistério.`,
-  yaia:       (n, de)       => `Agora você tem uma IA que conhece a rotina completa ${de} ${n}. Pode voltar quando quiser perguntar qualquer coisa.`,
-  invite:     (n, de)       => `Quando alguém aceitar, vai ver a rotina ${de} ${n} em tempo real. Ninguém mais fica sem saber o que aconteceu.`,
-  report:     (_n, _de)     => `Esse link tem toda a rotina registrada. Na próxima consulta, o pediatra vai chegar com contexto, não só com a balança.`,
+  routine:    (n, de)   => `O Yaya agora conhece a rotina ${de} ${n}. Você vai receber alertas na hora certa.`,
+  insights:   (n, de)   => `Isso é o Yaya trabalhando para você. Quanto mais você registrar, mais precisos ficam os padrões ${de} ${n}.`,
+  milestones: (n, de)   => `Marco registrado. Isso vai para a linha do tempo ${de} ${n} e para o relatório do pediatra.`,
+  leaps:      (n, de)   => `Faz sentido, né? Quando você entende o salto, a agitação ${de} ${n} vira informação, não mistério.`,
+  yaia:       (n, de)   => `Agora você tem uma IA que conhece a rotina completa ${de} ${n}. Pode voltar quando quiser perguntar qualquer coisa.`,
+  invite:     (n, de)   => `Quando alguém aceitar, vai ver a rotina ${de} ${n} em tempo real. Ninguém mais fica sem saber o que aconteceu.`,
+  report:     (_n, _de) => `Esse link tem toda a rotina registrada. Na próxima consulta, o pediatra vai chegar com contexto, não só com a balança.`,
 }
 
 function getAgeBucket(babyAgeWeeks: number): AgeBucket {

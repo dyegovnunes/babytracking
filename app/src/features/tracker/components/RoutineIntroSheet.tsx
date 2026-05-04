@@ -6,7 +6,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useSheetBackClose } from '../../../hooks/useSheetBackClose'
 import { hapticLight } from '../../../lib/haptics'
-import { contractionDe, type Gender } from '../../../lib/genderUtils'
+import { contractionDe, article, type Gender } from '../../../lib/genderUtils'
 
 interface Props {
   isOpen: boolean
@@ -15,21 +15,22 @@ interface Props {
   onClose: () => void
 }
 
+// Tokens [de] e [art] são substituídos em runtime; itens sem token ficam inalterados.
 const ITEMS = [
   {
     emoji: '⏱️',
-    title: 'Alertas no momento certo',
-    desc: 'O Yaya usa o intervalo que você definiu para avisar quando está chegando a hora — sem alarme fixo, sem interrupção desnecessária.',
+    title: 'Alertas na hora certa',
+    desc: 'O Yaya usa o intervalo que você definiu para avisar quando está chegando a hora. Sem alarme fixo. Sem interrupção desnecessária.',
   },
   {
     emoji: '📊',
     title: 'Insights mais precisos',
-    desc: 'Com os intervalos configurados, o Yaya identifica quando algo está fora do padrão do bebê, não de um padrão genérico.',
+    desc: 'Com os intervalos configurados, o Yaya identifica quando algo está fora do padrão [de] [nome], não de um padrão genérico.',
   },
   {
     emoji: '😴',
     title: 'Projeção de sono e acordar',
-    desc: 'A duração esperada da soneca ajuda o app a estimar quando o bebê vai acordar e quando deve dormir de novo.',
+    desc: 'A duração esperada da soneca ajuda o app a estimar quando [art] [nome] vai acordar e quando vai querer dormir de novo.',
   },
   {
     emoji: '🛁',
@@ -39,7 +40,7 @@ const ITEMS = [
   {
     emoji: '🌙',
     title: 'Silêncio noturno',
-    desc: 'As notificações ficam pausadas durante o horário de sono — para você não ser acordado à toa.',
+    desc: 'As notificações ficam pausadas durante o horário de sono. Para você não ser acordado à toa.',
   },
 ]
 
@@ -56,6 +57,7 @@ export default function RoutineIntroSheet({ isOpen, babyName, babyGender, onClos
   }
 
   const de   = contractionDe(babyGender)
+  const art  = article(babyGender)
   const name = babyName || 'bebê'
 
   return (
@@ -85,14 +87,14 @@ export default function RoutineIntroSheet({ isOpen, babyName, babyGender, onClos
               A rotina {de} {name}
             </h2>
             <p className="font-label text-xs text-on-surface-variant mt-0.5">
-              Configure uma vez, o Yaya trabalha sempre
+              Configura uma vez, o Yaya cuida do resto
             </p>
           </div>
         </div>
 
         {/* Contextualização */}
         <p className="font-body text-xs text-on-surface-variant leading-relaxed mb-4">
-          Cada bebê tem um ritmo. Quando você conta esse ritmo para o Yaya, ele passa a entender o que é normal — e o que mudou.
+          Cada bebê tem um ritmo próprio. Quando você conta esse ritmo para o Yaya, ele passa a entender o que é normal para {art} {name}, e o que mudou.
         </p>
 
         {/* O que cada config faz */}
@@ -105,7 +107,7 @@ export default function RoutineIntroSheet({ isOpen, babyName, babyGender, onClos
                   {item.title}
                 </p>
                 <p className="font-body text-xs text-on-surface-variant leading-snug">
-                  {item.desc}
+                  {item.desc.replace('[de]', de).replace('[art]', art).replace('[nome]', name)}
                 </p>
               </div>
             </div>

@@ -23,22 +23,27 @@ interface Props {
 
 type View = 'intro' | 'invite'
 
+// Tokens [de] e [nome] substituídos em runtime
 const BENEFITS = [
   {
+    emoji: '👀',
+    title: 'Todos veem o mesmo',
+    text: 'Quem entrou vê os registros [de] [nome] em tempo real. Ninguém fica desatualizado.',
+  },
+  {
+    emoji: '🔐',
+    title: 'Você no controle',
+    text: 'Você escolhe quem entra. E pode tirar qualquer pessoa quando quiser.',
+  },
+  {
+    emoji: '🧹',
+    title: 'Babá com acesso limitado',
+    text: 'A babá vê só o que precisa ver durante o turno. Sem acesso a histórico ou configurações.',
+  },
+  {
     emoji: '📱',
-    text: 'Pai, mãe, avó ou babá — qualquer um pode registrar e ver as atividades',
-  },
-  {
-    emoji: '🔄',
-    text: 'Todos veem os registros em tempo real, sem precisar contar nada',
-  },
-  {
-    emoji: '⚙️',
-    text: 'Você gerencia o grupo no perfil do bebê e pode remover alguém a qualquer hora',
-  },
-  {
-    emoji: '🕐',
-    text: 'A babá tem acesso limitado — você define o horário de expediente e o que ela pode ver. Ao final, ela pode fazer um resumo no app dela',
+    title: 'Sem precisar de app',
+    text: 'Familiares podem acompanhar pelo link, sem precisar instalar nada.',
   },
 ]
 
@@ -135,7 +140,7 @@ export default function FamilyInviteSheet({ isOpen, onClose }: Props) {
         {view === 'intro' ? (
           <>
             {/* Header */}
-            <div className="flex items-center gap-3 mb-5">
+            <div className="flex items-center gap-3 mb-4">
               <div
                 className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
                 style={{ background: 'rgba(183,159,255,0.12)' }}
@@ -144,20 +149,32 @@ export default function FamilyInviteSheet({ isOpen, onClose }: Props) {
               </div>
               <div>
                 <h2 className="font-headline text-base font-bold text-on-surface leading-tight">
-                  Quem cuida junto?
+                  {`Quem cuida ${de} ${babyName} com você?`}
                 </h2>
                 <p className="font-label text-xs text-on-surface-variant mt-0.5">
-                  {`Convide quem faz parte da rotina ${de} ${babyName}`}
+                  Convide quem faz parte da rotina
                 </p>
               </div>
             </div>
+
+            {/* Parágrafo de contexto */}
+            <p className="font-body text-xs text-on-surface-variant leading-relaxed mb-4">
+              {`O pai, a avó, a babá. Quem você chamar vai ver a rotina ${de} ${babyName} em tempo real. Você continua no controle de tudo.`}
+            </p>
 
             {/* Lista de benefícios */}
             <div className="space-y-3.5 mb-6">
               {BENEFITS.map((b, i) => (
                 <div key={i} className="flex items-start gap-3">
                   <span className="text-base mt-0.5 shrink-0">{b.emoji}</span>
-                  <p className="font-body text-sm text-on-surface-variant leading-snug">{b.text}</p>
+                  <div>
+                    <p className="font-label text-sm font-semibold text-on-surface leading-tight mb-0.5">
+                      {b.title}
+                    </p>
+                    <p className="font-body text-xs text-on-surface-variant leading-snug">
+                      {b.text.replace('[de]', de).replace('[nome]', babyName)}
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>
@@ -169,7 +186,7 @@ export default function FamilyInviteSheet({ isOpen, onClose }: Props) {
               className="w-full py-3 rounded-md bg-primary text-white font-label text-sm font-semibold flex items-center justify-center gap-2 active:opacity-80 transition-opacity"
             >
               <span className="material-symbols-outlined text-lg">group_add</span>
-              Criar convite
+              Gerar convite
             </button>
           </>
         ) : (

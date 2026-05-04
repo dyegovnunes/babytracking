@@ -51,7 +51,7 @@ function computeNudge(
       id: 'nudge_family',
       emoji: '👨‍👩‍👦',
       title: `${name} tem mais gente que cuida, né?`,
-      subtitle: 'Chame o pai, mãe ou avó — eles veem a rotina em tempo real.',
+      subtitle: 'Chame o pai, a mãe ou a avó. Eles veem a rotina em tempo real.',
       destination: '/',
     }
   }
@@ -102,8 +102,8 @@ function computeNudge(
     return {
       id: 'nudge_yaia',
       emoji: '🤖',
-      title: `Pergunte sobre ${name}`,
-      subtitle: `A yaIA tem o contexto completo ${gen} ${name} — sono, alimentação, marcos e mais.`,
+      title: 'Tem algo que você quer entender?',
+      subtitle: `A yaIA conhece a rotina ${gen} ${name}. Pode perguntar qualquer coisa.`,
       destination: '/yaia',
     }
   }
@@ -117,8 +117,8 @@ function computeNudge(
     return {
       id: 'nudge_report',
       emoji: '📋',
-      title: 'Quer compartilhar com o pediatra?',
-      subtitle: `Crie um link com os marcos, vacinas e evolução ${gen} ${name}.`,
+      title: 'Consulta do pediatra chegando?',
+      subtitle: `Você pode enviar a rotina ${gen} ${name} antes. Ele chega informado.`,
       destination: '/profile',
     }
   }

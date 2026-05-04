@@ -612,8 +612,8 @@ export default function SharedReports() {
         isOpen={showSpotlight}
         onClose={dismissSpotlight}
         emoji="📋"
-        title="Compartilhe com o pediatra"
-        description={`Crie um link seguro com a evolução ${genderContraction} ${baby?.name ?? 'bebê'} — marcos, vacinas e padrões de rotina.`}
+        title={`A rotina ${genderContraction} ${baby?.name ?? 'bebê'} em um link`}
+        description="Gera um link com sono, alimentação, marcos e vacinas. Envia para o pediatra antes da consulta."
       />
     </>
   );

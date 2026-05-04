@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppState } from '../../contexts/AppContext'
 import { trackOnce } from '../../lib/analytics'
+import { contractionDe } from '../../lib/genderUtils'
 import { SpotlightOverlay } from '../../components/ui/SpotlightOverlay'
 import { useInsightsEngine, type PeriodOption } from './useInsightsEngine'
 import { useBabyPremium } from '../../hooks/useBabyPremium'
@@ -261,8 +262,8 @@ export default function InsightsPage() {
         isOpen={showSpotlight}
         onClose={dismissSpotlight}
         emoji="✨"
-        title="Aqui ficam os padrões do bebê"
-        description={`O Yaya identificou tendências na rotina ${baby?.gender === 'girl' ? 'da' : baby?.gender === 'boy' ? 'do' : 'de'} ${baby?.name ?? 'bebê'} — sono, alimentação e mais.`}
+        title={`O que o Yaya descobriu sobre ${contractionDe(baby?.gender)} ${baby?.name ?? 'bebê'}`}
+        description="Padrões de sono, alimentação e desvios do normal. Tudo a partir do que você registrou."
       />
     </div>
   )

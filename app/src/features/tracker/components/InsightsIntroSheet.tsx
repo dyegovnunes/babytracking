@@ -35,17 +35,17 @@ const CONTENT: Record<StepId, StepContent> = {
     emoji: '✨',
     title: (n, de) => `Os padrões ${de} ${n}`,
     body: (n, _de, art) =>
-      `O Yaya analisa tudo que você registra e identifica padrões que passam despercebidos no dia a dia. Quanto tempo ${art} ${n} fica acordado antes de ficar irritado. Em que hora do dia ele come mais. Quando o sono começa a mudar.`,
+      `O Yaya analisa tudo que você registra e encontra padrões que passam batido no dia a dia. Quanto tempo ${art} ${n} fica acordado antes de ficar irritado. Em que hora do dia ele come mais. Quando o sono começa a mudar.`,
     items: [
       {
         emoji: '📈',
         title: 'Padrões de sono',
-        desc: 'Horários, duração e fragmentação — o Yaya identifica o que é normal para o seu bebê.',
+        desc: 'Horários, duração e fragmentação. O Yaya identifica o que é normal para o seu bebê.',
       },
       {
         emoji: '🍼',
         title: 'Ritmo de alimentação',
-        desc: 'Frequência e volume ao longo do dia — ajuda a antecipar fome e agitação.',
+        desc: 'Frequência e volume ao longo do dia. Ajuda a antecipar fome e agitação.',
       },
       {
         emoji: '⚠️',
@@ -60,7 +60,7 @@ const CONTENT: Record<StepId, StepContent> = {
     emoji: '🌱',
     title: (n, de) => `O desenvolvimento ${de} ${n}`,
     body: (n, _de, art) =>
-      `Cada coisa nova que ${art} ${n} faz é um marco. Registrar aqui cria uma linha do tempo que você vai querer olhar para sempre — e que o pediatra usa para acompanhar o desenvolvimento.`,
+      `Cada coisa nova que ${art} ${n} faz é um marco. Registrar aqui cria uma linha do tempo que você vai querer olhar para sempre. E que o pediatra usa para acompanhar o desenvolvimento.`,
     items: [
       {
         emoji: '📅',
@@ -70,7 +70,7 @@ const CONTENT: Record<StepId, StepContent> = {
       {
         emoji: '🩺',
         title: 'Dados para o pediatra',
-        desc: 'Os marcos aparecem no Super Relatório — o pediatra vê a evolução sem precisar perguntar.',
+        desc: 'Os marcos aparecem no Super Relatório. O pediatra vê a evolução sem precisar perguntar.',
       },
       {
         emoji: '🎯',
@@ -85,12 +85,13 @@ const CONTENT: Record<StepId, StepContent> = {
     emoji: '🚀',
     title: (n, de) => `Os saltos ${de} ${n}`,
     body: (_n, _de, _art) =>
-      `Entre 1 e 2 anos, o bebê passa por mudanças intensas no cérebro. Cada salto explica semanas de choro, agitação e mudança de sono que, sem contexto, parecem do nada.`,
+      `Entre 1 e 2 anos, o bebê passa por mudanças intensas no cérebro. São os saltos de desenvolvimento. Cada salto explica semanas de choro, agitação e mudança de sono que, sem contexto, parecem do nada.`,
     items: [
       {
         emoji: '🧠',
         title: 'O que muda em cada salto',
-        desc: 'O que o bebê está aprendendo agora — e por que isso explica o comportamento das últimas semanas.',
+        // [art] e [nome] são substituídos em runtime pelo render
+        desc: 'O que [art] [nome] está aprendendo agora. E por que isso explica o comportamento das últimas semanas.',
       },
       {
         emoji: '😮‍💨',
@@ -170,7 +171,7 @@ export default function InsightsIntroSheet({ isOpen, stepId, babyName, babyGende
                   {item.title}
                 </p>
                 <p className="font-body text-xs text-on-surface-variant leading-snug">
-                  {item.desc}
+                  {item.desc.replace('[art]', art).replace('[nome]', name).replace('[de]', de)}
                 </p>
               </div>
             </div>
