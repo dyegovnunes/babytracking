@@ -155,7 +155,7 @@ export default function ProfilePage() {
   const handleShareWhatsApp = useCallback(() => {
     if (!inviteCode || !baby) return
     const de = contractionDe(baby.gender)
-    const text = `Oi! Use o código *${inviteCode}* para acompanhar ${de} ${baby.name} no app Yaya. Baixe em yayababy.app`
+    const text = `Oi! Use o código *${inviteCode}* para acompanhar ${de} ${baby.name} no app Yaya. Baixe em www.yayababy.app`
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank')
     trackOnce('family_invite_sent', 'family_invite_sent', { source: 'profile_whatsapp' }, baby.id)
     localStorage.setItem(`yaya_invite_shared_at_${baby.id}`, String(Date.now()))
