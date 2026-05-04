@@ -5,10 +5,12 @@
 import { useNavigate } from 'react-router-dom'
 import { useSheetBackClose } from '../../../hooks/useSheetBackClose'
 import { hapticLight } from '../../../lib/haptics'
+import { contractionDe, type Gender } from '../../../lib/genderUtils'
 
 interface Props {
   isOpen: boolean
   babyName: string
+  babyGender?: Gender
   onClose: () => void
 }
 
@@ -35,13 +37,14 @@ const ITEMS = [
   },
 ]
 
-export default function ReportIntroSheet({ isOpen, babyName, onClose }: Props) {
+export default function ReportIntroSheet({ isOpen, babyName, babyGender, onClose }: Props) {
   useSheetBackClose(isOpen, onClose)
   const navigate = useNavigate()
 
   if (!isOpen) return null
 
-  const name = babyName || 'do bebê'
+  const de   = contractionDe(babyGender)
+  const name = babyName || 'bebê'
 
   function handleGo() {
     hapticLight()
@@ -76,7 +79,7 @@ export default function ReportIntroSheet({ isOpen, babyName, onClose }: Props) {
               O pediatra vai chegar informado
             </h2>
             <p className="font-label text-xs text-on-surface-variant mt-0.5">
-              Toda a rotina do {name} em um link
+              Toda a rotina {de} {name} em um link
             </p>
           </div>
         </div>

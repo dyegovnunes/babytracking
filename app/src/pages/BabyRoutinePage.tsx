@@ -104,7 +104,7 @@ export default function BabyRoutinePage() {
               expanded={expanded}
               onToggleExpanded={handleToggleExpanded}
               onOpenCustom={(cat) => setCustomModal(cat)}
-              onSaved={() => setToast('Atualizado!')}
+              onSaved={() => { setToast('Atualizado!'); if (baby?.id) setTrailKey('routine_configured', baby.id) }}
               onError={(msg) => setToast(msg)}
               prefs={prefs}
               onSavePrefs={handleSavePrefs}
@@ -129,7 +129,7 @@ export default function BabyRoutinePage() {
           <CustomIntervalModal
             cat={customModal}
             onClose={() => setCustomModal(null)}
-            onSaved={() => setToast('Intervalo salvo!')}
+            onSaved={() => { setToast('Intervalo salvo!'); if (baby?.id) setTrailKey('routine_configured', baby.id) }}
           />
           <QuietHourPickerModal
             which={pickingQuietHour}

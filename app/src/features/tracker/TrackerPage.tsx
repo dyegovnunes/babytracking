@@ -666,7 +666,9 @@ export default function TrackerPage() {
           babyId={baby.id}
           babyAgeWeeks={babyAgeWeeks}
           babyName={baby.name}
+          babyGender={baby.gender}
           onStepAction={{
+            record:     () => window.scrollTo({ top: 0, behavior: 'smooth' }),
             invite:     () => setShowFamilyInviteSheet(true),
             routine:    () => setShowRoutineIntro(true),
             insights:   () => setShowInsightsIntro('insights'),
@@ -1090,6 +1092,7 @@ export default function TrackerPage() {
       <RoutineIntroSheet
         isOpen={showRoutineIntro}
         babyName={baby?.name ?? ''}
+        babyGender={baby?.gender}
         onClose={() => setShowRoutineIntro(false)}
       />
 
@@ -1097,6 +1100,7 @@ export default function TrackerPage() {
         isOpen={showInsightsIntro !== null}
         stepId={showInsightsIntro ?? 'insights'}
         babyName={baby?.name ?? ''}
+        babyGender={baby?.gender}
         onClose={() => setShowInsightsIntro(null)}
       />
 
@@ -1105,12 +1109,14 @@ export default function TrackerPage() {
         babyName={baby?.name ?? ''}
         babyAgeWeeks={babyAgeWeeks}
         babyId={baby?.id ?? ''}
+        babyGender={baby?.gender}
         onClose={() => setShowYaIATrailSheet(false)}
       />
 
       <ReportIntroSheet
         isOpen={showReportIntro}
         babyName={baby?.name ?? ''}
+        babyGender={baby?.gender}
         onClose={() => setShowReportIntro(false)}
       />
     </div>

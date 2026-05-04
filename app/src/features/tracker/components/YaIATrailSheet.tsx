@@ -14,47 +14,52 @@ import { useNavigate } from 'react-router-dom'
 import { useSheetBackClose } from '../../../hooks/useSheetBackClose'
 import { hapticLight } from '../../../lib/haptics'
 import { markConsent } from '../../yaia/yaiaChatService'
+import { contractionDe, article, type Gender } from '../../../lib/genderUtils'
 
 interface Props {
   isOpen: boolean
   babyName: string
   babyAgeWeeks: number
   babyId: string
+  babyGender?: Gender
   onClose: () => void
 }
 
-// Exemplos de perguntas por faixa etária — contextualizados com o nome do bebê
-function getExamples(babyName: string, babyAgeWeeks: number): string[] {
+// Exemplos de perguntas por faixa etária — contextualizados com nome e gênero do bebê
+function getExamples(babyName: string, babyAgeWeeks: number, art: string, pronoun: string): string[] {
   const n = babyName || 'o bebê'
   if (babyAgeWeeks < 14) {
     return [
-      `Por que o ${n} está dormindo menos que o normal?`,
-      `Isso que ele está fazendo é normal para essa idade?`,
+      `Por que ${art} ${n} está dormindo menos que o normal?`,
+      `Isso que ${pronoun} está fazendo é normal para essa idade?`,
       `Quanto tempo um bebê de ${Math.round(babyAgeWeeks)} semanas fica acordado?`,
     ]
   }
   if (babyAgeWeeks < 53) {
     return [
-      `O ${n} comeu bem essa semana?`,
+      `${art.charAt(0).toUpperCase() + art.slice(1)} ${n} comeu bem essa semana?`,
       `Quando devo introduzir alimentos sólidos?`,
-      `Por que ele está mais agitado essa semana?`,
+      `Por que ${pronoun} está mais agitado essa semana?`,
     ]
   }
   return [
-    `O ${n} está dormindo o suficiente?`,
+    `${art.charAt(0).toUpperCase() + art.slice(1)} ${n} está dormindo o suficiente?`,
     `O que esperar do próximo salto de desenvolvimento?`,
-    `Quais palavras ele deveria estar falando já?`,
+    `Quais palavras ${pronoun} deveria estar falando já?`,
   ]
 }
 
-export default function YaIATrailSheet({ isOpen, babyName, babyAgeWeeks, babyId, onClose }: Props) {
+export default function YaIATrailSheet({ isOpen, babyName, babyAgeWeeks, babyId, babyGender, onClose }: Props) {
   useSheetBackClose(isOpen, onClose)
   const navigate = useNavigate()
 
   if (!isOpen) return null
 
-  const name = babyName || 'do bebê'
-  const examples = getExamples(babyName, babyAgeWeeks)
+  const name = babyName || 'bebê'
+  const de   = contractionDe(babyGender)
+  const art  = article(babyGender)
+  const pron = babyGender === 'girl' ? 'ela' : 'ele'
+  const examples = getExamples(babyName, babyAgeWeeks, art, pron)
 
   async function handleGo() {
     hapticLight()
@@ -90,7 +95,7 @@ export default function YaIATrailSheet({ isOpen, babyName, babyAgeWeeks, babyId,
           </div>
           <div>
             <h2 className="font-headline text-base font-bold text-on-surface leading-tight">
-              A yaIA conhece o {name}
+              A yaIA conhece {art} {name}
             </h2>
             <p className="font-label text-xs text-on-surface-variant mt-0.5">
               Pode perguntar qualquer coisa, qualquer hora
@@ -100,7 +105,7 @@ export default function YaIATrailSheet({ isOpen, babyName, babyAgeWeeks, babyId,
 
         {/* Corpo */}
         <p className="font-body text-xs text-on-surface-variant leading-relaxed mb-4">
-          Ela tem acesso a tudo que você registrou — sono, alimentação, fraldas, marcos de desenvolvimento. Não é uma IA genérica: ela conhece a rotina do {name}.
+          Ela tem acesso a tudo que você registrou — sono, alimentação, fraldas, marcos de desenvolvimento. Não é uma IA genérica: ela conhece a rotina {de} {name}.
         </p>
 
         {/* Exemplos de perguntas */}

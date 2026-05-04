@@ -9,6 +9,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useSheetBackClose } from '../../../hooks/useSheetBackClose'
 import { hapticLight } from '../../../lib/haptics'
+import { contractionDe, article, type Gender } from '../../../lib/genderUtils'
 
 type StepId = 'insights' | 'milestones' | 'leaps'
 
@@ -16,13 +17,14 @@ interface Props {
   isOpen: boolean
   stepId: StepId
   babyName: string
+  babyGender?: Gender
   onClose: () => void
 }
 
 interface StepContent {
   emoji: string
-  title: (name: string) => string
-  body: (name: string) => string
+  title: (name: string, de: string, art: string) => string
+  body: (name: string, de: string, art: string) => string
   items: { emoji: string; title: string; desc: string }[]
   ctaLabel: string
   destination: string
@@ -31,9 +33,9 @@ interface StepContent {
 const CONTENT: Record<StepId, StepContent> = {
   insights: {
     emoji: '✨',
-    title: (n) => `Os padrões do ${n}`,
-    body: (n) =>
-      `O Yaya analisa tudo que você registra e identifica padrões que passam despercebidos no dia a dia. Quanto tempo o ${n} fica acordado antes de ficar irritado. Em que hora do dia ele come mais. Quando o sono começa a mudar.`,
+    title: (n, de) => `Os padrões ${de} ${n}`,
+    body: (n, _de, art) =>
+      `O Yaya analisa tudo que você registra e identifica padrões que passam despercebidos no dia a dia. Quanto tempo ${art} ${n} fica acordado antes de ficar irritado. Em que hora do dia ele come mais. Quando o sono começa a mudar.`,
     items: [
       {
         emoji: '📈',
@@ -56,9 +58,9 @@ const CONTENT: Record<StepId, StepContent> = {
   },
   milestones: {
     emoji: '🌱',
-    title: (n) => `O desenvolvimento do ${n}`,
-    body: (n) =>
-      `Cada coisa nova que o ${n} faz é um marco. Registrar aqui cria uma linha do tempo que você vai querer olhar para sempre — e que o pediatra usa para acompanhar o desenvolvimento.`,
+    title: (n, de) => `O desenvolvimento ${de} ${n}`,
+    body: (n, _de, art) =>
+      `Cada coisa nova que ${art} ${n} faz é um marco. Registrar aqui cria uma linha do tempo que você vai querer olhar para sempre — e que o pediatra usa para acompanhar o desenvolvimento.`,
     items: [
       {
         emoji: '📅',
@@ -81,8 +83,8 @@ const CONTENT: Record<StepId, StepContent> = {
   },
   leaps: {
     emoji: '🚀',
-    title: (n) => `Os saltos do ${n}`,
-    body: (_n) =>
+    title: (n, de) => `Os saltos ${de} ${n}`,
+    body: (_n, _de, _art) =>
       `Entre 1 e 2 anos, o bebê passa por mudanças intensas no cérebro. Cada salto explica semanas de choro, agitação e mudança de sono que, sem contexto, parecem do nada.`,
     items: [
       {
@@ -106,14 +108,16 @@ const CONTENT: Record<StepId, StepContent> = {
   },
 }
 
-export default function InsightsIntroSheet({ isOpen, stepId, babyName, onClose }: Props) {
+export default function InsightsIntroSheet({ isOpen, stepId, babyName, babyGender, onClose }: Props) {
   useSheetBackClose(isOpen, onClose)
   const navigate = useNavigate()
 
   if (!isOpen) return null
 
   const c = CONTENT[stepId]
-  const name = babyName || 'do bebê'
+  const name = babyName || 'bebê'
+  const de  = contractionDe(babyGender)
+  const art = article(babyGender)
   const ctaLabel = c.ctaLabel.replace('[nome]', name)
 
   function handleGo() {
@@ -146,14 +150,14 @@ export default function InsightsIntroSheet({ isOpen, stepId, babyName, onClose }
           </div>
           <div>
             <h2 className="font-headline text-base font-bold text-on-surface leading-tight">
-              {c.title(name)}
+              {c.title(name, de, art)}
             </h2>
           </div>
         </div>
 
         {/* Corpo */}
         <p className="font-body text-xs text-on-surface-variant leading-relaxed mb-4">
-          {c.body(name)}
+          {c.body(name, de, art)}
         </p>
 
         {/* Itens */}

@@ -6,10 +6,12 @@
 import { useNavigate } from 'react-router-dom'
 import { useSheetBackClose } from '../../../hooks/useSheetBackClose'
 import { hapticLight } from '../../../lib/haptics'
+import { contractionDe, type Gender } from '../../../lib/genderUtils'
 
 interface Props {
   isOpen: boolean
   babyName: string
+  babyGender?: Gender
   onClose: () => void
 }
 
@@ -41,7 +43,7 @@ const ITEMS = [
   },
 ]
 
-export default function RoutineIntroSheet({ isOpen, babyName, onClose }: Props) {
+export default function RoutineIntroSheet({ isOpen, babyName, babyGender, onClose }: Props) {
   useSheetBackClose(isOpen, onClose)
   const navigate = useNavigate()
 
@@ -53,7 +55,8 @@ export default function RoutineIntroSheet({ isOpen, babyName, onClose }: Props) 
     navigate('/routine')
   }
 
-  const displayName = babyName || 'do bebê'
+  const de   = contractionDe(babyGender)
+  const name = babyName || 'bebê'
 
   return (
     <div
@@ -79,7 +82,7 @@ export default function RoutineIntroSheet({ isOpen, babyName, onClose }: Props) 
           </div>
           <div>
             <h2 className="font-headline text-base font-bold text-on-surface leading-tight">
-              A rotina {displayName}
+              A rotina {de} {name}
             </h2>
             <p className="font-label text-xs text-on-surface-variant mt-0.5">
               Configure uma vez, o Yaya trabalha sempre
@@ -116,7 +119,7 @@ export default function RoutineIntroSheet({ isOpen, babyName, onClose }: Props) 
           className="w-full py-3 rounded-md bg-primary text-white font-label text-sm font-semibold flex items-center justify-center gap-2 active:opacity-80 transition-opacity"
         >
           <span className="material-symbols-outlined text-lg">tune</span>
-          Personalizar a rotina {displayName}
+          Personalizar a rotina {de} {name}
         </button>
       </div>
     </div>

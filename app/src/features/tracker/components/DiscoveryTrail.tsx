@@ -18,6 +18,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { hapticLight } from '../../../lib/haptics'
+import { contractionDe, article, type Gender } from '../../../lib/genderUtils'
 
 interface TrailStep {
   id: string
@@ -30,42 +31,42 @@ type AgeBucket = '0to3m' | '3to12m' | '12mplus'
 
 const TRAIL_STEPS: Record<AgeBucket, TrailStep[]> = {
   '0to3m': [
-    { id: 'record',   label: 'Acompanhe tudo em um lugar',          doneKey: 'yaya_evt_first_record_created',    destination: '/' },
-    { id: 'routine',  label: 'Ajuste para a rotina do [nome]',      doneKey: 'yaya_evt_routine_configured',      destination: '/routine' },
-    { id: 'insights', label: 'Descubra os padrões do [nome]',       doneKey: 'yaya_evt_insights_tab_opened',     destination: '/insights' },
-    { id: 'yaia',     label: 'Tenha uma IA que conhece o [nome]',   doneKey: 'yaya_evt_yaia_first_message',      destination: '/yaia' },
-    { id: 'invite',   label: 'Cuide junto com quem você confia',    doneKey: 'yaya_evt_family_invite_sent',      destination: '/' },
-    { id: 'report',   label: 'Compartilhe a rotina com o pediatra', doneKey: 'yaya_evt_super_report_generated',  destination: '/profile' },
+    { id: 'record',   label: 'Acompanhe tudo em um lugar',               doneKey: 'yaya_evt_first_record_created',    destination: '/' },
+    { id: 'routine',  label: 'Ajuste para a rotina [de] [nome]',         doneKey: 'yaya_evt_routine_configured',      destination: '/routine' },
+    { id: 'insights', label: 'Descubra os padrões [de] [nome]',          doneKey: 'yaya_evt_insights_tab_opened',     destination: '/insights' },
+    { id: 'yaia',     label: 'Tenha uma IA que conhece [art] [nome]',    doneKey: 'yaya_evt_yaia_first_message',      destination: '/yaia' },
+    { id: 'invite',   label: 'Cuide junto com quem você confia',         doneKey: 'yaya_evt_family_invite_sent',      destination: '/' },
+    { id: 'report',   label: 'Compartilhe a rotina com o pediatra',      doneKey: 'yaya_evt_super_report_generated',  destination: '/profile' },
   ],
   '3to12m': [
-    { id: 'record',     label: 'Acompanhe tudo em um lugar',            doneKey: 'yaya_evt_first_record_created',    destination: '/' },
-    { id: 'routine',    label: 'Ajuste para a rotina do [nome]',        doneKey: 'yaya_evt_routine_configured',      destination: '/routine' },
-    { id: 'milestones', label: 'Acompanhe o desenvolvimento do [nome]', doneKey: 'yaya_evt_milestone_registered',    destination: '/milestones' },
-    { id: 'yaia',       label: 'Tenha uma IA que conhece o [nome]',     doneKey: 'yaya_evt_yaia_first_message',      destination: '/yaia' },
-    { id: 'invite',     label: 'Cuide junto com quem você confia',      doneKey: 'yaya_evt_family_invite_sent',      destination: '/' },
-    { id: 'report',     label: 'Compartilhe a rotina com o pediatra',   doneKey: 'yaya_evt_super_report_generated',  destination: '/profile' },
+    { id: 'record',     label: 'Acompanhe tudo em um lugar',               doneKey: 'yaya_evt_first_record_created',    destination: '/' },
+    { id: 'routine',    label: 'Ajuste para a rotina [de] [nome]',         doneKey: 'yaya_evt_routine_configured',      destination: '/routine' },
+    { id: 'milestones', label: 'Acompanhe o desenvolvimento [de] [nome]',  doneKey: 'yaya_evt_milestone_registered',    destination: '/milestones' },
+    { id: 'yaia',       label: 'Tenha uma IA que conhece [art] [nome]',    doneKey: 'yaya_evt_yaia_first_message',      destination: '/yaia' },
+    { id: 'invite',     label: 'Cuide junto com quem você confia',         doneKey: 'yaya_evt_family_invite_sent',      destination: '/' },
+    { id: 'report',     label: 'Compartilhe a rotina com o pediatra',      doneKey: 'yaya_evt_super_report_generated',  destination: '/profile' },
   ],
   '12mplus': [
-    { id: 'record',  label: 'Acompanhe tudo em um lugar',          doneKey: 'yaya_evt_first_record_created',    destination: '/' },
-    { id: 'routine', label: 'Ajuste para a rotina do [nome]',      doneKey: 'yaya_evt_routine_configured',      destination: '/routine' },
-    { id: 'leaps',   label: 'Explore os saltos do [nome]',         doneKey: 'yaya_evt_development_leap_opened', destination: '/saltos' },
-    { id: 'yaia',    label: 'Tenha uma IA que conhece o [nome]',   doneKey: 'yaya_evt_yaia_first_message',      destination: '/yaia' },
-    { id: 'invite',  label: 'Cuide junto com quem você confia',    doneKey: 'yaya_evt_family_invite_sent',      destination: '/' },
-    { id: 'report',  label: 'Compartilhe a rotina com o pediatra', doneKey: 'yaya_evt_super_report_generated',  destination: '/profile' },
+    { id: 'record',  label: 'Acompanhe tudo em um lugar',               doneKey: 'yaya_evt_first_record_created',    destination: '/' },
+    { id: 'routine', label: 'Ajuste para a rotina [de] [nome]',         doneKey: 'yaya_evt_routine_configured',      destination: '/routine' },
+    { id: 'leaps',   label: 'Explore os saltos [de] [nome]',            doneKey: 'yaya_evt_development_leap_opened', destination: '/saltos' },
+    { id: 'yaia',    label: 'Tenha uma IA que conhece [art] [nome]',    doneKey: 'yaya_evt_yaia_first_message',      destination: '/yaia' },
+    { id: 'invite',  label: 'Cuide junto com quem você confia',         doneKey: 'yaya_evt_family_invite_sent',      destination: '/' },
+    { id: 'report',  label: 'Compartilhe a rotina com o pediatra',      doneKey: 'yaya_evt_super_report_generated',  destination: '/profile' },
   ],
 }
 
 // Mensagens "depois" — exibidas inline na trilha logo após o step ser concluído.
-// Token [nome] substituído pelo nome do bebê.
-const STEP_AFTER_MESSAGES: Record<string, (name: string) => string> = {
-  record:     (n) => `Pronto. O Yaya começou a acompanhar o ${n}. Cada registro vai tornando os padrões mais claros.`,
-  routine:    (n) => `O Yaya agora conhece a rotina do ${n}. Você vai receber alertas na hora certa — não antes, não depois.`,
-  insights:   (n) => `Isso é o Yaya trabalhando para você. Quanto mais você registrar, mais precisos ficam os padrões do ${n}.`,
-  milestones: (n) => `Marco registrado. Isso vai para a linha do tempo do ${n} — e para o relatório do pediatra.`,
-  leaps:      (n) => `Faz sentido, né? Quando você entende o salto, a agitação do ${n} vira informação, não mistério.`,
-  yaia:       (n) => `Agora você tem uma IA que conhece a rotina completa do ${n}. Pode voltar quando quiser perguntar qualquer coisa.`,
-  invite:     (n) => `Quando alguém aceitar, vai ver a rotina do ${n} em tempo real. Ninguém mais fica sem saber o que aconteceu.`,
-  report:     (_) => `Esse link tem toda a rotina registrada. Na próxima consulta, o pediatra vai chegar com contexto, não só com a balança.`,
+// Recebem: name (nome do bebê), de (contração "do"/"da"/"de"), art (artigo "o"/"a")
+const STEP_AFTER_MESSAGES: Record<string, (name: string, de: string, art: string) => string> = {
+  record:     (n, _de, art) => `Pronto. O Yaya começou a acompanhar ${art} ${n}. Cada registro vai tornando os padrões mais claros.`,
+  routine:    (n, de)       => `O Yaya agora conhece a rotina ${de} ${n}. Você vai receber alertas na hora certa — não antes, não depois.`,
+  insights:   (n, de)       => `Isso é o Yaya trabalhando para você. Quanto mais você registrar, mais precisos ficam os padrões ${de} ${n}.`,
+  milestones: (n, de)       => `Marco registrado. Isso vai para a linha do tempo ${de} ${n} — e para o relatório do pediatra.`,
+  leaps:      (n, de)       => `Faz sentido, né? Quando você entende o salto, a agitação ${de} ${n} vira informação, não mistério.`,
+  yaia:       (n, de)       => `Agora você tem uma IA que conhece a rotina completa ${de} ${n}. Pode voltar quando quiser perguntar qualquer coisa.`,
+  invite:     (n, de)       => `Quando alguém aceitar, vai ver a rotina ${de} ${n} em tempo real. Ninguém mais fica sem saber o que aconteceu.`,
+  report:     (_n, _de)     => `Esse link tem toda a rotina registrada. Na próxima consulta, o pediatra vai chegar com contexto, não só com a balança.`,
 }
 
 function getAgeBucket(babyAgeWeeks: number): AgeBucket {
@@ -78,13 +79,14 @@ interface Props {
   babyId: string
   babyAgeWeeks: number
   babyName: string
+  babyGender?: Gender
   /** Override de navegação por step.id — quando fornecido, chama a função em vez de navegar */
   onStepAction?: Record<string, () => void>
   /** Callback disparado uma única vez quando todos os passos são concluídos */
   onComplete?: () => void
 }
 
-export default function DiscoveryTrail({ babyId, babyAgeWeeks, babyName, onStepAction, onComplete }: Props) {
+export default function DiscoveryTrail({ babyId, babyAgeWeeks, babyName, babyGender, onStepAction, onComplete }: Props) {
   const navigate = useNavigate()
   const [collapsed, setCollapsed] = useState(false)
   const [justCompletedId, setJustCompletedId] = useState<string | null>(null)
@@ -165,6 +167,8 @@ export default function DiscoveryTrail({ babyId, babyAgeWeeks, babyName, onStepA
   }
 
   const doneCount = doneFlags.filter(Boolean).length
+  const de  = contractionDe(babyGender)
+  const art = article(babyGender)
 
   return (
     <div className="mx-5 mt-3">
@@ -224,16 +228,19 @@ export default function DiscoveryTrail({ babyId, babyAgeWeeks, babyName, onStepA
                 check_circle
               </span>
               <span className="font-label text-xs text-on-surface-variant/50 line-through">
-                {babyName !== '' ? `Criou o perfil de ${babyName}` : 'Criou o perfil do bebê'}
+                {babyName !== '' ? `Criou o perfil ${de} ${babyName}` : 'Criou o perfil do bebê'}
               </span>
             </div>
 
             {/* Passos dinâmicos */}
             {steps.map((step, idx) => {
               const done = doneFlags[idx]
-              const resolvedLabel = step.label.replace('[nome]', babyName)
+              const resolvedLabel = step.label
+                .replace('[nome]', babyName)
+                .replace('[de]', de)
+                .replace('[art]', art)
               const afterMessage = justCompletedId === step.id
-                ? STEP_AFTER_MESSAGES[step.id]?.(babyName) ?? null
+                ? STEP_AFTER_MESSAGES[step.id]?.(babyName, de, art) ?? null
                 : null
 
               return (
