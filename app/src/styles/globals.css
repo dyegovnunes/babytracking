@@ -72,6 +72,9 @@
   --color-outline: #757294;
   --color-outline-variant: #474464;
 
+  /* Trail accent — verde mint da Discovery Trail */
+  --color-trail-accent: #7dffba;
+
   /* Lavender muted — substitui cinza frio em metadata/legend/placeholder.
      Mantém a família roxa viva em elementos secundários. */
   --color-lavender-muted: #a8a0c9;
@@ -152,6 +155,9 @@ html.theme-light {
   /* Utility */
   --color-outline: #9e9cb0;
   --color-outline-variant: #d5d3de;
+
+  /* Trail accent — verde escuro para legibilidade em fundo claro */
+  --color-trail-accent: #1a7a4d;
 }
 
 @keyframes fade-in {

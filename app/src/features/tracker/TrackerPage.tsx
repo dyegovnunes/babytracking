@@ -59,6 +59,9 @@ import RoutineIntroSheet from './components/RoutineIntroSheet'
 import InsightsIntroSheet from './components/InsightsIntroSheet'
 import YaIATrailSheet from './components/YaIATrailSheet'
 import ReportIntroSheet from './components/ReportIntroSheet'
+import FirstRecordSheet from './components/FirstRecordSheet'
+import MemberJoinedSheet from './components/MemberJoinedSheet'
+import { useMemberJoinNotification } from './useMemberJoinNotification'
 import FamilyInviteSheet from '../profile/components/FamilyInviteSheet'
 
 const PROJECTION_CATEGORIES: string[] = ['feed', 'diaper', 'sleep_nap', 'sleep_awake', 'bath']
@@ -289,6 +292,8 @@ export default function TrackerPage() {
   const [gridSettingsOpen, setGridSettingsOpen] = useState(false)
   const [showFamilyInviteSheet, setShowFamilyInviteSheet] = useState(false)
   const [showTrailCompletion, setShowTrailCompletion] = useState(false)
+  const [showFirstRecord, setShowFirstRecord] = useState(false)
+  const { notification: memberJoinNotif, clearNotification: clearMemberJoin } = useMemberJoinNotification(baby?.id)
   const [showRoutineIntro, setShowRoutineIntro] = useState(false)
   const [showInsightsIntro, setShowInsightsIntro] = useState<'insights' | 'milestones' | 'leaps' | null>(null)
   const [showYaIATrailSheet, setShowYaIATrailSheet] = useState(false)
@@ -329,6 +334,23 @@ export default function TrackerPage() {
     if (!quietHours?.enabled) return false
     return isInQuietHours(new Date(), { start: quietHours.start, end: quietHours.end })
   }, [quietHours, now])
+
+  // Helper: mostra FirstRecordSheet na primeira vez; toast normal nas seguintes.
+  // Chama hapticSuccess() internamente — não chamar de novo no handler.
+  const notifyRecordCreated = useCallback(
+    (label: string) => {
+      if (!baby) return
+      const celebKey = `yaya_celebration_first_record_${baby.id}`
+      if (!localStorage.getItem(celebKey)) {
+        localStorage.setItem(celebKey, '1')
+        hapticSuccess()
+        setShowFirstRecord(true)
+      } else {
+        setToast(`${label} registrado!`)
+      }
+    },
+    [baby],
+  )
 
   const handleLog = useCallback(
     async (eventId: string) => {
@@ -408,12 +430,11 @@ export default function TrackerPage() {
 
       const log = await addLog(dispatch, eventId, baby.id, undefined, user?.id)
       if (log) {
-        hapticSuccess()
-        setToast(`${event.label} registrado!`)
+        notifyRecordCreated(event.label)
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [baby, dispatch, user, checkAndRecord, isBabySleeping, enqueue],
+    [baby, dispatch, user, checkAndRecord, isBabySleeping, enqueue, notifyRecordCreated],
   )
 
   const handleMealConfirm = useCallback(
@@ -430,11 +451,10 @@ export default function TrackerPage() {
       }
       const log = await addLog(dispatch, 'meal', baby.id, undefined, user?.id, payload as unknown as Record<string, unknown>)
       if (log) {
-        hapticSuccess()
-        setToast('Refeição registrada!')
+        notifyRecordCreated('Refeição')
       }
     },
-    [baby, dispatch, user, enqueue],
+    [baby, dispatch, user, enqueue, notifyRecordCreated],
   )
 
   const handleMealEditConfirm = useCallback(
@@ -476,11 +496,10 @@ export default function TrackerPage() {
       }
       const log = await addLog(dispatch, 'mood', baby.id, undefined, user?.id, payload as unknown as Record<string, unknown>)
       if (log) {
-        hapticSuccess()
-        setToast('Humor registrado!')
+        notifyRecordCreated('Humor')
       }
     },
-    [baby, dispatch, user, enqueue],
+    [baby, dispatch, user, enqueue, notifyRecordCreated],
   )
 
   const handleSickConfirm = useCallback(
@@ -497,11 +516,10 @@ export default function TrackerPage() {
       }
       const log = await addLog(dispatch, 'sick_log', baby.id, undefined, user?.id, payload as unknown as Record<string, unknown>)
       if (log) {
-        hapticSuccess()
-        setToast('Registro salvo!')
+        notifyRecordCreated('Registro de saúde')
       }
     },
-    [baby, dispatch, user, enqueue],
+    [baby, dispatch, user, enqueue, notifyRecordCreated],
   )
 
   const handleSickEditConfirm = useCallback(
@@ -540,11 +558,10 @@ export default function TrackerPage() {
       }
       const log = await addLog(dispatch, 'bottle', baby.id, ml, user?.id)
       if (log) {
-        hapticSuccess()
-        setToast(`Mamadeira ${ml}ml registrada!`)
+        notifyRecordCreated(`Mamadeira ${ml}ml`)
       }
     },
-    [baby, dispatch, user, enqueue],
+    [baby, dispatch, user, enqueue, notifyRecordCreated],
   )
 
   const handleEditLog = useCallback((log: LogEntry) => {
@@ -1119,6 +1136,24 @@ export default function TrackerPage() {
         babyName={baby?.name ?? ''}
         babyGender={baby?.gender}
         onClose={() => setShowReportIntro(false)}
+      />
+
+      {/* ===== CELEBRATION MOMENTS ===== */}
+
+      <FirstRecordSheet
+        isOpen={showFirstRecord}
+        babyName={baby?.name ?? ''}
+        babyGender={baby?.gender}
+        onClose={() => setShowFirstRecord(false)}
+      />
+
+      <MemberJoinedSheet
+        isOpen={!!memberJoinNotif}
+        memberName={memberJoinNotif?.memberName ?? ''}
+        memberRole={memberJoinNotif?.memberRole ?? 'caregiver'}
+        babyName={baby?.name ?? ''}
+        babyGender={baby?.gender}
+        onClose={clearMemberJoin}
       />
     </div>
   )

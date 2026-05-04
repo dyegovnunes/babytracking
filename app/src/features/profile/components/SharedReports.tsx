@@ -30,6 +30,7 @@ const AUDIENCES: {
   { key: 'family',       icon: 'favorite',    title: 'Família', desc: 'Marcos recentes, fotos e progresso.' },
 ];
 import { hapticLight, hapticMedium, hapticSuccess } from '../../../lib/haptics';
+import ReportGeneratedSheet from './ReportGeneratedSheet';
 
 export default function SharedReports() {
   const { baby } = useAppState();
@@ -60,6 +61,7 @@ export default function SharedReports() {
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
   const [copyToast, setCopyToast] = useState<string | null>(null);
+  const [showReportCelebration, setShowReportCelebration] = useState(false);
 
   useSheetBackClose(showCreate, () => setShowCreate(false));
   useSheetBackClose(!!confirmDelete, () => setConfirmDelete(null));
@@ -129,7 +131,15 @@ export default function SharedReports() {
       // Analytics: super_report_generated + trail key
       const babyAgeDays = baby ? Math.floor((Date.now() - new Date(baby.birthDate).getTime()) / 86400000) : undefined;
       track('super_report_generated', { audience, baby_age_days: babyAgeDays });
-      if (baby?.id) setTrailKey('super_report_generated', baby.id);
+      if (baby?.id) {
+        setTrailKey('super_report_generated', baby.id);
+        // Celebration: primeira geração do Super Relatório
+        const celebKey = `yaya_celebration_report_generated_${baby.id}`;
+        if (!localStorage.getItem(celebKey)) {
+          localStorage.setItem(celebKey, '1');
+          setShowReportCelebration(true);
+        }
+      }
     }
   };
 
@@ -614,6 +624,20 @@ export default function SharedReports() {
         emoji="📋"
         title={`A rotina ${genderContraction} ${baby?.name ?? 'bebê'} em um link`}
         description="Gera um link com sono, alimentação, marcos e vacinas. Envia para o pediatra antes da consulta."
+      />
+
+      {/* Celebration: primeira geração do Super Relatório */}
+      <ReportGeneratedSheet
+        isOpen={showReportCelebration}
+        babyName={baby?.name ?? ''}
+        babyGender={baby?.gender}
+        onShare={() => {
+          if (!createdReport) return;
+          hapticLight();
+          const text = `Oi! Preparei o acompanhamento ${genderContraction} ${baby?.name} pra você dar uma olhada.\n\nLink: ${createdReport.url}\nSenha: ${createdReport.password}\n\nQualquer dúvida me chama 🙂`;
+          window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+        }}
+        onClose={() => setShowReportCelebration(false)}
       />
     </>
   );

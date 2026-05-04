@@ -15,6 +15,7 @@ import { useSheetBackClose } from '../../../hooks/useSheetBackClose'
 import { hapticLight } from '../../../lib/haptics'
 import { markConsent } from '../../yaia/yaiaChatService'
 import { contractionDe, article, type Gender } from '../../../lib/genderUtils'
+import YaIAOrb from '../../yaia/components/YaIAOrb'
 
 interface Props {
   isOpen: boolean
@@ -78,8 +79,7 @@ export default function YaIATrailSheet({ isOpen, babyName, babyAgeWeeks, babyId,
       onClick={onClose}
     >
       <div
-        className="rounded-t-2xl px-5 pt-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]"
-        style={{ background: 'var(--md-sys-color-surface-container-high, #1e1631)' }}
+        className="rounded-t-2xl bg-surface-container-highest px-5 pt-5 pb-[max(1.5rem,env(safe-area-inset-bottom))]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Handle */}
@@ -87,12 +87,7 @@ export default function YaIATrailSheet({ isOpen, babyName, babyAgeWeeks, babyId,
 
         {/* Header */}
         <div className="flex items-center gap-3 mb-3">
-          <div
-            className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
-            style={{ background: 'rgba(183,159,255,0.12)' }}
-          >
-            <span className="text-2xl">🤖</span>
-          </div>
+          <YaIAOrb size="md" breathing={false} />
           <div>
             <h2 className="font-headline text-base font-bold text-on-surface leading-tight">
               A yaIA conhece {art} {name}

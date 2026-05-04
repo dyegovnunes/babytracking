@@ -190,13 +190,13 @@ export default function DiscoveryTrail({ babyId, babyAgeWeeks, babyName, babyGen
           <div className="flex items-center gap-2">
             <span
               className="material-symbols-outlined text-sm"
-              style={{ color: 'var(--md-sys-color-tertiary, #7dffba)' }}
+              style={{ color: 'var(--color-trail-accent, #7dffba)' }}
             >
               route
             </span>
             <span
               className="font-label text-[11px] font-bold uppercase tracking-wider"
-              style={{ color: 'var(--md-sys-color-tertiary, #7dffba)' }}
+              style={{ color: 'var(--color-trail-accent, #7dffba)' }}
             >
               Explore o Yaya
             </span>
@@ -225,7 +225,7 @@ export default function DiscoveryTrail({ babyId, babyAgeWeeks, babyName, babyGen
             <div className="flex items-center gap-2.5 py-1">
               <span
                 className="material-symbols-outlined text-base flex-shrink-0"
-                style={{ color: 'var(--md-sys-color-tertiary, #7dffba)', fontVariationSettings: "'FILL' 1" }}
+                style={{ color: 'var(--color-trail-accent, #7dffba)', fontVariationSettings: "'FILL' 1" }}
               >
                 check_circle
               </span>
@@ -266,7 +266,7 @@ export default function DiscoveryTrail({ babyId, babyAgeWeeks, babyName, babyGen
                     {done ? (
                       <span
                         className="material-symbols-outlined text-base flex-shrink-0"
-                        style={{ color: 'var(--md-sys-color-tertiary, #7dffba)', fontVariationSettings: "'FILL' 1" }}
+                        style={{ color: 'var(--color-trail-accent, #7dffba)', fontVariationSettings: "'FILL' 1" }}
                       >
                         check_circle
                       </span>
