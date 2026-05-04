@@ -15,7 +15,7 @@ import { Browser } from '@capacitor/browser'
 import { Capacitor } from '@capacitor/core'
 import { hapticLight } from '../../../lib/haptics'
 import type { Highlight } from '../highlights'
-import type { ContentArticle } from '../../content/contentTypes'
+import type { ContentArticle, ContentCategory } from '../../content/contentTypes'
 import { CONTENT_CATEGORY_EMOJI } from '../../content/contentTypes'
 import HighlightSheet from './HighlightSheet'
 
@@ -27,7 +27,7 @@ type CarouselItem = BlogItem | FeatureItem
 
 // ---------- Constants ----------
 
-const AUTO_ADVANCE_MS  = 3000
+const AUTO_ADVANCE_MS  = 5000
 const RESUME_IDLE_MS   = 2500
 const SWIPE_THRESHOLD  = 48
 const MAX_DOTS         = 8
@@ -94,6 +94,20 @@ const ACCENT_BTN: Record<Highlight['accent'], string> = {
   tertiary: 'bg-tertiary/15 text-tertiary',
   warning:  'bg-yellow-500/15 text-yellow-400',
   success:  'bg-green-500/15 text-green-400',
+}
+
+// ---------- Blog kicker personalizado por categoria ----------
+
+const BLOG_KICKER_LABEL: Record<ContentCategory, string> = {
+  alimentacao:     'Dica de alimentação',
+  amamentacao:     'Dica de amamentação',
+  sono:            'Dica de sono',
+  desenvolvimento: 'Desenvolvimento',
+  saude:           'Para a saúde do bebê',
+  rotina:          'Dica de rotina',
+  marcos:          'Para não perder',
+  gestacao:        'Gestação',
+  seguranca:       'Segurança do bebê',
 }
 
 // ---------- Sequence builder ----------
@@ -180,6 +194,8 @@ export default function JourneyCarousel({
 }: Props) {
   const [index,         setIndex]         = useState(0)
   const [openHighlight, setOpenHighlight] = useState<Highlight | null>(null)
+  const [isPaused,      setIsPaused]      = useState(false)
+  const isPausedRef = useRef(false)
 
   // Stable random articles — only reshuffles when article IDs change
   const prevArticleIdsRef = useRef('')
@@ -238,7 +254,7 @@ export default function JourneyCarousel({
   useEffect(() => {
     const el = trackRef.current
     if (el) applySlideTransform(el, index, items.length, 0, true)
-    startProgressBar()
+    if (!isPausedRef.current) startProgressBar()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index, items.length])
 
@@ -276,10 +292,26 @@ export default function JourneyCarousel({
   const scheduleResume = useCallback(() => {
     if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current)
     resumeTimerRef.current = setTimeout(() => {
-      startAutoAdvance()
-      startProgressBar()
+      if (!isPausedRef.current) {
+        startAutoAdvance()
+        startProgressBar()
+      }
     }, RESUME_IDLE_MS)
   }, [startAutoAdvance, startProgressBar])
+
+  const togglePause = useCallback(() => {
+    if (isPausedRef.current) {
+      isPausedRef.current = false
+      setIsPaused(false)
+      startAutoAdvance()
+      startProgressBar()
+    } else {
+      isPausedRef.current = true
+      setIsPaused(true)
+      clearAutoAdvance()
+      pauseProgressBar()
+    }
+  }, [startAutoAdvance, startProgressBar, clearAutoAdvance, pauseProgressBar])
 
   const onTouchStart = useCallback((e: React.TouchEvent) => {
     clearAutoAdvance()
@@ -413,7 +445,7 @@ export default function JourneyCarousel({
 
           {/* Progress bar */}
           {items.length > 1 && (
-            <div style={{ height: 2, background: 'rgba(255,255,255,0.07)', marginTop: 6, borderRadius: 1 }}>
+            <div style={{ height: 2, background: 'rgba(255,255,255,0.07)', marginTop: 8, borderRadius: 1 }}>
               <div
                 ref={progressRef}
                 style={{
@@ -428,13 +460,36 @@ export default function JourneyCarousel({
           )}
         </div>
 
-        {/* Dots */}
+        {/* Dots + botão pausar */}
         {items.length > 1 && (
-          <DotsIndicator
-            total={items.length}
-            active={index}
-            onDotClick={goToDot}
-          />
+          <div className="flex items-center px-5 mt-2.5 pb-1">
+            {/* Spacer para centralizar os dots */}
+            <div style={{ width: 28 }} />
+
+            <div className="flex-1 flex justify-center">
+              <DotsIndicator
+                total={items.length}
+                active={index}
+                onDotClick={goToDot}
+              />
+            </div>
+
+            {/* Pause / Play */}
+            <button
+              type="button"
+              aria-label={isPaused ? 'Retomar' : 'Pausar'}
+              onClick={togglePause}
+              className="flex items-center justify-center"
+              style={{ width: 28, height: 28 }}
+            >
+              <span
+                className="material-symbols-outlined text-on-surface/35"
+                style={{ fontSize: 18 }}
+              >
+                {isPaused ? 'play_arrow' : 'pause'}
+              </span>
+            </button>
+          </div>
         )}
       </section>
 
@@ -572,7 +627,7 @@ function BlogCard({
     >
       <div className="px-3 pt-2.5 pb-3">
         <p className="font-label text-[10px] uppercase tracking-wider text-primary/70 font-bold mb-1">
-          {emoji} Para você
+          {emoji} {BLOG_KICKER_LABEL[article.category] ?? 'Selecionado para você'}
         </p>
         <p
           className="font-label text-sm font-semibold text-on-surface leading-snug mb-2"
@@ -677,7 +732,7 @@ function DotsIndicator({
   const visible     = Array.from({ length: windowEnd - windowStart }, (_, i) => windowStart + i)
 
   return (
-    <div className="flex items-center justify-center gap-1.5 mt-2.5 pb-1">
+    <div className="flex items-center justify-center gap-1.5">
       {visible.map((i) => (
         <button
           key={i}
