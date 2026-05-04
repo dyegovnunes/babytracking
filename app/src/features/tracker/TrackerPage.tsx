@@ -667,6 +667,7 @@ export default function TrackerPage() {
           babyAgeWeeks={babyAgeWeeks}
           babyName={baby.name}
           babyGender={baby.gender}
+          logsCount={logs.length}
           onStepAction={{
             record:     () => window.scrollTo({ top: 0, behavior: 'smooth' }),
             invite:     () => setShowFamilyInviteSheet(true),

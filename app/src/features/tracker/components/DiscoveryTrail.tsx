@@ -80,13 +80,15 @@ interface Props {
   babyAgeWeeks: number
   babyName: string
   babyGender?: Gender
+  /** Passado como logs.length — força re-check da detecção "depois" quando logs mudam na mesma página */
+  logsCount?: number
   /** Override de navegação por step.id — quando fornecido, chama a função em vez de navegar */
   onStepAction?: Record<string, () => void>
   /** Callback disparado uma única vez quando todos os passos são concluídos */
   onComplete?: () => void
 }
 
-export default function DiscoveryTrail({ babyId, babyAgeWeeks, babyName, babyGender, onStepAction, onComplete }: Props) {
+export default function DiscoveryTrail({ babyId, babyAgeWeeks, babyName, babyGender, logsCount, onStepAction, onComplete }: Props) {
   const navigate = useNavigate()
   const [collapsed, setCollapsed] = useState(false)
   const [justCompletedId, setJustCompletedId] = useState<string | null>(null)
@@ -152,7 +154,7 @@ export default function DiscoveryTrail({ babyId, babyAgeWeeks, babyName, babyGen
     }
     prevDoneFlagsRef.current = [...doneFlags]
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tick])
+  }, [tick, logsCount])
 
   if (dismissed || expired) return null
 
