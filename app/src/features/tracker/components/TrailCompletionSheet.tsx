@@ -38,8 +38,7 @@ export default function TrailCompletionSheet({ isOpen, babyName, onClose }: Prop
       onClick={handleClose}
     >
       <div
-        className="rounded-t-2xl px-5 pt-5 pb-[max(2rem,env(safe-area-inset-bottom))]"
-        style={{ background: 'var(--md-sys-color-surface-container-high, #1e1631)' }}
+        className="rounded-t-2xl bg-surface-container-highest px-5 pt-5 pb-[max(2rem,env(safe-area-inset-bottom))]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Handle */}

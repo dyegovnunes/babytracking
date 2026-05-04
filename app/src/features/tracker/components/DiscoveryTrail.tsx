@@ -155,17 +155,17 @@ export default function DiscoveryTrail({ babyId, babyAgeWeeks, babyName, babyGen
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tick, logsCount])
 
-  if (dismissed || expired) return null
-
-  // Se todos os passos estiverem concluídos → celebrar (1x) e sumir
+  // Celebração ao completar todos os passos — useEffect para não chamar setState durante render
   const allDone = doneFlags.every(Boolean)
-  if (allDone) {
-    if (!localStorage.getItem(completedKey) && onComplete) {
+  useEffect(() => {
+    if (allDone && !localStorage.getItem(completedKey) && onComplete) {
       localStorage.setItem(completedKey, '1')
       onComplete()
     }
-    return null
-  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allDone])
+
+  if (dismissed || expired || allDone) return null
 
   const doneCount = doneFlags.filter(Boolean).length
   const de  = contractionDe(babyGender)
