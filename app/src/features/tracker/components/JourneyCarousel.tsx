@@ -3,14 +3,12 @@
 // Sequência fixa de até 6 slides:
 //   blog_top1 → vacina → blog_random_a → marco → blog_random_b → salto
 //
-// Slots de feature só aparecem se estiverem ativos para o bebê.
-// Slots de blog só aparecem se houver artigos disponíveis.
-// Auto-avança a cada 3s; swipe pausa e retoma após 2.5s ocioso.
-// Dots indicadores abaixo do card (máx 8 visíveis, janela deslizante).
+// Ambos os tipos de card têm a mesma estrutura: imagem 16:9 no topo + bloco de
+// texto fixo abaixo — garantindo altura constante ao trocar de slide.
+// Cards de feature exibem a imagem real (marcos/saltos/vacinas) + badge overlay.
 //
-// Quando imagens de feature estiverem prontas (marcos, saltos, vacinas),
-// basta adicionar um mapa de imageUrl por ID em featureImages.ts e
-// passar imageUrl para FeatureCard — a estrutura já está preparada.
+// Animação de transição CSS translateX; drag ao vivo via manipulação direta do DOM.
+// Barra de progresso fina abaixo do card indica tempo até o próximo auto-avanço.
 
 import { useState, useRef, useMemo, useEffect, useCallback } from 'react'
 import { Browser } from '@capacitor/browser'
@@ -31,8 +29,42 @@ type CarouselItem = BlogItem | FeatureItem
 
 const AUTO_ADVANCE_MS  = 3000
 const RESUME_IDLE_MS   = 2500
-const SWIPE_THRESHOLD  = 50
+const SWIPE_THRESHOLD  = 48
 const MAX_DOTS         = 8
+
+// ---------- Image mapping ----------
+
+function getFeatureImageUrl(h: Highlight): string | null {
+  if (h.data.type === 'leap_active' || h.data.type === 'leap_upcoming') {
+    const id = h.data.leap.id
+    return `/carousel/saltos/salto-${id}.png`
+  }
+  if (h.data.type === 'milestone') {
+    const MAP: Record<string, string> = {
+      motor:       'marco-motor-grosso',
+      motor_fino:  'marco-motor-fino',
+      cognitivo:   'marco-cognitivo',
+      social:      'marco-social',
+      linguagem:   'marco-linguagem',
+      comunicacao: 'marco-linguagem',
+      alimentacao: 'marco-alimentacao',
+      autonomia:   'marco-autonomia',
+    }
+    const name = MAP[h.data.milestone.category] ?? 'marco-cognitivo'
+    return `/carousel/marcos/${name}.png`
+  }
+  if (h.data.type === 'vaccine_overdue' || h.data.type === 'vaccine_upcoming') {
+    const days = h.data.vaccine.recommendedAgeDays
+    let file: string
+    if (days < 46)       file = 'vacina-recem-nascido'
+    else if (days < 91)  file = 'vacina-2-meses'
+    else if (days < 361) file = 'vacina-4-6-meses'
+    else if (days < 451) file = 'vacina-12-15-meses'
+    else                 file = 'vacina-15-24-meses'
+    return `/carousel/vacinas/${file}.png`
+  }
+  return null
+}
 
 // ---------- Accent maps ----------
 
@@ -41,6 +73,13 @@ const ACCENT_GRADIENT: Record<Highlight['accent'], string> = {
   tertiary: 'linear-gradient(145deg, rgba(255,150,185,0.22) 0%, rgba(255,150,185,0.07) 100%)',
   warning:  'linear-gradient(145deg, rgba(234,179,8,0.22)   0%, rgba(234,179,8,0.07)   100%)',
   success:  'linear-gradient(145deg, rgba(34,197,94,0.22)   0%, rgba(34,197,94,0.07)   100%)',
+}
+
+const ACCENT_BADGE: Record<Highlight['accent'], string> = {
+  primary:  'rgba(100, 60, 200, 0.78)',
+  tertiary: 'rgba(190, 50, 110, 0.78)',
+  warning:  'rgba(140,  95,   0, 0.82)',
+  success:  'rgba(  5, 120,  50, 0.82)',
 }
 
 const ACCENT_KICKER: Record<Highlight['accent'], string> = {
@@ -57,13 +96,6 @@ const ACCENT_BTN: Record<Highlight['accent'], string> = {
   success:  'bg-green-500/15 text-green-400',
 }
 
-const ACCENT_BORDER: Record<Highlight['accent'], string> = {
-  primary:  'rgba(183,159,255,0.2)',
-  tertiary: 'rgba(255,150,185,0.2)',
-  warning:  'rgba(234,179,8,0.2)',
-  success:  'rgba(34,197,94,0.2)',
-}
-
 // ---------- Sequence builder ----------
 
 /**
@@ -77,14 +109,6 @@ function buildSequence(
   articles: ContentArticle[],
   randomBlogsRef: React.MutableRefObject<[ContentArticle | null, ContentArticle | null]>,
 ): CarouselItem[] {
-  const FEATURE_TYPES = new Set([
-    'milestone',
-    'leap_active',
-    'leap_upcoming',
-    'vaccine_overdue',
-    'vaccine_upcoming',
-  ] as const)
-
   const vacina = highlights.find((h) =>
     h.type === 'vaccine_overdue' || h.type === 'vaccine_upcoming',
   )
@@ -93,27 +117,16 @@ function buildSequence(
     h.type === 'leap_active' || h.type === 'leap_upcoming',
   )
 
-  const top1  = articles[0] ?? null
+  const top1           = articles[0] ?? null
   const [randA, randB] = randomBlogsRef.current
 
   const items: CarouselItem[] = []
 
-  // 1. Blog top 1
   if (top1) items.push({ kind: 'blog', article: top1 })
-
-  // 2. Vacina
   if (vacina) items.push({ kind: 'feature', highlight: vacina })
-
-  // 3. Blog random A — apenas se há feature depois (marco ou salto)
   if (randA && (marco || salto)) items.push({ kind: 'blog', article: randA })
-
-  // 4. Marco
   if (marco) items.push({ kind: 'feature', highlight: marco })
-
-  // 5. Blog random B — apenas se salto está ativo
   if (randB && salto) items.push({ kind: 'blog', article: randB })
-
-  // 6. Salto
   if (salto) items.push({ kind: 'feature', highlight: salto })
 
   // Se nenhuma feature está ativa e há artigos, mostra só os artigos
@@ -122,11 +135,24 @@ function buildSequence(
     return articles.slice(0, 3).map((a) => ({ kind: 'blog', article: a }))
   }
 
-  // Caso não haja nada relevante
-  const usedTypes = highlights.filter((h) => FEATURE_TYPES.has(h.type as never))
-  if (items.length === 0 && usedTypes.length === 0) return []
-
   return items
+}
+
+// ---------- Track helpers ----------
+
+function applySlideTransform(
+  el: HTMLDivElement,
+  index: number,
+  n: number,
+  offset: number,
+  animated: boolean,
+) {
+  el.style.transition = animated
+    ? 'transform 0.32s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+    : 'none'
+  el.style.transform = n > 0
+    ? `translateX(calc(${-(index / n) * 100}% + ${offset}px))`
+    : 'translateX(0)'
 }
 
 // ---------- Props ----------
@@ -155,14 +181,13 @@ export default function JourneyCarousel({
   const [index,         setIndex]         = useState(0)
   const [openHighlight, setOpenHighlight] = useState<Highlight | null>(null)
 
-  // Estabiliza artigos aleatórios: só recalcula quando a lista de artigos muda
+  // Stable random articles — only reshuffles when article IDs change
   const prevArticleIdsRef = useRef('')
   const randomBlogsRef    = useRef<[ContentArticle | null, ContentArticle | null]>([null, null])
 
   const articleIds = articles.map((a) => a.id).join(',')
   if (articleIds !== prevArticleIdsRef.current) {
     prevArticleIdsRef.current = articleIds
-    // Embaralha posições 1..N e pega as 2 primeiras
     const pool = [...articles.slice(1)].sort(() => Math.random() - 0.5)
     randomBlogsRef.current = [pool[0] ?? null, pool[1] ?? null]
   }
@@ -173,19 +198,54 @@ export default function JourneyCarousel({
     [highlights, articleIds],
   )
 
-  // Clamp index quando items encolhe (ex: artigo dispensado)
+  // Keep index in bounds if items shrink
   useEffect(() => {
     if (items.length > 0 && index >= items.length) {
       setIndex(items.length - 1)
     }
   }, [items.length, index])
 
-  // ── Auto-advance ──────────────────────────────────────────────────────────
+  // ── DOM refs ──────────────────────────────────────────────────────────────
 
-  const timerRef         = useRef<ReturnType<typeof setInterval> | null>(null)
-  const resumeTimerRef   = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const trackRef       = useRef<HTMLDivElement>(null)
+  const progressRef    = useRef<HTMLDivElement>(null)
+  const indexRef       = useRef(0)
+  indexRef.current = index
+  const itemsLenRef    = useRef(0)
+  itemsLenRef.current = items.length
   const openHighlightRef = useRef<Highlight | null>(null)
   openHighlightRef.current = openHighlight
+
+  // ── Progress bar ──────────────────────────────────────────────────────────
+
+  const startProgressBar = useCallback(() => {
+    const el = progressRef.current
+    if (!el) return
+    el.style.animation = 'none'
+    void el.offsetHeight            // force reflow to restart animation
+    el.style.animation = `carousel-progress ${AUTO_ADVANCE_MS}ms linear forwards`
+  }, [])
+
+  const pauseProgressBar = useCallback(() => {
+    const el = progressRef.current
+    if (!el) return
+    el.style.animationPlayState = 'paused'
+  }, [])
+
+  // ── Slide transform ───────────────────────────────────────────────────────
+
+  // Called after React commits the new index
+  useEffect(() => {
+    const el = trackRef.current
+    if (el) applySlideTransform(el, index, items.length, 0, true)
+    startProgressBar()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [index, items.length])
+
+  // ── Auto-advance ──────────────────────────────────────────────────────────
+
+  const timerRef       = useRef<ReturnType<typeof setInterval> | null>(null)
+  const resumeTimerRef = useRef<ReturnType<typeof setTimeout>  | null>(null)
 
   const clearAutoAdvance = useCallback(() => {
     if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null }
@@ -193,58 +253,114 @@ export default function JourneyCarousel({
 
   const startAutoAdvance = useCallback(() => {
     clearAutoAdvance()
-    if (items.length <= 1) return
+    if (itemsLenRef.current <= 1) return
     timerRef.current = setInterval(() => {
       if (!openHighlightRef.current) {
-        setIndex((prev) => (prev + 1) % items.length)
+        setIndex((prev) => (prev + 1) % itemsLenRef.current)
+        // Progress bar resets via useEffect → startProgressBar()
       }
     }, AUTO_ADVANCE_MS)
-  }, [items.length, clearAutoAdvance])
+  }, [clearAutoAdvance])
 
   useEffect(() => {
     startAutoAdvance()
     return clearAutoAdvance
   }, [startAutoAdvance, clearAutoAdvance])
 
-  // ── Swipe ─────────────────────────────────────────────────────────────────
+  // ── Touch / swipe ─────────────────────────────────────────────────────────
 
-  const touchStartX = useRef<number | null>(null)
-  const touchStartY = useRef<number | null>(null)
+  const dragStartXRef   = useRef<number | null>(null)
+  const dragStartYRef   = useRef<number | null>(null)
+  const isHorizDragRef  = useRef(false)
 
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    clearAutoAdvance()
+  const scheduleResume = useCallback(() => {
     if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current)
-    touchStartX.current = e.touches[0].clientX
-    touchStartY.current = e.touches[0].clientY
-  }, [clearAutoAdvance])
+    resumeTimerRef.current = setTimeout(() => {
+      startAutoAdvance()
+      startProgressBar()
+    }, RESUME_IDLE_MS)
+  }, [startAutoAdvance, startProgressBar])
 
-  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
-    const sx = touchStartX.current
-    const sy = touchStartY.current
-    if (sx !== null && sy !== null) {
-      const dx = e.changedTouches[0].clientX - sx
-      const dy = e.changedTouches[0].clientY - sy
-      if (Math.abs(dx) > SWIPE_THRESHOLD && Math.abs(dx) > Math.abs(dy)) {
-        hapticLight()
-        setIndex((prev) =>
-          dx < 0
-            ? (prev + 1) % items.length
-            : (prev - 1 + items.length) % items.length,
-        )
+  const onTouchStart = useCallback((e: React.TouchEvent) => {
+    clearAutoAdvance()
+    pauseProgressBar()
+    dragStartXRef.current  = e.touches[0].clientX
+    dragStartYRef.current  = e.touches[0].clientY
+    isHorizDragRef.current = false
+  }, [clearAutoAdvance, pauseProgressBar])
+
+  const onTouchMove = useCallback((e: React.TouchEvent) => {
+    if (dragStartXRef.current === null) return
+    const dx = e.touches[0].clientX - dragStartXRef.current
+    const dy = e.touches[0].clientY - dragStartYRef.current!
+
+    if (!isHorizDragRef.current) {
+      if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return // intent unclear
+      if (Math.abs(dx) > Math.abs(dy)) {
+        isHorizDragRef.current = true
+      } else {
+        // Vertical scroll — cancel drag
+        dragStartXRef.current = null
+        dragStartYRef.current = null
+        return
       }
     }
-    touchStartX.current = null
-    touchStartY.current = null
-    if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current)
-    resumeTimerRef.current = setTimeout(startAutoAdvance, RESUME_IDLE_MS)
-  }, [items.length, startAutoAdvance])
+
+    // Apply live drag offset directly on the DOM (no React re-render)
+    const el = trackRef.current
+    if (el) applySlideTransform(el, indexRef.current, itemsLenRef.current, dx, false)
+  }, [])
+
+  const onTouchEnd = useCallback((e: React.TouchEvent) => {
+    const sx = dragStartXRef.current
+    const el = trackRef.current
+
+    if (sx !== null && isHorizDragRef.current && el) {
+      const dx = e.changedTouches[0].clientX - sx
+      const n  = itemsLenRef.current
+
+      if (Math.abs(dx) > SWIPE_THRESHOLD) {
+        hapticLight()
+        const newIndex = dx < 0
+          ? (indexRef.current + 1) % n
+          : (indexRef.current - 1 + n) % n
+        // Apply immediately via DOM so the snap feels instant
+        indexRef.current = newIndex
+        applySlideTransform(el, newIndex, n, 0, true)
+        setIndex(newIndex)
+        // useEffect will fire again and re-apply (same result, harmless)
+      } else {
+        // Snap back
+        applySlideTransform(el, indexRef.current, n, 0, true)
+      }
+    }
+
+    dragStartXRef.current  = null
+    dragStartYRef.current  = null
+    isHorizDragRef.current = false
+    scheduleResume()
+  }, [scheduleResume])
+
+  const goToDot = useCallback((i: number) => {
+    hapticLight()
+    clearAutoAdvance()
+    setIndex(i)
+    scheduleResume()
+  }, [clearAutoAdvance, scheduleResume])
+
+  // ─────────────────────────────────────────────────────────────────────────
 
   if (items.length === 0) return null
 
-  const current = items[index]
-
   return (
     <>
+      <style>{`
+        @keyframes carousel-progress {
+          from { transform: scaleX(0); }
+          to   { transform: scaleX(1); }
+        }
+      `}</style>
+
       <section className="mt-6">
         {/* Cabeçalho */}
         <div className="px-5 mb-3">
@@ -253,28 +369,62 @@ export default function JourneyCarousel({
           </h2>
         </div>
 
-        {/* Card com suporte a swipe */}
-        <div
-          className="px-5"
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
-        >
-          {current.kind === 'blog' ? (
-            <BlogCard
-              article={current.article}
-              onDismiss={() => {
-                onDismissArticle(current.article.slug)
-                onChange()
-              }}
-            />
-          ) : (
-            <FeatureCard
-              highlight={current.highlight}
-              onTap={() => {
-                hapticLight()
-                setOpenHighlight(current.highlight)
-              }}
-            />
+        {/* Slider */}
+        <div className="px-5">
+          <div
+            className="overflow-hidden rounded-md"
+            style={{ touchAction: 'pan-y' }}
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+          >
+            {/* Track */}
+            <div
+              ref={trackRef}
+              style={{ display: 'flex', width: `${items.length * 100}%` }}
+            >
+              {items.map((item, i) => (
+                <div
+                  key={`${item.kind}-${item.kind === 'blog' ? item.article.id : item.highlight.id}-${i}`}
+                  style={{ width: `${100 / items.length}%`, flexShrink: 0 }}
+                >
+                  {item.kind === 'blog' ? (
+                    <BlogCard
+                      article={item.article}
+                      onDismiss={() => {
+                        onDismissArticle(item.article.slug)
+                        onChange()
+                      }}
+                    />
+                  ) : (
+                    <FeatureCard
+                      highlight={item.highlight}
+                      imageUrl={getFeatureImageUrl(item.highlight)}
+                      onTap={() => {
+                        hapticLight()
+                        setOpenHighlight(item.highlight)
+                      }}
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Progress bar */}
+          {items.length > 1 && (
+            <div style={{ height: 2, background: 'rgba(255,255,255,0.07)', marginTop: 6, borderRadius: 1 }}>
+              <div
+                ref={progressRef}
+                style={{
+                  height: '100%',
+                  background: 'rgba(183,159,255,0.55)',
+                  borderRadius: 1,
+                  transformOrigin: 'left',
+                  animation: `carousel-progress ${AUTO_ADVANCE_MS}ms linear forwards`,
+                }}
+              />
+            </div>
           )}
         </div>
 
@@ -283,13 +433,7 @@ export default function JourneyCarousel({
           <DotsIndicator
             total={items.length}
             active={index}
-            onDotClick={(i) => {
-              hapticLight()
-              clearAutoAdvance()
-              setIndex(i)
-              if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current)
-              resumeTimerRef.current = setTimeout(startAutoAdvance, RESUME_IDLE_MS)
-            }}
+            onDotClick={goToDot}
           />
         )}
       </section>
@@ -309,9 +453,85 @@ export default function JourneyCarousel({
   )
 }
 
+// ---------- Shared card shell ----------
+// Imagem 16:9 no topo + bloco de texto abaixo com altura fixa — garante que
+// ambos os tipos de card (blog e feature) tenham sempre a mesma altura total.
+
+function CardShell({
+  imageUrl,
+  imageFallback,
+  imageOverlay,
+  imageTopRight,
+  borderColor,
+  children,
+  onClick,
+  ariaLabel,
+}: {
+  imageUrl:      string | null
+  imageFallback: React.ReactNode
+  imageOverlay?: React.ReactNode
+  imageTopRight?: React.ReactNode
+  borderColor:   string
+  children:      React.ReactNode
+  onClick:       () => void
+  ariaLabel:     string
+}) {
+  return (
+    <button
+      type="button"
+      className="w-full text-left active:scale-[0.98] transition-transform"
+      onClick={onClick}
+      aria-label={ariaLabel}
+    >
+      <div
+        className="rounded-md overflow-hidden"
+        style={{ border: `1px solid ${borderColor}` }}
+      >
+        {/* Imagem 16:9 */}
+        <div
+          className="relative w-full"
+          style={{ aspectRatio: '16/9', background: 'rgba(255,255,255,0.04)' }}
+        >
+          {imageUrl ? (
+            <img
+              src={imageUrl}
+              alt=""
+              aria-hidden
+              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+              loading="lazy"
+            />
+          ) : (
+            <div
+              className="w-full h-full flex items-center justify-center"
+              aria-hidden
+            >
+              {imageFallback}
+            </div>
+          )}
+
+          {/* Gradient overlay bottom */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{ background: 'linear-gradient(to bottom, transparent 40%, rgba(15,11,26,0.60) 100%)' }}
+          />
+
+          {/* Overlay conteúdo extra (badge de feature, botão X de blog) */}
+          {imageOverlay}
+          {imageTopRight}
+        </div>
+
+        {/* Bloco de texto — altura fixa */}
+        <div style={{ minHeight: 88 }}>
+          {children}
+        </div>
+      </div>
+    </button>
+  )
+}
+
 // ---------- BlogCard ----------
 
-async function openUrl(url: string, _slug: string) {
+async function openUrl(url: string) {
   hapticLight()
   if (Capacitor.isNativePlatform()) {
     await Browser.open({ url })
@@ -330,119 +550,114 @@ function BlogCard({
   const emoji = CONTENT_CATEGORY_EMOJI[article.category] ?? '📖'
 
   return (
-    <button
-      type="button"
-      className="w-full text-left active:scale-[0.98] transition-transform"
-      onClick={() => openUrl(article.blogUrl, article.slug)}
-      aria-label={`Abrir artigo: ${article.title}`}
-    >
-      <div
-        className="rounded-md overflow-hidden"
-        style={{ background: 'rgba(183,159,255,0.05)', border: '1px solid rgba(183,159,255,0.12)' }}
-      >
-        {/* Imagem 16:9 */}
-        <div
-          className="relative w-full"
-          style={{ aspectRatio: '16/9', background: 'rgba(183,159,255,0.1)' }}
+    <CardShell
+      imageUrl={article.imageUrl}
+      imageFallback={
+        <span style={{ fontSize: 40 }}>{emoji}</span>
+      }
+      imageTopRight={
+        <button
+          type="button"
+          aria-label="Dispensar sugestão"
+          className="absolute top-2 right-2 flex items-center justify-center rounded-full text-white/80"
+          style={{ background: 'rgba(0,0,0,0.45)', width: 28, height: 28, backdropFilter: 'blur(4px)' }}
+          onClick={(e) => { e.stopPropagation(); hapticLight(); onDismiss() }}
         >
-          {article.imageUrl ? (
-            <img
-              src={article.imageUrl}
-              alt=""
-              aria-hidden
-              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-              loading="lazy"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center" style={{ fontSize: 36 }} aria-hidden>
-              {emoji}
-            </div>
-          )}
-
-          {/* Gradient overlay */}
-          <div
-            className="absolute inset-0 pointer-events-none"
-            style={{ background: 'linear-gradient(to bottom, transparent 50%, rgba(15,11,26,0.55) 100%)' }}
-          />
-
-          {/* Botão fechar */}
-          <button
-            type="button"
-            aria-label="Dispensar sugestão"
-            className="absolute top-2 right-2 flex items-center justify-center rounded-full text-white/80"
-            style={{ background: 'rgba(0,0,0,0.45)', width: 28, height: 28, backdropFilter: 'blur(4px)' }}
-            onClick={(e) => { e.stopPropagation(); hapticLight(); onDismiss() }}
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>close</span>
-          </button>
-        </div>
-
-        {/* Texto */}
-        <div className="px-3 py-2.5">
-          <p className="font-label text-[10px] uppercase tracking-wider text-primary/70 font-bold mb-1">
-            {emoji} Para você
-          </p>
-          <p
-            className="font-label text-sm font-semibold text-on-surface leading-snug mb-1.5"
-            style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
-          >
-            {article.title}
-          </p>
-          <p className="font-label text-xs text-primary font-medium">Ler artigo →</p>
-        </div>
+          <span className="material-symbols-outlined" style={{ fontSize: 16 }}>close</span>
+        </button>
+      }
+      borderColor="rgba(183,159,255,0.12)"
+      onClick={() => openUrl(article.blogUrl)}
+      ariaLabel={`Abrir artigo: ${article.title}`}
+    >
+      <div className="px-3 pt-2.5 pb-3">
+        <p className="font-label text-[10px] uppercase tracking-wider text-primary/70 font-bold mb-1">
+          {emoji} Para você
+        </p>
+        <p
+          className="font-label text-sm font-semibold text-on-surface leading-snug mb-2"
+          style={{
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+          }}
+        >
+          {article.title}
+        </p>
+        <p className="font-label text-xs text-primary font-medium">Ler artigo →</p>
       </div>
-    </button>
+    </CardShell>
   )
 }
 
 // ---------- FeatureCard ----------
-// TODO: adicionar imageUrl quando imagens de saltos/marcos/vacinas estiverem prontas.
-// Estrutura já suporta: basta passar `imageUrl?: string` e renderizar o <img> no topo.
 
 function FeatureCard({
   highlight,
+  imageUrl,
   onTap,
 }: {
   highlight: Highlight
+  imageUrl:  string | null
   onTap:     () => void
 }) {
-  return (
-    <button
-      type="button"
-      className="w-full text-left active:scale-[0.98] transition-transform"
-      onClick={onTap}
-      aria-label={`${highlight.kicker}: ${highlight.title}`}
-    >
-      <div
-        className="rounded-md overflow-hidden"
-        style={{
-          background: ACCENT_GRADIENT[highlight.accent],
-          border: `1px solid ${ACCENT_BORDER[highlight.accent]}`,
-          minHeight: 160,
-        }}
-      >
-        {/* Emoji centralizado */}
-        <div className="flex items-center justify-center pt-7 pb-4">
-          <span style={{ fontSize: 56 }} aria-hidden>{highlight.emoji}</span>
-        </div>
+  const hasBg = Boolean(imageUrl)
 
-        {/* Texto */}
-        <div className="px-4 pb-4">
-          <p className={`font-label text-[10px] font-bold uppercase tracking-wider mb-1 ${ACCENT_KICKER[highlight.accent]}`}>
-            {highlight.kicker}
-          </p>
-          <p
-            className="font-headline text-base font-bold text-on-surface leading-snug mb-3"
-            style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
+  return (
+    <CardShell
+      imageUrl={imageUrl}
+      imageFallback={
+        // Fallback: gradiente de accent + emoji grande centralizado
+        <div
+          className="w-full h-full flex items-center justify-center"
+          style={{ background: ACCENT_GRADIENT[highlight.accent] }}
+        >
+          <span style={{ fontSize: 52 }} aria-hidden>{highlight.emoji}</span>
+        </div>
+      }
+      imageOverlay={
+        // Badge kicker overlay no canto inferior-esquerdo da imagem
+        <div
+          className="absolute bottom-2 left-2 flex items-center gap-1.5 px-2 py-1 rounded"
+          style={{
+            background: hasBg ? ACCENT_BADGE[highlight.accent] : 'rgba(0,0,0,0.5)',
+            backdropFilter: 'blur(6px)',
+          }}
+        >
+          <span style={{ fontSize: 12 }} aria-hidden>{highlight.emoji}</span>
+          <span
+            className="font-label font-bold text-white"
+            style={{ fontSize: 10, letterSpacing: '0.06em', textTransform: 'uppercase' }}
           >
-            {highlight.title}
-          </p>
-          <div className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-md font-label text-xs font-semibold ${ACCENT_BTN[highlight.accent]}`}>
-            Ver mais →
-          </div>
+            {highlight.kicker}
+          </span>
+        </div>
+      }
+      borderColor="rgba(183,159,255,0.10)"
+      onClick={onTap}
+      ariaLabel={`${highlight.kicker}: ${highlight.title}`}
+    >
+      <div className="px-3 pt-2.5 pb-3">
+        <p className={`font-label text-[10px] font-bold uppercase tracking-wider mb-1 ${ACCENT_KICKER[highlight.accent]}`}>
+          {highlight.kicker}
+        </p>
+        <p
+          className="font-headline text-sm font-bold text-on-surface leading-snug mb-2"
+          style={{
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+          }}
+        >
+          {highlight.title}
+        </p>
+        <div className={`inline-flex items-center gap-1 px-2.5 py-1 rounded font-label text-xs font-semibold ${ACCENT_BTN[highlight.accent]}`}>
+          Ver mais →
         </div>
       </div>
-    </button>
+    </CardShell>
   )
 }
 
@@ -462,7 +677,7 @@ function DotsIndicator({
   const visible     = Array.from({ length: windowEnd - windowStart }, (_, i) => windowStart + i)
 
   return (
-    <div className="flex items-center justify-center gap-1.5 mt-3 pb-1">
+    <div className="flex items-center justify-center gap-1.5 mt-2.5 pb-1">
       {visible.map((i) => (
         <button
           key={i}
