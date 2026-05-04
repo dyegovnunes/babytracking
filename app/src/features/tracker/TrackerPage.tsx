@@ -56,6 +56,9 @@ import DiscoveryNudgeCard from './components/DiscoveryNudgeCard'
 import DiscoveryTrail from './components/DiscoveryTrail'
 import TrailCompletionSheet from './components/TrailCompletionSheet'
 import RoutineIntroSheet from './components/RoutineIntroSheet'
+import InsightsIntroSheet from './components/InsightsIntroSheet'
+import YaIATrailSheet from './components/YaIATrailSheet'
+import ReportIntroSheet from './components/ReportIntroSheet'
 import FamilyInviteSheet from '../profile/components/FamilyInviteSheet'
 
 const PROJECTION_CATEGORIES: string[] = ['feed', 'diaper', 'sleep_nap', 'sleep_awake', 'bath']
@@ -287,6 +290,9 @@ export default function TrackerPage() {
   const [showFamilyInviteSheet, setShowFamilyInviteSheet] = useState(false)
   const [showTrailCompletion, setShowTrailCompletion] = useState(false)
   const [showRoutineIntro, setShowRoutineIntro] = useState(false)
+  const [showInsightsIntro, setShowInsightsIntro] = useState<'insights' | 'milestones' | 'leaps' | null>(null)
+  const [showYaIATrailSheet, setShowYaIATrailSheet] = useState(false)
+  const [showReportIntro, setShowReportIntro] = useState(false)
   const [editingLog, setEditingLog] = useState<LogEntry | null>(null)
   const [toast, setToast] = useState<string | null>(null)
   const [showAdModal, setShowAdModal] = useState(false)
@@ -653,21 +659,6 @@ export default function TrackerPage() {
         </button>
       </div>
 
-      {/* Trilha de descoberta pós-onboarding — guia o usuário pelas features
-          nos primeiros 14 dias. Grid permanece intocável e no topo. */}
-      {baby && (
-        <DiscoveryTrail
-          babyId={baby.id}
-          babyAgeWeeks={babyAgeWeeks}
-          babyName={baby.name}
-          onStepAction={{
-            invite: () => setShowFamilyInviteSheet(true),
-            routine: () => setShowRoutineIntro(true),
-          }}
-          onComplete={() => setShowTrailCompletion(true)}
-        />
-      )}
-
       {/* Card comemorativo 2 anos — aparece quando bebê completa 24 meses */}
       {ageDays >= 730 && !twoYearCardDismissed && baby && (
         <div className="mx-5 mt-3 rounded-md overflow-hidden border border-[#ffd77a]/30"
@@ -860,6 +851,26 @@ export default function TrackerPage() {
 
       {/* Painel de desfralde — aparece a partir de 18 meses quando há registros */}
       <PottyPanel logs={logs} ageDays={ageDays} gridEvents={gridEvents} />
+
+      {/* Trilha de descoberta pós-onboarding — guia o usuário pelas features
+          nos primeiros 14 dias. Grid permanece intocável e no topo. */}
+      {baby && (
+        <DiscoveryTrail
+          babyId={baby.id}
+          babyAgeWeeks={babyAgeWeeks}
+          babyName={baby.name}
+          onStepAction={{
+            invite:     () => setShowFamilyInviteSheet(true),
+            routine:    () => setShowRoutineIntro(true),
+            insights:   () => setShowInsightsIntro('insights'),
+            milestones: () => setShowInsightsIntro('milestones'),
+            leaps:      () => setShowInsightsIntro('leaps'),
+            yaia:       () => setShowYaIATrailSheet(true),
+            report:     () => setShowReportIntro(true),
+          }}
+          onComplete={() => setShowTrailCompletion(true)}
+        />
+      )}
 
       {/* Journey Carousel — saltos, marcos, vacinas + artigos do blog */}
       {baby && (can.viewLeaps(myRole) || can.viewMilestones(myRole)) && (
@@ -1078,7 +1089,29 @@ export default function TrackerPage() {
 
       <RoutineIntroSheet
         isOpen={showRoutineIntro}
+        babyName={baby?.name ?? ''}
         onClose={() => setShowRoutineIntro(false)}
+      />
+
+      <InsightsIntroSheet
+        isOpen={showInsightsIntro !== null}
+        stepId={showInsightsIntro ?? 'insights'}
+        babyName={baby?.name ?? ''}
+        onClose={() => setShowInsightsIntro(null)}
+      />
+
+      <YaIATrailSheet
+        isOpen={showYaIATrailSheet}
+        babyName={baby?.name ?? ''}
+        babyAgeWeeks={babyAgeWeeks}
+        babyId={baby?.id ?? ''}
+        onClose={() => setShowYaIATrailSheet(false)}
+      />
+
+      <ReportIntroSheet
+        isOpen={showReportIntro}
+        babyName={baby?.name ?? ''}
+        onClose={() => setShowReportIntro(false)}
       />
     </div>
   )

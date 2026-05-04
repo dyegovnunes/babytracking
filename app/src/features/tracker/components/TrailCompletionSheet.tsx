@@ -1,6 +1,7 @@
 // Sheet comemorativa exibida uma única vez quando o usuário conclui
-// todos os passos da Trilha de Descoberta.
-// Celebra a conquista e apresenta o que o Yaya oferece no dia a dia.
+// todos os passos da Trilha de Descoberta — v2.
+// Tom: não comemora o checklist, comemora o entendimento.
+// "Você descobriu tudo que o Yaya pode fazer pelo [nome]. A partir daqui, ele vai ficando mais inteligente."
 
 import { useSheetBackClose } from '../../../hooks/useSheetBackClose'
 import { hapticSuccess } from '../../../lib/haptics'
@@ -12,11 +13,11 @@ interface Props {
 }
 
 const HIGHLIGHTS = [
-  { emoji: '📝', text: 'Registre as atividades do bebê com a família em tempo real' },
-  { emoji: '💡', text: 'Veja os insights e padrões da rotina a qualquer hora' },
-  { emoji: '🌱', text: 'Acompanhe vacinas, marcos e saltos de desenvolvimento' },
-  { emoji: '🤖', text: 'Pergunte qualquer coisa para a yaIA — ela conhece a rotina toda' },
-  { emoji: '📋', text: 'Tenha sempre em mãos o relatório pronto para o pediatra' },
+  { emoji: '📈', text: 'Os insights ficam mais precisos conforme você registra' },
+  { emoji: '🤖', text: 'A yaIA aprende com a rotina ao longo do tempo' },
+  { emoji: '👨‍👩‍👦', text: 'Quem está no grupo vê tudo em tempo real, sem precisar perguntar' },
+  { emoji: '📋', text: 'O relatório para o pediatra está sempre a um link de distância' },
+  { emoji: '🌱', text: 'Cada marco registrado fica para sempre na história do bebê' },
 ]
 
 export default function TrailCompletionSheet({ isOpen, babyName, onClose }: Props) {
@@ -27,6 +28,8 @@ export default function TrailCompletionSheet({ isOpen, babyName, onClose }: Prop
     hapticSuccess()
     onClose()
   }
+
+  const name = babyName || 'do bebê'
 
   return (
     <div
@@ -45,22 +48,23 @@ export default function TrailCompletionSheet({ isOpen, babyName, onClose }: Prop
         {/* Celebração */}
         <div className="text-center mb-6">
           <div className="text-5xl mb-3">🎉</div>
-          <h2 className="font-headline text-xl font-bold text-on-surface mb-1">
-            Exploração completa!
+          <h2 className="font-headline text-xl font-bold text-on-surface mb-2">
+            {babyName
+              ? `Você descobriu tudo que o Yaya tem para o ${name}.`
+              : 'Você descobriu tudo que o Yaya tem a oferecer.'}
           </h2>
           <p className="font-body text-sm text-on-surface-variant leading-relaxed">
-            {babyName ? `Você conheceu tudo que o Yaya tem para ${babyName}.` : 'Você conheceu tudo que o Yaya tem a oferecer.'}{' '}
-            Agora é só usar no dia a dia.
+            A partir daqui, ele vai ficando mais inteligente a cada registro.
           </p>
         </div>
 
-        {/* O que usar agora */}
+        {/* O que acontece a seguir */}
         <div
           className="rounded-md p-4 mb-5 space-y-3"
           style={{ background: 'rgba(183,159,255,0.05)', border: '1px solid rgba(183,159,255,0.12)' }}
         >
           <p className="font-label text-[11px] uppercase tracking-wider text-primary/60 font-bold">
-            No dia a dia com o Yaya
+            O que muda a partir de agora
           </p>
           {HIGHLIGHTS.map((h, i) => (
             <div key={i} className="flex items-start gap-3">

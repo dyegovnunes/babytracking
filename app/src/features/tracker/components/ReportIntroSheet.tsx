@@ -1,7 +1,6 @@
-// Sheet explicativa sobre a página de Rotina e Intervalos — v2
-// Aberta ao tocar no passo "Ajuste para a rotina do [nome]" na DiscoveryTrail,
-// antes de navegar para /routine.
-// Tom v2: explica o problema que resolve, não a feature em si.
+// Sheet explicativa sobre o Super Relatório — disparada pelo passo 'report' da DiscoveryTrail.
+// Tom v2: problema concreto (pais chegam na consulta sem saber o que aconteceu)
+// → solução (link com toda a rotina, o pediatra chega informado).
 
 import { useNavigate } from 'react-router-dom'
 import { useSheetBackClose } from '../../../hooks/useSheetBackClose'
@@ -15,45 +14,40 @@ interface Props {
 
 const ITEMS = [
   {
-    emoji: '⏱️',
-    title: 'Alertas no momento certo',
-    desc: 'O Yaya usa o intervalo que você definiu para avisar quando está chegando a hora — sem alarme fixo, sem interrupção desnecessária.',
+    emoji: '😰',
+    title: 'O problema',
+    desc: 'A maioria dos pais chega na consulta sem lembrar o que aconteceu na última semana. O pediatra examina sem contexto.',
   },
   {
-    emoji: '📊',
-    title: 'Insights mais precisos',
-    desc: 'Com os intervalos configurados, o Yaya identifica quando algo está fora do padrão do bebê, não de um padrão genérico.',
+    emoji: '🔗',
+    title: 'A solução',
+    desc: 'Você gera um link com toda a rotina registrada — sono, alimentação, fraldas, vacinas e marcos. Envia antes da consulta.',
   },
   {
-    emoji: '😴',
-    title: 'Projeção de sono e acordar',
-    desc: 'A duração esperada da soneca ajuda o app a estimar quando o bebê vai acordar e quando deve dormir de novo.',
+    emoji: '🩺',
+    title: 'O pediatra chega informado',
+    desc: 'Ele acessa o relatório antes ou durante a consulta. A conversa começa com dados, não com memória.',
   },
   {
-    emoji: '🛁',
-    title: 'Lembrete de banho',
-    desc: 'Você define o horário e recebe um alerta 15 minutos antes. Sem precisar lembrar.',
-  },
-  {
-    emoji: '🌙',
-    title: 'Silêncio noturno',
-    desc: 'As notificações ficam pausadas durante o horário de sono — para você não ser acordado à toa.',
+    emoji: '🔒',
+    title: 'Seguro e controlado',
+    desc: 'O link tem senha e expira em 30 dias. Você decide quem acessa e por quanto tempo.',
   },
 ]
 
-export default function RoutineIntroSheet({ isOpen, babyName, onClose }: Props) {
+export default function ReportIntroSheet({ isOpen, babyName, onClose }: Props) {
   useSheetBackClose(isOpen, onClose)
   const navigate = useNavigate()
 
   if (!isOpen) return null
 
+  const name = babyName || 'do bebê'
+
   function handleGo() {
     hapticLight()
     onClose()
-    navigate('/routine')
+    navigate('/profile')
   }
-
-  const displayName = babyName || 'do bebê'
 
   return (
     <div
@@ -75,24 +69,19 @@ export default function RoutineIntroSheet({ isOpen, babyName, onClose }: Props) 
             className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
             style={{ background: 'rgba(183,159,255,0.12)' }}
           >
-            <span className="text-2xl">⚙️</span>
+            <span className="text-2xl">📋</span>
           </div>
           <div>
             <h2 className="font-headline text-base font-bold text-on-surface leading-tight">
-              A rotina {displayName}
+              O pediatra vai chegar informado
             </h2>
             <p className="font-label text-xs text-on-surface-variant mt-0.5">
-              Configure uma vez, o Yaya trabalha sempre
+              Toda a rotina do {name} em um link
             </p>
           </div>
         </div>
 
-        {/* Contextualização */}
-        <p className="font-body text-xs text-on-surface-variant leading-relaxed mb-4">
-          Cada bebê tem um ritmo. Quando você conta esse ritmo para o Yaya, ele passa a entender o que é normal — e o que mudou.
-        </p>
-
-        {/* O que cada config faz */}
+        {/* Itens */}
         <div className="space-y-3.5 mb-6">
           {ITEMS.map((item, i) => (
             <div key={i} className="flex items-start gap-3">
@@ -115,8 +104,8 @@ export default function RoutineIntroSheet({ isOpen, babyName, onClose }: Props) 
           onClick={handleGo}
           className="w-full py-3 rounded-md bg-primary text-white font-label text-sm font-semibold flex items-center justify-center gap-2 active:opacity-80 transition-opacity"
         >
-          <span className="material-symbols-outlined text-lg">tune</span>
-          Personalizar a rotina {displayName}
+          <span className="material-symbols-outlined text-lg">link</span>
+          Gerar link para o pediatra
         </button>
       </div>
     </div>
