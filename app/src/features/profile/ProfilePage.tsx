@@ -434,10 +434,10 @@ export default function ProfilePage() {
           <span className="material-symbols-outlined text-on-surface-variant text-lg">chevron_right</span>
         </button>
 
-        {/* ===== PEDIATRA ===== */}
-        {(myRole === 'parent' || myRole === 'guardian') && baby && (
+        {/* ===== PEDIATRA ===== temporariamente oculto enquanto redesenhamos o fluxo */}
+        {/* {(myRole === 'parent' || myRole === 'guardian') && baby && (
           <PediatricianSection baby={baby} myRole={myRole} />
-        )}
+        )} */}
 
         {/* ===== CUIDADORES ===== */}
         {can.manageMembers(myRole) && <div className="bg-surface-container rounded-md p-4">
