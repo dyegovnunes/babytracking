@@ -659,6 +659,26 @@ export default function TrackerPage() {
         </button>
       </div>
 
+      {/* Trilha de descoberta pós-onboarding — guia o usuário pelas features
+          nos primeiros 14 dias. Grid permanece intocável e no topo. */}
+      {baby && (
+        <DiscoveryTrail
+          babyId={baby.id}
+          babyAgeWeeks={babyAgeWeeks}
+          babyName={baby.name}
+          onStepAction={{
+            invite:     () => setShowFamilyInviteSheet(true),
+            routine:    () => setShowRoutineIntro(true),
+            insights:   () => setShowInsightsIntro('insights'),
+            milestones: () => setShowInsightsIntro('milestones'),
+            leaps:      () => setShowInsightsIntro('leaps'),
+            yaia:       () => setShowYaIATrailSheet(true),
+            report:     () => setShowReportIntro(true),
+          }}
+          onComplete={() => setShowTrailCompletion(true)}
+        />
+      )}
+
       {/* Card comemorativo 2 anos — aparece quando bebê completa 24 meses */}
       {ageDays >= 730 && !twoYearCardDismissed && baby && (
         <div className="mx-5 mt-3 rounded-md overflow-hidden border border-[#ffd77a]/30"
@@ -851,26 +871,6 @@ export default function TrackerPage() {
 
       {/* Painel de desfralde — aparece a partir de 18 meses quando há registros */}
       <PottyPanel logs={logs} ageDays={ageDays} gridEvents={gridEvents} />
-
-      {/* Trilha de descoberta pós-onboarding — guia o usuário pelas features
-          nos primeiros 14 dias. Grid permanece intocável e no topo. */}
-      {baby && (
-        <DiscoveryTrail
-          babyId={baby.id}
-          babyAgeWeeks={babyAgeWeeks}
-          babyName={baby.name}
-          onStepAction={{
-            invite:     () => setShowFamilyInviteSheet(true),
-            routine:    () => setShowRoutineIntro(true),
-            insights:   () => setShowInsightsIntro('insights'),
-            milestones: () => setShowInsightsIntro('milestones'),
-            leaps:      () => setShowInsightsIntro('leaps'),
-            yaia:       () => setShowYaIATrailSheet(true),
-            report:     () => setShowReportIntro(true),
-          }}
-          onComplete={() => setShowTrailCompletion(true)}
-        />
-      )}
 
       {/* Journey Carousel — saltos, marcos, vacinas + artigos do blog */}
       {baby && (can.viewLeaps(myRole) || can.viewMilestones(myRole)) && (
