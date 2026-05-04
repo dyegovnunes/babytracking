@@ -39,7 +39,7 @@ BEGIN
     b.gender        AS gender,
     b.photo_url     AS photo_url,
     (
-      SELECT MAX(created_at) FROM logs WHERE baby_id = b.id
+      SELECT MAX(l.created_at) FROM logs l WHERE l.baby_id = b.id
     )               AS last_active_at,
     pp.id           AS link_id,
     pp.next_appointment_at
