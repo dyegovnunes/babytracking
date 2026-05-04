@@ -55,6 +55,7 @@ import { useDiscoveryNudges } from './useDiscoveryNudges'
 import DiscoveryNudgeCard from './components/DiscoveryNudgeCard'
 import DiscoveryTrail from './components/DiscoveryTrail'
 import TrailCompletionSheet from './components/TrailCompletionSheet'
+import RoutineIntroSheet from './components/RoutineIntroSheet'
 import FamilyInviteSheet from '../profile/components/FamilyInviteSheet'
 
 const PROJECTION_CATEGORIES: string[] = ['feed', 'diaper', 'sleep_nap', 'sleep_awake', 'bath']
@@ -285,6 +286,7 @@ export default function TrackerPage() {
   const [gridSettingsOpen, setGridSettingsOpen] = useState(false)
   const [showFamilyInviteSheet, setShowFamilyInviteSheet] = useState(false)
   const [showTrailCompletion, setShowTrailCompletion] = useState(false)
+  const [showRoutineIntro, setShowRoutineIntro] = useState(false)
   const [editingLog, setEditingLog] = useState<LogEntry | null>(null)
   const [toast, setToast] = useState<string | null>(null)
   const [showAdModal, setShowAdModal] = useState(false)
@@ -658,7 +660,10 @@ export default function TrackerPage() {
           babyId={baby.id}
           babyAgeWeeks={babyAgeWeeks}
           babyName={baby.name}
-          onStepAction={{ invite: () => setShowFamilyInviteSheet(true) }}
+          onStepAction={{
+            invite: () => setShowFamilyInviteSheet(true),
+            routine: () => setShowRoutineIntro(true),
+          }}
           onComplete={() => setShowTrailCompletion(true)}
         />
       )}
@@ -1069,6 +1074,11 @@ export default function TrackerPage() {
         isOpen={showTrailCompletion}
         babyName={baby?.name ?? ''}
         onClose={() => setShowTrailCompletion(false)}
+      />
+
+      <RoutineIntroSheet
+        isOpen={showRoutineIntro}
+        onClose={() => setShowRoutineIntro(false)}
       />
     </div>
   )
