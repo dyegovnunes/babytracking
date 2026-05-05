@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppState } from '../../contexts/AppContext'
 import { trackOnce } from '../../lib/analytics'
+import { setFlag } from '../../lib/userFlags'
 import { contractionDe } from '../../lib/genderUtils'
 import { SpotlightOverlay } from '../../components/ui/SpotlightOverlay'
 import { useInsightsEngine, type PeriodOption } from './useInsightsEngine'
@@ -42,7 +43,7 @@ export default function InsightsPage() {
   }, [baby?.id, spotlightKey, logs.length]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function dismissSpotlight() {
-    if (spotlightKey) localStorage.setItem(spotlightKey, '1')
+    if (spotlightKey) setFlag(spotlightKey)
     setShowSpotlight(false)
   }
 

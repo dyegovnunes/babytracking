@@ -7,6 +7,7 @@ import { updateStreak, getStreak, type StreakData } from '../lib/streak'
 import { Capacitor } from '@capacitor/core'
 import { initPushNotifications, updateLastSeen } from '../lib/pushNotifications'
 import { trackOnce } from '../lib/analytics'
+import { initFlags, syncFlags } from '../lib/userFlags'
 
 interface AppState {
   logs: LogEntry[]
@@ -132,6 +133,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'SET_LOADING' })
 
     async function load() {
+      // Inicializar flags do usuário e sincronizar do banco para o localStorage.
+      // Garante que a trilha, nudges e toasts não "reiniciem" ao reinstalar
+      // ou trocar de device. Aguardamos o sync antes de continuar pra evitar
+      // race condition: spotlights/intros checariam o localStorage no mount
+      // antes do estado vir do banco e disparariam erroneamente.
+      // Custo: ~200-400ms de SELECT pequeno indexado por user_id na 1ª carga.
+      initFlags(user!.id)
+      await syncFlags()
+
       // Find all babies the user has access to (with role)
       const { data: memberships } = await supabase
         .from('baby_members')
@@ -226,10 +236,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       dispatch({ type: 'SET_INITIAL', logs, intervals, baby, babies: allBabies, babiesWithRole, members, needsWelcome })
 
-      // Init push notifications if user has logs (not first-time user)
-      if (logs.length > 0) {
-        initPushNotifications(user!.id, babyId).catch(() => {})
-      }
+      // Init push notifications on every login (token must be registered regardless of logs)
+      initPushNotifications(user!.id, babyId).catch(() => {})
 
       // Load streak
       const streakData = await getStreak(babyId)

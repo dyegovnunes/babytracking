@@ -30,6 +30,7 @@ const AUDIENCES: {
   { key: 'family',       icon: 'favorite',    title: 'Família', desc: 'Marcos recentes, fotos e progresso.' },
 ];
 import { hapticLight, hapticMedium, hapticSuccess } from '../../../lib/haptics';
+import { setFlag } from '../../../lib/userFlags';
 import ReportGeneratedSheet from './ReportGeneratedSheet';
 
 export default function SharedReports() {
@@ -53,7 +54,7 @@ export default function SharedReports() {
   }, [baby?.id, spotlightKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function dismissSpotlight() {
-    if (spotlightKey) localStorage.setItem(spotlightKey, '1');
+    if (spotlightKey) setFlag(spotlightKey);
     setShowSpotlight(false);
   }
   const [loading, setLoading] = useState(true);
@@ -136,7 +137,7 @@ export default function SharedReports() {
         // Celebration: primeira geração do Super Relatório
         const celebKey = `yaya_celebration_report_generated_${baby.id}`;
         if (!localStorage.getItem(celebKey)) {
-          localStorage.setItem(celebKey, '1');
+          setFlag(celebKey);
           setShowReportCelebration(true);
         }
       }

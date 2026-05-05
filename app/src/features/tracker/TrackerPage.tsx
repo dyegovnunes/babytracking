@@ -8,6 +8,7 @@ import { DEFAULT_EVENTS, EVENT_CATALOG } from '../../lib/constants'
 import { getNextProjection, isInQuietHours } from './projections'
 import { useTimer } from '../../hooks/useTimer'
 import { hapticSuccess, hapticLight, hapticMedium } from '../../lib/haptics'
+import { setFlag } from '../../lib/userFlags'
 import HeroIdentity from './components/HeroIdentity'
 import ActivityGrid from './components/ActivityGrid'
 import PredictionCard from './components/PredictionCard'
@@ -338,6 +339,17 @@ export default function TrackerPage() {
   const [showInsightsIntro, setShowInsightsIntro] = useState<'insights' | 'milestones' | 'leaps' | null>(null)
   const [showYaIATrailSheet, setShowYaIATrailSheet] = useState(false)
   const [showReportIntro, setShowReportIntro] = useState(false)
+
+  // Fecha todos os sheets de descoberta/intro ao trocar de bebê — evita
+  // que um sheet aberto pro baby A continue exibido depois do switch pro B.
+  useEffect(() => {
+    setShowFamilyInviteSheet(false)
+    setShowFirstRecord(false)
+    setShowRoutineIntro(false)
+    setShowInsightsIntro(null)
+    setShowYaIATrailSheet(false)
+    setShowReportIntro(false)
+  }, [baby?.id])
   const [editingLog, setEditingLog] = useState<LogEntry | null>(null)
   const [toast, setToast] = useState<string | null>(null)
   const [showAdModal, setShowAdModal] = useState(false)
@@ -400,7 +412,7 @@ export default function TrackerPage() {
       if (!baby) return
       const celebKey = `yaya_celebration_first_record_${baby.id}`
       if (!localStorage.getItem(celebKey)) {
-        localStorage.setItem(celebKey, '1')
+        setFlag(celebKey)
         hapticSuccess()
         setShowFirstRecord(true)
       } else {
@@ -838,7 +850,7 @@ export default function TrackerPage() {
               <button
                 onClick={() => {
                   hapticLight()
-                  localStorage.setItem(`yaya_2yr_${baby.id}`, String(Date.now()))
+                  setFlag(`yaya_2yr_${baby.id}`, String(Date.now()))
                   setTwoYearCardDismissed(true)
                 }}
                 className="px-4 py-2 rounded-md border border-white/20 text-white/60 font-label text-xs"
@@ -908,7 +920,7 @@ export default function TrackerPage() {
                 toggleEvent('breast_left', false)
                 toggleEvent('breast_right', false)
                 toggleEvent('breast_both', true)
-                localStorage.setItem(`yaya_bss_${baby.id}`, '1')
+                setFlag(`yaya_bss_${baby.id}`)
                 setDismissedBreastCards((prev) => new Set([...prev, 'simplify']))
                 setToast('Painel simplificado!')
               }}
@@ -919,7 +931,7 @@ export default function TrackerPage() {
             <button
               onClick={() => {
                 hapticLight()
-                localStorage.setItem(`yaya_bss_${baby.id}`, '1')
+                setFlag(`yaya_bss_${baby.id}`)
                 setDismissedBreastCards((prev) => new Set([...prev, 'simplify']))
               }}
               className="px-4 py-2 rounded-md border border-outline-variant text-on-surface-variant font-label text-xs"
@@ -949,7 +961,7 @@ export default function TrackerPage() {
                 toggleEvent('breast_left', false)
                 toggleEvent('breast_right', false)
                 toggleEvent('breast_both', false)
-                localStorage.setItem(`yaya_bsd_${baby.id}`, '1')
+                setFlag(`yaya_bsd_${baby.id}`)
                 setDismissedBreastCards((prev) => new Set([...prev, 'disable']))
                 setToast('Botões de amamentação removidos!')
               }}
@@ -960,7 +972,7 @@ export default function TrackerPage() {
             <button
               onClick={() => {
                 hapticLight()
-                localStorage.setItem(`yaya_bsd_${baby.id}`, '1')
+                setFlag(`yaya_bsd_${baby.id}`)
                 setDismissedBreastCards((prev) => new Set([...prev, 'disable']))
               }}
               className="px-4 py-2 rounded-md border border-outline-variant text-on-surface-variant font-label text-xs"
