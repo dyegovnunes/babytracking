@@ -20,6 +20,7 @@ interface AppState {
   needsWelcome: boolean
   pauseDuringSleep: boolean
   quietHours: { enabled: boolean; start: number; end: number }
+  autoSleepEnabled: boolean
   streak: StreakData | null
 }
 
@@ -39,6 +40,7 @@ type Action =
   | { type: 'CLEAR_LOGS' }
   | { type: 'SET_PAUSE_DURING_SLEEP'; value: boolean }
   | { type: 'SET_QUIET_HOURS'; value: { enabled: boolean; start: number; end: number } }
+  | { type: 'SET_AUTO_SLEEP_ENABLED'; value: boolean }
   | { type: 'SET_STREAK'; streak: StreakData | null }
   | { type: 'SET_WELCOME_SHOWN' }
 
@@ -54,6 +56,7 @@ const initialState: AppState = {
   needsWelcome: false,
   pauseDuringSleep: true,
   quietHours: { enabled: false, start: 22, end: 7 },
+  autoSleepEnabled: true,
   streak: null,
 }
 
@@ -78,7 +81,7 @@ function reducer(state: AppState, action: Action): AppState {
     case 'SET_BABY':
       return { ...state, baby: action.baby }
     case 'SWITCH_BABY':
-      return { ...state, baby: action.baby, logs: action.logs, intervals: action.intervals, members: action.members, needsWelcome: action.needsWelcome, pauseDuringSleep: true, quietHours: { enabled: false, start: 22, end: 7 } }
+      return { ...state, baby: action.baby, logs: action.logs, intervals: action.intervals, members: action.members, needsWelcome: action.needsWelcome, pauseDuringSleep: true, quietHours: { enabled: false, start: 22, end: 7 }, autoSleepEnabled: true }
     case 'UPDATE_MEMBER':
       return { ...state, members: { ...state.members, [action.userId]: { ...state.members[action.userId], role: action.role } } }
     case 'REMOVE_MEMBER': {
@@ -91,6 +94,8 @@ function reducer(state: AppState, action: Action): AppState {
       return { ...state, pauseDuringSleep: action.value }
     case 'SET_QUIET_HOURS':
       return { ...state, quietHours: action.value }
+    case 'SET_AUTO_SLEEP_ENABLED':
+      return { ...state, autoSleepEnabled: action.value }
     case 'SET_STREAK':
       return { ...state, streak: action.streak }
     case 'SET_WELCOME_SHOWN':
@@ -163,6 +168,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         quietHoursEnabled: row.quiet_hours_enabled ?? false,
         quietHoursStart: row.quiet_hours_start ?? 22,
         quietHoursEnd: row.quiet_hours_end ?? 7,
+        autoSleepEnabled: row.auto_sleep_enabled ?? true,
       }))
 
       // Build babiesWithRole using membership roles
@@ -249,6 +255,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
           end: baby.quietHoursEnd ?? 7,
         },
       })
+      // Auto-sono: lido da coluna do bebê (per-baby, compartilhado entre cuidadores)
+      dispatch({ type: 'SET_AUTO_SLEEP_ENABLED', value: baby.autoSleepEnabled ?? true })
     }
 
     load().catch(() => {
@@ -643,6 +651,7 @@ export async function switchBaby(
     quietHoursEnabled: babyRes.data.quiet_hours_enabled ?? false,
     quietHoursStart: babyRes.data.quiet_hours_start ?? 22,
     quietHoursEnd: babyRes.data.quiet_hours_end ?? 7,
+    autoSleepEnabled: babyRes.data.auto_sleep_enabled ?? true,
   }
 
   const logs: LogEntry[] = (logsRes.data ?? []).map((row) => ({
@@ -705,4 +714,6 @@ export async function switchBaby(
       end: baby.quietHoursEnd ?? 7,
     },
   })
+  // Auto-sono: lido da coluna do bebê (per-baby)
+  dispatch({ type: 'SET_AUTO_SLEEP_ENABLED', value: baby.autoSleepEnabled ?? true })
 }

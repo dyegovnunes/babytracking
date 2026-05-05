@@ -75,6 +75,7 @@ export interface Baby {
   quietHoursEnabled?: boolean
   quietHoursStart?: number
   quietHoursEnd?: number
+  autoSleepEnabled?: boolean
 }
 
 /** Baby com o papel do usuário logado — usado no seletor de bebê */

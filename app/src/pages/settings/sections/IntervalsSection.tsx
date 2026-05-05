@@ -37,10 +37,25 @@ export default function IntervalsSection({
   onOpenQuietPicker,
   onOpenInfo,
 }: Props) {
-  const { baby, pauseDuringSleep } = useAppState()
+  const { baby, pauseDuringSleep, autoSleepEnabled } = useAppState()
   const { adaptiveTheme, setAdaptiveTheme } = useTheme()
   const { user } = useAuth()
   const dispatch = useAppDispatch()
+
+  const toggleAutoSleep = useCallback(async () => {
+    if (!user || !baby) return
+    const newVal = !autoSleepEnabled
+    const { error } = await supabase
+      .from('babies')
+      .update({ auto_sleep_enabled: newVal })
+      .eq('id', baby.id)
+    if (error) {
+      onError('Erro ao salvar')
+      return
+    }
+    dispatch({ type: 'SET_AUTO_SLEEP_ENABLED', value: newVal })
+    onSaved()
+  }, [autoSleepEnabled, user, baby, dispatch, onSaved, onError])
 
   const togglePauseDuringSleep = useCallback(async () => {
     if (!user || !baby) return
@@ -194,6 +209,20 @@ export default function IntervalsSection({
               </button>
             </div>
           )}
+        </div>
+
+        {/* Registrar despertadores noturnos automaticamente */}
+        <div className="bg-surface-container rounded-md px-4 py-3.5 flex items-center gap-3">
+          <span className="material-symbols-outlined text-on-surface-variant text-lg">
+            bedtime
+          </span>
+          <div className="flex-1">
+            <p className="font-body text-sm text-on-surface">Registrar despertadores noturnos</p>
+            <p className="font-label text-[11px] text-on-surface-variant leading-snug">
+              Insere &ldquo;Acordou&rdquo; 5 min antes e &ldquo;Dormiu&rdquo; 30 min depois ao registrar evento durante o sono noturno
+            </p>
+          </div>
+          <Toggle value={autoSleepEnabled} onChange={toggleAutoSleep} />
         </div>
 
         {/* Iluminação adaptada — só aparece se o horário noturno está configurado */}

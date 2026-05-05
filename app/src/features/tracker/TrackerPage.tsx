@@ -1,5 +1,7 @@
-import { useState, useCallback, useMemo, useEffect } from 'react'
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAppState, useAppDispatch, addLog, updateLog, deleteLog } from '../../contexts/AppContext'
+import { supabase } from '../../lib/supabase'
 import { useOfflineQueue, OFFLINE_QUEUE_ENABLED } from './useOfflineQueue'
 import { useAuth } from '../../contexts/AuthContext'
 import { DEFAULT_EVENTS, EVENT_CATALOG } from '../../lib/constants'
@@ -60,6 +62,7 @@ import InsightsIntroSheet from './components/InsightsIntroSheet'
 import YaIATrailSheet from './components/YaIATrailSheet'
 import ReportIntroSheet from './components/ReportIntroSheet'
 import FirstRecordSheet from './components/FirstRecordSheet'
+import AutoSleepIntroSheet from './components/AutoSleepIntroSheet'
 import MemberJoinedSheet from './components/MemberJoinedSheet'
 import { useMemberJoinNotification } from './useMemberJoinNotification'
 import FamilyInviteSheet from '../profile/components/FamilyInviteSheet'
@@ -67,9 +70,10 @@ import FamilyInviteSheet from '../profile/components/FamilyInviteSheet'
 const PROJECTION_CATEGORIES: string[] = ['feed', 'diaper', 'sleep_nap', 'sleep_awake', 'bath']
 
 export default function TrackerPage() {
-  const { logs, intervals, baby, members, loading, pauseDuringSleep, quietHours, streak } = useAppState()
+  const { logs, intervals, baby, members, loading, pauseDuringSleep, quietHours, autoSleepEnabled, streak } = useAppState()
   const dispatch = useAppDispatch()
   const { user } = useAuth()
+  const navigate = useNavigate()
   const myRole = useMyRole()
   const { enqueue } = useOfflineQueue(baby?.id, dispatch)
   // Grid configurável: carrega baby_grid_items do Supabase.
@@ -293,6 +297,8 @@ export default function TrackerPage() {
   const [showFamilyInviteSheet, setShowFamilyInviteSheet] = useState(false)
   const [showTrailCompletion, setShowTrailCompletion] = useState(false)
   const [showFirstRecord, setShowFirstRecord] = useState(false)
+  const [showAutoSleepIntro, setShowAutoSleepIntro] = useState(false)
+  const [autoSleepIntroEventLabel, setAutoSleepIntroEventLabel] = useState('')
 
   // Detectar conclusão da trilha diretamente no TrackerPage — mais confiável que
   // depender do useEffect interno do DiscoveryTrail (que pode ser perdido no remount).
@@ -362,12 +368,30 @@ export default function TrackerPage() {
   // Eventos que indicam que o bebê acordou (alimentação ou troca de fralda)
   const WAKE_TRIGGER_EVENTS = ['breast_left', 'breast_right', 'breast_both', 'bottle', 'diaper_wet', 'diaper_dirty']
 
-  // Auto-sono só faz sentido durante o horário noturno configurado.
-  // Durante o dia, o pai pode ter simplesmente esquecido de registrar o acordou.
-  const isNighttime = useMemo(() => {
-    if (!quietHours?.enabled) return false
-    return isInQuietHours(new Date(), { start: quietHours.start, end: quietHours.end })
+  // Auto-sono só faz sentido durante o horário noturno.
+  // Independente de quietHours.enabled — usa a faixa horária configurada (padrão 22h-7h)
+  // mesmo que o usuário nunca tenha ativado as notificações noturnas.
+  const isInNightHours = useMemo(() => {
+    const start = quietHours?.start ?? 22
+    const end   = quietHours?.end   ?? 7
+    return isInQuietHours(new Date(), { start, end })
   }, [quietHours, now])
+
+  // Guard de re-entrada: impede que dois eventos rápidos em sucessão (ex: fralda + amamentação)
+  // ambos disparem o auto-sono antes do primeiro addLog retornar do Supabase.
+  const isAutoSleepRunningRef = useRef(false)
+
+  // Toggle de auto-sono — salva na tabela babies (per-baby, compartilhado)
+  const toggleAutoSleep = useCallback(async () => {
+    if (!baby) return
+    const newVal = !autoSleepEnabled
+    const { error } = await supabase
+      .from('babies')
+      .update({ auto_sleep_enabled: newVal })
+      .eq('id', baby.id)
+    if (error) return
+    dispatch({ type: 'SET_AUTO_SLEEP_ENABLED', value: newVal })
+  }, [autoSleepEnabled, baby, dispatch])
 
   // Helper: mostra FirstRecordSheet na primeira vez; toast normal nas seguintes.
   // Chama hapticSuccess() internamente — não chamar de novo no handler.
@@ -426,8 +450,8 @@ export default function TrackerPage() {
 
       // Offline: enfileirar localmente e dispatch otimista para feedback imediato
       if (!navigator.onLine && OFFLINE_QUEUE_ENABLED) {
-        // Auto-sono offline — só durante horário noturno
-        if (isBabySleeping && isNighttime && WAKE_TRIGGER_EVENTS.includes(eventId)) {
+        // Auto-sono offline — só durante horário noturno e se feature habilitada
+        if (autoSleepEnabled && isBabySleeping && isInNightHours && !isAutoSleepRunningRef.current && WAKE_TRIGGER_EVENTS.includes(eventId)) {
           const ts = Date.now()
           const wakeId = enqueue({ eventId: 'wake',  babyId: baby.id, userId: user?.id, payload: { source: 'offline' }, timestamp: ts - 5 * 60_000 })
           const evtId  = enqueue({ eventId,           babyId: baby.id, userId: user?.id, payload: { source: 'offline' }, timestamp: ts })
@@ -447,17 +471,30 @@ export default function TrackerPage() {
         return
       }
 
-      // Auto-sono: se bebê está dormindo E é horário noturno e registrou amamentação/fralda,
-      // insere "acordou" 5 min antes e "dormiu" 30 min depois automaticamente.
-      // Fora do horário noturno, o pai pode ter simplesmente esquecido de registrar o acordou.
-      if (isBabySleeping && isNighttime && WAKE_TRIGGER_EVENTS.includes(eventId)) {
-        const ts = Date.now()
-        await addLog(dispatch, 'wake',  baby.id, undefined, user?.id, null, ts - 5 * 60_000)
-        const log = await addLog(dispatch, eventId, baby.id, undefined, user?.id, null, ts)
-        await addLog(dispatch, 'sleep', baby.id, undefined, user?.id, null, ts + 30 * 60_000)
-        if (log) {
-          hapticSuccess()
-          setToast(`${event.label} + sono automático registrado`)
+      // Auto-sono: se bebê está dormindo, é horário noturno, a feature está ligada
+      // e não há outro auto-sono em andamento — insere "acordou" 5 min antes e
+      // "dormiu" 30 min depois automaticamente.
+      if (autoSleepEnabled && isBabySleeping && isInNightHours && !isAutoSleepRunningRef.current && WAKE_TRIGGER_EVENTS.includes(eventId)) {
+        isAutoSleepRunningRef.current = true
+        try {
+          const ts = Date.now()
+          await addLog(dispatch, 'wake',  baby.id, undefined, user?.id, null, ts - 5 * 60_000)
+          const log = await addLog(dispatch, eventId, baby.id, undefined, user?.id, null, ts)
+          await addLog(dispatch, 'sleep', baby.id, undefined, user?.id, null, ts + 30 * 60_000)
+          if (log) {
+            const introKey = `yaya_autosleep_intro_${baby.id}`
+            if (!localStorage.getItem(introKey)) {
+              localStorage.setItem(introKey, '1')
+              hapticSuccess()
+              setAutoSleepIntroEventLabel(event.label)
+              setShowAutoSleepIntro(true)
+            } else {
+              hapticSuccess()
+              setToast(`${event.label} + sono automático registrado`)
+            }
+          }
+        } finally {
+          isAutoSleepRunningRef.current = false
         }
         return
       }
@@ -468,7 +505,7 @@ export default function TrackerPage() {
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [baby, dispatch, user, checkAndRecord, isBabySleeping, enqueue, notifyRecordCreated],
+    [baby, dispatch, user, checkAndRecord, isBabySleeping, isInNightHours, autoSleepEnabled, enqueue, notifyRecordCreated],
   )
 
   const handleMealConfirm = useCallback(
@@ -583,6 +620,20 @@ export default function TrackerPage() {
       if (!baby) return
       setBottleModalOpen(false)
       if (!navigator.onLine && OFFLINE_QUEUE_ENABLED) {
+        // Auto-sono offline para mamadeira
+        if (autoSleepEnabled && isBabySleeping && isInNightHours && !isAutoSleepRunningRef.current) {
+          const ts = Date.now()
+          const p: Record<string, unknown> = { source: 'offline' }
+          const wakeId = enqueue({ eventId: 'wake',   babyId: baby.id, userId: user?.id, payload: p, timestamp: ts - 5 * 60_000 })
+          const evtId  = enqueue({ eventId: 'bottle', babyId: baby.id, ml, userId: user?.id, payload: p, timestamp: ts })
+          const slpId  = enqueue({ eventId: 'sleep',  babyId: baby.id, userId: user?.id, payload: p, timestamp: ts + 30 * 60_000 })
+          if (wakeId) dispatch({ type: 'ADD_LOG', log: { id: wakeId, eventId: 'wake',   timestamp: ts - 5 * 60_000, payload: p, createdBy: user?.id } })
+          if (evtId)  dispatch({ type: 'ADD_LOG', log: { id: evtId,  eventId: 'bottle', timestamp: ts, ml, payload: p, createdBy: user?.id } })
+          if (slpId)  dispatch({ type: 'ADD_LOG', log: { id: slpId,  eventId: 'sleep',  timestamp: ts + 30 * 60_000, payload: p, createdBy: user?.id } })
+          hapticLight()
+          setToast(`Mamadeira ${ml}ml + sono automático salvos offline`)
+          return
+        }
         const ts = Date.now()
         const p: Record<string, unknown> = { source: 'offline' }
         const tempId = enqueue({ eventId: 'bottle', babyId: baby.id, ml, userId: user?.id, payload: p, timestamp: ts })
@@ -590,12 +641,38 @@ export default function TrackerPage() {
         setToast(`Mamadeira ${ml}ml salva offline`)
         return
       }
+      // Auto-sono para mamadeira (online)
+      if (autoSleepEnabled && isBabySleeping && isInNightHours && !isAutoSleepRunningRef.current) {
+        isAutoSleepRunningRef.current = true
+        try {
+          const ts = Date.now()
+          await addLog(dispatch, 'wake',   baby.id, undefined, user?.id, null, ts - 5 * 60_000)
+          const log = await addLog(dispatch, 'bottle', baby.id, ml, user?.id, null, ts)
+          await addLog(dispatch, 'sleep',  baby.id, undefined, user?.id, null, ts + 30 * 60_000)
+          if (log) {
+            const introKey = `yaya_autosleep_intro_${baby.id}`
+            if (!localStorage.getItem(introKey)) {
+              localStorage.setItem(introKey, '1')
+              hapticSuccess()
+              setAutoSleepIntroEventLabel(`Mamadeira ${ml}ml`)
+              setShowAutoSleepIntro(true)
+            } else {
+              hapticSuccess()
+              setToast(`Mamadeira ${ml}ml + sono automático registrado`)
+            }
+          }
+        } finally {
+          isAutoSleepRunningRef.current = false
+        }
+        return
+      }
       const log = await addLog(dispatch, 'bottle', baby.id, ml, user?.id)
       if (log) {
         notifyRecordCreated(`Mamadeira ${ml}ml`)
       }
     },
-    [baby, dispatch, user, enqueue, notifyRecordCreated],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [baby, dispatch, user, enqueue, notifyRecordCreated, autoSleepEnabled, isBabySleeping, isInNightHours],
   )
 
   const handleEditLog = useCallback((log: LogEntry) => {
@@ -1138,6 +1215,7 @@ export default function TrackerPage() {
       <TrailCompletionSheet
         isOpen={showTrailCompletion}
         babyName={baby?.name ?? ''}
+        babyGender={baby?.gender}
         onClose={() => setShowTrailCompletion(false)}
       />
 
@@ -1179,6 +1257,20 @@ export default function TrackerPage() {
         babyName={baby?.name ?? ''}
         babyGender={baby?.gender}
         onClose={() => setShowFirstRecord(false)}
+      />
+
+      <AutoSleepIntroSheet
+        isOpen={showAutoSleepIntro}
+        babyName={baby?.name ?? ''}
+        babyGender={baby?.gender}
+        eventLabel={autoSleepIntroEventLabel}
+        autoSleepEnabled={autoSleepEnabled}
+        onToggle={toggleAutoSleep}
+        onClose={() => setShowAutoSleepIntro(false)}
+        onOpenSettings={() => {
+          setShowAutoSleepIntro(false)
+          navigate('/routine')
+        }}
       />
 
       <MemberJoinedSheet
