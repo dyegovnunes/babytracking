@@ -123,8 +123,11 @@ export function getActiveLeap(birthDate: string): DevelopmentLeap | null {
   const now = new Date();
   const ageWeeks = Math.floor((now.getTime() - birth.getTime()) / (7 * 86400000));
 
+  // Buffer de +1 semana no início (prebuffer: avisa que o salto está chegando).
+  // Sem buffer no final: um salto terminado não deve continuar aparecendo como ativo,
+  // pois bloqueia a exibição do próximo salto (getUpcomingLeap só roda se !activeLeap).
   return DEVELOPMENT_LEAPS.find(
-    leap => ageWeeks >= leap.weekStart - 1 && ageWeeks <= leap.weekEnd + 1
+    leap => ageWeeks >= leap.weekStart - 1 && ageWeeks <= leap.weekEnd
   ) || null;
 }
 

@@ -168,9 +168,17 @@ function getCarouselFeatureText(h: Highlight, babyName: string): CarouselFeature
   }
 
   if (d.type === 'leap_upcoming') {
-    const weeks = d.weeksUntil
+    // Calcula dias reais até o início do salto para um texto mais preciso
+    const birth = new Date(d.birthDate)
+    const now   = new Date()
+    const ageDays = Math.floor((now.getTime() - birth.getTime()) / 86400000)
+    const targetDays = d.leap.weekStart * 7
+    const daysUntil  = Math.max(0, targetDays - ageDays)
+    const badgeLabel = daysUntil <= 13
+      ? `Em ${daysUntil} dia${daysUntil !== 1 ? 's' : ''}`
+      : `Em ${d.weeksUntil} semana${d.weeksUntil !== 1 ? 's' : ''}`
     return {
-      badge:  `Em ${weeks} semana${weeks !== 1 ? 's' : ''}`,
+      badge:  badgeLabel,
       kicker: 'Próximo salto mental',
       title:  `O Salto ${d.leap.id} está chegando para ${babyName}`,
     }
