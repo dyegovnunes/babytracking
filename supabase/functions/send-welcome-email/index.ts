@@ -11,12 +11,14 @@
 // ════════════════════════════════════════════════════════════════════════════
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { EMAIL_TEMPLATE } from './template.ts'
 
 const SUPABASE_URL         = Deno.env.get('SUPABASE_URL') ?? ''
 const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
 const RESEND_API_KEY       = Deno.env.get('RESEND_API_KEY') ?? ''
 const RESEND_FROM_EMAIL    = Deno.env.get('RESEND_FROM_EMAIL') ?? 'oi@yayababy.app'
-const APP_LINK             = 'https://yayababy.app'
+const APP_LINK             = 'https://yayababy.app/'
+const PRIVACY_LINK         = 'https://yayababy.app/privacidade'
 
 const adminClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY, {
   auth: { autoRefreshToken: false, persistSession: false },
@@ -59,7 +61,7 @@ Deno.serve(async (req) => {
   // Buscar perfil do usuário + verificar se já enviou
   const { data: profile } = await adminClient
     .from('profiles')
-    .select('full_name, welcome_email_sent_at')
+    .select('welcome_email_sent_at')
     .eq('id', user.id)
     .single()
 
@@ -88,16 +90,16 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ error: 'no_email' }), { status: 422 })
   }
 
-  const parentName = profile?.full_name
-    ? profile.full_name.split(' ')[0]
-    : 'você'
   const babyName = baby.name
+
+  // Montar HTML a partir do template
+  const html = buildEmailHTML()
 
   // Enviar email via Resend
   const sent = await sendEmail({
     to: email,
     subject: `O ${babyName} chegou ao Yaya.`,
-    html: welcomeEmailHTML({ parentName, babyName, appLink: APP_LINK }),
+    html,
   })
 
   if (!sent) {
@@ -154,83 +156,16 @@ async function sendEmail({
   return true
 }
 
-// ── HTML placeholder do email M0 ─────────────────────────────────────────────
-// TODO: substituir pelo template final do cowork quando disponível.
+// ── HTML do email M0 ─────────────────────────────────────────────────────────
+// Template importado de template.ts (gerado do HTML do cowork).
+// Tokens substituídos:
+//   {{DEEP_LINK}}        → universal link que abre o app (iOS/Android) ou web
+//   {{UNSUBSCRIBE_LINK}} → configurações do app
+//   {{PRIVACY_LINK}}     → página de privacidade
 
-function welcomeEmailHTML({
-  parentName,
-  babyName,
-  appLink,
-}: {
-  parentName: string
-  babyName: string
-  appLink: string
-}): string {
-  return `<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>O ${babyName} chegou ao Yaya.</title>
-</head>
-<body style="margin:0;padding:0;background:#f8f7ff;font-family:'Segoe UI',Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8f7ff;padding:32px 16px;">
-    <tr>
-      <td align="center">
-        <table width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(112,86,224,0.10);">
-
-          <!-- Header -->
-          <tr>
-            <td style="background:linear-gradient(135deg,#b79fff 0%,#7056e0 100%);padding:32px 40px;text-align:center;">
-              <p style="margin:0;font-size:28px;font-weight:800;color:#ffffff;letter-spacing:-0.02em;">Yaya</p>
-              <p style="margin:6px 0 0;font-size:14px;color:rgba(255,255,255,0.85);">acompanhamento do bebê</p>
-            </td>
-          </tr>
-
-          <!-- Body -->
-          <tr>
-            <td style="padding:36px 40px;">
-              <p style="margin:0 0 16px;font-size:20px;font-weight:800;color:#1c1b2b;">Oi, ${parentName}!</p>
-              <p style="margin:0 0 16px;font-size:15px;color:#6f6896;line-height:1.7;">
-                O perfil do ${babyName} está criado. A partir de agora, o Yaya vai guardar a rotina dele pra você.
-              </p>
-              <p style="margin:0 0 16px;font-size:15px;color:#6f6896;line-height:1.7;">
-                O primeiro passo é simples: fazer o primeiro registro. Sono, amamentação, fralda, o que aconteceu agora. Leva uns 10 segundos.
-              </p>
-              <p style="margin:0 0 28px;font-size:15px;color:#6f6896;line-height:1.7;">
-                Quanto mais você registrar, mais o Yaya vai entendendo a rotina do ${babyName} e mostrando padrões que você talvez não esteja percebendo no dia a dia.
-              </p>
-
-              <table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:28px;">
-                <tr>
-                  <td align="center">
-                    <a href="${appLink}" style="display:inline-block;background:linear-gradient(135deg,#b79fff 0%,#7056e0 100%);color:#ffffff;text-decoration:none;font-size:15px;font-weight:700;padding:14px 36px;border-radius:8px;letter-spacing:0.01em;">
-                      Fazer primeiro registro
-                    </a>
-                  </td>
-                </tr>
-              </table>
-
-              <p style="margin:0;font-size:14px;color:#9e9cb0;line-height:1.6;">
-                A gente está aqui se precisar.<br>
-                <strong style="color:#7056e0;">Yaya</strong>
-              </p>
-            </td>
-          </tr>
-
-          <!-- Footer -->
-          <tr>
-            <td style="border-top:1px solid #ede9f9;padding:20px 40px;text-align:center;">
-              <p style="margin:0;font-size:12px;color:#9e9cb0;">
-                Yaya Baby &bull; <a href="${appLink}" style="color:#7056e0;text-decoration:none;">yayababy.app</a>
-              </p>
-            </td>
-          </tr>
-
-        </table>
-      </td>
-    </tr>
-  </table>
-</body>
-</html>`
+function buildEmailHTML(): string {
+  return EMAIL_TEMPLATE
+    .replace(/\{\{DEEP_LINK\}\}/g, APP_LINK)
+    .replace(/\{\{UNSUBSCRIBE_LINK\}\}/g, APP_LINK + 'configuracoes')
+    .replace(/\{\{PRIVACY_LINK\}\}/g, PRIVACY_LINK)
 }

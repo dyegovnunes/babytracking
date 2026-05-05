@@ -44,7 +44,7 @@ export function getWelcomeContent(
   babyName: string,
   gender: 'boy' | 'girl',
 ): WelcomeContent {
-  const pronoun = gender === 'girl' ? 'a' : 'o'
+  const subjectPronoun = gender === 'girl' ? 'ela' : 'ele'
   const doPronoun = gender === 'girl' ? 'da' : 'do'
   const readyPronoun = gender === 'girl' ? 'pronta' : 'pronto'
 
@@ -67,7 +67,7 @@ export function getWelcomeContent(
       paragraph: `Entre 1 e 3 meses, os padrões de sono começam a surgir. Registre por alguns dias e o Yaya te mostra quando ${babyName} está ${readyPronoun} para dormir.`,
       features: [
         featureFirst,
-        { icon: '🌙', title: 'Previsão de sono', desc: `Descubra quando el${pronoun} está ${readyPronoun} para dormir` },
+        { icon: '🌙', title: 'Previsão de sono', desc: `Descubra quando ${subjectPronoun} está ${readyPronoun} para dormir` },
         { icon: '🌊', title: 'Salto chegando', desc: 'Fique por dentro do desenvolvimento' },
       ],
     },

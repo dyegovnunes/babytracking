@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import YaIAOrb from './YaIAOrb'
+import { contractionDe, type Gender } from '../../../lib/genderUtils'
 
 // Status rotativo — 6 fases + "quase lá..." só depois de 6s. Sensação de
 // progresso varia: às vezes ela "olha os registros", às vezes "consulta o
 // blog", às vezes "faz as contas". Injeta nome do bebê quando disponível
 // pra passar sinal de grounding ("olhando os registros do Guto...").
-const BASE_STAGES = (babyName?: string | null): string[] => [
+const BASE_STAGES = (babyName?: string | null, babyGender?: Gender): string[] => [
   'yaIA está pensando...',
-  babyName ? `olhando os registros do ${babyName}...` : 'olhando os registros...',
+  babyName ? `olhando os registros ${contractionDe(babyGender)} ${babyName}...` : 'olhando os registros...',
   'consultando o blog do Yaya...',
   'fazendo as contas...',
   'organizando a resposta...',
@@ -25,11 +26,12 @@ function shuffle<T>(arr: T[]): T[] {
 
 interface TypingIndicatorProps {
   babyName?: string | null
+  babyGender?: Gender
 }
 
-export default function TypingIndicator({ babyName }: TypingIndicatorProps) {
+export default function TypingIndicator({ babyName, babyGender }: TypingIndicatorProps) {
   // Ordem embaralhada por chamada pra não parecer scripted.
-  const stages = useMemo(() => shuffle(BASE_STAGES(babyName)), [babyName])
+  const stages = useMemo(() => shuffle(BASE_STAGES(babyName, babyGender)), [babyName, babyGender])
   const [idx, setIdx] = useState(0)
   const [elapsed, setElapsed] = useState(0)
 

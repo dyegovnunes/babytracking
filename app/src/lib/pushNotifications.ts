@@ -2,13 +2,15 @@ import { PushNotifications, type Token, type ActionPerformed } from '@capacitor/
 import { Capacitor } from '@capacitor/core';
 import { supabase } from './supabase';
 
+// Flag para evitar adicionar listeners múltiplas vezes
+let _listenersAdded = false;
+
 /**
  * Inicializa push notifications.
  * Chamar APOS o primeiro registro do usuario (nao no onboarding).
  */
 export async function initPushNotifications(userId: string, babyId: string): Promise<void> {
   if (!Capacitor.isNativePlatform()) {
-    console.log('[Push] Not native platform, skipping');
     return;
   }
 
@@ -20,34 +22,34 @@ export async function initPushNotifications(userId: string, babyId: string): Pro
   }
 
   if (permStatus.receive !== 'granted') {
-    console.log('[Push] Permission not granted');
     return;
   }
 
-  // Registrar no sistema nativo
+  // Adicionar listeners ANTES de register() — o evento 'registration' dispara
+  // assim que register() completa; se o listener for adicionado depois, o token
+  // chega e ninguém escuta → token nunca salvo no banco.
+  if (!_listenersAdded) {
+    _listenersAdded = true;
+
+    PushNotifications.addListener('registration', async (token: Token) => {
+      await saveToken(userId, babyId, token.value);
+    });
+
+    PushNotifications.addListener('registrationError', (error) => {
+      console.error('[Push] Registration error:', error);
+    });
+
+    PushNotifications.addListener('pushNotificationReceived', (notification) => {
+      console.log('[Push] Received in foreground:', notification);
+    });
+
+    PushNotifications.addListener('pushNotificationActionPerformed', (action: ActionPerformed) => {
+      handlePushAction(action);
+    });
+  }
+
+  // Registrar no sistema nativo — dispara o evento 'registration' com o token
   await PushNotifications.register();
-
-  // Listener: token recebido
-  PushNotifications.addListener('registration', async (token: Token) => {
-    console.log('[Push] Token:', token.value);
-    await saveToken(userId, babyId, token.value);
-  });
-
-  // Listener: erro no registro
-  PushNotifications.addListener('registrationError', (error) => {
-    console.error('[Push] Registration error:', error);
-  });
-
-  // Listener: push recebido com app aberto
-  PushNotifications.addListener('pushNotificationReceived', (notification) => {
-    console.log('[Push] Received in foreground:', notification);
-  });
-
-  // Listener: push clicado (app aberto via push)
-  PushNotifications.addListener('pushNotificationActionPerformed', (action: ActionPerformed) => {
-    console.log('[Push] Action performed:', action);
-    handlePushAction(action);
-  });
 }
 
 /**

@@ -9,7 +9,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useSheetBackClose } from '../../../hooks/useSheetBackClose'
 import { hapticLight } from '../../../lib/haptics'
-import { contractionDe, article, type Gender } from '../../../lib/genderUtils'
+import { contractionDe, article, pronoun, adjEnding, type Gender } from '../../../lib/genderUtils'
 
 type StepId = 'insights' | 'milestones' | 'leaps'
 
@@ -24,7 +24,7 @@ interface Props {
 interface StepContent {
   emoji: string
   title: (name: string, de: string, art: string) => string
-  body: (name: string, de: string, art: string) => string
+  body: (name: string, de: string, art: string, adj?: string, pron?: string) => string
   items: { emoji: string; title: string; desc: string }[]
   ctaLabel: string
   destination: string
@@ -34,8 +34,8 @@ const CONTENT: Record<StepId, StepContent> = {
   insights: {
     emoji: '✨',
     title: (n, de) => `Os padrões ${de} ${n}`,
-    body: (n, _de, art) =>
-      `O Yaya analisa tudo que você registra e encontra padrões que passam batido no dia a dia. Quanto tempo ${art} ${n} fica acordado antes de ficar irritado. Em que hora do dia ele come mais. Quando o sono começa a mudar.`,
+    body: (n, _de, art, adj = 'o', pron = 'ele') =>
+      `O Yaya analisa tudo que você registra e encontra padrões que passam batido no dia a dia. Quanto tempo ${art} ${n} fica acordad${adj} antes de ficar irritad${adj}. Em que hora do dia ${pron} come mais. Quando o sono começa a mudar.`,
     items: [
       {
         emoji: '📈',
@@ -117,8 +117,10 @@ export default function InsightsIntroSheet({ isOpen, stepId, babyName, babyGende
 
   const c = CONTENT[stepId]
   const name = babyName || 'bebê'
-  const de  = contractionDe(babyGender)
-  const art = article(babyGender)
+  const de   = contractionDe(babyGender)
+  const art  = article(babyGender)
+  const adj  = adjEnding(babyGender)
+  const pron = pronoun(babyGender)
   const ctaLabel = c.ctaLabel.replace('[nome]', name)
 
   function handleGo() {
@@ -157,7 +159,7 @@ export default function InsightsIntroSheet({ isOpen, stepId, babyName, babyGende
 
         {/* Corpo */}
         <p className="font-body text-xs text-on-surface-variant leading-relaxed mb-4">
-          {c.body(name, de, art)}
+          {c.body(name, de, art, adj, pron)}
         </p>
 
         {/* Itens */}

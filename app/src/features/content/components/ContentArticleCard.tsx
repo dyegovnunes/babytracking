@@ -6,6 +6,7 @@
 import { Browser } from '@capacitor/browser'
 import { Capacitor } from '@capacitor/core'
 import { hapticLight } from '../../../lib/haptics'
+import { track } from '../../../lib/analytics'
 import type { ContentArticle } from '../contentTypes'
 import { CONTENT_CATEGORY_EMOJI } from '../contentTypes'
 
@@ -14,8 +15,9 @@ interface Props {
   onDismiss: () => void
 }
 
-async function openUrl(url: string) {
+async function openUrl(url: string, slug: string) {
   hapticLight()
+  track('blog_article_opened', { article_slug: slug, source: 'tracker_card' })
   if (Capacitor.isNativePlatform()) {
     await Browser.open({ url })
   } else {
@@ -31,7 +33,7 @@ export default function ContentArticleCard({ article, onDismiss }: Props) {
       <button
         type="button"
         className="w-full text-left active:scale-[0.98] transition-transform"
-        onClick={() => openUrl(article.blogUrl)}
+        onClick={() => openUrl(article.blogUrl, article.slug)}
         aria-label={`Abrir artigo: ${article.title}`}
       >
         <div

@@ -267,7 +267,7 @@ export default function YaIAPage() {
 
         {isLoading && (
           <div className="mt-3">
-            <TypingIndicator babyName={baby?.name ?? null} />
+            <TypingIndicator babyName={baby?.name ?? null} babyGender={baby?.gender} />
           </div>
         )}
 

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAppState } from '../../contexts/AppContext'
 import { useAuth } from '../../contexts/AuthContext'
+import { trackOnce } from '../../lib/analytics'
 import { useBabyPremium } from '../../hooks/useBabyPremium'
 import { useMyRole } from '../../hooks/useMyRole'
 import { useMyCaregiverPermissions } from '../../hooks/useMyCaregiverPermissions'
@@ -50,6 +51,13 @@ export default function VaccinesPage() {
       navigate('/', { replace: true })
     }
   }, [myRole, perms.show_vaccines, navigate])
+
+  // Analytics: primeira abertura da caderneta de vacinas
+  useEffect(() => {
+    if (!baby) return
+    const babyAgeDays = Math.floor((Date.now() - new Date(baby.birthDate).getTime()) / 86400000)
+    trackOnce('vaccine_record_opened', 'vaccine_record_opened', { baby_age_days: babyAgeDays })
+  }, [baby?.id]) // eslint-disable-line react-hooks/exhaustive-deps
   const {
     records,
     statusByCode,

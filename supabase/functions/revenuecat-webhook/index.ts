@@ -83,6 +83,19 @@ serve(async (req) => {
         p_plan: subscribedPlan,
       });
     }
+
+    // Analytics: subscription_started — APENAS na compra inicial (não em renewals)
+    // Inserção via service role: bypassa RLS com user_id correto
+    if (type === 'INITIAL_PURCHASE' || type === 'NON_SUBSCRIPTION_PURCHASE') {
+      await supabase.from('analytics_events').insert({
+        user_id: app_user_id,
+        event_name: 'subscription_started',
+        metadata: {
+          plan_id: subscribedPlan,
+          revenue: null, // RevenueCat não envia revenue no webhook v1
+        },
+      });
+    }
   }
 
   if (type === 'CANCELLATION') {
@@ -94,6 +107,14 @@ serve(async (req) => {
         subscription_cancelled_at: new Date().toISOString(),
       })
       .eq('id', app_user_id);
+
+    // Analytics: subscription_cancelled
+    const cancelledPlan = getPlanFromProductId(product_id ?? '');
+    await supabase.from('analytics_events').insert({
+      user_id: app_user_id,
+      event_name: 'subscription_cancelled',
+      metadata: { plan_id: cancelledPlan },
+    });
   }
 
   if (type === 'EXPIRATION') {

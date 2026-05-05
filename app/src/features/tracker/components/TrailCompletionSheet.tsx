@@ -5,22 +5,24 @@
 
 import { useSheetBackClose } from '../../../hooks/useSheetBackClose'
 import { hapticSuccess } from '../../../lib/haptics'
+import { article, type Gender } from '../../../lib/genderUtils'
 
 interface Props {
   isOpen: boolean
   babyName: string
+  babyGender?: Gender
   onClose: () => void
 }
 
 const HIGHLIGHTS = [
   { emoji: '📈', text: 'Os insights ficam mais precisos conforme você registra' },
-  { emoji: '🤖', text: 'A yaIA aprende com a rotina ao longo do tempo' },
+  { emoji: '💜', text: 'A yaIA aprende com a rotina ao longo do tempo' },
   { emoji: '👨‍👩‍👦', text: 'Quem está no grupo vê tudo em tempo real, sem precisar perguntar' },
   { emoji: '📋', text: 'O relatório para o pediatra está sempre a um link de distância' },
   { emoji: '🌱', text: 'Cada marco registrado fica para sempre na história do bebê' },
 ]
 
-export default function TrailCompletionSheet({ isOpen, babyName, onClose }: Props) {
+export default function TrailCompletionSheet({ isOpen, babyName, babyGender, onClose }: Props) {
   useSheetBackClose(isOpen, onClose)
   if (!isOpen) return null
 
@@ -49,7 +51,7 @@ export default function TrailCompletionSheet({ isOpen, babyName, onClose }: Prop
           <div className="text-5xl mb-3">🎉</div>
           <h2 className="font-headline text-xl font-bold text-on-surface mb-2">
             {babyName
-              ? `Você descobriu tudo que o Yaya tem para o ${name}.`
+              ? `Você descobriu tudo que o Yaya tem para ${article(babyGender)} ${name}.`
               : 'Você descobriu tudo que o Yaya tem a oferecer.'}
           </h2>
           <p className="font-body text-sm text-on-surface-variant leading-relaxed">

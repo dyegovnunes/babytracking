@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { usePurchase } from '../../contexts/PurchaseContext';
 import { getAvailablePackages, type PlanType } from '../../lib/purchases';
 import { useSheetBackClose } from '../../hooks/useSheetBackClose';
 import { Capacitor } from '@capacitor/core';
+import { track } from '../../lib/analytics';
 
 interface PaywallModalProps {
   isOpen: boolean;
@@ -94,8 +95,17 @@ export function PaywallModal({ isOpen, onClose, trigger = 'generic', resetWhen }
   const [error, setError] = useState<string | null>(null);
   const [selectedPlan, setSelectedPlan] = useState<PlanType>('annual');
   const [plans, setPlans] = useState<PlanOption[]>(FALLBACK_PLANS);
+  // Flag: compra foi iniciada com sucesso (não disparar paywall_dismissed nesses casos)
+  const purchasedRef = useRef(false);
 
   useSheetBackClose(isOpen, onClose);
+
+  // Analytics: paywall_viewed ao abrir
+  useEffect(() => {
+    if (!isOpen) return;
+    purchasedRef.current = false;
+    track('paywall_viewed', { trigger, plan_highlighted: 'annual' });
+  }, [isOpen, trigger]);
 
   useEffect(() => {
     if (!isOpen || Capacitor.getPlatform() === 'web') return;
@@ -160,7 +170,10 @@ export function PaywallModal({ isOpen, onClose, trigger = 'generic', resetWhen }
     setError(null);
     try {
       const success = await purchase(selectedPlan);
-      if (success) onClose();
+      if (success) {
+        purchasedRef.current = true;
+        onClose();
+      }
       // success=false sem exception = usuário cancelou — não mostrar nada
     } catch (e: any) {
       // Só erros reais chegam aqui (pacote não encontrado, rede, etc.)
@@ -168,6 +181,14 @@ export function PaywallModal({ isOpen, onClose, trigger = 'generic', resetWhen }
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleClose = () => {
+    // Analytics: fechou o paywall sem assinar
+    if (!purchasedRef.current) {
+      track('paywall_dismissed', { trigger });
+    }
+    onClose();
   };
 
   const handleRestore = async () => {
@@ -194,7 +215,7 @@ export function PaywallModal({ isOpen, onClose, trigger = 'generic', resetWhen }
           {/* Header */}
           <div className="flex items-center justify-between mb-4">
             <span className="text-xs font-semibold tracking-widest uppercase text-primary">Yaya+</span>
-            <button onClick={onClose} className="text-on-surface/40 hover:text-on-surface text-xl leading-none">
+            <button onClick={handleClose} className="text-on-surface/40 hover:text-on-surface text-xl leading-none">
               <span className="material-symbols-outlined">close</span>
             </button>
           </div>

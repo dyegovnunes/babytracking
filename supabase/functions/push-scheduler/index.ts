@@ -136,17 +136,24 @@ serve(async (req) => {
       intervalMap.set(`${ic.baby_id}_${ic.category}`, ic);
     }
 
-    // 5. Get recent push_log to avoid duplicates (last 30 min)
-    const thirtyMinAgo = new Date(nowTs - 30 * 60_000).toISOString();
+    // 5. Get push_log from last 24h to deduplicate — routine alerts fire at most
+    // once per interval cycle (i.e., not again until user makes a new log entry).
     const { data: recentPushes } = await supabase
       .from('push_log')
-      .select('user_id, baby_id, type')
-      .gte('sent_at', thirtyMinAgo);
+      .select('user_id, baby_id, type, sent_at')
+      .gte('sent_at', new Date(nowTs - 24 * 3600_000).toISOString());
 
-    const recentPushSet = new Set<string>();
+    // Map of lastSentAt per (userId_babyId_type) for cycle-aware dedup
+    const lastSentAtMap = new Map<string, number>();
     for (const p of recentPushes ?? []) {
-      recentPushSet.add(`${p.user_id}_${p.baby_id}_${p.type}`);
+      const key = `${p.user_id}_${p.baby_id}_${p.type}`;
+      const ts = new Date(p.sent_at).getTime();
+      if (!lastSentAtMap.has(key) || lastSentAtMap.get(key)! < ts) {
+        lastSentAtMap.set(key, ts);
+      }
     }
+    // For non-routine types (bath, etc.) keep a simple set for fast dedup
+    const recentPushSet = new Set<string>(lastSentAtMap.keys());
 
     // 6. Get babies info for names, birth_date, created_at and quiet hours (per-baby source of truth)
     const { data: babies } = await supabase
@@ -208,8 +215,11 @@ serve(async (req) => {
         const elapsed = nowTs - lastLogTs;
         const intervalMs = interval.minutes * 60_000;
         const warnMs = (interval.warn ?? interval.minutes * 0.8) * 60_000;
-        // P2 sleep_nap fires at 150% of configured interval (long nap alert)
-        const expiredMs = cat === 'sleep_nap' ? intervalMs * 1.5 : intervalMs;
+        // sleep_nap expired fires at 120% of configured interval
+        const expiredMs = cat === 'sleep_nap' ? intervalMs * 1.2 : intervalMs;
+
+        // Disabled push types — skip entirely
+        const disabledTypes = new Set(['feed_expired', 'diaper_warn', 'sleep_awake_expired', 'sleep_nap_warn']);
 
         // Check if interval expired or warning
         let pushType: string | null = null;
@@ -217,10 +227,14 @@ serve(async (req) => {
 
         if (elapsed >= expiredMs) {
           pushType = `${cat}_expired`;
-          message = getExpiredMessage(cat, interval.minutes, babyName, babyAgeMonths);
+          if (!disabledTypes.has(pushType)) {
+            message = getExpiredMessage(cat, interval.minutes, babyName, babyAgeMonths);
+          }
         } else if (elapsed >= warnMs && elapsed < expiredMs) {
           pushType = `${cat}_warn`;
-          message = getWarnMessage(cat, interval.minutes, babyName);
+          if (!disabledTypes.has(pushType)) {
+            message = getWarnMessage(cat, interval.minutes, babyName, babyAgeMonths);
+          }
         }
 
         if (!message || !pushType) continue;
@@ -245,12 +259,14 @@ serve(async (req) => {
             if (lastSleep && (!lastWake || lastSleep > lastWake)) continue; // Baby is sleeping
           }
 
-          // Check duplicate
+          // Cycle-aware dedup: only fire once per interval cycle.
+          // If this push was already sent AFTER the last log of this category, skip.
           const dupeKey = `${target.userId}_${babyId}_${pushType}`;
-          if (recentPushSet.has(dupeKey)) continue;
+          const lastSent = lastSentAtMap.get(dupeKey);
+          if (lastSent && lastSent >= lastLogTs) continue;
 
           // Send!
-          recentPushSet.add(dupeKey);
+          lastSentAtMap.set(dupeKey, nowTs); // optimistic dedup
           pushPromises.push(
             sendFCMPush(target.token, message).then(async (success) => {
               if (success) {
@@ -270,14 +286,14 @@ serve(async (req) => {
         const userMinute = now.getMinutes();
 
         for (const h of hours) {
-          // Alert 15 min before
-          const alertMinute = h * 60 - 15;
+          // Alert 30 min before
+          const alertMinute = h * 60 - 30;
           const currentMinute = userHour * 60 + userMinute;
 
           if (Math.abs(currentMinute - alertMinute) <= 3) { // within 3 min window
             const message: PushMessage = {
               title: `Hora do banho! 🛁`,
-              body: `Banho de ${babyName} em 15 minutos`,
+              body: `Daqui a 30 minutos é hora do banho do ${babyName} 🛁`,
               type: 'bath_reminder',
             };
 
@@ -305,7 +321,8 @@ serve(async (req) => {
       }
     }
 
-    // ─── 1.3 SLEEP INSIGHT (once per day at BRT 21h) ──────────────────────────
+    // ─── 1.3 SLEEP INSIGHT — desativado por ora ──────────────────────────────
+    if (false) {
     // Fires during the 21h BRT window. Checks if each baby's total sleep today
     // is below 80% of the minimum reference for their age band. Dedup: once
     // per baby per calendar day (BRT) using type = sleep_insight_YYYY-MM-DD.
@@ -386,6 +403,7 @@ serve(async (req) => {
         }
       }
     }
+    } // end if (false) — sleep_insight disabled
     // ─── 2.5 PHASE TRANSITION 6 MONTHS (once per baby, lifetime dedup) ───────
     // Fires every run but sends at most once per baby (dedup type = phase_6m_{babyId}).
     // Checks if today (BRT) matches the baby's exact 6-month birthday.
@@ -607,19 +625,21 @@ function isInQuietHours(prefs: any, now: Date): boolean {
   }
 }
 
-function getWarnMessage(cat: string, minutes: number, babyName: string): PushMessage {
+function getWarnMessage(cat: string, minutes: number, babyName: string, babyAgeMonths = 0): PushMessage {
   const h = Math.floor(minutes / 60);
   const m = minutes % 60;
   const timeStr = h > 0 ? `${h}h${m > 0 ? m + 'min' : ''}` : `${m}min`;
 
   switch (cat) {
-    case 'feed':
+    case 'feed': {
+      const isSolid = babyAgeMonths >= 6;
       return {
-        title: `Amamentação se aproximando ⏰`,
-        body: `Última mamada de ${babyName} foi há quase ${timeStr}`,
+        title: isSolid ? 'Hora do lanche!' : 'Hora do tetê!',
+        body: `Acho que o ${babyName} vai querer ${isSolid ? 'comer' : 'tetê'} em breve. Faz ${timeStr} desde a última vez.`,
         type: 'routine_alert',
         data: { category: 'feed' },
       };
+    }
     case 'diaper':
       return {
         title: `Hora de verificar a fralda 💧`,

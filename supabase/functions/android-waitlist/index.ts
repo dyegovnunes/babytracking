@@ -127,13 +127,13 @@ serve(async (req) => {
 
   const magicLink = linkData.properties.action_link
 
-  await sendEmail({
+  const emailResult = await sendEmail({
     to: email,
     subject: 'Seus 10 dias de Yaya+ chegaram 💜',
     html: welcomeEmailHTML({ magicLink }),
   })
 
-  return jsonResponse({ success: true, alreadySubscribed })
+  return jsonResponse({ success: true, alreadySubscribed, emailSent: emailResult.ok, emailDebug: emailResult })
 })
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -161,26 +161,35 @@ async function findOrCreateUser(supabase: ReturnType<typeof createClient>, email
   return created.user.id
 }
 
-async function sendEmail({ to, subject, html }: { to: string; subject: string; html: string }) {
+async function sendEmail({ to, subject, html }: { to: string; subject: string; html: string }): Promise<{ ok: boolean; status?: number; body?: string }> {
   if (!RESEND_API_KEY) {
     console.warn('[android-waitlist] RESEND_API_KEY missing — skipping email')
-    return
+    return { ok: false, body: 'RESEND_API_KEY_MISSING' }
   }
 
-  const res = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${RESEND_API_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ from: `Yaya <${RESEND_FROM_EMAIL}>`, to: [to], subject, html }),
-  })
+  console.log(`[android-waitlist] sending email to ${to} from ${RESEND_FROM_EMAIL}`)
 
-  if (!res.ok) {
+  try {
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${RESEND_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ from: `Yaya <${RESEND_FROM_EMAIL}>`, to: [to], subject, html }),
+    })
+
     const txt = await res.text()
-    console.error('[android-waitlist] Resend failed:', res.status, txt)
-  } else {
-    console.log(`[android-waitlist] email sent to ${to}`)
+    if (!res.ok) {
+      console.error('[android-waitlist] Resend failed:', res.status, txt)
+      return { ok: false, status: res.status, body: txt }
+    }
+    console.log(`[android-waitlist] email sent to ${to}`, txt)
+    return { ok: true, status: res.status, body: txt }
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err)
+    console.error('[android-waitlist] sendEmail threw:', msg)
+    return { ok: false, body: msg }
   }
 }
 
