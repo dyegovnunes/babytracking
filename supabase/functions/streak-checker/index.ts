@@ -103,16 +103,21 @@ serve(async (req) => {
       sentToday.add(`${p.user_id}_${p.baby_id}`);
     }
 
-    // 5. Get baby names
+    // 5. Get baby names + gender (gender used for pt-BR copy: "do" / "da")
     const { data: babies } = await supabase
       .from('babies')
-      .select('id, name')
+      .select('id, name, gender')
       .in('id', babyIds);
 
     const babyNames = new Map<string, string>();
+    const babyGenders = new Map<string, 'boy' | 'girl' | null>();
     for (const b of babies ?? []) {
       babyNames.set(b.id, b.name);
+      babyGenders.set(b.id, (b.gender === 'boy' || b.gender === 'girl') ? b.gender : null);
     }
+
+    const deOf = (g: 'boy' | 'girl' | null): string =>
+      g === 'boy' ? 'do' : g === 'girl' ? 'da' : 'de';
 
     // Create streak map
     const streakMap = new Map<string, number>();
@@ -141,10 +146,11 @@ serve(async (req) => {
 
       const streakDays = streakMap.get(token.baby_id) ?? 0;
       const babyName = babyNames.get(token.baby_id) ?? 'Bebê';
+      const babyGender = babyGenders.get(token.baby_id) ?? null;
 
       const message = {
         title: `Seu streak de ${streakDays} dias está em risco! 🔥`,
-        body: `Registre algo de ${babyName} hoje para não perder sua sequência`,
+        body: `Registre algo ${deOf(babyGender)} ${babyName} hoje para não perder sua sequência`,
         type: 'streak_risk',
       };
 

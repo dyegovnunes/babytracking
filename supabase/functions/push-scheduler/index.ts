@@ -155,19 +155,21 @@ serve(async (req) => {
     // For non-routine types (bath, etc.) keep a simple set for fast dedup
     const recentPushSet = new Set<string>(lastSentAtMap.keys());
 
-    // 6. Get babies info for names, birth_date, created_at and quiet hours (per-baby source of truth)
+    // 6. Get babies info for names, birth_date, created_at, gender and quiet hours
     const { data: babies } = await supabase
       .from('babies')
-      .select('id, name, birth_date, created_at, quiet_hours_enabled, quiet_hours_start, quiet_hours_end')
+      .select('id, name, birth_date, gender, created_at, quiet_hours_enabled, quiet_hours_start, quiet_hours_end')
       .in('id', babyIds);
 
     const babyNames = new Map<string, string>();
     const babyBirthDates = new Map<string, string>();
+    const babyGenders = new Map<string, 'boy' | 'girl' | null>();
     const babyCreatedAt = new Map<string, string>();
     const babyQuietHours = new Map<string, { enabled: boolean; start: number; end: number }>();
     for (const b of babies ?? []) {
       babyNames.set(b.id, b.name);
       if (b.birth_date) babyBirthDates.set(b.id, b.birth_date);
+      babyGenders.set(b.id, (b.gender === 'boy' || b.gender === 'girl') ? b.gender : null);
       if (b.created_at) babyCreatedAt.set(b.id, b.created_at);
       babyQuietHours.set(b.id, {
         enabled: b.quiet_hours_enabled ?? false,
@@ -195,6 +197,7 @@ serve(async (req) => {
 
     for (const [babyId, targets] of babyTokens) {
       const babyName = babyNames.get(babyId) ?? 'Bebê';
+      const babyGender = babyGenders.get(babyId) ?? null;
 
       // Compute baby age in months for age-conditional push copy
       const birthDate = babyBirthDates.get(babyId);
@@ -228,12 +231,12 @@ serve(async (req) => {
         if (elapsed >= expiredMs) {
           pushType = `${cat}_expired`;
           if (!disabledTypes.has(pushType)) {
-            message = getExpiredMessage(cat, interval.minutes, babyName, babyAgeMonths);
+            message = getExpiredMessage(cat, interval.minutes, babyName, babyAgeMonths, babyGender);
           }
         } else if (elapsed >= warnMs && elapsed < expiredMs) {
           pushType = `${cat}_warn`;
           if (!disabledTypes.has(pushType)) {
-            message = getWarnMessage(cat, interval.minutes, babyName, babyAgeMonths);
+            message = getWarnMessage(cat, interval.minutes, babyName, babyAgeMonths, babyGender);
           }
         }
 
@@ -268,7 +271,7 @@ serve(async (req) => {
           // Send!
           lastSentAtMap.set(dupeKey, nowTs); // optimistic dedup
           pushPromises.push(
-            sendFCMPush(target.token, message).then(async (success) => {
+            sendPush(target, message).then(async (success) => {
               if (success) {
                 totalSent++;
                 await logPush(target.userId, babyId, pushType!, message!.title, message!.body);
@@ -293,7 +296,7 @@ serve(async (req) => {
           if (Math.abs(currentMinute - alertMinute) <= 3) { // within 3 min window
             const message: PushMessage = {
               title: `Hora do banho! 🛁`,
-              body: `Daqui a 30 minutos é hora do banho do ${babyName} 🛁`,
+              body: `Daqui a 30 minutos é hora do banho ${deOf(babyGender)} ${babyName} 🛁`,
               type: 'bath_reminder',
             };
 
@@ -308,7 +311,7 @@ serve(async (req) => {
               recentPushSet.add(dupeKey);
 
               pushPromises.push(
-                sendFCMPush(target.token, message).then(async (success) => {
+                sendPush(target, message).then(async (success) => {
                   if (success) {
                     totalSent++;
                     await logPush(target.userId, babyId, `bath_${h}`, message.title, message.body);
@@ -393,7 +396,7 @@ serve(async (req) => {
 
           insightSentToday.add(`${target.userId}_${babyId}`); // optimistic dedup
           pushPromises.push(
-            sendFCMPush(target.token, message).then(async (success) => {
+            sendPush(target, message).then(async (success) => {
               if (success) {
                 totalSent++;
                 await logPush(target.userId, babyId, dedupType, message.title, message.body);
@@ -443,7 +446,7 @@ serve(async (req) => {
           if (prefs && isInQuietHours(prefs, now)) continue;
 
           pushPromises.push(
-            sendFCMPush(target.token, message).then(async (success) => {
+            sendPush(target, message).then(async (success) => {
               if (success) {
                 totalSent++;
                 await logPush(target.userId, babyId, dedupType, message.title, message.body);
@@ -490,9 +493,10 @@ serve(async (req) => {
       const h = Math.floor(hoursSinceLastLog);
       const timeStr = `${h}h`;
       const babyName = babyNames.get(babyId) ?? 'Bebê';
+      const babyGender = babyGenders.get(babyId) ?? null;
       const msg: PushMessage = {
-        title: `Cadê vocês? Estou sentindo falta do ${babyName}.`,
-        body: `Faz ${timeStr} desde o último registro do ${babyName}. Aconteceu algo diferente hoje?`,
+        title: `Cadê vocês? Estou sentindo falta ${deOf(babyGender)} ${babyName}.`,
+        body: `Faz ${timeStr} desde o último registro ${deOf(babyGender)} ${babyName}. Aconteceu algo diferente hoje?`,
         type: 'no_record_5h',
         data: { category: 'no_record' },
       };
@@ -503,7 +507,7 @@ serve(async (req) => {
         if (prefs && isInQuietHours(prefs, now)) continue;
 
         pushPromises.push(
-          sendFCMPush(target.token, msg).then(async (ok) => {
+          sendPush(target, msg).then(async (ok) => {
             if (ok) {
               totalSent++;
               await logPush(target.userId, babyId, 'no_record_5h', msg.title, msg.body);
@@ -531,18 +535,19 @@ serve(async (req) => {
         let reactType: string | null = null;
         let reactMsg: PushMessage | null = null;
         const babyName = babyNames.get(babyId) ?? 'Bebê';
+        const babyGender = babyGenders.get(babyId) ?? null;
 
         if (ageMs >= D0_MIN && ageMs <= D0_MAX) {
           reactType = 'reactivation_d0';
           reactMsg = {
             title: 'Oi!',
-            body: `O ${babyName} está te esperando no app. Vai levar uns 10 segundos pro primeiro registro.`,
+            body: `${Art(babyGender)} ${babyName} está te esperando no app. Vai levar uns 10 segundos pro primeiro registro.`,
             type: 'reactivation',
           };
         } else if (ageMs >= D1_MIN && ageMs <= D1_MAX) {
           reactType = 'reactivation_d1';
           reactMsg = {
-            title: `Como está sendo a rotina do ${babyName}?`,
+            title: `Como está sendo a rotina ${deOf(babyGender)} ${babyName}?`,
             body: 'O Yaya está aqui quando você precisar.',
             type: 'reactivation',
           };
@@ -570,7 +575,7 @@ serve(async (req) => {
           const msgCopy = reactMsg!;
           const typeCopy = reactType!;
           pushPromises.push(
-            sendFCMPush(target.token, msgCopy).then(async (ok) => {
+            sendPush(target, msgCopy).then(async (ok) => {
               if (ok) {
                 totalSent++;
                 await logPush(target.userId, babyId, typeCopy, msgCopy.title, msgCopy.body);
@@ -625,7 +630,40 @@ function isInQuietHours(prefs: any, now: Date): boolean {
   }
 }
 
-function getWarnMessage(cat: string, minutes: number, babyName: string, babyAgeMonths = 0): PushMessage {
+// ─── Gender helpers (pt-BR) ───────────────────────────────────────────────
+// Inline aqui porque edge function não pode importar do app/src.
+// Mantido em paralelo com app/src/lib/genderUtils.ts.
+type Gender = 'boy' | 'girl' | null | undefined;
+
+/** "do" / "da" / "de" — ex: "rotina ___ Maria" */
+function deOf(g: Gender): string {
+  if (g === 'boy') return 'do';
+  if (g === 'girl') return 'da';
+  return 'de';
+}
+
+/** "o" / "a" / "o(a)" — artigo minúsculo */
+function art(g: Gender): string {
+  if (g === 'boy') return 'o';
+  if (g === 'girl') return 'a';
+  return 'o(a)';
+}
+
+/** "O" / "A" / "O(a)" — artigo capitalizado para início de frase */
+function Art(g: Gender): string {
+  if (g === 'boy') return 'O';
+  if (g === 'girl') return 'A';
+  return 'O(a)';
+}
+
+/** Terminação adjetiva: "o" / "a" / "o(a)" — ex: `acordad${adjEnd(g)}` */
+function adjEnd(g: Gender): string {
+  if (g === 'boy') return 'o';
+  if (g === 'girl') return 'a';
+  return 'o(a)';
+}
+
+function getWarnMessage(cat: string, minutes: number, babyName: string, babyAgeMonths = 0, gender: Gender = null): PushMessage {
   const h = Math.floor(minutes / 60);
   const m = minutes % 60;
   const timeStr = h > 0 ? `${h}h${m > 0 ? m + 'min' : ''}` : `${m}min`;
@@ -635,7 +673,7 @@ function getWarnMessage(cat: string, minutes: number, babyName: string, babyAgeM
       const isSolid = babyAgeMonths >= 6;
       return {
         title: isSolid ? 'Hora do lanche!' : 'Hora do tetê!',
-        body: `Acho que o ${babyName} vai querer ${isSolid ? 'comer' : 'tetê'} em breve. Faz ${timeStr} desde a última vez.`,
+        body: `Acho que ${art(gender)} ${babyName} vai querer ${isSolid ? 'comer' : 'tetê'} em breve. Faz ${timeStr} desde a última vez.`,
         type: 'routine_alert',
         data: { category: 'feed' },
       };
@@ -643,7 +681,7 @@ function getWarnMessage(cat: string, minutes: number, babyName: string, babyAgeM
     case 'diaper':
       return {
         title: `Hora de verificar a fralda 💧`,
-        body: `Última troca de ${babyName} foi há quase ${timeStr}`,
+        body: `Última troca ${deOf(gender)} ${babyName} foi há quase ${timeStr}`,
         type: 'routine_alert',
         data: { category: 'diaper' },
       };
@@ -657,7 +695,7 @@ function getWarnMessage(cat: string, minutes: number, babyName: string, babyAgeM
     case 'sleep_awake':
       return {
         title: 'zzZzzZzzZzz...',
-        body: `O ${babyName} pode começar a ficar com sono nos próximos minutos.`,
+        body: `${Art(gender)} ${babyName} pode começar a ficar com sono nos próximos minutos.`,
         type: 'routine_alert',
         data: { category: 'sleep' },
       };
@@ -666,7 +704,7 @@ function getWarnMessage(cat: string, minutes: number, babyName: string, babyAgeM
   }
 }
 
-function getExpiredMessage(cat: string, minutes: number, babyName: string, babyAgeMonths = 0): PushMessage {
+function getExpiredMessage(cat: string, minutes: number, babyName: string, babyAgeMonths = 0, gender: Gender = null): PushMessage {
   const h = Math.floor(minutes / 60);
   const m = minutes % 60;
   const timeStr = h > 0 ? `${h}h${m > 0 ? m + 'min' : ''}` : `${m}min`;
@@ -676,7 +714,7 @@ function getExpiredMessage(cat: string, minutes: number, babyName: string, babyA
       const isSolid = babyAgeMonths >= 6;
       return {
         title: isSolid ? 'Hora do lanche!' : 'Hora do tetê!',
-        body: `Acho que o ${babyName} vai querer ${isSolid ? 'comer' : 'tetê'} em breve. Faz ${timeStr} desde a última vez.`,
+        body: `Acho que ${art(gender)} ${babyName} vai querer ${isSolid ? 'comer' : 'tetê'} em breve. Faz ${timeStr} desde a última vez.`,
         type: 'routine_alert',
         data: { category: 'feed' },
       };
@@ -684,21 +722,21 @@ function getExpiredMessage(cat: string, minutes: number, babyName: string, babyA
     case 'diaper':
       return {
         title: `Hora de trocar a fralda! 💧`,
-        body: `Última troca de ${babyName} foi há ${timeStr}`,
+        body: `Última troca ${deOf(gender)} ${babyName} foi há ${timeStr}`,
         type: 'routine_alert',
         data: { category: 'diaper' },
       };
     case 'sleep_nap':
       return {
         title: 'Que soneca boa!',
-        body: `Passando pra avisar que o ${babyName} está dormindo há um tempo. Talvez seja hora de acordar.`,
+        body: `Passando pra avisar que ${art(gender)} ${babyName} está dormindo há um tempo. Talvez seja hora de acordar.`,
         type: 'routine_alert',
         data: { category: 'sleep' },
       };
     case 'sleep_awake':
       return {
         title: `Hora de dormir! 🌙`,
-        body: `${babyName} está acordado há mais de ${timeStr}. Hora da soneca?`,
+        body: `${babyName} está acordad${adjEnd(gender)} há mais de ${timeStr}. Hora da soneca?`,
         type: 'routine_alert',
         data: { category: 'sleep' },
       };
@@ -834,6 +872,113 @@ async function sendFCMPush(token: string, message: PushMessage): Promise<boolean
     console.error('FCM send error:', error);
     return false;
   }
+}
+
+// ─── APNs (iOS) ──────────────────────────────────────────────────────────────
+// Usado quando platform === 'ios'. O app sem Firebase SDK registra tokens APNs
+// brutos (hex 64 chars). FCM V1 API não aceita APNs tokens — precisamos enviar
+// direto via APNs HTTP/2.
+
+const APNS_KEY_ID   = Deno.env.get('APNS_KEY_ID')   ?? '';
+const APNS_TEAM_ID  = Deno.env.get('APNS_TEAM_ID')  ?? '';
+const APNS_PRIV_KEY = Deno.env.get('APNS_PRIVATE_KEY') ?? '';
+const APNS_BUNDLE_ID = 'app.yayababy';
+
+let cachedApnsJwt: { token: string; expiresAt: number } | null = null;
+
+async function getApnsJwt(): Promise<string> {
+  if (cachedApnsJwt && cachedApnsJwt.expiresAt > Date.now() + 60_000) {
+    return cachedApnsJwt.token;
+  }
+
+  const encoder = new TextEncoder();
+  const b64url = (buf: Uint8Array): string => {
+    let bin = '';
+    for (const b of buf) bin += String.fromCharCode(b);
+    return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  };
+
+  const pemBody = APNS_PRIV_KEY
+    .replace(/-----BEGIN PRIVATE KEY-----/, '')
+    .replace(/-----END PRIVATE KEY-----/, '')
+    .replace(/\n/g, '');
+
+  const keyBuffer = Uint8Array.from(atob(pemBody), (c) => c.charCodeAt(0));
+
+  const cryptoKey = await crypto.subtle.importKey(
+    'pkcs8',
+    keyBuffer,
+    { name: 'ECDSA', namedCurve: 'P-256' },
+    false,
+    ['sign']
+  );
+
+  const iat = Math.floor(Date.now() / 1000);
+  const header  = b64url(encoder.encode(JSON.stringify({ alg: 'ES256', kid: APNS_KEY_ID })));
+  const payload = b64url(encoder.encode(JSON.stringify({ iss: APNS_TEAM_ID, iat })));
+  const signInput = `${header}.${payload}`;
+
+  const sig = await crypto.subtle.sign(
+    { name: 'ECDSA', hash: 'SHA-256' },
+    cryptoKey,
+    encoder.encode(signInput)
+  );
+
+  const jwt = `${signInput}.${b64url(new Uint8Array(sig))}`;
+
+  cachedApnsJwt = { token: jwt, expiresAt: Date.now() + 55 * 60 * 1000 };
+  return jwt;
+}
+
+async function sendAPNSPush(token: string, message: PushMessage): Promise<boolean> {
+  if (!APNS_KEY_ID || !APNS_TEAM_ID || !APNS_PRIV_KEY) {
+    console.error('[APNs] Secrets not configured (APNS_KEY_ID / APNS_TEAM_ID / APNS_PRIVATE_KEY)');
+    return false;
+  }
+  try {
+    const jwt = await getApnsJwt();
+    const payload = {
+      aps: {
+        alert: { title: message.title, body: message.body },
+        sound: 'default',
+        badge: 1,
+      },
+      type: message.type,
+      ...(message.data ?? {}),
+    };
+
+    const res = await fetch(`https://api.push.apple.com/3/device/${token}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `bearer ${jwt}`,
+        'apns-topic': APNS_BUNDLE_ID,
+        'apns-push-type': 'alert',
+        'apns-priority': '10',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (res.status === 200) return true;
+
+    const errBody = await res.text();
+    console.error('[APNs] Error:', res.status, errBody);
+
+    // Remove tokens inválidos
+    if (res.status === 400 || res.status === 410) {
+      await supabase.from('push_tokens').delete().eq('token', token);
+    }
+    return false;
+  } catch (e) {
+    console.error('[APNs] Send error:', e);
+    return false;
+  }
+}
+
+/** Roteamento: iOS → APNs, Android → FCM */
+async function sendPush(target: PushTarget, message: PushMessage): Promise<boolean> {
+  if (target.platform === 'ios') return sendAPNSPush(target.token, message);
+  return sendFCMPush(target.token, message);
 }
 
 async function logPush(userId: string, babyId: string, type: string, title: string, body: string): Promise<void> {
