@@ -69,20 +69,35 @@ function mapPost(p: RawPost, utmMedium: string): ContentArticle {
  * Score mais baixo = mais relevante.
  *
  * Lógica:
- * - Distância do midpoint do range até a semana atual (componente principal)
+ * - Distância do midpoint até a semana atual (componente principal)
+ * - Penalidade assimétrica: tema no passado recente = 1.5×, passado distante = 2.5×
+ *   (artigos sobre eventos que já passaram são menos úteis — "volta ao trabalho"
+ *    é útil ANTES de acontecer, não semanas depois)
  * - Penalidade proporcional à largura do range (artigos mais específicos ganham)
  *
- * Exemplos para bebê de 26 semanas:
- *   range 24-28  → score ≈  0 + 0.4 = 0.4  ← muito específico, aparece primeiro
- *   range 0-52   → score ≈  0 + 5.2 = 5.2  ← genérico, cai no ranking
- *   range 0-16   → score ≈ 18 + 1.6 = 19.6 ← passou da fase, fica lá atrás
+ * Exemplos para bebê de 20 semanas:
+ *   range 18-22  → midpoint=20, dist=0   → score ≈ 0   + 0.4 = 0.4  ← certeiro
+ *   range 16-18  → midpoint=17, passou 3 → score ≈ 4.5 + 0.2 = 4.7  ← penalizado
+ *   range 0-52   → midpoint=26, 6 antes  → score ≈ 6   + 5.2 = 11.2 ← genérico
  */
 function relevanceScore(post: RawPost, babyAgeWeeks: number): number {
   const start = post.target_week_start ?? 0
   const end = post.target_week_end ?? 52
   const midpoint = (start + end) / 2
-  const distance = Math.abs(midpoint - babyAgeWeeks)
   const width = end - start
+
+  const raw = midpoint - babyAgeWeeks // positivo = tema ainda não chegou; negativo = já passou
+
+  let distance: number
+  if (raw >= 0) {
+    // Tema ainda no futuro: distância linear normal
+    distance = raw
+  } else {
+    // Tema já passou: penalidade assimétrica
+    const weeksPast = Math.abs(raw)
+    distance = weeksPast * (weeksPast > 4 ? 2.5 : 1.5)
+  }
+
   return distance + width * 0.1
 }
 
