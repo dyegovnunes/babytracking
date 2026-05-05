@@ -19,6 +19,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { hapticLight } from '../../../lib/haptics'
 import { contractionDe, article, type Gender } from '../../../lib/genderUtils'
+import { setFlag } from '../../../lib/userFlags'
 
 interface TrailStep {
   id: string
@@ -89,8 +90,20 @@ interface Props {
 
 export default function DiscoveryTrail({ babyId, babyAgeWeeks, babyName, babyGender, logsCount, onStepAction, onComplete }: Props) {
   const navigate = useNavigate()
-  const [collapsed, setCollapsed] = useState(false)
+  // Estado de colapso persiste cross-device via user_flags. Default = aberto.
+  // Chave baby-scoped pra cada bebê manter sua própria preferência.
+  const collapsedKey = `yaya_trail_collapsed_${babyId}`
+  const [collapsed, setCollapsed] = useState(() => localStorage.getItem(collapsedKey) === '1')
   const [justCompletedId, setJustCompletedId] = useState<string | null>(null)
+
+  const toggleCollapsed = useCallback(() => {
+    setCollapsed((c) => {
+      const next = !c
+      if (next) setFlag(collapsedKey)
+      else setFlag(collapsedKey, '0')
+      return next
+    })
+  }, [collapsedKey])
 
   // Forçar re-render ao retornar de outra tela (itens podem ter sido completados)
   const [tick, setTick] = useState(0)
@@ -113,13 +126,13 @@ export default function DiscoveryTrail({ babyId, babyAgeWeeks, babyName, babyGen
 
   useEffect(() => {
     if (!localStorage.getItem(startKey)) {
-      localStorage.setItem(startKey, String(Date.now()))
+      setFlag(startKey, String(Date.now()))
     }
   }, [startKey])
 
   const handleDismiss = useCallback(() => {
     hapticLight()
-    localStorage.setItem(dismissKey, '1')
+    setFlag(dismissKey)
     forceUpdate()
   }, [dismissKey])
 
@@ -144,7 +157,7 @@ export default function DiscoveryTrail({ babyId, babyAgeWeeks, babyName, babyGen
         if (!prev[i] && doneFlags[i]) {
           const afterKey = `yaya_trail_step_after_${step.id}_${babyId}`
           if (!localStorage.getItem(afterKey)) {
-            localStorage.setItem(afterKey, '1')
+            setFlag(afterKey)
             setJustCompletedId(step.id)
             setTimeout(() => setJustCompletedId(null), 5000)
           }
@@ -161,8 +174,8 @@ export default function DiscoveryTrail({ babyId, babyAgeWeeks, babyName, babyGen
   const allDone = doneFlags.every(Boolean)
   useEffect(() => {
     if (allDone && !localStorage.getItem(completedKey)) {
-      localStorage.setItem(completedKey, '1')
-      localStorage.setItem(`yaya_trail_pending_celebration_${babyId}`, '1')
+      setFlag(completedKey)
+      setFlag(`yaya_trail_pending_celebration_${babyId}`)
       onComplete?.()
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -187,7 +200,7 @@ export default function DiscoveryTrail({ babyId, babyAgeWeeks, babyName, babyGen
         <button
           type="button"
           className="w-full flex items-center justify-between px-3 py-3"
-          onClick={() => setCollapsed((c) => !c)}
+          onClick={toggleCollapsed}
         >
           <div className="flex items-center gap-2">
             <span
