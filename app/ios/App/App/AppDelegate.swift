@@ -46,4 +46,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return ApplicationDelegateProxy.shared.application(application, continue: userActivity, restorationHandler: restorationHandler)
     }
 
+    // MARK: - Push Notifications (APNs → Capacitor bridge)
+    // CRÍTICO: sem essas duas callbacks o evento `registration` do plugin
+    // @capacitor/push-notifications NUNCA dispara no iOS. O token APNs chega
+    // do sistema e não tem pra onde ir. Documentado em:
+    // https://capacitorjs.com/docs/apis/push-notifications#ios
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        NotificationCenter.default.post(name: .capacitorDidRegisterForRemoteNotifications, object: deviceToken)
+    }
+
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        NotificationCenter.default.post(name: .capacitorDidFailToRegisterForRemoteNotifications, object: error)
+    }
+
 }
