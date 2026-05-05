@@ -37,7 +37,7 @@ const MAX_DOTS         = 8
 function getFeatureImageUrl(h: Highlight): string | null {
   if (h.data.type === 'leap_active' || h.data.type === 'leap_upcoming') {
     const id = h.data.leap.id
-    return `/carousel/saltos/salto-${id}.png`
+    return `/carousel/saltos/salto-${id}.jpg`
   }
   if (h.data.type === 'milestone') {
     const MAP: Record<string, string> = {
@@ -51,7 +51,7 @@ function getFeatureImageUrl(h: Highlight): string | null {
       autonomia:   'marco-autonomia',
     }
     const name = MAP[h.data.milestone.category] ?? 'marco-cognitivo'
-    return `/carousel/marcos/${name}.png`
+    return `/carousel/marcos/${name}.jpg`
   }
   if (h.data.type === 'vaccine_overdue' || h.data.type === 'vaccine_upcoming') {
     const days = h.data.vaccine.recommendedAgeDays
@@ -61,7 +61,7 @@ function getFeatureImageUrl(h: Highlight): string | null {
     else if (days < 361) file = 'vacina-4-6-meses'
     else if (days < 451) file = 'vacina-12-15-meses'
     else                 file = 'vacina-15-24-meses'
-    return `/carousel/vacinas/${file}.png`
+    return `/carousel/vacinas/${file}.jpg`
   }
   return null
 }
