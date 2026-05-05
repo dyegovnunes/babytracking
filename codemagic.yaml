@@ -3,6 +3,8 @@ workflows:
     name: iOS TestFlight
     max_build_duration: 30
     instance_type: mac_mini_m2
+    triggering:
+      events: []   # Auto-trigger desativado — disparar manualmente no dashboard
     # Automatic code signing gerenciado pelo Codemagic via ASC API.
     # A integration "codemagic" (Teams → Integrations → App Store Connect)
     # deve ter uma API key válida com permissões de signing.
@@ -108,7 +110,7 @@ workflows:
           # Bump aqui sempre que subir versão.
           PBXPROJ="app/ios/App/App.xcodeproj/project.pbxproj"
           sed -i '' 's/MARKETING_VERSION = [^;]*;/MARKETING_VERSION = 1.9.4;/g' "$PBXPROJ"
-          sed -i '' 's/CURRENT_PROJECT_VERSION = [^;]*;/CURRENT_PROJECT_VERSION = 69;/g' "$PBXPROJ"
+          sed -i '' 's/CURRENT_PROJECT_VERSION = [^;]*;/CURRENT_PROJECT_VERSION = 70;/g' "$PBXPROJ"
 
       - name: Use fetched profiles
         script: |
