@@ -6,6 +6,7 @@
 
 import { useNavigate } from 'react-router-dom'
 import { hapticLight } from '../../../lib/haptics'
+import YaIAOrb from '../../yaia/components/YaIAOrb'
 import type { DiscoveryNudge } from '../useDiscoveryNudges'
 
 interface Props {
@@ -42,12 +43,16 @@ export default function DiscoveryNudgeCard({ nudge, onDismiss, onExplore }: Prop
             border: '1px solid rgba(183,159,255,0.18)',
           }}
         >
-          {/* Área do emoji */}
+          {/* Área do visual — yaIA usa o orb oficial; demais usam emoji */}
           <div
             className="w-full flex items-center justify-center py-5"
             style={{ background: 'rgba(183,159,255,0.07)' }}
           >
-            <span style={{ fontSize: 44 }} aria-hidden>{nudge.emoji}</span>
+            {nudge.id === 'nudge_yaia' ? (
+              <YaIAOrb size="lg" breathing={false} />
+            ) : (
+              <span style={{ fontSize: 44 }} aria-hidden>{nudge.emoji}</span>
+            )}
           </div>
 
           {/* Botão fechar — canto superior direito */}
