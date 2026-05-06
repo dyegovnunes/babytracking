@@ -9,6 +9,14 @@ import { hapticLight } from '../../../lib/haptics'
 import YaIAOrb from '../../yaia/components/YaIAOrb'
 import type { DiscoveryNudge } from '../useDiscoveryNudges'
 
+/** Mapeia o id do nudge para a foto em /public/nudges/. yaIA é tratado à parte (orb). */
+function nudgeImage(id: string): string {
+  if (id === 'nudge_family' || id === 'nudge_family_remind') return '/nudges/family.webp'
+  if (id === 'nudge_insights') return '/nudges/insights.webp'
+  if (id === 'nudge_report') return '/nudges/report.webp'
+  return ''
+}
+
 interface Props {
   nudge: DiscoveryNudge
   onDismiss: () => void
@@ -43,17 +51,28 @@ export default function DiscoveryNudgeCard({ nudge, onDismiss, onExplore }: Prop
             border: '1px solid rgba(183,159,255,0.18)',
           }}
         >
-          {/* Área do visual — yaIA usa o orb oficial; demais usam emoji */}
-          <div
-            className="w-full flex items-center justify-center py-5"
-            style={{ background: 'rgba(183,159,255,0.07)' }}
-          >
-            {nudge.id === 'nudge_yaia' ? (
+          {/* Área do visual — yaIA usa o orb oficial; demais usam fotos. */}
+          {nudge.id === 'nudge_yaia' ? (
+            <div
+              className="w-full flex items-center justify-center py-5"
+              style={{ background: 'rgba(183,159,255,0.07)' }}
+            >
               <YaIAOrb size="lg" breathing={false} />
-            ) : (
-              <span style={{ fontSize: 44 }} aria-hidden>{nudge.emoji}</span>
-            )}
-          </div>
+            </div>
+          ) : (
+            <div
+              className="w-full overflow-hidden"
+              style={{ aspectRatio: '16/9', background: 'rgba(183,159,255,0.07)' }}
+            >
+              <img
+                src={nudgeImage(nudge.id)}
+                alt=""
+                className="w-full h-full object-cover"
+                loading="lazy"
+                aria-hidden
+              />
+            </div>
+          )}
 
           {/* Botão fechar — canto superior direito */}
           <button
