@@ -66,13 +66,10 @@ const BENEFITS = [
   'Histórico completo',
   'Insights e gráficos semanais',
   'Marcar vacinas livremente',
-  'Até 2 bebês',
+  'Bebês ilimitados',
   'Cuidadores ilimitados',
   'Lembretes de medicamento',
 ];
-
-// Benefício em destaque — aparece separado dos bullets para chamar atenção
-const HIGHLIGHTED_BENEFIT = 'Biblioteca Yaya incluída';
 
 interface PlanOption {
   type: PlanType;
@@ -91,7 +88,7 @@ interface PlanOption {
 const FALLBACK_PLANS: PlanOption[] = [
   { type: 'annual',   label: 'Anual',     price: 'R$20,83/mês', detail: 'R$249,90 cobrado anualmente',  badge: 'Mais escolhido' },
   { type: 'monthly',  label: 'Mensal',    price: 'R$34,90/mês', detail: 'Cobrado mensalmente' },
-  { type: 'lifetime', label: 'Vitalício', price: 'R$37,49/mês', ctaPrice: 'R$449,90', detail: 'Cobrado uma vez: R$449,90', badge: 'Melhor custo' },
+  { type: 'lifetime', label: 'Vitalício', price: 'R$37,49/mês', ctaPrice: 'R$449,90', detail: 'Cobrado uma vez: R$449,90', badge: '🔒 Melhor valor' },
 ];
 
 export function PaywallModal({ isOpen, onClose, trigger = 'generic', resetWhen }: PaywallModalProps) {
@@ -158,7 +155,7 @@ export function PaywallModal({ isOpen, onClose, trigger = 'generic', resetWhen }
           price: monthly,
           ctaPrice: totalPrice,
           detail: `Cobrado uma vez: ${totalPrice}`,
-          badge: 'Melhor custo',
+          badge: '🔒 Melhor valor',
         });
       }
 
@@ -258,11 +255,13 @@ export function PaywallModal({ isOpen, onClose, trigger = 'generic', resetWhen }
             ))}
           </div>
 
-          {/* Biblioteca Yaya — destaque em faixa própria */}
-          <div className="flex items-center gap-2 bg-primary/10 border border-primary/30 rounded-md px-3 py-2 mb-4">
-            <span className="text-base">📚</span>
-            <span className="text-xs font-semibold text-primary">{HIGHLIGHTED_BENEFIT}</span>
-            <span className="ml-auto text-[10px] text-primary/60 font-medium">inclusa</span>
+          {/* Biblioteca Yaya — destaque em faixa própria, só anual + vitalício */}
+          <div className="flex items-center gap-2.5 bg-amber-400/10 border border-amber-400/30 rounded-md px-3 py-2 mb-4">
+            <span className="text-base leading-none">📚</span>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-semibold text-amber-400">Biblioteca Yaya incluída</p>
+              <p className="text-[10px] text-on-surface/50">Disponível nos planos Anual e Vitalício</p>
+            </div>
           </div>
 
           {/* Plan cards */}
@@ -270,45 +269,58 @@ export function PaywallModal({ isOpen, onClose, trigger = 'generic', resetWhen }
             {plans.map((plan) => {
               const isSelected = selectedPlan === plan.type
               const isLifetime = plan.type === 'lifetime'
+              const isAnnual   = plan.type === 'annual'
 
-              // Tema de cor: vitalício = âmbar, demais = primary (roxo)
-              const accentBorder = isLifetime ? 'border-amber-400'      : 'border-primary'
-              const accentBg     = isLifetime ? 'bg-amber-400/10'       : 'bg-primary/10'
-              const accentBadge  = isLifetime
-                ? 'bg-amber-400/20 text-amber-400'
-                : 'bg-primary/20 text-primary'
-              const accentRadio  = isLifetime ? 'border-amber-400'      : 'border-primary'
-              const accentDot    = isLifetime ? 'bg-amber-400'          : 'bg-primary'
-              const accentPrice  = isLifetime ? 'text-amber-400'        : 'text-primary'
+              // --- Tema de cor por plano ---
+              // Anual: roxo + rosa (fuchsia — mais chamativo que o primary genérico)
+              // Vitalício: âmbar/dourado
+              // Mensal: neutro
+              const borderSelected   = isLifetime ? 'border-amber-400'   : isAnnual ? 'border-fuchsia-400'   : 'border-outline-variant/50'
+              const borderUnselected = isLifetime ? 'border-amber-400/30' : isAnnual ? 'border-fuchsia-400/30' : 'border-outline-variant/50'
+              const bgSelected       = isLifetime ? 'bg-amber-400/10'    : isAnnual ? 'bg-fuchsia-500/10'    : 'bg-surface-container/50'
+              const bgUnselected     = 'bg-surface-container/50'
+              const priceColor       = isLifetime ? 'text-amber-400'     : isAnnual ? 'text-fuchsia-300'     : 'text-on-surface/70'
+              const radioColor       = isLifetime ? 'border-amber-400'   : isAnnual ? 'border-fuchsia-400'   : 'border-outline-variant'
+              const dotColor         = isLifetime ? 'bg-amber-400'       : isAnnual ? 'bg-fuchsia-400'       : 'bg-primary'
 
-              // Faixa de badge: sempre visível para planos com badge
-              // Selecionado = cores vivas; não selecionado = versão apagada
-              const badgeFaixaSelected   = isLifetime
-                ? 'bg-amber-400/20 text-amber-400'
-                : 'bg-primary/20 text-primary'
-              const badgeFaixaUnselected = isLifetime
-                ? 'bg-amber-400/8 text-amber-400/50'
-                : 'bg-primary/8 text-primary/50'
+              // Faixas de badge (selecionado = vivo, não selecionado = apagado)
+              const badgeBgSelected   = isLifetime
+                ? { background: 'linear-gradient(135deg, rgba(245,200,66,0.25) 0%, rgba(240,160,32,0.25) 100%)' }
+                : { background: 'linear-gradient(135deg, rgba(167,139,250,0.25) 0%, rgba(236,72,153,0.25) 100%)' }
+              const badgeBgUnselected = isLifetime
+                ? { background: 'rgba(245,200,66,0.08)' }
+                : { background: 'rgba(167,139,250,0.08)' }
+              const badgeTextSelected   = isLifetime ? 'text-amber-400'      : 'text-fuchsia-300'
+              const badgeTextUnselected = isLifetime ? 'text-amber-400/50'   : 'text-fuchsia-400/50'
+
+              // Glow externo quando selecionado
+              const glowStyle = isSelected
+                ? isLifetime
+                  ? { boxShadow: '0 0 24px rgba(245,200,66,0.25)' }
+                  : isAnnual
+                    ? { boxShadow: '0 0 24px rgba(183,159,255,0.2)' }
+                    : {}
+                : {}
 
               return (
                 <button
                   key={plan.type}
                   onClick={() => setSelectedPlan(plan.type)}
+                  style={glowStyle}
                   className={`w-full rounded-md border-2 transition-all overflow-hidden text-left ${
                     isSelected
-                      ? `${accentBorder} ${accentBg}`
-                      : plan.badge
-                        ? isLifetime
-                          ? 'border-amber-400/30 bg-surface-container/50'
-                          : 'border-primary/30 bg-surface-container/50'
-                        : 'border-outline-variant/50 bg-surface-container/50'
+                      ? `${borderSelected} ${bgSelected}`
+                      : `${borderUnselected} ${bgUnselected}`
                   }`}
                 >
-                  {/* Faixa de destaque — sempre visível para planos com badge */}
+                  {/* Faixa de badge — sempre visível para planos com badge */}
                   {plan.badge && (
-                    <div className={`px-4 py-1 text-[10px] font-bold uppercase tracking-wider transition-all ${
-                      isSelected ? badgeFaixaSelected : badgeFaixaUnselected
-                    }`}>
+                    <div
+                      className={`px-4 py-1 text-[10px] font-bold uppercase tracking-wider transition-all ${
+                        isSelected ? badgeTextSelected : badgeTextUnselected
+                      }`}
+                      style={isSelected ? badgeBgSelected : badgeBgUnselected}
+                    >
                       {plan.badge}
                     </div>
                   )}
@@ -316,9 +328,9 @@ export function PaywallModal({ isOpen, onClose, trigger = 'generic', resetWhen }
                   <div className="flex items-center gap-3 px-4 py-3">
                     {/* Radio */}
                     <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
-                      isSelected ? accentRadio : 'border-outline-variant'
+                      isSelected ? radioColor : 'border-outline-variant'
                     }`}>
-                      {isSelected && <div className={`w-2.5 h-2.5 rounded-full ${accentDot}`} />}
+                      {isSelected && <div className={`w-2.5 h-2.5 rounded-full ${dotColor}`} />}
                     </div>
 
                     {/* Info */}
@@ -331,7 +343,7 @@ export function PaywallModal({ isOpen, onClose, trigger = 'generic', resetWhen }
 
                     {/* Price — equiv. mensal para todos os planos */}
                     <div className="text-right flex-shrink-0">
-                      <div className={`text-sm font-bold ${isSelected ? accentPrice : 'text-on-surface/70'}`}>
+                      <div className={`text-sm font-bold ${isSelected ? priceColor : 'text-on-surface/70'}`}>
                         {plan.price}
                       </div>
                       {/* Nota de equivalência para vitalício */}

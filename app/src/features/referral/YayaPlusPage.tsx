@@ -91,7 +91,7 @@ export default function YayaPlusPage() {
             </div>
           </div>
           <ComparisonRow feature="Registros/dia" free="5" premium="Ilimitados" />
-          <ComparisonRow feature="Bebês" free="1" premium="2" />
+          <ComparisonRow feature="Bebês" free="1" premium="Ilimitado" />
           <ComparisonRow feature="Histórico" free="Hoje + ontem" premium="Completo" />
           <ComparisonRow
             feature="Compartilhar com babá e família"
@@ -122,6 +122,11 @@ export default function YayaPlusPage() {
             feature="Insights inteligentes"
             free="Básicos"
             premium="Completos"
+          />
+          <ComparisonRow
+            feature="Biblioteca Yaya"
+            free={<Cross />}
+            premium="Anual e Vitalício"
           />
           <ComparisonRow
             feature="Resumo para o pediatra"
