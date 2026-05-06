@@ -71,6 +71,9 @@ const BENEFITS = [
   'Lembretes de medicamento',
 ];
 
+// Benefício em destaque — aparece separado dos bullets para chamar atenção
+const HIGHLIGHTED_BENEFIT = 'Biblioteca Yaya incluída';
+
 interface PlanOption {
   type: PlanType;
   label: string;
@@ -246,13 +249,20 @@ export function PaywallModal({ isOpen, onClose, trigger = 'generic', resetWhen }
           </p>
 
           {/* Benefits — compact 2-column */}
-          <div className="grid grid-cols-2 gap-x-2 gap-y-1.5 mb-4">
+          <div className="grid grid-cols-2 gap-x-2 gap-y-1.5 mb-3">
             {BENEFITS.map((benefit) => (
               <div key={benefit} className="flex items-center gap-1.5 text-xs text-on-surface/80">
                 <span className="material-symbols-outlined text-primary text-sm">check_circle</span>
                 {benefit}
               </div>
             ))}
+          </div>
+
+          {/* Biblioteca Yaya — destaque em faixa própria */}
+          <div className="flex items-center gap-2 bg-primary/10 border border-primary/30 rounded-md px-3 py-2 mb-4">
+            <span className="text-base">📚</span>
+            <span className="text-xs font-semibold text-primary">{HIGHLIGHTED_BENEFIT}</span>
+            <span className="ml-auto text-[10px] text-primary/60 font-medium">inclusa</span>
           </div>
 
           {/* Plan cards */}
@@ -271,6 +281,15 @@ export function PaywallModal({ isOpen, onClose, trigger = 'generic', resetWhen }
               const accentDot    = isLifetime ? 'bg-amber-400'          : 'bg-primary'
               const accentPrice  = isLifetime ? 'text-amber-400'        : 'text-primary'
 
+              // Faixa de badge: sempre visível para planos com badge
+              // Selecionado = cores vivas; não selecionado = versão apagada
+              const badgeFaixaSelected   = isLifetime
+                ? 'bg-amber-400/20 text-amber-400'
+                : 'bg-primary/20 text-primary'
+              const badgeFaixaUnselected = isLifetime
+                ? 'bg-amber-400/8 text-amber-400/50'
+                : 'bg-primary/8 text-primary/50'
+
               return (
                 <button
                   key={plan.type}
@@ -278,12 +297,18 @@ export function PaywallModal({ isOpen, onClose, trigger = 'generic', resetWhen }
                   className={`w-full rounded-md border-2 transition-all overflow-hidden text-left ${
                     isSelected
                       ? `${accentBorder} ${accentBg}`
-                      : 'border-outline-variant/50 bg-surface-container/50'
+                      : plan.badge
+                        ? isLifetime
+                          ? 'border-amber-400/30 bg-surface-container/50'
+                          : 'border-primary/30 bg-surface-container/50'
+                        : 'border-outline-variant/50 bg-surface-container/50'
                   }`}
                 >
-                  {/* Faixa de destaque no topo — visível só quando selecionado */}
-                  {isSelected && plan.badge && (
-                    <div className={`px-4 py-1 text-[10px] font-bold uppercase tracking-wider ${accentBadge}`}>
+                  {/* Faixa de destaque — sempre visível para planos com badge */}
+                  {plan.badge && (
+                    <div className={`px-4 py-1 text-[10px] font-bold uppercase tracking-wider transition-all ${
+                      isSelected ? badgeFaixaSelected : badgeFaixaUnselected
+                    }`}>
                       {plan.badge}
                     </div>
                   )}
@@ -298,14 +323,8 @@ export function PaywallModal({ isOpen, onClose, trigger = 'generic', resetWhen }
 
                     {/* Info */}
                     <div className="flex-1 text-left min-w-0">
-                      <div className="flex items-center gap-2 mb-0.5">
+                      <div className="mb-0.5">
                         <span className="text-sm font-bold text-on-surface">{plan.label}</span>
-                        {/* Pill badge compacto quando NÃO selecionado */}
-                        {!isSelected && plan.badge && (
-                          <span className="text-[9px] font-semibold uppercase tracking-wider bg-primary/20 text-primary px-1.5 py-0.5 rounded-full">
-                            {plan.badge}
-                          </span>
-                        )}
                       </div>
                       <span className="text-[11px] text-on-surface/50">{plan.detail}</span>
                     </div>
