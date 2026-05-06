@@ -275,12 +275,12 @@ export function PaywallModal({ isOpen, onClose, trigger = 'generic', resetWhen }
               // Anual: roxo + rosa (fuchsia — mais chamativo que o primary genérico)
               // Vitalício: âmbar/dourado
               // Mensal: neutro
-              const borderSelected   = isLifetime ? 'border-amber-400'   : isAnnual ? 'border-fuchsia-400'   : 'border-outline-variant/50'
+              const borderSelected   = isLifetime ? 'border-amber-400'    : isAnnual ? 'border-fuchsia-400'    : 'border-primary/70'
               const borderUnselected = isLifetime ? 'border-amber-400/30' : isAnnual ? 'border-fuchsia-400/30' : 'border-outline-variant/50'
-              const bgSelected       = isLifetime ? 'bg-amber-400/10'    : isAnnual ? 'bg-fuchsia-500/10'    : 'bg-surface-container/50'
+              const bgSelected       = isLifetime ? 'bg-amber-400/10'    : isAnnual ? 'bg-fuchsia-500/10'    : 'bg-primary/5'
               const bgUnselected     = 'bg-surface-container/50'
-              const priceColor       = isLifetime ? 'text-amber-400'     : isAnnual ? 'text-fuchsia-300'     : 'text-on-surface/70'
-              const radioColor       = isLifetime ? 'border-amber-400'   : isAnnual ? 'border-fuchsia-400'   : 'border-outline-variant'
+              const priceColor       = isLifetime ? 'text-amber-400'     : isAnnual ? 'text-fuchsia-300'     : 'text-primary'
+              const radioColor       = isLifetime ? 'border-amber-400'   : isAnnual ? 'border-fuchsia-400'   : 'border-primary'
               const dotColor         = isLifetime ? 'bg-amber-400'       : isAnnual ? 'bg-fuchsia-400'       : 'bg-primary'
 
               // Faixas de badge (selecionado = vivo, não selecionado = apagado)
