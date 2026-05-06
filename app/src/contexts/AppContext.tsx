@@ -313,7 +313,43 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }, [user])
 
-  // Background sync: refresh logs when app resumes from background
+  // Realtime: escuta mudanças na tabela babies do bebê ativo.
+  // Sincroniza quiet hours, auto_sleep_enabled e outras configs per-baby
+  // entre múltiplos cuidadores sem exigir reload manual.
+  useEffect(() => {
+    if (!state.baby) return
+    const babyId = state.baby.id
+    const channel = supabase
+      .channel(`babies-settings-${babyId}`)
+      .on(
+        'postgres_changes' as never,
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'babies',
+          filter: `id=eq.${babyId}`,
+        },
+        (payload: { new: Record<string, unknown> }) => {
+          const row = payload.new
+          dispatch({
+            type: 'SET_QUIET_HOURS',
+            value: {
+              enabled: (row.quiet_hours_enabled as boolean) ?? false,
+              start:   (row.quiet_hours_start   as number) ?? 22,
+              end:     (row.quiet_hours_end      as number) ?? 7,
+            },
+          })
+          dispatch({ type: 'SET_AUTO_SLEEP_ENABLED', value: (row.auto_sleep_enabled as boolean) ?? true })
+        },
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [state.baby?.id, dispatch])
+
+  // Background sync: refresh logs + intervals when app resumes from background
   const lastResumeRef = useRef(Date.now())
 
   const refreshLogs = useCallback(async () => {
@@ -327,13 +363,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
     updateLastSeen(user.id).catch(() => {})
 
     try {
-      const [logsRes, streakData] = await Promise.all([
+      const [logsRes, streakData, intervalsRes] = await Promise.all([
         supabase
           .from('logs')
           .select('*')
           .eq('baby_id', state.baby.id)
           .order('timestamp', { ascending: true }),
         getStreak(state.baby.id),
+        // Recarrega intervalos para capturar mudanças feitas por outros cuidadores
+        supabase
+          .from('interval_configs')
+          .select('*')
+          .eq('baby_id', state.baby.id),
       ])
 
       if (logsRes.data) {
@@ -356,6 +397,25 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       if (streakData) {
         dispatch({ type: 'SET_STREAK', streak: streakData })
+      }
+
+      // Atualiza intervalos se houver mudanças (ex: outro cuidador editou a rotina)
+      if (intervalsRes.data) {
+        const freshIntervals = { ...DEFAULT_INTERVALS }
+        for (const row of intervalsRes.data) {
+          const base = freshIntervals[row.category] ?? { label: row.category, minutes: row.minutes, warn: row.warn }
+          freshIntervals[row.category] = {
+            ...base,
+            minutes: row.minutes,
+            warn: row.warn,
+            mode: row.mode ?? 'interval',
+            scheduledHours: row.scheduled_hours ? JSON.parse(row.scheduled_hours) : undefined,
+          }
+        }
+        // Só despacha se algo mudou (evita re-renders desnecessários)
+        if (JSON.stringify(freshIntervals) !== JSON.stringify(state.intervals)) {
+          dispatch({ type: 'SET_INTERVALS', intervals: freshIntervals })
+        }
       }
     } catch {
       // Silent fail — user still has cached data

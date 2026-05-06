@@ -10,13 +10,23 @@ import { DEFAULT_PREFS, type NotifPrefs } from './types'
  * (insights, push scheduler) reads from a single source of truth.
  *
  * `savePrefs` returns a boolean so the caller can show a toast on failure.
+ *
+ * FONTE DE VERDADE para quietHours:
+ * - `notification_prefs` é per-user — só guarda enabled/categories de notificação
+ * - `babies.quiet_hours_*` é per-baby (compartilhado) — fonte canônica para horário noturno
+ * - `AppContext.quietHours` é carregado de `babies` → é o valor correto para exibir
+ * Por isso `prefs.quietHours` é sempre derivado de AppContext, nunca de notification_prefs.
  */
 export function useNotificationPrefs() {
-  const { baby } = useAppState()
+  const { baby, quietHours } = useAppState()
   const { user } = useAuth()
   const dispatch = useAppDispatch()
-  const [prefs, setPrefs] = useState<NotifPrefs>(DEFAULT_PREFS)
 
+  // Inicializa com quietHours do AppContext (já carregado de babies na inicialização)
+  const [prefs, setPrefs] = useState<NotifPrefs>({ ...DEFAULT_PREFS, quietHours })
+
+  // Carrega apenas campos per-user (enabled, categories) do notification_prefs.
+  // quietHours NÃO vem daqui — vem do AppContext para garantir sincronização entre usuários.
   useEffect(() => {
     if (!user || !baby) return
     supabase
@@ -27,7 +37,7 @@ export function useNotificationPrefs() {
       .single()
       .then(({ data }) => {
         if (data) {
-          setPrefs({
+          setPrefs(prev => ({
             enabled: data.enabled,
             categories: {
               feed: data.cat_feed,
@@ -35,15 +45,18 @@ export function useNotificationPrefs() {
               sleep: data.cat_sleep,
               bath: data.cat_bath,
             },
-            quietHours: {
-              enabled: data.quiet_enabled,
-              start: data.quiet_start,
-              end: data.quiet_end,
-            },
-          })
+            // Mantém o quietHours atual do AppContext, não o do notification_prefs
+            quietHours: prev.quietHours,
+          }))
         }
       })
-  }, [user, baby])
+  }, [user?.id, baby?.id])
+
+  // Sincroniza quietHours sempre que AppContext.quietHours mudar.
+  // Isso garante que a UI reflita mudanças feitas por outro cuidador.
+  useEffect(() => {
+    setPrefs(prev => ({ ...prev, quietHours }))
+  }, [quietHours])
 
   const savePrefs = useCallback(
     async (updated: NotifPrefs): Promise<boolean> => {
