@@ -1,5 +1,6 @@
 ﻿---
 import CookieConsent from '../components/CookieConsent.astro'
+import { Analytics } from '@vercel/analytics/astro'
 import ThemeToggle from '../components/ThemeToggle.astro'
 import HeaderAuthButton from '../components/HeaderAuthButton'
 import '../styles/theme.css'
@@ -246,6 +247,7 @@ const GA_ID = import.meta.env.PUBLIC_GA_MEASUREMENT_ID as string | undefined
     </footer>
 
     <CookieConsent />
+    <Analytics />
 
     <!-- Toggle do menu mobile -->
     <script is:inline>
