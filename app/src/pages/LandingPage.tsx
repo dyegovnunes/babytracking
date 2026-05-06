@@ -1067,12 +1067,11 @@ function StoreButton({ platform, isMobile }: { platform: 'apple' | 'google'; isM
 // ─── AndroidWaitlistModal ────────────────────────────────────────────────────
 function AndroidWaitlistModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const [email, setEmail] = useState('')
-  const [phone, setPhone] = useState('')
   const [state, setState] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState('')
   const [alreadySubscribed, setAlreadySubscribed] = useState(false)
 
-  // Fechar com botão back
+  // Fechar com Escape
   useEffect(() => {
     if (!isOpen) return
     function onKey(e: KeyboardEvent) { if (e.key === 'Escape') onClose() }
@@ -1094,7 +1093,7 @@ function AndroidWaitlistModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
           'Content-Type': 'application/json',
           Authorization: `Bearer ${supabaseAnonKey}`,
         },
-        body: JSON.stringify({ email: email.trim(), phone: phone.trim() || undefined }),
+        body: JSON.stringify({ email: email.trim() }),
       })
 
       const data = await res.json()
@@ -1115,9 +1114,8 @@ function AndroidWaitlistModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
 
   function handleClose() {
     onClose()
-    // Reset depois do fade
     setTimeout(() => {
-      setEmail(''); setPhone(''); setState('idle'); setErrorMsg(''); setAlreadySubscribed(false)
+      setEmail(''); setState('idle'); setErrorMsg(''); setAlreadySubscribed(false)
     }, 300)
   }
 
@@ -1158,13 +1156,12 @@ function AndroidWaitlistModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
         {state !== 'success' ? (
           <>
             <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-              <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>🎉</div>
+              <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>🚀</div>
               <h2 style={{ fontSize: '1.375rem', fontWeight: 700, lineHeight: 1.25, margin: '0 0 0.75rem' }}>
-                Yaya para Android <span className="lp-gradient-text">em breve!</span>
+                Seja um dos primeiros no <span className="lp-gradient-text">Android!</span>
               </h2>
               <p style={{ fontSize: '0.9375rem', color: 'hsl(250 25% 75%)', lineHeight: 1.6, margin: 0 }}>
-                Estamos aguardando a aprovação do Google, que deve liberar o app nos próximos dias.
-                Deixa seu email que te avisamos quando lançar, e já te damos <strong style={{ color: 'hsl(254 100% 81%)' }}>10 dias de Yaya+</strong> para testar pelo navegador do celular!
+                O Yaya está chegando ao Google Play e você pode entrar antes de todo mundo. Coloca seu email abaixo e te mandamos o convite em até 2h. De brinde, seus <strong style={{ color: 'hsl(254 100% 81%)' }}>10 dias de Yaya+</strong> já ficam liberados!
               </p>
             </div>
 
@@ -1182,25 +1179,24 @@ function AndroidWaitlistModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
                   color: 'white', fontFamily: 'inherit', outline: 'none',
                 }}
               />
-              <input
-                type="tel"
-                placeholder="WhatsApp (opcional)"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                disabled={state === 'loading'}
-                style={{
-                  padding: '0.875rem 1rem', borderRadius: '0.625rem', fontSize: '0.9375rem',
-                  background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(183,159,255,0.18)',
-                  color: 'white', fontFamily: 'inherit', outline: 'none',
-                }}
-              />
+              <div style={{
+                padding: '0.75rem 1rem', borderRadius: '0.625rem',
+                background: 'rgba(183,159,255,0.06)', border: '1px solid rgba(183,159,255,0.12)',
+              }}>
+                <p style={{ fontSize: '0.8125rem', color: 'hsl(250 30% 65%)', lineHeight: 1.6, margin: 0 }}>
+                  💡 Use o email da sua conta Google no celular.<br />
+                  <span style={{ color: 'hsl(250 20% 50%)' }}>
+                    Para descobrir: abra o Play Store, toque na sua foto de perfil e o email aparece no topo.
+                  </span>
+                </p>
+              </div>
               <button
                 type="submit"
                 disabled={state === 'loading' || !email.trim()}
                 className="lp-btn-primary"
-                style={{ marginTop: '0.5rem', padding: '0.875rem 1.25rem', fontSize: '0.9375rem', opacity: state === 'loading' ? 0.6 : 1 }}
+                style={{ marginTop: '0.25rem', padding: '0.875rem 1.25rem', fontSize: '0.9375rem', opacity: state === 'loading' ? 0.6 : 1 }}
               >
-                {state === 'loading' ? 'Enviando...' : 'Quero testar! Me avisa quando lançar'}
+                {state === 'loading' ? 'Enviando...' : 'Quero ser testador!'}
               </button>
               {state === 'error' && (
                 <p style={{ fontSize: '0.8125rem', color: '#ff7a7a', textAlign: 'center', margin: '0.25rem 0 0' }}>
@@ -1213,24 +1209,20 @@ function AndroidWaitlistModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>✅</div>
             <h2 style={{ fontSize: '1.375rem', fontWeight: 700, margin: '0 0 0.75rem' }}>
-              {alreadySubscribed ? 'Você já está na lista!' : 'Pronto! Seus 10 dias começaram.'}
+              {alreadySubscribed ? 'Você já está na lista!' : 'Pronto! Convite a caminho.'}
             </h2>
-            <p style={{ fontSize: '0.9375rem', color: 'hsl(250 25% 75%)', lineHeight: 1.6, margin: '0 0 1.25rem' }}>
-              Enviamos um link pro seu email. Clique nele <strong>pelo celular</strong> para entrar no Yaya com Yaya+ ativo por 10 dias.
+            <p style={{ fontSize: '0.9375rem', color: 'hsl(250 25% 75%)', lineHeight: 1.6, margin: '0 0 1rem' }}>
+              {alreadySubscribed
+                ? 'Fique de olho no seu email, o convite do Google Play está a caminho!'
+                : 'Vamos enviar um convite direto do Google Play para o seu email em até 2 horas. Quando chegar, toque em "Aceitar" para instalar o Yaya.'}
             </p>
-            <div style={{ padding: '1rem', borderRadius: '0.625rem', background: 'rgba(183,159,255,0.08)', border: '1px solid rgba(183,159,255,0.18)', marginBottom: '1.25rem' }}>
-              <p style={{ fontSize: '0.8125rem', color: 'hsl(250 30% 70%)', margin: '0 0 0.5rem' }}>Ou acesse direto pelo celular:</p>
-              <code style={{ fontSize: '0.875rem', color: 'hsl(254 100% 81%)', fontFamily: 'inherit', fontWeight: 600 }}>
-                yayababy.app/mobile
-              </code>
-            </div>
-            <p style={{ fontSize: '0.8125rem', color: 'hsl(250 20% 55%)', margin: 0 }}>
-              Te avisamos quando o app Android lançar! 💜
+            <p style={{ fontSize: '0.8125rem', color: 'hsl(250 20% 55%)', margin: '0 0 1.25rem' }}>
+              Seus 10 dias de Yaya+ já estão liberados. Te avisamos quando o app lançar oficialmente! 💜
             </p>
             <button
               onClick={handleClose}
               style={{
-                marginTop: '1.25rem', padding: '0.625rem 1.5rem', borderRadius: '0.5rem',
+                padding: '0.625rem 1.5rem', borderRadius: '0.5rem',
                 background: 'transparent', border: '1px solid rgba(183,159,255,0.3)',
                 color: 'hsl(254 100% 81%)', fontFamily: 'inherit', fontSize: '0.875rem',
                 fontWeight: 600, cursor: 'pointer',
