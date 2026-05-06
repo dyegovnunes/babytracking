@@ -74,7 +74,10 @@ const BENEFITS = [
 interface PlanOption {
   type: PlanType;
   label: string;
+  /** Preço exibido no card — para vitalício é o equiv. mensal */
   price: string;
+  /** Preço real usado no CTA — para vitalício é o valor total cobrado */
+  ctaPrice?: string;
   detail: string;
   badge?: string;
 }
@@ -83,9 +86,9 @@ interface PlanOption {
 // Estes valores precisam bater com os produtos criados no App Store Connect
 // e no Google Play Console — se mudar aqui, mude lá também (e vice-versa).
 const FALLBACK_PLANS: PlanOption[] = [
-  { type: 'annual', label: 'Anual', price: 'R$20,83/mês', detail: 'R$249,90 cobrado anualmente', badge: 'Mais escolhido' },
-  { type: 'monthly', label: 'Mensal', price: 'R$34,90/mês', detail: 'Cobrado mensalmente' },
-  { type: 'lifetime', label: 'Vitalício', price: 'R$449,90', detail: 'Uma vez, para sempre' },
+  { type: 'annual',   label: 'Anual',     price: 'R$20,83/mês', detail: 'R$249,90 cobrado anualmente',  badge: 'Mais escolhido' },
+  { type: 'monthly',  label: 'Mensal',    price: 'R$34,90/mês', detail: 'Cobrado mensalmente' },
+  { type: 'lifetime', label: 'Vitalício', price: 'R$37,49/mês', ctaPrice: 'R$449,90', detail: 'Cobrado uma vez: R$449,90', badge: 'Melhor custo' },
 ];
 
 export function PaywallModal({ isOpen, onClose, trigger = 'generic', resetWhen }: PaywallModalProps) {
@@ -140,11 +143,19 @@ export function PaywallModal({ isOpen, onClose, trigger = 'generic', resetWhen }
         });
       }
       if (pkgs.lifetime) {
+        // Para vitalício mostramos o equiv. mensal (total/12) no card
+        // e o valor real no CTA — mesmo padrão do anual.
+        const totalPrice = pkgs.lifetime.product.priceString || 'R$449,90';
+        const monthly = pkgs.lifetime.product.price
+          ? `R$${(pkgs.lifetime.product.price / 12).toFixed(2).replace('.', ',')}/mês`
+          : 'R$37,49/mês';
         dynamicPlans.push({
           type: 'lifetime',
           label: 'Vitalício',
-          price: pkgs.lifetime.product.priceString || 'R$449,90',
-          detail: 'Uma vez, para sempre',
+          price: monthly,
+          ctaPrice: totalPrice,
+          detail: `Cobrado uma vez: ${totalPrice}`,
+          badge: 'Melhor custo',
         });
       }
 
@@ -204,7 +215,7 @@ export function PaywallModal({ isOpen, onClose, trigger = 'generic', resetWhen }
   if (!isOpen) return null;
 
   const ctaText = selectedPlan === 'lifetime'
-    ? `Comprar Yaya+ · ${selected.price}`
+    ? `Comprar Yaya+ · ${selected.ctaPrice ?? selected.price}`
     : `Assinar Yaya+ · ${selected.price}`;
 
   return (
@@ -244,44 +255,75 @@ export function PaywallModal({ isOpen, onClose, trigger = 'generic', resetWhen }
             ))}
           </div>
 
-          {/* Plan cards — uniform height */}
+          {/* Plan cards */}
           <div className="space-y-2 mb-2">
-            {plans.map((plan) => (
-              <button
-                key={plan.type}
-                onClick={() => setSelectedPlan(plan.type)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-md border-2 transition-all ${
-                  selectedPlan === plan.type
-                    ? 'border-primary bg-primary/10'
-                    : 'border-outline-variant/50 bg-surface-container/50'
-                }`}
-              >
-                {/* Radio */}
-                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
-                  selectedPlan === plan.type ? 'border-primary' : 'border-outline-variant'
-                }`}>
-                  {selectedPlan === plan.type && (
-                    <div className="w-2.5 h-2.5 rounded-full bg-primary" />
+            {plans.map((plan) => {
+              const isSelected = selectedPlan === plan.type
+              const isLifetime = plan.type === 'lifetime'
+
+              // Tema de cor: vitalício = âmbar, demais = primary (roxo)
+              const accentBorder = isLifetime ? 'border-amber-400'      : 'border-primary'
+              const accentBg     = isLifetime ? 'bg-amber-400/10'       : 'bg-primary/10'
+              const accentBadge  = isLifetime
+                ? 'bg-amber-400/20 text-amber-400'
+                : 'bg-primary/20 text-primary'
+              const accentRadio  = isLifetime ? 'border-amber-400'      : 'border-primary'
+              const accentDot    = isLifetime ? 'bg-amber-400'          : 'bg-primary'
+              const accentPrice  = isLifetime ? 'text-amber-400'        : 'text-primary'
+
+              return (
+                <button
+                  key={plan.type}
+                  onClick={() => setSelectedPlan(plan.type)}
+                  className={`w-full rounded-md border-2 transition-all overflow-hidden text-left ${
+                    isSelected
+                      ? `${accentBorder} ${accentBg}`
+                      : 'border-outline-variant/50 bg-surface-container/50'
+                  }`}
+                >
+                  {/* Faixa de destaque no topo — visível só quando selecionado */}
+                  {isSelected && plan.badge && (
+                    <div className={`px-4 py-1 text-[10px] font-bold uppercase tracking-wider ${accentBadge}`}>
+                      {plan.badge}
+                    </div>
                   )}
-                </div>
 
-                {/* Info */}
-                <div className="flex-1 text-left min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-on-surface">{plan.label}</span>
-                    {plan.badge && (
-                      <span className="text-[9px] font-semibold uppercase tracking-wider bg-primary text-on-primary px-1.5 py-0.5 rounded-full">
-                        {plan.badge}
-                      </span>
-                    )}
+                  <div className="flex items-center gap-3 px-4 py-3">
+                    {/* Radio */}
+                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+                      isSelected ? accentRadio : 'border-outline-variant'
+                    }`}>
+                      {isSelected && <div className={`w-2.5 h-2.5 rounded-full ${accentDot}`} />}
+                    </div>
+
+                    {/* Info */}
+                    <div className="flex-1 text-left min-w-0">
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <span className="text-sm font-bold text-on-surface">{plan.label}</span>
+                        {/* Pill badge compacto quando NÃO selecionado */}
+                        {!isSelected && plan.badge && (
+                          <span className="text-[9px] font-semibold uppercase tracking-wider bg-primary/20 text-primary px-1.5 py-0.5 rounded-full">
+                            {plan.badge}
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-[11px] text-on-surface/50">{plan.detail}</span>
+                    </div>
+
+                    {/* Price — equiv. mensal para todos os planos */}
+                    <div className="text-right flex-shrink-0">
+                      <div className={`text-sm font-bold ${isSelected ? accentPrice : 'text-on-surface/70'}`}>
+                        {plan.price}
+                      </div>
+                      {/* Nota de equivalência para vitalício */}
+                      {isLifetime && (
+                        <div className="text-[9px] text-on-surface/40">equiv./mês</div>
+                      )}
+                    </div>
                   </div>
-                  <span className="text-[11px] text-on-surface/50">{plan.detail || '\u00A0'}</span>
-                </div>
-
-                {/* Price */}
-                <span className="text-sm font-bold text-primary flex-shrink-0">{plan.price}</span>
-              </button>
-            ))}
+                </button>
+              )
+            })}
           </div>
         </div>
 
